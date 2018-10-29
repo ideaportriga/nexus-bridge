@@ -16,12 +16,11 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
         DefaultFormAppletPR.prototype.Init = function () {
           SiebelAppFacade.DefaultFormAppletPR.superclass.Init.apply(this, arguments);
           pm = this.GetPM();
+          appletName = pm.Get("GetName");
 
-          this.GetPM().AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW"), function (){
-            console.log('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW', arguments);
+          this.GetPM().AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW"), function () {
             afterSelection();
           });
-
         }
 
         DefaultFormAppletPR.prototype.ShowUI = function () {
@@ -31,14 +30,12 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
         DefaultFormAppletPR.prototype.BindData = function (bRefresh) {
           //SiebelAppFacade.DefaultFormAppletPR.superclass.BindData.apply(this, arguments);
 
-          appletName = pm.Get("GetName");
           var divId = "s_" + this.GetPM().Get("GetFullId") + "_div";
           var control = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].GetControls()["Name"];
           var controlInfo = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].GetControls()['InfoChanged'];
           var canUpdateName = pm.ExecuteMethod("CanUpdate", control.GetName());
-          console.log('can update', canUpdateName);
 
-          inputReadOnly = canUpdateName? '' : 'readonly="readonly"';
+          inputReadOnly = canUpdateName ? '' : 'readonly="readonly"';
 
           console.log(pm.Get("GetRecordSet")[pm.Get("GetSelection")]);
           var _caseNum = pm.Get("GetRecordSet")[pm.Get("GetSelection")].Name;
@@ -77,21 +74,13 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
           });
 
           $('#' + divId).find('form').hide().end()
-            .append('<div>' + input + '</div>')
-            .append('<div>' + checkBox + '</div>')
-            .append('<div>' + button + '</div>')
+            .append('<div>' + input + checkBox + '</div>' + button)
             .find('button').on('click', function (e) {
-              //var newCaseNum = $("#ipr-input-text").val();
-
+              //Save the record
               SiebelApp.S_App.GetActiveView().SetActiveAppletInternal(SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName]);
-
-              //var control = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].GetControls()["Name"];
-              //pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), control);
-              //pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), control, newCaseNum);
-
-              var n = {
+              var ai = {
                 scope: {
-                  cb: function (){
+                  cb: function () {
                     console.log('response in callback from save record >>>', arguments);
                     if (arguments[3]) {
                       console.log('save was successful');
@@ -101,15 +90,14 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
                   }
                 }
               }
-
-              SiebelApp.CommandManager.GetInstance().InvokeCommand.call(SiebelApp.CommandManager.GetInstance, "*Browser Applet* *WriteRecord* * ", true, n);
+              SiebelApp.CommandManager.GetInstance().InvokeCommand.call(SiebelApp.CommandManager.GetInstance, "*Browser Applet* *WriteRecord* * ", true, ai);
             })
             .end()
-            .append('<div>' + nextRecordButton + '</div>')
+            .append(nextRecordButton)
             .find('#ipr-next-record').on('click', function (e) {
-
+              //go to the next record
               if (!pm.ExecuteMethod("CanInvokeMethod", "GotoNextSet")) {
-                alert('Not allowed to invoke GotoNextSet');
+                alert('GotoNextSet is not allowed to invoke ');
               } else {
                 //invoking the goto next set
                 var ps = SiebelApp.S_App.NewPropertySet();
@@ -120,58 +108,50 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
                 }
                 SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].InvokeControlMethod('GotoNextSet', ps, ai)
               }
+            }
+          );
 
-            });
-          $('#ipr-input-text').on('blur', function(){
-            //todo make it synchronous? or callback?
-            console.log('blur');
-            var newCaseNum = $("#ipr-input-text").val();
+          $('#ipr-input-text').on('blur', function () {
+            var newCaseNum = $(this).val();
             //TODO: CHECK IF VALUE ACTUALLY WAS CHANGED
             pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), control);
             pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), control, newCaseNum);
-            var isPostChanges = control.IsPostChanges();
-            if (isPostChanges) {
-              console.log('before OnControlEvent');
-              console.log(pm.OnControlEvent('change', control, $(this).val()));
-              console.log('after OnControlEvent');
+            if (control.IsPostChanges()) {
+              //recalculate model
             }
           });
 
-          $('#ipr-input-check').on('change', function(){
+          $('#ipr-input-check').on('change', function () {
             console.log('changed checkbox', $(this).checked);
             var newInfo = $(this).prop('checked') ? 'Y' : 'N';
             pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), controlInfo);
             pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlInfo, newInfo);
-            // we don't need to send by ourselves?
-            var isPostChanges = controlInfo.IsPostChanges();
-            if (isPostChanges) {
+            if (controlInfo.IsPostChanges()) {
               var control = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].GetControls()["Name"];
               if (pm.ExecuteMethod("CanUpdate", control.GetName())) {
                 $('#ipr-input-text').removeAttr('readonly');
               } else {
                 $('#ipr-input-text').attr('readonly', 'reaonly');
               }
-              console.log('before OnControlEvent checkbox', pm.ExecuteMethod("CanUpdate", control.GetName()));
-              console.log(pm.OnControlEvent('change', controlInfo, newInfo));
-              control = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].GetControls()["Name"];
-              console.log('after OnControlEvent checkbox', pm.ExecuteMethod("CanUpdate", control.GetName()));
             }
           });
         }
 
         function afterSelection() {
-
-            $("#ipr-input-text").val(pm.Get("GetRecordSet")[pm.Get("GetSelection")].Name);
-            var control = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].GetControls()["Name"];
-            if (pm.ExecuteMethod("CanUpdate", control.GetName())) {
-              $('#ipr-input-text').removeAttr('readonly');
-            } else {
-              $('#ipr-input-text').attr('readonly', 'reaonly');
-            }
+          var el = $("#ipr-input-text");
+          el.val(pm.Get("GetRecordSet")[pm.Get("GetSelection")].Name);
+          var control = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].GetControls()["Name"];
+          if (pm.ExecuteMethod("CanUpdate", control.GetName())) {
+            el.removeAttr('readonly');
+          } else {
+            el.attr('readonly', 'reaonly');
+          }
+          var _infoChanged = pm.Get("GetRecordSet")[pm.Get("GetSelection")]['Info Changed Flag'];
+          $("#ipr-input-check").prop('checked', _infoChanged == 'Y' ? true : false)
         }
 
         DefaultFormAppletPR.prototype.BindEvents = function () {
-          SiebelAppFacade.DefaultFormAppletPR.superclass.BindEvents.apply(this, arguments);
+          //SiebelAppFacade.DefaultFormAppletPR.superclass.BindEvents.apply(this, arguments);
         }
 
         DefaultFormAppletPR.prototype.EndLife = function () {

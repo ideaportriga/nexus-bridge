@@ -31,31 +31,19 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
           //SiebelAppFacade.DefaultFormAppletPR.superclass.BindData.apply(this, arguments);
 
           var divId = "s_" + this.GetPM().Get("GetFullId") + "_div";
-          var control = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].GetControls()["Name"];
           var controlInfo = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].GetControls()['InfoChanged'];
-          var canUpdateName = pm.ExecuteMethod("CanUpdate", control.GetName());
-
-          inputReadOnly = canUpdateName ? '' : 'readonly="readonly"';
-
-          console.log(pm.Get("GetRecordSet")[pm.Get("GetSelection")]);
-          var _caseNum = pm.Get("GetRecordSet")[pm.Get("GetSelection")].Name;
-          var _infoChanged = pm.Get("GetRecordSet")[pm.Get("GetSelection")]['Info Changed Flag'];
-          console.log(_caseNum, _infoChanged);
+          var control = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].GetControls().Name;
 
           var input = SiebelAppFacade.HTMLTemplateManager.GenerateMarkup({
             type: consts.get('SWE_CTRL_TEXT'),
-            value: _caseNum,
             id: 'ipr-input-text',
             className: 'siebui-align-left siebui-input-align-left',
-            attrs: 'title="Enter the case name" aria-label="Case Name" placeholder="<Enter case name>" ' + inputReadOnly
+            attrs: 'title="Enter the case name" aria-label="Case Name" placeholder="<Enter case name>"'
           });
 
-          var checked = _infoChanged == 'Y' ? 'checked' : '';
           var checkBox = SiebelAppFacade.HTMLTemplateManager.GenerateMarkup({
             type: consts.get('SWE_CTRL_CHECKBOX'),
-            id: 'ipr-input-check',
-            className: '',
-            attrs: checked
+            id: 'ipr-input-check'
           });
 
           var button = SiebelAppFacade.HTMLTemplateManager.GenerateMarkup({
@@ -122,7 +110,7 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
           });
 
           $('#ipr-input-check').on('change', function () {
-            console.log('changed checkbox', $(this).checked);
+            console.log('changed checkbox', $(this).prop('checked'));
             var newInfo = $(this).prop('checked') ? 'Y' : 'N';
             pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), controlInfo);
             pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlInfo, newInfo);
@@ -135,6 +123,8 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
               }
             }
           });
+
+          afterSelection();
         }
 
         function afterSelection() {

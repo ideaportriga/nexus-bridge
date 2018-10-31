@@ -3,7 +3,9 @@ if (typeof (SiebelAppFacade.IPRHelper) == "undefined") {
   SiebelAppFacade.IPRHelper = function () {
     console.log('IPR Helper Started....')
     return {
-      a: function() {alert('b')}
+      getControls: function() {
+        console.log('get controls started...')
+      }
     }
 
   }();

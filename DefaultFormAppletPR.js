@@ -86,28 +86,34 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
             <v-app>                                                                                                                                             \n\
               <v-flex>                                                                                                                                          \n\
                 <v-layout row wrap>                                                                                                                             \n\
-                <v-flex md6>                                                                                                                                    \n\
-                  <v-text-field v-on:input="changeName" :readonly="caseNameRO" label="Case Name" v-model="caseName"></v-text-field>                             \n\
+                <v-flex md12 pa-2>                                                                                                                              \n\
+                  <v-alert :value="true" type="success">HLS Case Form Applet with custom VUE.JS PR</v-alert>                                                    \n\
                 </v-flex>                                                                                                                                       \n\
-                <v-flex md6>                                                                                                                                             \n\
-                  <v-checkbox v-on:change="changeInfoCheck" label="Info Changed" v-model="infoChanged"></v-checkbox>                                                     \n\
-                </v-flex>                                                                                                                                                \n\
-                <v-flex md6>                                                                                                                                             \n\
-                  <v-select :items="caseStatusArr" v-on:click.native="clickStatus" v-on:change="changeStatus" v-model="caseStatus" label="Status"></v-select>            \n\
-                </v-flex>                                                                                                                                                \n\
-                <v-flex md6>                                                                                                                                             \n\
-                  <v-select :items="caseSubStatusArr" v-on:click.native="clickSubStatus" v-on:change="changeSubStatus" v-model="caseSubStatus" label="SubStatus"></v-select>    \n\
+                <v-flex md6 pa-2>                                                                                                                               \n\
+                  <v-text-field v-on:input="changeName" :disabled="caseNameRO" label="Case Name" v-model="caseName"></v-text-field>                             \n\
+                </v-flex>                                                                                                                                       \n\
+                <v-flex md6 pa-2>                                                                                                                               \n\
+                  <v-switch v-on:change="changeInfoCheck" label="Case Name ReadOnly (configured in Siebel Tools)" v-model="infoChanged"></v-switch>             \n\
+                </v-flex>                                                                                                                                       \n\
+                <v-flex md4 pa-2>                                                                                                                               \n\
+                  <v-select box :items="caseStatusArr" v-on:click.native="clickStatus" v-on:change="changeStatus" v-model="caseStatus" label="Status"></v-select>                 \n\
+                </v-flex>                                                                                                                                                         \n\
+                <v-flex md4 pa-2>                                                                                                                                                 \n\
+                  <v-select box :items="caseSubStatusArr" v-on:click.native="clickSubStatus" v-on:change="changeSubStatus" v-model="caseSubStatus" label="SubStatus"></v-select>  \n\
+                </v-flex>                                                                                                                                                         \n\
+                <v-flex md4 pa-2>                                                                                                                                                 \n\
+                  <v-select outline :items="caseCategoryArr" v-on:change="changeCategory" v-model="caseCategory" label="Category"></v-select>                                     \n\
                 </v-flex>                                                                                                                                                       \n\
-                <v-flex md12>                                                                                                                                                   \n\
-                  <v-select :items="caseCategoryArr" v-on:change="changeCategory" v-model="caseCategory" label="Category"></v-select>                                           \n\
-                </v-flex>                                                                                                                                                       \n\
-                <v-flex md4>                                                                                                                                                    \n\
+                <v-flex md3>                                                                                                                                                    \n\
                     <v-btn v-on:click="saveButtonClick" color="primary">Save!</v-btn>                                                                                           \n\
                 </v-flex>                                                                                                                                                       \n\
-                <v-flex md4>                                                                                                                                                    \n\
+                <v-flex md3>                                                                                                                                                    \n\
+                    <v-btn v-on:click="prevButtonClick" color="primary">Previous!</v-btn>                                                                                       \n\
+                </v-flex>                                                                                                                                                       \n\
+                <v-flex md3>                                                                                                                                                    \n\
                     <v-btn v-on:click="nextButtonClick" color="primary">Next!</v-btn>                                                                                           \n\
                 </v-flex>                                                                                                                                                       \n\
-                <v-flex md4>                                                                                                                                                    \n\
+                <v-flex md3>                                                                                                                                                    \n\
                     <v-btn v-on:click="newButtonClick" color="primary">New!</v-btn>                                                                                             \n\
                 </v-flex>                                                                                                                                                       \n\
                 </v-layout>                                                                                                                                                     \n\
@@ -256,6 +262,16 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
                   ps.SetProperty('SWEApplet', appletName);
                   ps.SetProperty('SWEView', viewName);
                   SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].InvokeControlMethod('GotoNextSet', ps, {});
+                }
+              },
+              prevButtonClick: function() {
+                if (!pm.ExecuteMethod("CanInvokeMethod", "GotoPreviousSet")) {
+                  alert('GotoPreviousSet is not allowed to invoke ');
+                } else {
+                  var ps = SiebelApp.S_App.NewPropertySet();
+                  ps.SetProperty('SWEApplet', appletName);
+                  ps.SetProperty('SWEView', viewName);
+                  SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].InvokeControlMethod('GotoPreviousSet', ps, {});
                 }
               },
               afterSelection: function() {

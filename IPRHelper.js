@@ -34,11 +34,18 @@ if (typeof (SiebelAppFacade.N19Helper) == "undefined") {
       return ret;
     }
 
+    function getRecordSet(){
+      console.log('get row set started...')
+
+    }
+
     return {
       getControls: getControls,
+      getRecordSet: getRecordSet,
       updateControlValue: function(controlName) {
         console.log('update control value started...')
       },
+
 //      setRecord?
       nextRecord: function() { },
       prevRecord: function() { },

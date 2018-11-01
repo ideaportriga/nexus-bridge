@@ -26,6 +26,11 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
           appletName = pm.Get("GetName");
           viewName = SiebelApp.S_App.GetActiveView().GetName();
 
+          if (!SiebelAppFacade.N19) {
+            SiebelAppFacade.N19 = {};
+          }
+          SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({pm: pm});
+
           this.GetPM().AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_GENERIC"), function (propSet){
             var type = propSet.GetProperty(consts.get("SWE_PROP_NOTI_TYPE"));
             if (type === "GetQuickPickInfo"){
@@ -49,8 +54,6 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
               app.afterSelection();
             }
           });
-
-          SiebelAppFacade.obj1 = new SiebelAppFacade.IPRHelper({pm: pm});
         }
 
         DefaultFormAppletPR.prototype.ShowUI = function () {

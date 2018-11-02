@@ -18,6 +18,7 @@ if (typeof (SiebelAppFacade.N19Helper) == "undefined") {
         console.log(control);
         //todo: control value
         //todo: required
+        //field max size?
         var obj = {
           name: controlName,
           type: control.GetControlType(),

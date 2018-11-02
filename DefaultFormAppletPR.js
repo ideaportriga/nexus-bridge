@@ -19,6 +19,7 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
         var controlCategory;
         var controlStatus;
         var controlSubStatus;
+        var controlDescription;
 
         DefaultFormAppletPR.prototype.Init = function () {
           SiebelAppFacade.DefaultFormAppletPR.superclass.Init.apply(this, arguments);
@@ -50,10 +51,22 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
           });
 
           this.GetPM().AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW"), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW');
             if (app) {
               app.afterSelection();
             }
           });
+
+          this.GetPM().AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_DELETE_WORKSET"), function () {
+            console.log('SWE_PROP_BC_NOTI_DELETE_WORKSET');
+            if (app) {
+              app.afterSelection();
+            }
+          });
+          this.GetPM().AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_STATE_CHANGED"), function () {
+            console.log('SWE_PROP_BC_NOTI_STATE_CHANGED');
+          });
+
         }
 
         DefaultFormAppletPR.prototype.ShowUI = function () {
@@ -83,42 +96,50 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
           $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
           var html = '\
           <div id="app">                                                                                                                                        \n\
-            <v-app>                                                                                                                                             \n\
-              <v-flex>                                                                                                                                          \n\
+            <v-app id="inspire"><v-container fluid>                                                                                                                                             \n\
                 <v-layout row wrap>                                                                                                                             \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
-                  <v-alert :value="true" type="success">HLS Case Form Applet with custom VUE.JS PR</v-alert>                                                    \n\
-                </v-flex>                                                                                                                                       \n\
-                <v-flex md6 pa-2>                                                                                                                               \n\
-                  <v-text-field v-on:input="changeName" :disabled="caseNameRO" label="Case Name" v-model="caseName"></v-text-field>                             \n\
+                  <v-alert :value="true" type="info">HLS Case Form Applet rendered by VUE.JS PR</v-alert>                                                    \n\
+                </v-flex>                                                                      \n\
+                <v-flex md6 pa-2>                                   \n\
+                  <v-text-field :rules="[rules.required]" v-on:input="changeName" ref="caseName" :disabled="caseNameRO" label="Case Name" v-model="caseName" clearable counter="100"></v-text-field>                             \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
                   <v-switch v-on:change="changeInfoCheck" label="Case Name ReadOnly (configured in Siebel Tools)" v-model="infoChanged"></v-switch>             \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
-                  <v-select box :items="caseStatusArr" v-on:click.native="clickStatus" v-on:change="changeStatus" v-model="caseStatus" label="Status"></v-select>                 \n\
+                  <v-select @input="inputStatus" box :items="caseStatusArr" v-on:click.native="clickStatus" v-on:change="changeStatus" v-model="caseStatus" label="Status"></v-select>                 \n\
                 </v-flex>                                                                                                                                                         \n\
                 <v-flex md4 pa-2>                                                                                                                                                 \n\
                   <v-select box :items="caseSubStatusArr" v-on:click.native="clickSubStatus" v-on:change="changeSubStatus" v-model="caseSubStatus" label="SubStatus"></v-select>  \n\
                 </v-flex>                                                                                                                                                         \n\
-                <v-flex md4 pa-2>                                                                                                                                                 \n\
-                  <v-select outline :items="caseCategoryArr" v-on:change="changeCategory" v-model="caseCategory" label="Category"></v-select>                                     \n\
+                <v-flex md4 pa-2>  \n\
+                  <v-autocomplete v-model="caseCategory" v-on:click.native="fixPosition" :items="caseCategoryArr" v-on:change="changeCategory" label="Category"> \n\
+                </v-flex>    \n\
+                <v-flex md12 pa-2>  \n\
+                  <v-textarea rows="7" label="Description" v-model="caseDescription" counter="2000" box name="input-7-1"></v-textarea> \n\
+                </v-flex>    \n\
+                <v-flex md12 pa-2>                                                                                                                              \n\
+                  <v-divider></v-divider>                                                                                                                                                  \n\
+                </v-flex>                                                                                                                              \n\
+                <v-flex md1 pa-2>                                                                                                                                                    \n\
+                    <v-btn v-on:click="saveButtonClick" color="primary"><v-icon>save</v-icon>Save!</v-btn>                                                                                           \n\
                 </v-flex>                                                                                                                                                       \n\
-                <v-flex md3>                                                                                                                                                    \n\
-                    <v-btn v-on:click="saveButtonClick" color="primary">Save!</v-btn>                                                                                           \n\
+                <v-flex md9 pa-2>                                                                                                                                                    \n\
+                </v-flex>                                                                                                                                                    \n\
+                <v-flex md1 pa-2>                                                                                                                                                    \n\
+                  <v-tooltip top><v-btn slot="activator" v-on:click="prevButtonClick" color="primary"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>                                                                                       \n\
                 </v-flex>                                                                                                                                                       \n\
-                <v-flex md3>                                                                                                                                                    \n\
-                    <v-btn v-on:click="prevButtonClick" color="primary">Previous!</v-btn>                                                                                       \n\
+                <v-flex md1 pa-2>                                                                                                                                                    \n\
+                <v-tooltip top><v-btn slot="activator" v-on:click="nextButtonClick" color="primary"><v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip> \n\
                 </v-flex>                                                                                                                                                       \n\
-                <v-flex md3>                                                                                                                                                    \n\
-                    <v-btn v-on:click="nextButtonClick" color="primary">Next!</v-btn>                                                                                           \n\
-                </v-flex>                                                                                                                                                       \n\
-                <v-flex md3>                                                                                                                                                    \n\
-                    <v-btn v-on:click="newButtonClick" color="primary">New!</v-btn>                                                                                             \n\
-                </v-flex>                                                                                                                                                       \n\
+                <v-fab-transition> \n\
+                  <v-btn v-on:click="newButtonClick" v-show="true" color="pink" dark fixed bottom right fab> \n\
+                    <v-icon>add</v-icon> \n\
+                  </v-btn> \n\
+                </v-fab-transition> \n\
                 </v-layout>                                                                                                                                                     \n\
-              </v-flex>                                                                                                                                                         \n\
-            </v-app>                                                                                                                                                            \n\
+              </v-container></v-app>                                                                                                                                                            \n\
           </div>';
 
           $('#' + divId).append(html);
@@ -135,9 +156,19 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
               for (var i=0; i < arr.length; i++) {
                 this.caseCategoryArr.push(arr[i].propArray.DisplayName);
               }
+              this.caseCategoryArr.sort();
               this.afterSelection();
+              $('.application--wrap').css({'min-height': 'auto'});
+              //$('#_swecontent').css({'height': 'auto'});
+
             },
             data: {
+              rules: {
+                required: function(value) {
+                  return !!value || 'Required.';
+                }
+              },
+
               caseName: '',
               caseStatus: '',
               caseSubStatus: '',
@@ -146,7 +177,8 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
               canUpdateName: true,
               caseStatusArr: [],
               caseSubStatusArr: [],
-              caseCategoryArr: []
+              caseCategoryArr: [],
+              caseDescription: ''
             },
             computed: {
               caseNameRO: function () {
@@ -154,6 +186,17 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
               }
             },
             methods: {
+              fixPosition() {
+                //shame - just for demo
+                var i = Math.round($('.v-select__slot')[0].getBoundingClientRect().top);
+                setTimeout(function(){
+                  var j = i + 0 + 'px';
+                  $('.v-menu__content').css('top', j);
+                }, 10);
+              },
+              inputStatus: function(){
+                console.log('inputStatus', arguments, this.caseStatus);
+              },
               populateStatusArray: function(arr) {
                 this.caseStatusArr = [this.caseStatus];
                 for (var i = 0; i < arr.length; i++) {
@@ -178,6 +221,8 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
                 ps.SetProperty('SWEJI', false);
                 controlSubStatus.GetApplet().InvokeMethod('GetQuickPickInfo', ps);
                 //console.log(pm.OnControlEvent('invoke_combo', controlStatus));
+                //shame
+                this.fixPosition();
               },
               clickStatus: function() { //TODO: WHAT IS THE BEST EVENT FOR IT
                 console.log('clickStatus', arguments);
@@ -186,7 +231,8 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
                 ps.SetProperty('SWEField', controlStatus.GetInputName());
                 ps.SetProperty('SWEJI', false);
                 controlStatus.GetApplet().InvokeMethod('GetQuickPickInfo', ps);
-                //console.log(pm.OnControlEvent('invoke_combo', controlStatus));
+                //shame
+                this.fixPosition();
               },
               changeControl: function(control, value) {
                 pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), control);
@@ -194,10 +240,23 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
               },
               changeStatus: function(value) {
                 //could the input parameters to be sent from the control
-                this.changeControl(controlStatus, value);
-                if (controlStatus.IsPostChanges()) {
-                  console.log('TODO: change status post changes');
-                  this.afterSelection(); //?????????????????????
+                pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), controlStatus);
+                var isChanged = pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlStatus, value);
+                if (isChanged) {
+                  if (controlStatus.IsPostChanges()) {
+                    console.log('change status post changes');
+                    this.afterSelection();
+                  }
+                } else {
+                  //is it the only option?
+                  var currentRecord = pm.Get("GetRecordSet")[pm.Get("GetSelection")];
+                  pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlStatus, currentRecord.Status);
+                  Vue.nextTick(function(){
+                    //console.log('vue next tick')
+                    this.caseStatusArr = [currentRecord.Status];
+                    //this.caseStatusArr.push(currentRecord.Status);
+                    this.caseStatus = currentRecord.Status;
+                  }.bind(this))
                 }
               },
               changeSubStatus: function(value) {
@@ -217,18 +276,20 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
                 pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlInfo, newInfo);
                 if (controlInfo.IsPostChanges()) {
                   this.canUpdateName = pm.ExecuteMethod("CanUpdate", controlName.GetName());
+                  setTimeout(function(){
+                    this.$refs.caseName.focus();
+                  }.bind(this));
                 }
-
               },
               newButtonClick: function() {
-                SiebelApp.S_App.GetActiveView().SetActiveAppletInternal(SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName]);
+                //SiebelApp.S_App.GetActiveView().SetActiveAppletInternal(SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName]);
                 var ai = {
                   scope: {
                     cb: function () {
                       console.log('response in callback from new record >>>', arguments);
                       if (arguments[3]) {
                         console.log('new record was successful');
-                        this.afterSelection();
+                        //this.afterSelection();
                       } else {
                         console.log('new record WAS NOT successful');
                       }
@@ -236,6 +297,10 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
                   }
                 }
                 SiebelApp.CommandManager.GetInstance().InvokeCommand.call(SiebelApp.CommandManager.GetInstance, "*Browser Applet* *NewRecord* * ", true, ai);
+
+                setTimeout(function(){
+                  this.$refs.caseName.focus();
+                }.bind(this));
               },
               saveButtonClick: function() {
                 SiebelApp.S_App.GetActiveView().SetActiveAppletInternal(SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName]);
@@ -280,6 +345,7 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
                 controlStatus = pm.ExecuteMethod("GetControl", 'Status');
                 controlSubStatus = pm.ExecuteMethod("GetControl", 'Sub Status');
                 controlCategory = pm.ExecuteMethod("GetControl", 'Category');
+                controlDescription = pm.ExecuteMethod("GetControl", 'Description');
 
                 this.canUpdateName = pm.ExecuteMethod("CanUpdate", controlName.GetName());
                 var currentRecord = pm.Get("GetRecordSet")[pm.Get("GetSelection")];
@@ -287,14 +353,17 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
                 this.caseName = currentRecord.Name;
                 this.caseStatus = currentRecord.Status;
                 this.caseSubStatus = currentRecord['Sub Status'];
-                console.log('after selection', this.caseSubStatus);
-                this.caseStatusArr.push(this.caseStatus);
-                this.caseSubStatusArr.push(this.caseSubStatus);
+                this.caseStatusArr = [this.caseStatus];
+                this.caseSubStatusArr = [this.caseSubStatus];
                 this.caseCategory = currentRecord.Category;
+                this.caseDescription = currentRecord.Description;
+
                 //pm.OnControlEvent('invoke_combo', controlStatus);
               }
             }
           });
+
+
         }
 
         DefaultFormAppletPR.prototype.EndLife = function () {

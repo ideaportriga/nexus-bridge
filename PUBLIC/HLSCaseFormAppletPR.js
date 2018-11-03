@@ -362,8 +362,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               }
             }
           });
-
-
         }
 
         HLSCaseFormAppletPR.prototype.EndLife = function () {

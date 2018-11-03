@@ -11,6 +11,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     const appletId = `s_${pm.Get('GetFullId')}_div`;
     const required = []; // will be empty for list applet
     let controls = {};
+    let lov = [];
 
     // populate required
     if (!isListApplet) {
@@ -22,7 +23,22 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       }
     }
 
-    console.log('N19Helper Started....', appletName, isListApplet, appletId, required); // eslint-disable-line no-console
+    // listener to get dynamic LOVs
+    pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_GENERIC'), (propSet) => {
+      const type = propSet.GetProperty(consts.get('SWE_PROP_NOTI_TYPE'));
+      if (type === 'GetQuickPickInfo') {
+        // console.log(propSet); // eslint-disable-line no-console
+        const arr = [];
+        CCFMiscUtil_StringToArray(propSet.GetProperty(consts.get('SWE_PROP_ARGS_ARRAY')), arr);
+        // console.log(arr); // eslint-disable-line no-console
+        // if (viewName == arr[1] && appletName == arr[2]) {
+        //   if (control.GetInputName() == arr[3]) {
+        lov = arr;
+      }
+    });
+
+    // eslint-disable-next-line no-console
+    console.log('N19Helper Started....', appletName, isListApplet, appletId, required);
 
     function _returnControls() {
       if (isListApplet) {
@@ -99,6 +115,19 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return controls;
     }
 
+    function _getControlByName(name) {
+      // check if controls are not empty
+      if (Object.keys(controls).length === 0) {
+        controls = getControls();
+      }
+      const control = controls[name];
+      if (!control) {
+        throw new Error(`control is not found - ${name}`);
+      }
+      console.log(control); // eslint-disable-line no-console
+      return control;
+    }
+
     function getRecordSet() {
       return pm.Get('GetRecordSet');
     }
@@ -112,17 +141,44 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       ps.SetProperty('SWEView', viewName);
       const ret = applet.InvokeControlMethod(method, ps, {});
       if (ret) {
-        controls = []; // it should be got the new controls
+        // if navigation successfull, we need to get the new controls
+        controls = {};
       }
       return ret;
     }
 
     function nextRecord() {
+      return _navigate(isListApplet ? 'GotoNext' : 'GotoNextSet');
+    }
+
+    function nextRecordSet() {
+      if (!isListApplet) {
+        return false;
+      }
       return _navigate('GotoNextSet');
     }
 
     function prevRecord() {
+      if (isListApplet) {
+        // todo: call position on row
+        return false;
+      }
+      return _navigate(isListApplet ? 'GotoPrevios' : 'GotoPreviousSet');
+    }
+
+    function prevRecordSet() {
+      if (!isListApplet) {
+        return false;
+      }
       return _navigate('GotoPreviousSet');
+    }
+
+    function positionOnRow() {
+      if (!isListApplet) {
+        return false;
+      }
+      return true;
+      // todo
     }
 
     function _invokeCommandManager(cmd, f) {
@@ -161,11 +217,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     }
 
     function setControlValue(name, value) {
-      const control = controls[name];
-      if (!control) {
-        throw new Error(`control is not found - ${name}`);
-      }
-      console.log(control); // eslint-disable-line no-console
+      const control = _getControlByName(name);
       if (consts.get('SWE_CTRL_CHECKBOX') === control.uiType) {
         // convert true/false => Y/N
         // do we want to support null
@@ -181,8 +233,14 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return ret;
     }
 
-    function getDynamicLOV() {
-      // control name
+    function getDynamicLOV(name) {
+      const control = _getControlByName(name);
+      const ps = SiebelApp.S_App.NewPropertySet();
+      ps.SetProperty('SWEField', control.inputName);
+      ps.SetProperty('SWEJI', false);
+      const ret = applet.InvokeMethod('GetQuickPickInfo', ps);
+      console.log(ret); // eslint-disable-line no-console
+      return lov;
     }
 
     return {
@@ -190,12 +248,14 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       getControls,
       getRecordSet,
       nextRecord,
+      nextRecordSet,
       prevRecord,
+      prevRecordSet,
+      positionOnRow,
       newRecord,
       undoRecord,
       writeRecord,
       setControlValue,
-      // setRecord?
       getDynamicLOV,
     };
   };

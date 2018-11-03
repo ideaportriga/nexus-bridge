@@ -23,6 +23,7 @@
     "SiebelAppFacade": false,
     "SiebelApp": false,
     "Namespace": false,
-    "consts": false
+    "consts": false,
+    "CCFMiscUtil_StringToArray": false
   }
 }

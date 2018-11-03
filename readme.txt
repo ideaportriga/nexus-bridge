@@ -1,1 +1,0 @@
-Store your JavaScript customization in this folder.

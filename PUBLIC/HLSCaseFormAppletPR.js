@@ -1,15 +1,15 @@
-if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
+if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
-  SiebelJS.Namespace("SiebelAppFacade.DefaultFormAppletPR");
-  define("siebel/custom/DefaultFormAppletPR", ["siebel/phyrenderer", "siebel/custom/vue.js", "siebel/custom/vuetify.js"],
+  SiebelJS.Namespace("SiebelAppFacade.HLSCaseFormAppletPR");
+  define("siebel/custom/HLSCaseFormAppletPR", ["siebel/phyrenderer", "siebel/custom/vue.js", "siebel/custom/vuetify.js"],
     function () {
-      SiebelAppFacade.DefaultFormAppletPR = (function () {
+      SiebelAppFacade.HLSCaseFormAppletPR = (function () {
 
-        function DefaultFormAppletPR(pm) {
-          SiebelAppFacade.DefaultFormAppletPR.superclass.constructor.apply(this, arguments);
+        function HLSCaseFormAppletPR(pm) {
+          SiebelAppFacade.HLSCaseFormAppletPR.superclass.constructor.apply(this, arguments);
         }
 
-        SiebelJS.Extend(DefaultFormAppletPR, SiebelAppFacade.PhysicalRenderer);
+        SiebelJS.Extend(HLSCaseFormAppletPR, SiebelAppFacade.PhysicalRenderer);
         var app;
         var pm;
         var appletName;
@@ -21,8 +21,8 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
         var controlSubStatus;
         var controlDescription;
 
-        DefaultFormAppletPR.prototype.Init = function () {
-          SiebelAppFacade.DefaultFormAppletPR.superclass.Init.apply(this, arguments);
+        HLSCaseFormAppletPR.prototype.Init = function () {
+          SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
           pm = this.GetPM();
           appletName = pm.Get("GetName");
           viewName = SiebelApp.S_App.GetActiveView().GetName();
@@ -69,16 +69,16 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
 
         }
 
-        DefaultFormAppletPR.prototype.ShowUI = function () {
-      //    SiebelAppFacade.DefaultFormAppletPR.superclass.ShowUI.apply(this, arguments);
+        HLSCaseFormAppletPR.prototype.ShowUI = function () {
+      //    SiebelAppFacade.HLSCaseFormAppletPR.superclass.ShowUI.apply(this, arguments);
         }
 
-        DefaultFormAppletPR.prototype.BindEvents = function () {
-    //      SiebelAppFacade.DefaultFormAppletPR.superclass.BindEvents.apply(this, arguments);
+        HLSCaseFormAppletPR.prototype.BindEvents = function () {
+    //      SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindEvents.apply(this, arguments);
         }
 
-        DefaultFormAppletPR.prototype.BindData = function (bRefresh) {
-  //        SiebelAppFacade.DefaultFormAppletPR.superclass.BindData.apply(this, arguments);
+        HLSCaseFormAppletPR.prototype.BindData = function (bRefresh) {
+  //        SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindData.apply(this, arguments);
 //return;
 
           var divId = "s_" + this.GetPM().Get("GetFullId") + "_div";
@@ -366,13 +366,13 @@ if (typeof (SiebelAppFacade.DefaultFormAppletPR) === "undefined") {
 
         }
 
-        DefaultFormAppletPR.prototype.EndLife = function () {
-          SiebelAppFacade.DefaultFormAppletPR.superclass.EndLife.apply(this, arguments);
+        HLSCaseFormAppletPR.prototype.EndLife = function () {
+          SiebelAppFacade.HLSCaseFormAppletPR.superclass.EndLife.apply(this, arguments);
         }
 
-        return DefaultFormAppletPR;
+        return HLSCaseFormAppletPR;
       }()
       );
-      return "SiebelAppFacade.DefaultFormAppletPR";
+      return "SiebelAppFacade.HLSCaseFormAppletPR";
     })
 }

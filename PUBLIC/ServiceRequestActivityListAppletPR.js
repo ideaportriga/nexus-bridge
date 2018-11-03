@@ -27,20 +27,20 @@ if (typeof (SiebelAppFacade.ServiceRequestActivityListAppletPR) === "undefined")
 
         ServiceRequestActivityListAppletPR.prototype.ShowUI = function () {
           SiebelJS.Log(appletName + ": ServiceRequestActivityListAppletPR:      ShowUI method reached.");
-          var divId = "s_" + pm.Get("GetFullId") + "_div";
-          $('#' + divId).hide();
+          //var divId = "s_" + pm.Get("GetFullId") + "_div";
+          //$('#' + divId).hide();
 
-          //SiebelAppFacade.ServiceRequestActivityListAppletPR.superclass.ShowUI.apply(this, arguments);
+          SiebelAppFacade.ServiceRequestActivityListAppletPR.superclass.ShowUI.apply(this, arguments);
         }
 
         ServiceRequestActivityListAppletPR.prototype.BindData = function (bRefresh) {
           SiebelJS.Log(appletName + ": ServiceRequestActivityListAppletPR:      BindData method reached.");
-          //SiebelAppFacade.ServiceRequestActivityListAppletPR.superclass.BindData.apply(this, arguments);
+          SiebelAppFacade.ServiceRequestActivityListAppletPR.superclass.BindData.apply(this, arguments);
         }
 
         ServiceRequestActivityListAppletPR.prototype.BindEvents = function () {
           SiebelJS.Log(appletName + ": ServiceRequestActivityListAppletPR:      BindEvents method reached.");
-          //SiebelAppFacade.ServiceRequestActivityListAppletPR.superclass.BindEvents.apply(this, arguments);
+          SiebelAppFacade.ServiceRequestActivityListAppletPR.superclass.BindEvents.apply(this, arguments);
         }
 
         ServiceRequestActivityListAppletPR.prototype.EndLife = function () {

@@ -10,8 +10,8 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     const isListApplet = typeof applet.GetListOfColumns === 'function';
     const appletId = `s_${pm.Get('GetFullId')}_div`;
     const required = []; // will be empty for list applet
+    const lov = {};
     let controls = {};
-    let lov = [];
 
     // populate required
     if (!isListApplet) {
@@ -30,10 +30,10 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
         // console.log(propSet); // eslint-disable-line no-console
         const arr = [];
         CCFMiscUtil_StringToArray(propSet.GetProperty(consts.get('SWE_PROP_ARGS_ARRAY')), arr);
-        // console.log(arr); // eslint-disable-line no-console
-        // if (viewName == arr[1] && appletName == arr[2]) {
-        //   if (control.GetInputName() == arr[3]) {
-        lov = arr;
+        console.log(arr); // eslint-disable-line no-console
+        if (viewName === arr[1] && appletName === arr[2]) {
+          lov[arr[3]] = arr.splice(5).filter(el => el !== '');
+        }
       }
     });
 
@@ -235,12 +235,14 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
 
     function getDynamicLOV(name) {
       const control = _getControlByName(name);
+      lov[control.inputName] = {};
       const ps = SiebelApp.S_App.NewPropertySet();
       ps.SetProperty('SWEField', control.inputName);
       ps.SetProperty('SWEJI', false);
       const ret = applet.InvokeMethod('GetQuickPickInfo', ps);
+      // is it possible to get something different than true
       console.log(ret); // eslint-disable-line no-console
-      return lov;
+      return lov[control.inputName];
     }
 
     return {

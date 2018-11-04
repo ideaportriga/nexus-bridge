@@ -19,10 +19,8 @@ if (typeof (SiebelAppFacade.ServiceRequestActivityListAppletPR) === "undefined")
           appletName = pm.Get("GetName");
           SiebelJS.Log(appletName + ": ServiceRequestActivityListAppletPR:      Init method reached.");
 
-          if (!SiebelAppFacade.N19) {
-            SiebelAppFacade.N19 = {};
-          }
-          SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({pm: pm});
+          SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
+          SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
         }
 
         ServiceRequestActivityListAppletPR.prototype.ShowUI = function () {

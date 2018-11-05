@@ -71,6 +71,7 @@ if (typeof (SiebelAppFacade.ServiceRequestActivityListAppletPR) === "undefined")
 ### View PR
 * Overrides BindData, BindEvents, and ShowUI, and does not call the methods of super classes (commented out)
 * Hides everything inside `_sweview` 
+* Injects the external application that manipulates with Siebel Data using the instances of N19Helpers
 ```js
 if (typeof (SiebelAppFacade.ServiceRequestDetailViewPR) === "undefined") {
 

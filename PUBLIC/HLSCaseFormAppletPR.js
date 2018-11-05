@@ -346,15 +346,27 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 controlDescription = pm.ExecuteMethod("GetControl", 'Description');
 
                 this.canUpdateName = pm.ExecuteMethod("CanUpdate", controlName.GetName());
-                var currentRecord = pm.Get("GetRecordSet")[pm.Get("GetSelection")];
-                this.infoChanged = currentRecord['Info Changed Flag'] === 'Y';
-                this.caseName = currentRecord.Name;
-                this.caseStatus = currentRecord.Status;
-                this.caseSubStatus = currentRecord['Sub Status'];
-                this.caseStatusArr = [this.caseStatus];
-                this.caseSubStatusArr = [this.caseSubStatus];
-                this.caseCategory = currentRecord.Category;
-                this.caseDescription = currentRecord.Description;
+                var i = [pm.Get("GetSelection")];
+                if (i > -1) {
+                  var currentRecord = pm.Get("GetRecordSet")[i];
+                  this.infoChanged = currentRecord['Info Changed Flag'] === 'Y';
+                  this.caseName = currentRecord.Name;
+                  this.caseStatus = currentRecord.Status;
+                  this.caseSubStatus = currentRecord['Sub Status'];
+                  this.caseStatusArr = [this.caseStatus];
+                  this.caseSubStatusArr = [this.caseSubStatus];
+                  this.caseCategory = currentRecord.Category;
+                  this.caseDescription = currentRecord.Description;
+                } else { // no records displayed
+                  this.infoChanged = false;
+                  this.caseName = '';
+                  this.caseStatus = '';
+                  this.caseSubStatus = '';
+                  this.caseStatusArr = [];
+                  this.caseSubStatusArr = [];
+                  this.caseCategory = '';
+                  this.caseDescription = '';
+                }
 
                 //pm.OnControlEvent('invoke_combo', controlStatus);
               }

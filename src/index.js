@@ -23,6 +23,9 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       }
     }
 
+    // eslint-disable-next-line no-console
+    console.log('N19Helper Started....', appletName, isListApplet, appletId, required);
+
     // listener to get dynamic LOVs
     pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_GENERIC'), (propSet) => {
       const type = propSet.GetProperty(consts.get('SWE_PROP_NOTI_TYPE'));
@@ -36,9 +39,6 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
         }
       }
     });
-
-    // eslint-disable-next-line no-console
-    console.log('N19Helper Started....', appletName, isListApplet, appletId, required);
 
     function _returnControls() {
       if (isListApplet) {
@@ -132,6 +132,22 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return pm.Get('GetRecordSet');
     }
 
+    function getRawRecordSet() {
+      return pm.Get('GetRawRecordSet');
+    }
+
+    function _getRowListRowCount() {
+      return pm.Get('GetRowListRowCount');
+    }
+
+    function _getNumRows() {
+      return pm.Get('GetNumRows');
+    }
+
+    function getSelection() {
+      return pm.Get('GetSelection');
+    }
+
     function _navigate(method) {
       if (!pm.ExecuteMethod('CanInvokeMethod', method)) {
         return false;
@@ -141,7 +157,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       ps.SetProperty('SWEView', viewName);
       const ret = applet.InvokeControlMethod(method, ps, {});
       if (ret) {
-        // if navigation successfull, we need to get the new controls
+        // if navigation was successfull, we need to get the new controls
         controls = {};
       }
       return ret;
@@ -158,10 +174,22 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return _navigate('GotoNextSet');
     }
 
+    function positionOnRow(index) {
+      if (isListApplet) {
+        if (!pm.ExecuteMethod('CanInvokeMethod', 'PositionOnRow')) {
+          return false;
+        }
+        if (_getNumRows() < index + 1) {
+          return false;
+        }
+        return pm.ExecuteMethod('HandleRowSelect', index, false, false);
+      }
+      return false;
+    }
+
     function prevRecord() {
       if (isListApplet) {
-        // todo: call position on row
-        return false;
+        return positionOnRow(pm.Get('GetSelection') - 1);
       }
       return _navigate(isListApplet ? 'GotoPrevios' : 'GotoPreviousSet');
     }
@@ -171,14 +199,6 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
         return false;
       }
       return _navigate('GotoPreviousSet');
-    }
-
-    function positionOnRow() {
-      if (!isListApplet) {
-        return false;
-      }
-      return true;
-      // todo
     }
 
     function _invokeCommandManager(cmd, f) {
@@ -200,7 +220,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
           },
         },
       };
-      // todo: DEBUG DO WE ALWAYS NEED TRUE
+      // todo: Do we always need to sent true
       SiebelApp.CommandManager.GetInstance().InvokeCommand.call(null, cmd, true, ai);
     }
 
@@ -217,18 +237,19 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     }
 
     function setControlValue(name, value) {
-      const control = _getControlByName(name);
+      const control = _returnControls()[name];
+      // TODO: Check if control is found
       if (consts.get('SWE_CTRL_CHECKBOX') === control.uiType) {
         // convert true/false => Y/N
-        // do we want to support null
+        // do we want to support setting to null
         value = value ? 'Y' : 'N'; // eslint-disable-line no-param-reassign
       }
-      // TODO: do we need to convert the dates?
+      console.log(control); // eslint-disable-line no-console
       pm.OnControlEvent(consts.get('PHYEVENT_CONTROL_FOCUS'), control);
       const ret = pm.OnControlEvent(consts.get('PHYEVENT_CONTROL_BLUR'), control, value);
       if (!ret) {
-        console.log('something went wrong'); // eslint-disable-line no-console
-        // putting back the old value
+        console.log(`Value ${value} was not set for ${control}`); // eslint-disable-line no-console
+        // todo: do we need to put back the old value
       }
       return ret;
     }
@@ -249,6 +270,10 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       getAppletType,
       getControls,
       getRecordSet,
+      getRawRecordSet,
+      getRowListRowCount: _getRowListRowCount,
+      getNumRows: _getNumRows,
+      getSelection,
       nextRecord,
       nextRecordSet,
       prevRecord,
@@ -259,6 +284,8 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       writeRecord,
       setControlValue,
       getDynamicLOV,
+      // canInvokeMethod
+      // deleteRecord
     };
   };
 }

@@ -16,6 +16,7 @@
   "rules": {
     "yoda": 0,
     "no-underscore-dangle": 0,
+    "linebreak-style": 0,
     "no-console": 1,
     "no-useless-escape": 1
   },

@@ -16,6 +16,7 @@ Load the `N19Helper.js` using the Siebel manifest (Application - Common)
 * Overrides BindData, BindEvents, and ShowUI, and does not call the methods of super classes (commented out)
 * Hides applet's div
 * Initializes the instance of N19Helper in the Init procedure
+
 ```js
 if (typeof (SiebelAppFacade.ServiceRequestActivityListAppletPR) === "undefined") {
 
@@ -72,6 +73,7 @@ if (typeof (SiebelAppFacade.ServiceRequestActivityListAppletPR) === "undefined")
 * Overrides BindData, BindEvents, and ShowUI, and does not call the methods of super classes (commented out)
 * Hides everything inside `_sweview` 
 * Injects the external application that manipulates with Siebel Data using the instances of N19Helpers
+
 ```js
 if (typeof (SiebelAppFacade.ServiceRequestDetailViewPR) === "undefined") {
 
@@ -116,6 +118,7 @@ if (typeof (SiebelAppFacade.ServiceRequestDetailViewPR) === "undefined") {
 ```
 
 The initailized instances of `N19Helper` could be iterated as 
+
 ```js
 var appletmap = SiebelApp.S_App.GetActiveView().GetAppletMap();
 for (var applet in appletmap) {
@@ -124,6 +127,7 @@ for (var applet in appletmap) {
 ```
 
 ### SetControlValue
+
 ```js
 SiebelAppFacade.N19["Service Request Detail Applet"].setControlValue('Status', 'Pending')
 ````

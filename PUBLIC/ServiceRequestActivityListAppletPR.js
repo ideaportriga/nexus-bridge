@@ -26,7 +26,7 @@ if (typeof (SiebelAppFacade.ServiceRequestActivityListAppletPR) === "undefined")
         ServiceRequestActivityListAppletPR.prototype.ShowUI = function () {
           SiebelJS.Log(appletName + ": ServiceRequestActivityListAppletPR:      ShowUI method reached.");
           //var divId = "s_" + pm.Get("GetFullId") + "_div";
-          //$('#' + divId).hide();
+          //document.getElementById(divId).style.display = 'none';
 
           SiebelAppFacade.ServiceRequestActivityListAppletPR.superclass.ShowUI.apply(this, arguments);
         }

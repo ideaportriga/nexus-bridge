@@ -45,7 +45,7 @@ if (typeof (SiebelAppFacade.ServiceRequestActivityListAppletPR) === "undefined")
 
         ServiceRequestActivityListAppletPR.prototype.ShowUI = function () {
           var divId = "s_" + pm.Get("GetFullId") + "_div";
-          $('#' + divId).hide();
+          document.getElementById(divId).style.display = 'none';
           //SiebelAppFacade.ServiceRequestActivityListAppletPR.superclass.ShowUI.apply(this, arguments);
         }
 
@@ -94,7 +94,7 @@ if (typeof (SiebelAppFacade.ServiceRequestDetailViewPR) === "undefined") {
 
         ServiceRequestDetailViewPR.prototype.ShowUI = function () {
           //SiebelAppFacade.ServiceRequestDetailViewPR.superclass.ShowUI.apply(this, arguments);
-          $('#_sweview > div').hide();
+          document.querySelector('#_sweview > div').style.display = 'none';
         }
 
         ServiceRequestDetailViewPR.prototype.BindData = function (bRefresh) {

@@ -22,7 +22,7 @@ if (typeof (SiebelAppFacade.ServiceRequestDetailViewPR) === "undefined") {
         ServiceRequestDetailViewPR.prototype.ShowUI = function () {
           SiebelJS.Log(pm.Get("GetName") + ": ServiceRequestDetailViewPR:      ShowUI method reached.");
           SiebelAppFacade.ServiceRequestDetailViewPR.superclass.ShowUI.apply(this, arguments);
-          //$('#_sweview > div').hide();
+          //document.querySelector('#_sweview > div').style.display = 'none';
         }
 
         ServiceRequestDetailViewPR.prototype.BindData = function (bRefresh) {

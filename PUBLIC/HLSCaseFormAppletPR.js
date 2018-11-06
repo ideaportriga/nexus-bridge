@@ -30,7 +30,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
           SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
 
-          this.GetPM().AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_GENERIC"), function (propSet) {
+          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_GENERIC"), function (propSet) {
             var type = propSet.GetProperty(consts.get("SWE_PROP_NOTI_TYPE"));
             if (type === "GetQuickPickInfo") {
               var arr = [];
@@ -48,24 +48,51 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           });
 
-          this.GetPM().AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW"), function () {
+          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW"), function () {
             console.log('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW');
             if (app) {
               app.afterSelection();
             }
           });
 
-          this.GetPM().AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_DELETE_WORKSET"), function () {
+          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_DELETE_WORKSET"), function () {
             console.log('SWE_PROP_BC_NOTI_DELETE_WORKSET');
             if (app) {
               app.afterSelection();
             }
           });
-          this.GetPM().AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_STATE_CHANGED"), function () {
+
+          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_STATE_CHANGED"), function () {
             console.log('SWE_PROP_BC_NOTI_STATE_CHANGED');
+            console.log(arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_DATA"), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_DATA');
+            console.log(arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD_DATA"), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA');
+            console.log(arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS"), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS');
+            console.log(arguments);
+          });
+
+          pm.AddMethod("InvokeMethod", this.preInvokeMethod, {
+            sequence: true,
+            scope: this
           });
 
         }
+
+        HLSCaseFormAppletPR.prototype.preInvokeMethod = function (methodName, args, lp, returnStructure) {
+          SiebelJS.Log(this.GetPM().Get("GetName") + ": HLSCaseFormAppletPR:      preInvokeMethod -  " + methodName);
+        }
+
 
         HLSCaseFormAppletPR.prototype.ShowUI = function () {
           //    SiebelAppFacade.HLSCaseFormAppletPR.superclass.ShowUI.apply(this, arguments);
@@ -82,7 +109,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           var divId = "s_" + this.GetPM().Get("GetFullId") + "_div";
 
           //hide server rendered html
-          $('#' + divId).find('form').hide();
+          document.querySelector('#' + divId + ' form').style.display = 'none';
 
           //is it a good enough place to initialize VUE.JS
           putVue(divId);
@@ -94,50 +121,52 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
           var html = '\
           <div id="app">                                                                                                                                        \n\
-            <v-app id="inspire"><v-container fluid>                                                                                                                                             \n\
+            <v-app id="inspire">                                                                                                                                \n\
+            <v-snackbar v-model="snackbar" :timeout="2000" :top="true">Record saved<v-btn color="pink" flat @click="snackbar = false">Close</v-btn></v-snackbar> \n\
+            <v-container fluid>                                                                                                                                 \n\
                 <v-layout row wrap>                                                                                                                             \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
-                  <v-alert :value="true" type="info">HLS Case Form Applet rendered by VUE.JS PR</v-alert>                                                    \n\
-                </v-flex>                                                                      \n\
-                <v-flex md6 pa-2>                                   \n\
-                  <v-text-field :rules="[rules.required]" v-on:input="changeName" ref="caseName" :disabled="caseNameRO" label="Case Name" v-model="caseName" clearable counter="100"></v-text-field>                             \n\
+                  <v-alert :value="true" type="info">HLS Case Form Applet rendered by VUE.JS PR</v-alert>                                                       \n\
+                </v-flex>                                                                                                                                       \n\
+                <v-flex md6 pa-2>                                                                                                                               \n\
+                  <v-text-field :rules="[rules.required]" v-on:input="changeName" ref="caseName" :disabled="caseNameRO" label="Case Name" v-model="caseName" clearable v-on:keyup.esc="escName" :click:clear="handleClear" counter="100"></v-text-field>  \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
                   <v-switch v-on:change="changeInfoCheck" label="Case Name ReadOnly (configured in Siebel Tools)" v-model="infoChanged"></v-switch>             \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
-                  <v-select @input="inputStatus" box :items="caseStatusArr" v-on:click.native="clickStatus" v-on:change="changeStatus" v-model="caseStatus" label="Status"></v-select>                 \n\
+                  <v-select @input="inputStatus" box :items="caseStatusArr" v-on:click.native="clickStatus" v-on:change="changeStatus" v-model="caseStatus" label="Status"></v-select> \n\
                 </v-flex>                                                                                                                                                         \n\
                 <v-flex md4 pa-2>                                                                                                                                                 \n\
                   <v-select box :items="caseSubStatusArr" v-on:click.native="clickSubStatus" v-on:change="changeSubStatus" v-model="caseSubStatus" label="SubStatus"></v-select>  \n\
                 </v-flex>                                                                                                                                                         \n\
-                <v-flex md4 pa-2>  \n\
-                  <v-autocomplete v-model="caseCategory" v-on:click.native="fixPosition" :items="caseCategoryArr" v-on:change="changeCategory" label="Category"> \n\
-                </v-flex>    \n\
-                <v-flex md12 pa-2>  \n\
-                  <v-textarea rows="7" label="Description" v-model="caseDescription" counter="2000" box name="input-7-1"></v-textarea> \n\
-                </v-flex>    \n\
+                <v-flex md4 pa-2>                                                                                                                                                 \n\
+                  <v-autocomplete v-model="caseCategory" v-on:click.native="fixPosition" :items="caseCategoryArr" v-on:change="changeCategory" label="Category">                  \n\
+                </v-flex>                                                                                                                                       \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
-                  <v-divider></v-divider>                                                                                                                                                  \n\
-                </v-flex>                                                                                                                              \n\
-                <v-flex md1 pa-2>                                                                                                                                                    \n\
-                    <v-btn v-on:click="saveButtonClick" color="primary"><v-icon>save</v-icon>Save!</v-btn>                                                                                           \n\
-                </v-flex>                                                                                                                                                       \n\
-                <v-flex md9 pa-2>                                                                                                                                                    \n\
-                </v-flex>                                                                                                                                                    \n\
-                <v-flex md1 pa-2>                                                                                                                                                    \n\
-                  <v-tooltip top><v-btn slot="activator" v-on:click="prevButtonClick" color="primary"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>                                                                                       \n\
-                </v-flex>                                                                                                                                                       \n\
-                <v-flex md1 pa-2>                                                                                                                                                    \n\
-                <v-tooltip top><v-btn slot="activator" v-on:click="nextButtonClick" color="primary"><v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip> \n\
-                </v-flex>                                                                                                                                                       \n\
-                <v-fab-transition> \n\
-                  <v-btn v-on:click="newButtonClick" v-show="true" color="pink" dark fixed bottom right fab> \n\
-                    <v-icon>add</v-icon> \n\
-                  </v-btn> \n\
-                </v-fab-transition> \n\
-                </v-layout>                                                                                                                                                     \n\
-              </v-container></v-app>                                                                                                                                                            \n\
+                  <v-textarea rows="7" label="Description" v-model="caseDescription" counter="2000" box name="input-7-1"></v-textarea>                          \n\
+                </v-flex>                                                                                                                                       \n\
+                <v-flex md12 pa-2>                                                                                                                              \n\
+                  <v-divider></v-divider>                                                                                                                       \n\
+                </v-flex>                                                                                                                                       \n\
+                <v-flex md1 pa-2>                                                                                                                               \n\
+                    <v-btn v-on:click="saveButtonClick" color="primary"><v-icon>save</v-icon>Save!</v-btn>                                                      \n\
+                </v-flex>                                                                                                                                       \n\
+                <v-flex md9 pa-2>                                                                                                                               \n\
+                </v-flex>                                                                                                                                       \n\
+                <v-flex md1 pa-2>                                                                                                                               \n\
+                  <v-tooltip top><v-btn slot="activator" v-on:click="prevButtonClick" color="primary"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>  \n\
+                </v-flex>                                                                                                                                                                         \n\
+                <v-flex md1 pa-2>                                                                                                                                                                 \n\
+                <v-tooltip top><v-btn slot="activator" v-on:click="nextButtonClick" color="primary"><v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>      \n\
+                </v-flex>                                                                                                                                                                         \n\
+                <v-fab-transition>                                                                            \n\
+                  <v-btn v-on:click="newButtonClick" v-show="true" color="pink" dark fixed bottom right fab>  \n\
+                    <v-icon>add</v-icon>                                                                      \n\
+                  </v-btn>                                                                                    \n\
+                </v-fab-transition>                                                                           \n\
+                </v-layout>                                                                                   \n\
+              </v-container></v-app>                                                                          \n\
           </div>';
 
           $('#' + divId).append(html);
@@ -166,7 +195,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   return !!value || 'Required.';
                 }
               },
-
+              snackbar: false,
               caseName: '',
               caseStatus: '',
               caseSubStatus: '',
@@ -264,6 +293,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), controlCategory);
                 pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlCategory, value);
               },
+              escName: function() {
+                this.caseName = pm.Get("GetRecordSet")[pm.Get("GetSelection")].Name;
+              },
+              handleClear: function() {
+                this.caseName = '';
+                this.changeName();
+              },
               changeName: function () {
                 pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), controlName);
                 pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlName, this.caseName);
@@ -308,10 +344,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                       console.log('response in callback from save record >>>', arguments);
                       if (arguments[3]) {
                         console.log('save was successful');
+                        this.snackbar = true;
                       } else {
                         console.log('save WAS NOT successful');
                       }
-                    }
+                    }.bind(this)
                   }
                 }
                 SiebelApp.CommandManager.GetInstance().InvokeCommand.call(SiebelApp.CommandManager.GetInstance, "*Browser Applet* *WriteRecord* * ", true, ai);

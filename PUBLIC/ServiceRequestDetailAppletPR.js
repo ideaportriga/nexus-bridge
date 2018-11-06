@@ -33,7 +33,7 @@ if (typeof (SiebelAppFacade.ServiceRequestDetailAppletPR) === "undefined") {
           //return;
           //}
           //var divId = "s_" + pm.Get("GetFullId") + "_div";
-          //$('#' + divId).hide();
+          //document.getElementById(divId).style.display = 'none';
         }
 
         ServiceRequestDetailAppletPR.prototype.BindData = function (bRefresh) {

@@ -74,7 +74,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return applet.SetActiveControl(_returnControls()[name]);
     }
 
-    function _showPopupApplet(name) {
+    function _showMvgApplet(name) {
       view.SetActiveAppletInternal(applet);
       _setActiveControl(name);
       const ps = SiebelApp.S_App.NewPropertySet();
@@ -286,7 +286,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       getRowListRowCount: _getRowListRowCount,
       getNumRows: _getNumRows,
       setActiveControl: _setActiveControl,
-      showPopupApplet: _showPopupApplet,
+      showMvgApplet: _showMvgApplet,
       isInQueryMode,
       getAppletType,
       getControls,

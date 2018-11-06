@@ -108,6 +108,10 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
         }
 
+        HLSCaseFormAppletPR.prototype.UpdatePick = function() {
+          console.log('update pick called >>>> ')
+        }
+
         HLSCaseFormAppletPR.prototype.preInvokeMethod = function (methodName, args, lp, returnStructure) {
           SiebelJS.Log(this.GetPM().Get("GetName") + ": HLSCaseFormAppletPR:      preInvokeMethod -  " + methodName);
         }
@@ -163,11 +167,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-autocomplete v-model="caseCategory" v-on:click.native="fixPosition" :items="caseCategoryArr" v-on:change="changeCategory" label="Category">                  \n\
                 </v-flex>                                                                                                                                      \n\
                 <v-flex md6 pa-2> \n\
-                <v-label>Threat Level: {{this.caseThreatLevel}}</v-label> \n\                                                                                                                           \n\
+                <v-label>Threat Level: {{this.caseThreatLevel}}</v-label><span> \n\                                                                                                                           \n\
                   <v-rating :readonly="threatLevelRO" v-on:input="threatLevelChange" v-model="caseThreatLevelNum" clearable length="3" label="Threat Level"></v-rating>                                                                                                                        \n\
-                </v-flex>                                                                                                                                      \n\
-                <v-flex md6 pa-2>                                                                                                                              \n\
-                  <div>test</div>  \n\
+                </span></v-flex>                                                                                                                                        \n\
+                <v-flex md6 pa-2>                                                                                                                               \n\
+                  <v-label>Sales Rep:</v-label> \n\
+                  <v-chip close @input="chipInput"><v-avatar class="teal">S</v-avatar>SADMIN</v-chip> \n\
+                  <v-btn flat icon v-on:click="addSalesRep" color="indigo"><v-icon>edit</v-icon></v-btn>       \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
                   <v-textarea rows="7" label="Description" v-model="caseDescription" counter="2000" box name="input-7-1"></v-textarea>                          \n\
@@ -246,6 +252,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               }
             },
             methods: {
+              addSalesRep() {
+                console.log('addSalesRep', arguments);
+                SiebelAppFacade.N19[appletName].showMvgApplet('Sales Rep');
+              },
+              chipInput() {
+                console.log('chip input', arguments);
+              },
               threatLevelChange(val) {
                 if (val > 0) {
                   this.caseThreatLevel = this.threatLevel[val-1];

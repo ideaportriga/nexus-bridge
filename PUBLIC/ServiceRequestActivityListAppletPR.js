@@ -15,10 +15,10 @@ if (typeof (SiebelAppFacade.ServiceRequestActivityListAppletPR) === "undefined")
 
         ServiceRequestActivityListAppletPR.prototype.Init = function () {
           SiebelAppFacade.ServiceRequestActivityListAppletPR.superclass.Init.apply(this, arguments);
-          pm = this.GetPM();
-          appletName = pm.Get("GetName");
           SiebelJS.Log(appletName + ": ServiceRequestActivityListAppletPR:      Init method reached.");
 
+          pm = this.GetPM();
+          appletName = pm.Get("GetName");
           SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
           SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
         }

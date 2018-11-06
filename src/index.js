@@ -70,6 +70,17 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return ret;
     }
 
+    function _setActiveControl(name) {
+      return applet.SetActiveControl(_returnControls()[name]);
+    }
+
+    function _showPopupApplet(name) {
+      view.SetActiveAppletInternal(applet);
+      _setActiveControl(name);
+      const ps = SiebelApp.S_App.NewPropertySet();
+      return applet.InvokeMethod('EditPopup', ps, false);
+    }
+
     function getAppletType() {
       if (isListApplet) {
         return 'list';
@@ -202,7 +213,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     }
 
     function _invokeCommandManager(cmd, f) {
-      view.SetActiveAppletInternal(view.GetAppletMap()[appletName]);
+      view.SetActiveAppletInternal(applet);
       // maybe we don't need to set active applet if send the command as below
       // "*Browser Applet* *UndoRecord*Service Request Detail Applet* "
       const ai = {
@@ -266,13 +277,21 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return lov[control.inputName];
     }
 
+    function isInQueryMode() {
+      return pm.Get('IsInQueryMode');
+    }
+
     return {
+      returnControls: _returnControls,
+      getRowListRowCount: _getRowListRowCount,
+      getNumRows: _getNumRows,
+      setActiveControl: _setActiveControl,
+      showPopupApplet: _showPopupApplet,
+      isInQueryMode,
       getAppletType,
       getControls,
       getRecordSet,
       getRawRecordSet,
-      getRowListRowCount: _getRowListRowCount,
-      getNumRows: _getNumRows,
       getSelection,
       nextRecord,
       nextRecordSet,

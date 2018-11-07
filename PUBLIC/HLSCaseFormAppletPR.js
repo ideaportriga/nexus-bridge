@@ -132,7 +132,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         }
 
         HLSCaseFormAppletPR.prototype.UpdatePick = function() {
-          console.log('update pick called >>>>>>>>>>>>>> '); //todo
+          console.log('update pick called >>>>>>>>>>>>>> '); //todo - move into N19Helper
         }
 
         HLSCaseFormAppletPR.prototype.preInvokeMethod = function (methodName, args, lp, returnStructure) {

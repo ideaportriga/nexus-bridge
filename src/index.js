@@ -116,11 +116,15 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
           pickApplet: control.GetPickApplet(),
           inputName: controlInputName,
           isPostChanges: control.IsPostChanges(),
-          readOnly: pm.ExecuteMethod('CanUpdate', controlName),
           maxSize: control.GetMaxSize(),
           maxChars: control.GetMaxChars(),
           fieldName: control.GetFieldName(),
         };
+        if (isListApplet) {
+          obj.readOnly = !pm.ExecuteMethod('CanUpdate', pm.GetRenderer().GetColumnHelper().GetActualControlName(controlName));
+        } else {
+          obj.readOnly = !pm.ExecuteMethod('CanUpdate', controlName);
+        }
         // add values to be displayed in the static pick list
         if ('1' === obj.staticPick) {
           obj.staticValue = _getStaticLOV(control.GetRadioGroupPropSet().childArray);

@@ -40,6 +40,10 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       }
     });
 
+    pm.AttachPMBinding('isControlPopupOpen', (...args) => {
+      console.log('>>>isControlPopupOpen', args); // eslint-disable-line no-console
+    });
+
     function _returnControls() {
       if (isListApplet) {
         return applet.GetListOfColumns();
@@ -78,6 +82,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       view.SetActiveAppletInternal(applet);
       _setActiveControl(name);
       const ps = SiebelApp.S_App.NewPropertySet();
+      // pm.OnControlEvent( consts.get( "PHYEVENT_INVOKE_MVG" ), control )
       return applet.InvokeMethod('EditPopup', ps, false);
     }
 
@@ -148,6 +153,8 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     }
 
     function _getRowListRowCount() {
+      // how much applet can display (specified in Siebel Tools)
+      // 10/20
       return pm.Get('GetRowListRowCount');
     }
 

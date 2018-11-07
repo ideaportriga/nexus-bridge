@@ -53,6 +53,9 @@ if (typeof (SiebelAppFacade.ServiceRequestDetailAppletPR) === "undefined") {
         }
 
         ServiceRequestDetailAppletPR.prototype.EndLife = function () {
+          if (SiebelAppFacade.N19[appletName]) {
+            delete SiebelAppFacade.N19[appletName];
+          }
           SiebelJS.Log(appletName + ": ServiceRequestDetailAppletPR:      EndLife method reached.");
           SiebelAppFacade.ServiceRequestDetailAppletPR.superclass.EndLife.apply(this, arguments);
         }

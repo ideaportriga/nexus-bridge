@@ -39,6 +39,9 @@ if (typeof (SiebelAppFacade.TeamMemberAssocAppletPR) === "undefined") {
         }
 
         TeamMemberAssocAppletPR.prototype.EndLife = function () {
+          if (SiebelAppFacade.N19[appletName]) {
+            delete SiebelAppFacade.N19[appletName];
+          }
           SiebelJS.Log(this.GetPM().Get("GetName") + ": TeamMemberAssocAppletPR:      EndLife method reached.");
           SiebelAppFacade.TeamMemberAssocAppletPR.superclass.EndLife.apply(this, arguments);
         }

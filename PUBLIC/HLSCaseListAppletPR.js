@@ -22,6 +22,10 @@ if (typeof (SiebelAppFacade.HLSCaseListAppletPR) === "undefined") {
           appletName = pm.Get("GetName");
           SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
           SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
+
+          //pm.AttachPMBinding('isControlPopupOpen', (...args) => {
+          //  console.log('>>>isControlPopupOpen', args); // eslint-disable-line no-console
+          //});
         }
 
         HLSCaseListAppletPR.prototype.ShowUI = function () {
@@ -40,6 +44,9 @@ if (typeof (SiebelAppFacade.HLSCaseListAppletPR) === "undefined") {
         }
 
         HLSCaseListAppletPR.prototype.EndLife = function () {
+          if (SiebelAppFacade.N19[appletName]) {
+            delete SiebelAppFacade.N19[appletName];
+          }
           SiebelJS.Log(this.GetPM().Get("GetName") + ": HLSCaseListAppletPR:      EndLife method reached.");
           SiebelAppFacade.HLSCaseListAppletPR.superclass.EndLife.apply(this, arguments);
         }

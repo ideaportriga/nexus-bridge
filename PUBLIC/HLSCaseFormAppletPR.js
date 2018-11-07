@@ -20,7 +20,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var controlStatus;
         var controlSubStatus;
         var controlThreatLevel;
-        var controlDescription;
+        var controlDescription; //todo
 
         HLSCaseFormAppletPR.prototype.Init = function () {
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
@@ -92,6 +92,24 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS', arguments);
           });
 
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_DATA'), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_FIELD_DATA', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA_WS'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_NEW_DATA_WS', arguments);
+            var fieldName = propSet.GetProperty('f');
+            if (fieldName === 'Sales Rep') {
+              console.log('FIELD SALES REP UPDATED', propSet);
+              console.log(propSet.childArray[0].GetProperty('ValueArray'));
+              if (app) {
+                var arr = [];
+                CCFMiscUtil_StringToArray(propSet.childArray[0].GetProperty('ValueArray'), arr);
+                app.updateSalesRep(arr[0]);
+              }
+            }
+          });
+
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_END"), function () {
             console.log('SWE_PROP_BC_NOTI_END', arguments);
             if (!SiebelAppFacade.N19[appletName].isInQueryMode()) {
@@ -106,10 +124,15 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             scope: this
           });
 
+          this.AttachPMBinding('isControlPopupOpen', (...args) => {
+            console.log('>>><<<isControlPopupOpen', args); // eslint-disable-line no-console
+          });
+
+
         }
 
         HLSCaseFormAppletPR.prototype.UpdatePick = function() {
-          console.log('update pick called >>>> ')
+          console.log('update pick called >>>>>>>>>>>>>> '); //todo
         }
 
         HLSCaseFormAppletPR.prototype.preInvokeMethod = function (methodName, args, lp, returnStructure) {
@@ -118,15 +141,15 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
 
         HLSCaseFormAppletPR.prototype.ShowUI = function () {
-          //    SiebelAppFacade.HLSCaseFormAppletPR.superclass.ShowUI.apply(this, arguments);
+          //SiebelAppFacade.HLSCaseFormAppletPR.superclass.ShowUI.apply(this, arguments);
         }
 
         HLSCaseFormAppletPR.prototype.BindEvents = function () {
-          //      SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindEvents.apply(this, arguments);
+          //SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindEvents.apply(this, arguments);
         }
 
         HLSCaseFormAppletPR.prototype.BindData = function (bRefresh) {
-          //        SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindData.apply(this, arguments);
+          //SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindData.apply(this, arguments);
           //return;
 
           var divId = "s_" + this.GetPM().Get("GetFullId") + "_div";
@@ -134,7 +157,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           //hide server rendered html
           document.querySelector('#' + divId + ' form').style.display = 'none';
 
-          //is it a good enough place to initialize VUE.JS
+          //is it a good enough place to initialize VUE.JS?
           putVue(divId);
         }
 
@@ -172,7 +195,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 </span></v-flex>                                                                                                                                        \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
                   <v-label>Sales Rep:</v-label> \n\
-                  <v-chip close @input="chipInput"><v-avatar class="teal">S</v-avatar>SADMIN</v-chip> \n\
+                  <v-chip v-for="salesRep in caseSalesRepArr" close @input="chipInput(salesRep.login)"><v-avatar class="teal">{{salesRep.login[0]}}</v-avatar>{{salesRep.login}}</v-chip> \n\
+<!--                  <v-chip close @input="chipInput"><v-avatar class="teal">{{caseSalesRep[0]}}</v-avatar>{{caseSalesRep}}</v-chip> --> \n\
                   <v-btn flat icon v-on:click="addSalesRep" color="indigo"><v-icon>edit</v-icon></v-btn>       \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
@@ -241,7 +265,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               caseDescription: '',
               caseThreatLevelNum: 0,
               caseThreatLevel: '',
-              threatLevel: ['Low', 'Medium', 'High']
+              caseSalesRep: '',
+              threatLevel: ['Low', 'Medium', 'High'],
+              caseSalesRepArr: []
             },
             computed: {
               caseNameRO: function () {
@@ -252,6 +278,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               }
             },
             methods: {
+              updateSalesRep(val) {
+                console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< update sales rep', val);
+                this.caseSalesRep = val;
+                //this.getSalesRep(); //cycled calling of update sales rep
+              },
               addSalesRep() {
                 console.log('addSalesRep', arguments);
                 SiebelAppFacade.N19[appletName].showMvgApplet('Sales Rep');
@@ -429,8 +460,35 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].InvokeControlMethod('GotoPreviousSet', ps, {});
                 }
               },
+              getSalesRep: function() {
+                var service = SiebelApp.S_App.GetService("N19 BS");
+                if (service) {
+                  var ai = {
+                    async: true,
+                    selfbusy: true,
+                    scope: this,
+                    cb: function (method, psInput, psOutput) {
+                      console.log('BS output to get the sales reps...', psOutput.childArray);
+
+                      var resultSet = psOutput.GetChildByType("ResultSet");
+                      this.caseSalesRepArr = [];
+                      for (var i = 0; i < resultSet.GetChildCount(); i++) {
+                        console.log(resultSet.GetChild(i));
+                        var obj = {
+                          firstName: resultSet.GetChild(i).GetProperty('First'),
+                          lastName: resultSet.GetChild(i).GetProperty('Last'),
+                          primary: resultSet.GetChild(i).GetProperty('Primary') === 'Y',
+                          login: resultSet.GetChild(i).GetProperty('Login')
+                        }
+                        this.caseSalesRepArr.push(obj);
+                      }
+                    }
+                  };
+                  service.InvokeMethod("GetSalesRep", null, ai);
+                }
+              },
               afterSelection: function () {
-                console.log('AFTER SELECTION');
+                console.log('>>>>>>>>> AFTER SELECTION');
                 controlInfo = pm.ExecuteMethod("GetControl", 'InfoChanged');
                 controlName = pm.ExecuteMethod("GetControl", 'Name');
                 controlStatus = pm.ExecuteMethod("GetControl", 'Status');
@@ -442,9 +500,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 this.canUpdateName = pm.ExecuteMethod("CanUpdate", controlName.GetName());
                 this.canUpdateThreatLevel = pm.ExecuteMethod("CanUpdate", controlThreatLevel.GetName());
 
-                var i = [pm.Get("GetSelection")];
+                var i = [pm.Get('GetSelection')];
                 if (i > -1) {
-                  var currentRecord = pm.Get("GetRecordSet")[i];
+                  var currentRecord = pm.Get('GetRecordSet')[i];
                   this.infoChanged = currentRecord['Info Changed Flag'] === 'Y';
                   this.caseName = currentRecord.Name;
                   this.caseStatus = currentRecord.Status;
@@ -455,6 +513,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   this.caseDescription = currentRecord.Description;
                   this.caseThreatLevel = currentRecord['Threat Level'];
                   this.caseThreatLevelNum = this.threatLevel.indexOf(this.caseThreatLevel) + 1;
+                  this.caseSalesRep = currentRecord['Sales Rep'];
+                  console.log('before calling sales rep', this.caseSalesRep );
+                  this.getSalesRep();
                 } else { // no records displayed
                   this.infoChanged = false;
                   this.caseName = '';
@@ -465,15 +526,25 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   this.caseCategory = '';
                   this.caseDescription = '';
                   this.caseThreatLevel = '';
+                  this.caseSalesRep = '';
+                  this.caseSalesRepArr = [];
                 }
-
-                //pm.OnControlEvent('invoke_combo', controlStatus);
               }
             }
           });
         }
 
         HLSCaseFormAppletPR.prototype.EndLife = function () {
+          if (app) {
+            app.$destroy(true);
+            setTimeout(function(){
+              $('#app').remove();
+              app = null;
+            })
+          }
+          if (SiebelAppFacade.N19[appletName]) {
+            delete SiebelAppFacade.N19[appletName];
+          }
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.EndLife.apply(this, arguments);
         }
 

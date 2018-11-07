@@ -12,6 +12,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         SiebelJS.Extend(HLSCaseFormAppletPR, SiebelAppFacade.PhysicalRenderer);
         var app;
         var pm;
+        var divId;
         var appletName;
         var viewName;
         var controlInfo;
@@ -23,8 +24,14 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var controlDescription; //todo
 
         HLSCaseFormAppletPR.prototype.Init = function () {
-          SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
+
+          //hide server rendered html
           pm = this.GetPM();
+          divId = "s_" + pm.Get("GetFullId") + "_div";
+          document.querySelector('#' + divId + ' form').style.display = 'none';
+          //document.querySelector('#' + divId + ' form').parentNode.removeChild('form');
+
+          SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
           appletName = pm.Get("GetName");
           viewName = SiebelApp.S_App.GetActiveView().GetName();
 
@@ -152,11 +159,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           //SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindData.apply(this, arguments);
           //return;
 
-          var divId = "s_" + this.GetPM().Get("GetFullId") + "_div";
-
-          //hide server rendered html
-          document.querySelector('#' + divId + ' form').style.display = 'none';
-
           //is it a good enough place to initialize VUE.JS?
           putVue(divId);
         }
@@ -195,7 +197,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 </span></v-flex>                                                                                                                                        \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
                   <v-label>Sales Rep:</v-label> \n\
-                  <v-chip v-for="salesRep in caseSalesRepArr" close @input="chipInput(salesRep.login)"><v-avatar class="teal">{{salesRep.login[0]}}</v-avatar>{{salesRep.login}}</v-chip> \n\
+                  <v-chip v-for="salesRep in caseSalesRepArr" close @input="chipInput(salesRep)"><v-avatar class="teal">{{salesRep.login[0]}}</v-avatar>{{salesRep.login}}</v-chip> \n\
 <!--                  <v-chip close @input="chipInput"><v-avatar class="teal">{{caseSalesRep[0]}}</v-avatar>{{caseSalesRep}}</v-chip> --> \n\
                   <v-btn flat icon v-on:click="addSalesRep" color="indigo"><v-icon>edit</v-icon></v-btn>       \n\
                 </v-flex>                                                                                                                                       \n\

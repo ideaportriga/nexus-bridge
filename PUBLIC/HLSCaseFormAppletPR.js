@@ -159,6 +159,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           //SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindData.apply(this, arguments);
           //return;
 
+          document.getElementById('_sweview').title = '';
           //is it a good enough place to initialize VUE.JS?
           putVue(divId);
         }
@@ -197,7 +198,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 </span></v-flex>                                                                                                                                        \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
                   <v-label>Sales Rep:</v-label> \n\
-                  <v-chip v-for="salesRep in caseSalesRepArr" close @input="chipInput(salesRep)"><v-avatar class="teal">{{salesRep.login[0]}}</v-avatar>{{salesRep.login}}</v-chip> \n\
+                  <v-tooltip top v-for="salesRep in caseSalesRepArr" > \n\
+                  <v-chip slot="activator" close @input="chipInput(salesRep)"><v-avatar v-bind:class="{teal : !salesRep.primary}"> \n\
+                  <v-icon v-if="salesRep.primary">check_circle</v-icon>{{salesRep.primary ? "" : salesRep.login[0]}}</v-avatar>{{salesRep.login}}</v-chip> \n\
+                  <span>{{salesRep.firstName + " " + salesRep.lastName}}</span></v-tooltip> \n\
+                  \n\
 <!--                  <v-chip close @input="chipInput"><v-avatar class="teal">{{caseSalesRep[0]}}</v-avatar>{{caseSalesRep}}</v-chip> --> \n\
                   <v-btn flat icon v-on:click="addSalesRep" color="indigo"><v-icon>edit</v-icon></v-btn>       \n\
                 </v-flex>                                                                                                                                       \n\
@@ -216,7 +221,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-tooltip top><v-btn slot="activator" v-on:click="prevButtonClick" color="primary"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>  \n\
                 </v-flex>                                                                                                                                                                         \n\
                 <v-flex md1 pa-2>                                                                                                                                                                 \n\
-                <v-tooltip top><v-btn slot="activator" v-on:click="nextButtonClick" color="primary"><v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>      \n\
+                  <v-tooltip top><v-btn slot="activator" v-on:click="nextButtonClick" color="primary"><v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>      \n\
                 </v-flex>                                                                                                                                                                         \n\
                 <v-fab-transition>                                                                            \n\
                   <v-btn v-on:click="newButtonClick" v-show="true" color="pink" dark fixed bottom right fab>  \n\

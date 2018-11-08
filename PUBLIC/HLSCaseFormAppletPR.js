@@ -21,7 +21,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var controlStatus;
         var controlSubStatus;
         var controlThreatLevel;
-        var controlDescription; //todo
+        var controlDescription;
 
         HLSCaseFormAppletPR.prototype.Init = function () {
 
@@ -160,6 +160,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           //return;
 
           document.getElementById('_sweview').title = '';
+          $('#_swecontent').css({ 'height': 'auto' }); // TODO
           //is it a good enough place to initialize VUE.JS?
           putVue(divId);
         }
@@ -171,14 +172,14 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           var html = '\
           <div id="app">                                                                                                                                        \n\
             <v-app id="inspire">                                                                                                                                \n\
-            <v-snackbar v-model="snackbar" :timeout="2000" :top="true">Record saved<v-btn color="pink" flat @click="snackbar = false">Close</v-btn></v-snackbar> \n\
+            <v-snackbar v-model="snackbar" :timeout="2000" :top="true">Record saved<v-btn color="pink" flat @click="snackbar = false">Close</v-btn></v-snackbar>\n\
             <v-container fluid>                                                                                                                                 \n\
                 <v-layout row wrap>                                                                                                                             \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
                   <v-alert :value="true" type="info">HLS Case Form Applet rendered by VUE.JS PR</v-alert>                                                       \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
-                  <v-text-field :rules="[rules.required]" v-on:input="changeName" ref="caseName" :disabled="caseNameRO" label="Case Name" v-model="caseName" clearable v-on:keyup.esc="escName" :click:clear="handleClear" counter="100"></v-text-field>  \n\
+                  <v-text-field :rules="[rules.required]" v-on:input="changeName" ref="caseName" :disabled="caseNameRO" label="Case Name" v-model="caseName" clearable v-on:keyup.esc="escName" v-on:click:clear="handleClear" counter="100"></v-text-field> \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
                   <v-switch v-on:change="changeInfoCheck" label="Case Name ReadOnly (configured in Siebel Tools)" v-model="infoChanged"></v-switch>             \n\
@@ -191,23 +192,23 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 </v-flex>                                                                                                                                                         \n\
                 <v-flex md4 pa-2>                                                                                                                                                 \n\
                   <v-autocomplete v-model="caseCategory" v-on:click.native="fixPosition" :items="caseCategoryArr" v-on:change="changeCategory" label="Category">                  \n\
-                </v-flex>                                                                                                                                      \n\
-                <v-flex md6 pa-2> \n\
-                <v-label>Threat Level: {{this.caseThreatLevel}}</v-label><span> \n\                                                                                                                           \n\
-                  <v-rating :readonly="threatLevelRO" v-on:input="threatLevelChange" v-model="caseThreatLevelNum" clearable length="3" label="Threat Level"></v-rating>                                                                                                                        \n\
-                </span></v-flex>                                                                                                                                        \n\
+                </v-flex>                                                                                                                                                         \n\
+                <v-flex md6 pa-2>                                                                                                                                                 \n\
+                <v-label>Threat Level: {{this.caseThreatLevel}}</v-label><span>                                                                                                   \n\                                                                                                                           \n\
+                  <v-rating :background-color="ratingColor" :color="ratingColor" :readonly="threatLevelRO" v-on:input="threatLevelChange" v-model="caseThreatLevelNum" clearable length="3" label="Threat Level"></v-rating>  \n\
+                </span></v-flex>                                                                                                                                \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
-                  <v-label>Sales Rep:</v-label> \n\
-                  <v-tooltip top v-for="salesRep in caseSalesRepArr" > \n\
-                  <v-chip slot="activator" close @input="chipInput(salesRep)"><v-avatar v-bind:class="{teal : !salesRep.primary}"> \n\
-                  <v-icon v-if="salesRep.primary">check_circle</v-icon>{{salesRep.primary ? "" : salesRep.login[0]}}</v-avatar>{{salesRep.login}}</v-chip> \n\
-                  <span>{{salesRep.firstName + " " + salesRep.lastName}}</span></v-tooltip> \n\
-                  \n\
-<!--                  <v-chip close @input="chipInput"><v-avatar class="teal">{{caseSalesRep[0]}}</v-avatar>{{caseSalesRep}}</v-chip> --> \n\
-                  <v-btn flat icon v-on:click="addSalesRep" color="indigo"><v-icon>edit</v-icon></v-btn>       \n\
+                  <v-label>Sales Rep:</v-label>                                                                                                                 \n\
+                  <v-tooltip top v-for="salesRep in caseSalesRepArr" >                                                                                          \n\
+                  <v-chip slot="activator" :close="!salesRep.primary" @input="chipInput(salesRep)"><v-avatar v-bind:class="{teal : !salesRep.primary}">         \n\
+                  <v-icon v-if="salesRep.primary">check_circle</v-icon>{{salesRep.primary ? "" : salesRep.login[0]}}</v-avatar>{{salesRep.login}}</v-chip>      \n\
+                  <span>{{salesRep.firstName + " " + salesRep.lastName}}</span></v-tooltip>                                                                     \n\
+                                                                                                                                                                \n\
+<!--                  <v-chip close @input="chipInput"><v-avatar class="teal">{{caseSalesRep[0]}}</v-avatar>{{caseSalesRep}}</v-chip> -->                       \n\
+                  <v-btn flat icon v-on:click="addSalesRep" color="indigo"><v-icon>edit</v-icon></v-btn>                                                        \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
-                  <v-textarea rows="7" label="Description" v-model="caseDescription" counter="2000" box name="input-7-1"></v-textarea>                          \n\
+                  <v-textarea v-on:change="changeDescription" rows="7" label="Description" v-model="caseDescription" counter="2000" box name="input-7-1"></v-textarea>                          \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
                   <v-divider></v-divider>                                                                                                                       \n\
@@ -221,7 +222,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-tooltip top><v-btn slot="activator" v-on:click="prevButtonClick" color="primary"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>  \n\
                 </v-flex>                                                                                                                                                                         \n\
                 <v-flex md1 pa-2>                                                                                                                                                                 \n\
-                  <v-tooltip top><v-btn slot="activator" v-on:click="nextButtonClick" color="primary"><v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>      \n\
+                  <v-tooltip top><v-btn slot="activator" v-on:click="nextButtonClick" color="primary"><v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>    \n\
                 </v-flex>                                                                                                                                                                         \n\
                 <v-fab-transition>                                                                            \n\
                   <v-btn v-on:click="newButtonClick" v-show="true" color="pink" dark fixed bottom right fab>  \n\
@@ -282,20 +283,58 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               threatLevelRO: function(){
                 return !this.canUpdateThreatLevel;
+              },
+              ratingColor: function() {
+                if (this.threatLevelRO) {
+                  return "grey";
+                }
+                return "red";
               }
             },
             methods: {
+              changeDescription(val) {
+                pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), controlDescription);
+                pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlDescription, val);
+              },
               updateSalesRep(val) {
                 console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< update sales rep', val);
-                this.caseSalesRep = val;
-                //this.getSalesRep(); //cycled calling of update sales rep
+                if (val != this.caseSalesRep) {
+                  this.caseSalesRep = val;
+                  this.getSalesRep(); //cycled calling of update sales rep
+                }
               },
               addSalesRep() {
                 console.log('addSalesRep', arguments);
                 SiebelAppFacade.N19[appletName].showMvgApplet('Sales Rep');
               },
-              chipInput() {
-                console.log('chip input', arguments);
+              chipInput(salesRep) {
+                console.log('chip input', salesRep, salesRep.login, this.caseSalesRep.length);
+                var index = -1;
+                for (var i = 0; i < this.caseSalesRepArr.length; i++) {
+                  console.log(this.caseSalesRepArr[i].login);
+                  if (this.caseSalesRepArr[i].login == salesRep.login) {
+                    index = i;
+                    break;
+                  }
+                }
+                if (index > -1) {
+                  this.caseSalesRepArr.splice(0, 1);
+                  var service = SiebelApp.S_App.GetService("N19 BS");
+                  if (service) {
+                    var psInput = SiebelApp.S_App.NewPropertySet();
+                    psInput.SetProperty('Login', salesRep.login);
+                    var ai = {
+                      async: true,
+                      selfbusy: true,
+                      scope: this,
+                      cb: function (method, psInput, psOutput) {
+                        console.log('BS output to get the sales reps...', psOutput);
+                        SiebelAppFacade.N19[appletName].NotifyNewDataWS('Sales Rep');
+                      }
+                    };
+                    service.InvokeMethod("DeleteSalesRep", psInput, ai);
+                  }
+                }
               },
               threatLevelChange(val) {
                 if (val > 0) {
@@ -307,12 +346,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 console.log(val, this.caseThreatLevel);
               },
               fixPosition() {
-                //shame - just for demo
-                var i = Math.round($('.v-select__slot')[0].getBoundingClientRect().top);
-                setTimeout(function () {
-                  var j = i + 0 + 'px';
-                  $('.v-menu__content').css('top', j);
-                }, 10);
+                // var i = Math.round($('.v-select__slot')[0].getBoundingClientRect().top);
+                // setTimeout(function () {
+                //   var j = i + 0 + 'px';
+                //   $('.v-menu__content').css('top', j);
+                // }, 10);
               },
               inputStatus: function () {
                 console.log('inputStatus', arguments, this.caseStatus);
@@ -478,16 +516,18 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                       console.log('BS output to get the sales reps...', psOutput.childArray);
 
                       var resultSet = psOutput.GetChildByType("ResultSet");
-                      this.caseSalesRepArr = [];
-                      for (var i = 0; i < resultSet.GetChildCount(); i++) {
-                        console.log(resultSet.GetChild(i));
-                        var obj = {
-                          firstName: resultSet.GetChild(i).GetProperty('First'),
-                          lastName: resultSet.GetChild(i).GetProperty('Last'),
-                          primary: resultSet.GetChild(i).GetProperty('Primary') === 'Y',
-                          login: resultSet.GetChild(i).GetProperty('Login')
+                      if (resultSet) {
+                        this.caseSalesRepArr = [];
+                        for (var i = 0; i < resultSet.GetChildCount(); i++) {
+                          console.log(resultSet.GetChild(i));
+                          var obj = {
+                            firstName: resultSet.GetChild(i).GetProperty('First'),
+                            lastName: resultSet.GetChild(i).GetProperty('Last'),
+                            primary: resultSet.GetChild(i).GetProperty('Primary') === 'Y',
+                            login: resultSet.GetChild(i).GetProperty('Login')
+                          }
+                          this.caseSalesRepArr.push(obj);
                         }
-                        this.caseSalesRepArr.push(obj);
                       }
                     }
                   };
@@ -544,10 +584,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         HLSCaseFormAppletPR.prototype.EndLife = function () {
           if (app) {
             app.$destroy(true);
-            setTimeout(function(){
-              $('#app').remove();
-              app = null;
-            })
+            $('#app').remove();
+            app = null;
           }
           if (SiebelAppFacade.N19[appletName]) {
             delete SiebelAppFacade.N19[appletName];

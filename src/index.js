@@ -258,7 +258,12 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       _invokeCommandManager('*Browser Applet* *WriteRecord* * ', cb);
     }
 
+    function deleteRecord(cb) {
+      _invokeCommandManager('*Browser Applet* *DeleteRecord* * ', cb);
+    }
+
     function setControlValue(name, value) {
+      // !!! TODO: If value is null, nothing happens, should we convert null to ''?
       const control = _returnControls()[name];
       // TODO: Check if control is found
       if (consts.get('SWE_CTRL_CHECKBOX') === control.uiType) {
@@ -292,6 +297,10 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return pm.Get('IsInQueryMode');
     }
 
+    function _NotifyNewDataWS(name) {
+      return applet.NotifyNewDataWS(name);
+    }
+
     return {
       returnControls: _returnControls,
       getRowListRowCount: _getRowListRowCount,
@@ -312,8 +321,10 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       newRecord,
       undoRecord,
       writeRecord,
+      deleteRecord,
       setControlValue,
       getDynamicLOV,
+      NotifyNewDataWS: _NotifyNewDataWS,
       // canInvokeMethod
       // deleteRecord
     };

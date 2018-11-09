@@ -243,23 +243,39 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
         },
       };
       // todo: Do we always need to sent true
-      SiebelApp.CommandManager.GetInstance().InvokeCommand.call(null, cmd, true, ai);
+      return SiebelApp.CommandManager.GetInstance().InvokeCommand.call(null, cmd, true, ai);
     }
 
     function newRecord(cb) {
-      _invokeCommandManager('*Browser Applet* *NewRecord* * ', cb);
+      // console.log(typeof cb); // eslint-disable-line no-console
+      // return pm.ExecuteMethod('InvokeMethod', 'NewRecord', null, false);
+      return _invokeCommandManager('*Browser Applet* *NewRecord* * ', cb);
     }
 
+    function newRecordSync(cb) {
+      console.log(typeof cb); // eslint-disable-line no-console
+      return pm.ExecuteMethod('InvokeMethod', 'NewRecord', null, false);
+      // return _invokeCommandManager('*Browser Applet* *NewRecord* * ', cb);
+    }
+
+
     function undoRecord(cb) {
-      _invokeCommandManager('*Browser Applet* *UndoRecord* * ', cb);
+      return _invokeCommandManager('*Browser Applet* *UndoRecord* * ', cb);
     }
 
     function writeRecord(cb) {
-      _invokeCommandManager('*Browser Applet* *WriteRecord* * ', cb);
+      // return pm.ExecuteMethod('InvokeMethod', 'WriteRecord', null, false);
+      return _invokeCommandManager('*Browser Applet* *WriteRecord* * ', cb);
+    }
+
+    function writeRecordSync() {
+      return pm.ExecuteMethod('InvokeMethod', 'WriteRecord', null, false);
     }
 
     function deleteRecord(cb) {
-      _invokeCommandManager('*Browser Applet* *DeleteRecord* * ', cb);
+      console.log(typeof cb); // eslint-disable-line no-console
+      return pm.ExecuteMethod('InvokeMethod', 'DeleteRecord', null, false);
+      // return _invokeCommandManager('*Browser Applet* *DeleteRecord* * ', cb);
     }
 
     function setControlValue(name, value) {
@@ -319,14 +335,15 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       prevRecordSet,
       positionOnRow,
       newRecord,
+      newRecordSync,
       undoRecord,
       writeRecord,
+      writeRecordSync,
       deleteRecord,
       setControlValue,
       getDynamicLOV,
       NotifyNewDataWS: _NotifyNewDataWS,
       // canInvokeMethod
-      // deleteRecord
     };
   };
 }

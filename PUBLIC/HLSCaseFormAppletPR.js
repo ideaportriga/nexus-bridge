@@ -5,6 +5,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
     function () {
       SiebelAppFacade.HLSCaseFormAppletPR = (function () {
 
+        //for vue
+        $('head').append('<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" rel="stylesheet"></link>');
+        $('head').append('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>');
+        $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
+
         function HLSCaseFormAppletPR(pm) {
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.constructor.apply(this, arguments);
         }
@@ -23,7 +28,24 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var controlThreatLevel;
         var controlDescription;
 
+
+
         HLSCaseFormAppletPR.prototype.Init = function () {
+
+          SiebelApp.S_App.ListApplet.prototype.NotifyNewPrimary = function() {
+            console.log('new primary in list applet', arguments);
+          }
+
+          SiebelAppFacade.n19notifyNewPrimary = SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary;
+          SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary = function() {
+            console.log('>>>>> new primary in notify object', arguments);
+            if (this.GetAppletRegistry()[0].GetName() === 'Contact Team Mvg Applet') {
+              if (app) {
+                app.updatePrimary();
+              }
+            }
+            SiebelAppFacade.n19notifyNewPrimary.apply(this, arguments);
+          }
 
           //hide server rendered html
           pm = this.GetPM();
@@ -39,6 +61,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
 
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_GENERIC"), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_GENERIC', propSet);
             var type = propSet.GetProperty(consts.get("SWE_PROP_NOTI_TYPE"));
             if (type === "GetQuickPickInfo") {
               var arr = [];
@@ -56,18 +79,36 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           });
 
-          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW"), function () {
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW'), function () {
             console.log('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW', arguments);
             if (app) {
               app.afterSelection();
             }
           });
 
-          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_DELETE_WORKSET"), function () {
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_DATA', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'), function () {
+            console.log('SWE_PROP_BC_NOTI_DELETE_RECORD', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_WORKSET'), function () {
             console.log('SWE_PROP_BC_NOTI_DELETE_WORKSET', arguments);
-            if (app) {
-              app.afterSelection();
-            }
+            setTimeout(function() {
+              if (app) {
+                app.afterSelection();
+              }
+            });
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_PRIMARY'), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_PRIMARY', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_EXECUTE'), function () {
+            console.log('SWE_PROP_BC_NOTI_EXECUTE', arguments);
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_CHANGE_SELECTION'), function () {
@@ -87,7 +128,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           });
 
-          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_DATA"), function () {
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), function () {
             console.log('SWE_PROP_BC_NOTI_NEW_DATA', arguments);
           });
 
@@ -95,7 +136,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA', arguments);
           });
 
-          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS"), function () {
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS'), function () {
             console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS', arguments);
           });
 
@@ -112,7 +153,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               if (app) {
                 var arr = [];
                 CCFMiscUtil_StringToArray(propSet.childArray[0].GetProperty('ValueArray'), arr);
-                app.updateSalesRep(arr[0]);
+                setTimeout(function(){
+                  app.updateSalesRep(arr[0]);
+                });
               }
             }
           });
@@ -160,15 +203,12 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           //return;
 
           document.getElementById('_sweview').title = '';
-          $('#_swecontent').css({ 'height': 'auto' }); // TODO
+          //$('#_swecontent').css({ 'height': 'auto' }); // TODO
           //is it a good enough place to initialize VUE.JS?
           putVue(divId);
         }
 
         function putVue(divId) {
-          $('head').append('<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" rel="stylesheet"></link>');
-          $('head').append('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>');
-          $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
           var html = '\
           <div id="app">                                                                                                                                        \n\
             <v-app id="inspire">                                                                                                                                \n\
@@ -292,6 +332,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               }
             },
             methods: {
+              updatePrimary() {
+                console.log('<<< change case primary to <<<', this.caseSalesRep);
+                for (var i = 0; i < this.caseSalesRepArr.length; i++) {
+                  this.caseSalesRepArr[i].primary = this.caseSalesRepArr[i].login == this.caseSalesRep;
+                }
+                console.log(this.caseSalesRepArr);
+              },
               changeDescription(val) {
                 pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), controlDescription);
                 pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlDescription, val);
@@ -300,7 +347,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< update sales rep', val);
                 if (val != this.caseSalesRep) {
                   this.caseSalesRep = val;
-                  this.getSalesRep(); //cycled calling of update sales rep
+                  this.getSalesRep(val); //cycled calling of update sales rep
                 }
               },
               addSalesRep() {
@@ -314,11 +361,14 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   console.log(this.caseSalesRepArr[i].login);
                   if (this.caseSalesRepArr[i].login == salesRep.login) {
                     index = i;
+                    this.caseSalesRepArr.splice(index, 1);
                     break;
                   }
                 }
+                if ((pm.Get("GetBusComp").insertPending)) {
+                  return; //skip update
+                }
                 if (index > -1) {
-                  this.caseSalesRepArr.splice(0, 1);
                   var service = SiebelApp.S_App.GetService("N19 BS");
                   if (service) {
                     var psInput = SiebelApp.S_App.NewPropertySet();
@@ -454,7 +504,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                       console.log('response in callback from new record >>>', arguments);
                       if (arguments[3]) {
                         console.log('new record was successful');
-                        //this.afterSelection();
+                        this.afterSelection();
                       } else {
                         console.log('new record WAS NOT successful');
                       }
@@ -465,7 +515,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
                 setTimeout(function () {
                   this.$refs.caseName.focus();
-                }.bind(this));
+                }.bind(this), 100); // move to callback
               },
               saveButtonClick: function () {
                 SiebelApp.S_App.GetActiveView().SetActiveAppletInternal(SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName]);
@@ -505,7 +555,40 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].InvokeControlMethod('GotoPreviousSet', ps, {});
                 }
               },
-              getSalesRep: function() {
+              getSalesRep: function(val) {
+                if ((pm.Get("GetBusComp").insertPending)) {
+                  if (val) {
+                    if (!this.caseSalesRepArr.some(e => e.login === val)) {
+                      this.caseSalesRepArr.push({
+                        firstName: '',
+                        lastName: '',
+                        primary: false,
+                        login: val
+                      });
+                    }
+                  }
+                  return;
+                }
+
+                if (SiebelApp.S_App.GetActiveBusObj().GetBusCompByName('Position')) {
+                  var arr = SiebelApp.S_App.GetActiveBusObj().GetBusCompByName('Position').GetRecordSet();
+                  if (arr) {
+                    this.caseSalesRepArr = [];
+                    for (var i = 0; i < arr.length; i++) {
+                      console.log('from definition of active bus object', arr[i]);
+                      var obj = {
+                        firstName: arr[i]["Active First Name"],
+                        lastName: arr[i]["Active Last Name"],
+                        primary: arr[i]["SSA Primary Field"] == 'Y',
+                        login: arr[i]["Active Login Name"]
+                      }
+                      this.caseSalesRepArr.push(obj);
+                    }
+                    return;
+                  }
+                }
+
+                //we don't have an object yet
                 var service = SiebelApp.S_App.GetService("N19 BS");
                 if (service) {
                   var ai = {
@@ -562,7 +645,17 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   this.caseThreatLevelNum = this.threatLevel.indexOf(this.caseThreatLevel) + 1;
                   this.caseSalesRep = currentRecord['Sales Rep'];
                   console.log('before calling sales rep', this.caseSalesRep );
-                  this.getSalesRep();
+                  if (pm.Get("GetBusComp").insertPending) {
+                    console.log('skipped calling sales rep BS because insert pending');
+                    this.caseSalesRepArr = [{
+                      firstName: '',
+                      lastName: '',
+                      primary: true,
+                      login: this.caseSalesRep
+                    }];
+                  } else {
+                    this.getSalesRep();
+                  }
                 } else { // no records displayed
                   this.infoChanged = false;
                   this.caseName = '';

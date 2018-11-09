@@ -6,6 +6,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
       SiebelAppFacade.HLSCaseFormAppletPR = (function () {
 
         //for vue
+        //todo: remove in EndLife
         $('head').append('<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" rel="stylesheet"></link>');
         $('head').append('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>');
         $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
@@ -20,6 +21,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var divId;
         var appletName;
         var viewName;
+
         var controlInfo;
         var controlName;
         var controlCategory;
@@ -28,15 +30,16 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var controlThreatLevel;
         var controlDescription;
 
-
-
         HLSCaseFormAppletPR.prototype.Init = function () {
 
-          SiebelApp.S_App.ListApplet.prototype.NotifyNewPrimary = function() {
-            console.log('new primary in list applet', arguments);
-          }
+          //hide the server rendered html, better to remove, but not now
+          pm = this.GetPM();
+          divId = "s_" + pm.Get("GetFullId") + "_div";
+          document.querySelector('#' + divId + ' form').style.display = 'none';
+          //document.querySelector('#' + divId + ' form').parentNode.removeChild('form');
 
-          SiebelAppFacade.n19notifyNewPrimary = SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary;
+          //todo: restore in EndLife?
+          SiebelAppFacade.N19notifyNewPrimary = SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary;
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary = function() {
             console.log('>>>>> new primary in notify object', arguments);
             if (this.GetAppletRegistry()[0].GetName() === 'Contact Team Mvg Applet') {
@@ -44,16 +47,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 app.updatePrimary();
               }
             }
-            SiebelAppFacade.n19notifyNewPrimary.apply(this, arguments);
+            SiebelAppFacade.N19notifyNewPrimary.apply(this, arguments);
           }
 
-          //hide server rendered html
-          pm = this.GetPM();
-          divId = "s_" + pm.Get("GetFullId") + "_div";
-          document.querySelector('#' + divId + ' form').style.display = 'none';
-          //document.querySelector('#' + divId + ' form').parentNode.removeChild('form');
-
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
+
           appletName = pm.Get("GetName");
           viewName = SiebelApp.S_App.GetActiveView().GetName();
 
@@ -86,16 +84,10 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_DATA', arguments);
-          });
-
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'), function () {
-            console.log('SWE_PROP_BC_NOTI_DELETE_RECORD', arguments);
-          });
-
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_WORKSET'), function () {
             console.log('SWE_PROP_BC_NOTI_DELETE_WORKSET', arguments);
+            // there is an only option FOR NOW to get a new record creation
+            // need timeout to allow a new record to be created
             setTimeout(function() {
               if (app) {
                 app.afterSelection();
@@ -103,24 +95,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             });
           });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_PRIMARY'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_PRIMARY', arguments);
-          });
-
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_EXECUTE'), function () {
-            console.log('SWE_PROP_BC_NOTI_EXECUTE', arguments);
-          });
-
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_CHANGE_SELECTION'), function () {
-            console.log('SWE_PROP_BC_NOTI_CHANGE_SELECTION', arguments);
-          });
-
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END_QUERY'), function () {
-            console.log('SWE_PROP_BC_NOTI_END_QUERY', arguments);
-          });
-
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'), function (ps) {
-            console.log('SWE_PROP_BC_NOTI_STATE_CHANGED', arguments, ps.GetProperty('state'));
+            console.log('SWE_PROP_BC_NOTI_STATE_CHANGED', arguments);
             if ('activeRow' === ps.GetProperty('state')) {
               if (app) {
                 app.afterSelection();
@@ -128,28 +104,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_DATA', arguments);
-          });
-
-          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD_DATA"), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA', arguments);
-          });
-
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS', arguments);
-          });
-
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_DATA'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_FIELD_DATA', arguments);
-          });
-
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA_WS'), function (propSet) {
             console.log('SWE_PROP_BC_NOTI_NEW_DATA_WS', arguments);
             var fieldName = propSet.GetProperty('f');
             if (fieldName === 'Sales Rep') {
-              console.log('FIELD SALES REP UPDATED', propSet);
-              console.log(propSet.childArray[0].GetProperty('ValueArray'));
+              console.log('FIELD SALES REP UPDATED', propSet, propSet.childArray[0].GetProperty('ValueArray'));
               if (app) {
                 var arr = [];
                 CCFMiscUtil_StringToArray(propSet.childArray[0].GetProperty('ValueArray'), arr);
@@ -169,26 +128,64 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           });
 
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_DATA', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'), function () {
+            console.log('SWE_PROP_BC_NOTI_DELETE_RECORD', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_PRIMARY'), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_PRIMARY', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_EXECUTE'), function () {
+            console.log('SWE_PROP_BC_NOTI_EXECUTE', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_CHANGE_SELECTION'), function () {
+            console.log('SWE_PROP_BC_NOTI_CHANGE_SELECTION', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END_QUERY'), function () {
+            console.log('SWE_PROP_BC_NOTI_END_QUERY', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_DATA', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD_DATA"), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS'), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_DATA'), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_FIELD_DATA', arguments);
+          });
+
           pm.AddMethod("InvokeMethod", this.preInvokeMethod, {
             sequence: true,
             scope: this
           });
 
           this.AttachPMBinding('isControlPopupOpen', (...args) => {
+            // combobox and probably pickapplets also?
             console.log('>>><<<isControlPopupOpen', args); // eslint-disable-line no-console
           });
-
-
         }
 
         HLSCaseFormAppletPR.prototype.UpdatePick = function() {
-          console.log('update pick called >>>>>>>>>>>>>> '); //todo - move into N19Helper
+          console.log('update pick called'); //todo - move into N19Helper?
         }
 
         HLSCaseFormAppletPR.prototype.preInvokeMethod = function (methodName, args, lp, returnStructure) {
           SiebelJS.Log(this.GetPM().Get("GetName") + ": HLSCaseFormAppletPR:      preInvokeMethod -  " + methodName);
         }
-
 
         HLSCaseFormAppletPR.prototype.ShowUI = function () {
           //SiebelAppFacade.HLSCaseFormAppletPR.superclass.ShowUI.apply(this, arguments);
@@ -200,10 +197,10 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
         HLSCaseFormAppletPR.prototype.BindData = function (bRefresh) {
           //SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindData.apply(this, arguments);
-          //return;
 
           document.getElementById('_sweview').title = '';
-          //$('#_swecontent').css({ 'height': 'auto' }); // TODO
+          //$('#_swecontent').css({ 'height': 'auto' });
+
           //is it a good enough place to initialize VUE.JS?
           putVue(divId);
         }
@@ -290,8 +287,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               this.caseCategoryArr.sort();
               this.afterSelection();
               $('.application--wrap').css({ 'min-height': 'auto' });
-              //$('#_swecontent').css({'height': 'auto'});
-
             },
             data: {
               rules: {

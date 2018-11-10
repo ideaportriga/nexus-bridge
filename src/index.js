@@ -276,7 +276,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       // !!! TODO: If value is null, nothing happens, should we convert null to ''?
       const control = _returnControls()[name];
       // TODO: Check if control is found
-      if (consts.get('SWE_CTRL_CHECKBOX') === control.uiType) {
+      if (consts.get('SWE_CTRL_CHECKBOX') === control.GetUIType()) {
         // convert true/false => Y/N
         // do we want to support setting to null
         value = value ? 'Y' : 'N'; // eslint-disable-line no-param-reassign

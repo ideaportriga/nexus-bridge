@@ -20,7 +20,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var pm;
         var divId;
         var appletName;
-        var viewName;
 
         var controlInfo;
         var controlName;
@@ -28,7 +27,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var controlStatus;
         var controlSubStatus;
         var controlThreatLevel;
-        var controlDescription;
 
         HLSCaseFormAppletPR.prototype.Init = function () {
 
@@ -53,32 +51,17 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
 
           appletName = pm.Get("GetName");
-          viewName = SiebelApp.S_App.GetActiveView().GetName();
 
           SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
           SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
 
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_GENERIC"), function (propSet) {
-            console.log('SWE_PROP_BC_NOTI_GENERIC', propSet);
             var type = propSet.GetProperty(consts.get("SWE_PROP_NOTI_TYPE"));
-            if (type === "GetQuickPickInfo") {
-              var arr = [];
-              CCFMiscUtil_StringToArray(propSet.GetProperty(consts.get("SWE_PROP_ARGS_ARRAY")), arr);
-              console.log(arr);
-              if (app) {
-                if (viewName == arr[1] && appletName == arr[2]) {
-                  if (controlStatus.GetInputName() == arr[3]) {
-                    app.populateStatusArray(arr.splice(5));
-                  } else if (controlSubStatus.GetInputName() == arr[3]) {
-                    app.populateSubStatusArray(arr.splice(5));
-                  }
-                }
-              }
-            }
+            console.log('SWE_PROP_BC_NOTI_GENERIC', type, propSet);
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW', arguments);
+            console.log('>>>SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW', arguments);
             if (app) {
               app.afterSelection();
             }
@@ -98,6 +81,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'), function (ps) {
             console.log('SWE_PROP_BC_NOTI_STATE_CHANGED', arguments);
             if ('activeRow' === ps.GetProperty('state')) {
+              console.log('>>>SWE_PROP_BC_NOTI_STATE_CHANGED', arguments);
               if (app) {
                 app.afterSelection();
               }
@@ -119,13 +103,24 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           });
 
+          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_BEGIN"), function () {
+            console.log('SWE_PROP_BC_NOTI_BEGIN', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_LONG_OPERATION_PROCESS"), function () {
+            console.log('SWE_PROP_BC_NOTI_LONG_OPERATION_PROCESS', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NEW_ACTIVE_FIELD'), function () {
+            console.log('SWE_PROP_BC_NEW_ACTIVE_FIELD', arguments);
+          });
+
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_END"), function () {
             console.log('SWE_PROP_BC_NOTI_END', arguments);
-            if (!SiebelAppFacade.N19[appletName].isInQueryMode()) {
-              if (app) {
-              //  app.afterSelection();
-              }
-            }
+          });
+
+          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_SELECTION"), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_SELECTION', arguments);
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), function () {
@@ -140,6 +135,17 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log('SWE_PROP_BC_NOTI_NEW_PRIMARY', arguments);
           });
 
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET'), function () {
+            //todo: get a new record here?
+            console.log('SWE_PROP_BC_NOTI_INSERT_WORKSET', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET_FIELD_VALUES'), function () {
+            //todo: get a new record here?
+            console.log('SWE_PROP_BC_NOTI_INSERT_WORKSET_FIELD_VALUES', arguments);
+          });
+
+
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_EXECUTE'), function () {
             console.log('SWE_PROP_BC_NOTI_EXECUTE', arguments);
           });
@@ -148,12 +154,17 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log('SWE_PROP_BC_NOTI_CHANGE_SELECTION', arguments);
           });
 
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_SELECTION_MODE_CHANGE'), function () {
+            console.log('SWE_PROP_BC_NOTI_SELECTION_MODE_CHANGE', arguments);
+          });
+
+
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END_QUERY'), function () {
             console.log('SWE_PROP_BC_NOTI_END_QUERY', arguments);
           });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_DATA', arguments);
+          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD"), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_RECORD', arguments);
           });
 
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD_DATA"), function () {
@@ -162,6 +173,14 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS'), function () {
             console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD_SCROLL_DATA'), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_RECORD_SCROLL_DATA', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_PAGE_REFRESH'), function () {
+            console.log('SWE_PROP_BC_NOTI_PAGE_REFRESH', arguments);
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_DATA'), function () {
@@ -209,43 +228,41 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           var html = '\
           <div id="app">                                                                                                                                        \n\
             <v-app id="inspire">                                                                                                                                \n\
-            <v-snackbar v-model="snackbar" :timeout="2000" :top="true">Record saved<v-btn color="pink" flat @click="snackbar = false">Close</v-btn></v-snackbar>\n\
+            <v-snackbar v-model="snackbar" :timeout="3000" :top="true">Record saved<v-btn color="pink" flat @click="snackbar = false">Close</v-btn></v-snackbar>\n\
             <v-container fluid>                                                                                                                                 \n\
                 <v-layout row wrap>                                                                                                                             \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
                   <v-alert :value="true" type="info">HLS Case Form Applet rendered by VUE.JS PR</v-alert>                                                       \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
-                  <v-text-field :rules="[rules.required]" v-on:input="changeName" ref="caseName" :disabled="caseNameRO" label="Case Name" v-model="caseName" clearable v-on:keyup.esc="escName" v-on:click:clear="handleClear" counter="100"></v-text-field> \n\
+                  <v-text-field :rules="[rules.required]" v-on:input="changeName" ref="caseName" :disabled="!canUpdateName" label="Case Name" v-model="caseName" clearable v-on:keyup.esc="escapeOnName" v-on:click:clear="handleClear" counter="100"></v-text-field> \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
                   <v-switch v-on:change="changeInfoCheck" label="Case Name ReadOnly (configured in Siebel Tools)" v-model="infoChanged"></v-switch>             \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
-                  <v-select @input="inputStatus" box :items="caseStatusArr" v-on:click.native="clickStatus" v-on:change="changeStatus" v-model="caseStatus" label="Status"></v-select> \n\
+                  <v-select box :items="caseStatusArr" v-on:click.native="clickStatus" v-on:change="changeStatus" v-model="caseStatus" label="Status"></v-select> \n\
                 </v-flex>                                                                                                                                                         \n\
                 <v-flex md4 pa-2>                                                                                                                                                 \n\
                   <v-select box :items="caseSubStatusArr" v-on:click.native="clickSubStatus" v-on:change="changeSubStatus" v-model="caseSubStatus" label="SubStatus"></v-select>  \n\
                 </v-flex>                                                                                                                                                         \n\
                 <v-flex md4 pa-2>                                                                                                                                                 \n\
-                  <v-autocomplete v-model="caseCategory" v-on:click.native="fixPosition" :items="caseCategoryArr" v-on:change="changeCategory" label="Category">                  \n\
+                  <v-autocomplete v-model="caseCategory" :items="caseCategoryArr" v-on:change="changeCategory" label="Category">                  \n\
                 </v-flex>                                                                                                                                                         \n\
                 <v-flex md6 pa-2>                                                                                                                                                 \n\
-                <v-label>Threat Level: {{this.caseThreatLevel}}</v-label><span>                                                                                                   \n\                                                                                                                           \n\
-                  <v-rating :background-color="ratingColor" :color="ratingColor" :readonly="threatLevelRO" v-on:input="threatLevelChange" v-model="caseThreatLevelNum" clearable length="3" label="Threat Level"></v-rating>  \n\
+                <v-label>Threat Level: {{this.caseThreatLevel}}</v-label><span>                                                                                                   \n\
+                  <v-rating :background-color="ratingColor" :color="ratingColor" :readonly="!canUpdateThreatLevel" v-on:input="changeThreatLevel" v-model="caseThreatLevelNum" clearable length="3" label="Threat Level"></v-rating>  \n\
                 </span></v-flex>                                                                                                                                \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
                   <v-label>Sales Rep:</v-label>                                                                                                                 \n\
                   <v-tooltip top v-for="salesRep in caseSalesRepArr" >                                                                                          \n\
-                  <v-chip slot="activator" :close="!salesRep.primary" @input="chipInput(salesRep)"><v-avatar v-bind:class="{teal : !salesRep.primary}">         \n\
+                  <v-chip slot="activator" :close="!salesRep.primary" @input="clickDeleteSalesRep(salesRep)"><v-avatar :class="{teal : !salesRep.primary}">  \n\
                   <v-icon v-if="salesRep.primary">check_circle</v-icon>{{salesRep.primary ? "" : salesRep.login[0]}}</v-avatar>{{salesRep.login}}</v-chip>      \n\
                   <span>{{salesRep.firstName + " " + salesRep.lastName}}</span></v-tooltip>                                                                     \n\
-                                                                                                                                                                \n\
-<!--                  <v-chip close @input="chipInput"><v-avatar class="teal">{{caseSalesRep[0]}}</v-avatar>{{caseSalesRep}}</v-chip> -->                       \n\
                   <v-btn flat icon v-on:click="addSalesRep" color="indigo"><v-icon>edit</v-icon></v-btn>                                                        \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
-                  <v-textarea v-on:change="changeDescription" rows="7" label="Description" v-model="caseDescription" counter="2000" box name="input-7-1"></v-textarea>                          \n\
+                  <v-textarea v-on:change="changeDescription" rows="7" label="Description" v-model="caseDescription" counter="2000" box name="input-7-1"></v-textarea> \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
                   <v-divider></v-divider>                                                                                                                       \n\
@@ -274,11 +291,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           app = new Vue({
             el: '#app',
-            created: function () {
-              console.log('VUE created');
-            },
             mounted: function () {
-              console.log('VUE mounted');
               controlCategory = pm.ExecuteMethod("GetControl", 'Category');
               var arr = controlCategory.GetRadioGroupPropSet().childArray;
               for (var i = 0; i < arr.length; i++) {
@@ -313,177 +326,29 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               caseSalesRepArr: []
             },
             computed: {
-              caseNameRO: function () {
-                return !this.canUpdateName;
-              },
-              threatLevelRO: function(){
-                return !this.canUpdateThreatLevel;
-              },
               ratingColor: function() {
-                if (this.threatLevelRO) {
-                  return "grey";
-                }
-                return "red";
+                return this.canUpdateThreatLevel ? 'red' : 'grey';
               }
             },
             methods: {
-              updatePrimary() {
-                console.log('<<< change case primary to <<<', this.caseSalesRep);
-                for (var i = 0; i < this.caseSalesRepArr.length; i++) {
-                  this.caseSalesRepArr[i].primary = this.caseSalesRepArr[i].login == this.caseSalesRep;
-                }
-                console.log(this.caseSalesRepArr);
-              },
               changeDescription(val) {
-                pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), controlDescription);
-                pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlDescription, val);
+                SiebelAppFacade.N19[appletName].setControlValue('Description', val);
               },
-              updateSalesRep(val) {
-                console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< update sales rep', val);
-                if (val != this.caseSalesRep) {
-                  this.caseSalesRep = val;
-                  this.getSalesRep(val); //cycled calling of update sales rep
-                }
-              },
-              addSalesRep() {
-                console.log('addSalesRep', arguments);
-                SiebelAppFacade.N19[appletName].showMvgApplet('Sales Rep');
-              },
-              chipInput(salesRep) {
-                console.log('chip input', salesRep, salesRep.login, this.caseSalesRep.length);
-                var index = -1;
-                for (var i = 0; i < this.caseSalesRepArr.length; i++) {
-                  console.log(this.caseSalesRepArr[i].login);
-                  if (this.caseSalesRepArr[i].login == salesRep.login) {
-                    index = i;
-                    this.caseSalesRepArr.splice(index, 1);
-                    break;
-                  }
-                }
-                if ((pm.Get("GetBusComp").insertPending)) {
-                  return; //skip update
-                }
-                if (index > -1) {
-                  var service = SiebelApp.S_App.GetService("N19 BS");
-                  if (service) {
-                    var psInput = SiebelApp.S_App.NewPropertySet();
-                    psInput.SetProperty('Login', salesRep.login);
-                    var ai = {
-                      async: true,
-                      selfbusy: true,
-                      scope: this,
-                      cb: function (method, psInput, psOutput) {
-                        console.log('BS output to get the sales reps...', psOutput);
-                        SiebelAppFacade.N19[appletName].NotifyNewDataWS('Sales Rep');
-                      }
-                    };
-                    service.InvokeMethod("DeleteSalesRep", psInput, ai);
-                  }
-                }
-              },
-              threatLevelChange(val) {
-                if (val > 0) {
-                  this.caseThreatLevel = this.threatLevel[val-1];
-                } else {
-                  this.caseThreatLevel = '';
-                }
+              changeThreatLevel(val) {
+                this.caseThreatLevel = val > 0 ? this.threatLevel[val-1] : '';
                 SiebelAppFacade.N19[appletName].setControlValue('Threat Level', this.caseThreatLevel);
-                console.log(val, this.caseThreatLevel);
               },
-              fixPosition() {
-                // var i = Math.round($('.v-select__slot')[0].getBoundingClientRect().top);
-                // setTimeout(function () {
-                //   var j = i + 0 + 'px';
-                //   $('.v-menu__content').css('top', j);
-                // }, 10);
+              changeSubStatus: function (val) {
+                SiebelAppFacade.N19[appletName].setControlValue('Sub Status', val);
               },
-              inputStatus: function () {
-                console.log('inputStatus', arguments, this.caseStatus);
+              changeCategory: function (val) {
+                SiebelAppFacade.N19[appletName].setControlValue('Category', val);
               },
-              populateStatusArray: function (arr) {
-                this.caseStatusArr = [this.caseStatus];
-                for (var i = 0; i < arr.length; i++) {
-                  if ((arr[i] != '') && (arr[i] != this.caseStatus)) {
-                    this.caseStatusArr.push(arr[i]);
-                  }
-                }
+              changeName: function (value) {
+                SiebelAppFacade.N19[appletName].setControlValue('Name', value);
               },
-              populateSubStatusArray: function (arr) {
-                this.caseSubStatusArr = this.caseSubStatus ? [this.caseSubStatus] : [];
-                for (var i = 0; i < arr.length; i++) {
-                  if ((arr[i] != '') && (arr[i] != this.caseSubStatus)) {
-                    this.caseSubStatusArr.push(arr[i]);
-                  }
-                }
-              },
-              clickSubStatus: function () {
-                console.log('clickSubStatus', arguments);
-                //controlSubStatus = pm.ExecuteMethod("GetControl", 'Sub Status');
-                var ps = SiebelApp.S_App.NewPropertySet();
-                ps.SetProperty('SWEField', controlSubStatus.GetInputName());
-                ps.SetProperty('SWEJI', false);
-                controlSubStatus.GetApplet().InvokeMethod('GetQuickPickInfo', ps);
-                //console.log(pm.OnControlEvent('invoke_combo', controlStatus));
-                //shame
-                this.fixPosition();
-              },
-              clickStatus: function () { //TODO: WHAT IS THE BEST EVENT FOR IT
-                console.log('clickStatus', arguments);
-                //controlStatus = pm.ExecuteMethod("GetControl", 'Status');
-                var ps = SiebelApp.S_App.NewPropertySet();
-                ps.SetProperty('SWEField', controlStatus.GetInputName());
-                ps.SetProperty('SWEJI', false);
-                controlStatus.GetApplet().InvokeMethod('GetQuickPickInfo', ps);
-                //shame
-                this.fixPosition();
-              },
-              changeControl: function (control, value) {
-                pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), control);
-                pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), control, value);
-              },
-              changeStatus: function (value) {
-                //could the input parameters to be sent from the control
-                pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), controlStatus);
-                var isChanged = pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlStatus, value);
-                if (isChanged) {
-                  if (controlStatus.IsPostChanges()) {
-                    console.log('change status post changes');
-                    this.afterSelection();
-                  }
-                } else {
-                  //is it the only option?
-                  var currentRecord = pm.Get("GetRecordSet")[pm.Get("GetSelection")];
-                  pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlStatus, currentRecord.Status);
-                  Vue.nextTick(function () {
-                    //console.log('vue next tick')
-                    this.caseStatusArr = [currentRecord.Status];
-                    //this.caseStatusArr.push(currentRecord.Status);
-                    this.caseStatus = currentRecord.Status;
-                  }.bind(this))
-                }
-              },
-              changeSubStatus: function (value) {
-                this.changeControl(controlSubStatus, value);
-              },
-              changeCategory: function (value) {
-                pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), controlCategory);
-                pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlCategory, value);
-              },
-              escName: function() {
-                this.caseName = pm.Get("GetRecordSet")[pm.Get("GetSelection")].Name;
-              },
-              handleClear: function() {
-                this.caseName = '';
-                this.changeName();
-              },
-              changeName: function () {
-                pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), controlName);
-                pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlName, this.caseName);
-              },
-              changeInfoCheck: function () {
-                var newInfo = this.infoChanged ? 'Y' : 'N';
-                pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), controlInfo);
-                pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlInfo, newInfo);
+              changeInfoCheck: function (value) {
+                SiebelAppFacade.N19[appletName].setControlValue('InfoChanged',  value);
                 if (controlInfo.IsPostChanges()) {
                   this.canUpdateName = pm.ExecuteMethod("CanUpdate", controlName.GetName());
                   setTimeout(function () {
@@ -491,63 +356,69 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   }.bind(this));
                 }
               },
-              newButtonClick: function () {
-                //SiebelApp.S_App.GetActiveView().SetActiveAppletInternal(SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName]);
-                var ai = {
-                  scope: {
-                    cb: function () {
-                      console.log('response in callback from new record >>>', arguments);
-                      if (arguments[3]) {
-                        console.log('new record was successful');
-                        this.afterSelection();
-                      } else {
-                        console.log('new record WAS NOT successful');
-                      }
-                    }.bind(this)
+              changeStatus: function (value) {
+                var isChanged = SiebelAppFacade.N19[appletName].setControlValue('Status',  value);
+                if (isChanged && controlStatus.IsPostChanges()) {
+                  console.log('change status post changes');
+                  this.afterSelection();
+                } else {
+                  //is it the only option for rollback - todo
+                  var currentRecord = pm.Get("GetRecordSet")[pm.Get("GetSelection")];
+                  pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlStatus, currentRecord.Status);
+                  Vue.nextTick(function () {
+                    this.caseStatusArr = [currentRecord.Status];
+                    this.caseStatus = currentRecord.Status;
+                  }.bind(this))
+                }
+              },
+              clickSubStatus: function () {
+                var arr = SiebelAppFacade.N19[appletName].getDynamicLOV('Sub Status');
+                this.caseSubStatusArr = this.caseSubStatus ? [this.caseSubStatus] : [];
+                for (var i = 0; i < arr.length; i++) {
+                  if ((arr[i] != '') && (arr[i] != this.caseSubStatus)) {
+                    this.caseSubStatusArr.push(arr[i]);
                   }
                 }
-                SiebelApp.CommandManager.GetInstance().InvokeCommand.call(SiebelApp.CommandManager.GetInstance, "*Browser Applet* *NewRecord* * ", true, ai);
-
-                setTimeout(function () {
+              },
+              clickStatus: function () {
+                var arr = SiebelAppFacade.N19[appletName].getDynamicLOV('Status');
+                this.caseStatusArr = [this.caseStatus];
+                for (var i = 0; i < arr.length; i++) {
+                  if ((arr[i] != '') && (arr[i] != this.caseStatus)) {
+                    this.caseStatusArr.push(arr[i]);
+                  }
+                }
+              },
+              escapeOnName: function() {
+                this.caseName = pm.Get("GetRecordSet")[pm.Get("GetSelection")].Name;
+              },
+              handleClear: function() { // this is needed because clearing set the model value to null
+                this.caseName = '';     // maybe it is not needed if we handle it at N19
+                this.changeName();
+              },
+              newButtonClick: function () {
+                SiebelAppFacade.N19[appletName].newRecord(function() {
+                  this.afterSelection();
                   this.$refs.caseName.focus();
-                }.bind(this), 100); // move to callback
+                }.bind(this));
               },
               saveButtonClick: function () {
-                SiebelApp.S_App.GetActiveView().SetActiveAppletInternal(SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName]);
-                var ai = {
-                  scope: {
-                    cb: function () {
-                      console.log('response in callback from save record >>>', arguments);
-                      if (arguments[3]) {
-                        console.log('save was successful');
-                        this.snackbar = true;
-                      } else {
-                        console.log('save WAS NOT successful');
-                      }
-                    }.bind(this)
-                  }
-                }
-                SiebelApp.CommandManager.GetInstance().InvokeCommand.call(SiebelApp.CommandManager.GetInstance, "*Browser Applet* *WriteRecord* * ", true, ai);
+                SiebelAppFacade.N19[appletName].writeRecord(function() {
+                  this.snackbar = true;
+                }.bind(this));
               },
               nextButtonClick: function () {
                 if (!pm.ExecuteMethod("CanInvokeMethod", "GotoNextSet")) {
                   alert('GotoNextSet is not allowed to invoke ');
                 } else {
-                  //invoking the goto next set
-                  var ps = SiebelApp.S_App.NewPropertySet();
-                  ps.SetProperty('SWEApplet', appletName);
-                  ps.SetProperty('SWEView', viewName);
-                  SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].InvokeControlMethod('GotoNextSet', ps, {});
+                  SiebelAppFacade.N19[appletName].nextRecord();
                 }
               },
               prevButtonClick: function () {
                 if (!pm.ExecuteMethod("CanInvokeMethod", "GotoPreviousSet")) {
                   alert('GotoPreviousSet is not allowed to invoke ');
                 } else {
-                  var ps = SiebelApp.S_App.NewPropertySet();
-                  ps.SetProperty('SWEApplet', appletName);
-                  ps.SetProperty('SWEView', viewName);
-                  SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName].InvokeControlMethod('GotoPreviousSet', ps, {});
+                  SiebelAppFacade.N19[appletName].prevRecord();
                 }
               },
               getSalesRep: function(val) {
@@ -612,6 +483,56 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   service.InvokeMethod("GetSalesRep", null, ai);
                 }
               },
+              updatePrimary() {
+                console.log('<<< change case primary to <<<', this.caseSalesRep);
+                for (var i = 0; i < this.caseSalesRepArr.length; i++) {
+                  this.caseSalesRepArr[i].primary = this.caseSalesRepArr[i].login == this.caseSalesRep;
+                }
+                console.log(this.caseSalesRepArr);
+              },
+              updateSalesRep(val) {
+                console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< update sales rep', val);
+                if (val != this.caseSalesRep) {
+                  this.caseSalesRep = val;
+                  this.getSalesRep(val); //cycled calling of update sales rep
+                }
+              },
+              addSalesRep() {
+                console.log('addSalesRep', arguments);
+                SiebelAppFacade.N19[appletName].showMvgApplet('Sales Rep');
+              },
+              clickDeleteSalesRep(salesRep) {
+                console.log('chip input', salesRep, salesRep.login, this.caseSalesRep.length);
+                var index = -1;
+                for (var i = 0; i < this.caseSalesRepArr.length; i++) {
+                  console.log(this.caseSalesRepArr[i].login);
+                  if (this.caseSalesRepArr[i].login == salesRep.login) {
+                    index = i;
+                    this.caseSalesRepArr.splice(index, 1);
+                    break;
+                  }
+                }
+                if ((pm.Get("GetBusComp").insertPending)) {
+                  return; //skip update
+                }
+                if (index > -1) {
+                  var service = SiebelApp.S_App.GetService("N19 BS");
+                  if (service) {
+                    var psInput = SiebelApp.S_App.NewPropertySet();
+                    psInput.SetProperty('Login', salesRep.login);
+                    var ai = {
+                      async: true,
+                      selfbusy: true,
+                      scope: this,
+                      cb: function (method, psInput, psOutput) {
+                        console.log('BS output to get the sales reps...', psOutput);
+                        SiebelAppFacade.N19[appletName].NotifyNewDataWS('Sales Rep');
+                      }
+                    };
+                    service.InvokeMethod("DeleteSalesRep", psInput, ai);
+                  }
+                }
+              },
               afterSelection: function () {
                 console.log('>>>>>>>>> AFTER SELECTION');
                 controlInfo = pm.ExecuteMethod("GetControl", 'InfoChanged');
@@ -619,7 +540,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 controlStatus = pm.ExecuteMethod("GetControl", 'Status');
                 controlSubStatus = pm.ExecuteMethod("GetControl", 'Sub Status');
                 controlCategory = pm.ExecuteMethod("GetControl", 'Category');
-                controlDescription = pm.ExecuteMethod("GetControl", 'Description');
                 controlThreatLevel = pm.ExecuteMethod("GetControl", 'Threat Level');
 
                 this.canUpdateName = pm.ExecuteMethod("CanUpdate", controlName.GetName());
@@ -675,6 +595,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             $('#app').remove();
             app = null;
           }
+          $("link[href*='vuetify.min.css']").remove();
           if (SiebelAppFacade.N19[appletName]) {
             delete SiebelAppFacade.N19[appletName];
           }

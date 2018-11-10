@@ -1,6 +1,3 @@
-var webpack = require('webpack');
-var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-
 var plugins = [];
 
 var config = {
@@ -16,7 +13,7 @@ var config = {
         test: /\.js$/,
         loader: 'babel-loader',
         query: {
-          presets: ['es2015']
+          presets: ['env']
         }
       }
     ]

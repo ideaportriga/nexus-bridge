@@ -247,24 +247,18 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     }
 
     function newRecord(cb) {
-      // console.log(typeof cb); // eslint-disable-line no-console
-      // return pm.ExecuteMethod('InvokeMethod', 'NewRecord', null, false);
       return _invokeCommandManager('*Browser Applet* *NewRecord* * ', cb);
     }
 
-    function newRecordSync(cb) {
-      console.log(typeof cb); // eslint-disable-line no-console
+    function newRecordSync() {
       return pm.ExecuteMethod('InvokeMethod', 'NewRecord', null, false);
-      // return _invokeCommandManager('*Browser Applet* *NewRecord* * ', cb);
     }
-
 
     function undoRecord(cb) {
       return _invokeCommandManager('*Browser Applet* *UndoRecord* * ', cb);
     }
 
     function writeRecord(cb) {
-      // return pm.ExecuteMethod('InvokeMethod', 'WriteRecord', null, false);
       return _invokeCommandManager('*Browser Applet* *WriteRecord* * ', cb);
     }
 

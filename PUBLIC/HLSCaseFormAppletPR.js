@@ -25,7 +25,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var controlName;
         var controlCategory;
         var controlStatus;
-        var controlSubStatus;
         var controlThreatLevel;
 
         HLSCaseFormAppletPR.prototype.Init = function () {
@@ -37,6 +36,16 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           //document.querySelector('#' + divId + ' form').parentNode.removeChild('form');
 
           //todo: restore in EndLife?
+          //todo: use applet.prototype.RepopulateField instead of it?
+          SiebelAppFacade.N19notifyNewFieldData = SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData;
+          SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = function(name, value) {
+            console.log('>>>>> new field data in notify object', arguments);
+            if (app) {
+              app.updateFieldData(name, value);
+            }
+            SiebelAppFacade.N19notifyNewFieldData.apply(this, arguments);
+          }
+
           SiebelAppFacade.N19notifyNewPrimary = SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary;
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary = function() {
             console.log('>>>>> new primary in notify object', arguments);
@@ -57,7 +66,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_GENERIC"), function (propSet) {
             var type = propSet.GetProperty(consts.get("SWE_PROP_NOTI_TYPE"));
-            console.log('SWE_PROP_BC_NOTI_GENERIC', type, propSet);
+            console.log('SWE_PROP_BC_NOTI_GENERIC ', type, propSet);
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW'), function () {
@@ -71,7 +80,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log('SWE_PROP_BC_NOTI_DELETE_WORKSET', arguments);
             // there is an only option FOR NOW to get a new record creation
             // need timeout to allow a new record to be created
-            setTimeout(function() {
+            setTimeout(function() { // use INSERT_WS_DATA
               if (app) {
                 app.afterSelection();
               }
@@ -90,7 +99,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA_WS'), function (propSet) {
             console.log('SWE_PROP_BC_NOTI_NEW_DATA_WS', arguments);
-            var fieldName = propSet.GetProperty('f');
+            var fieldName = propSet.GetProperty(consts.get("SWE_PROP_NOTI_FIELD")); // f
             if (fieldName === 'Sales Rep') {
               console.log('FIELD SALES REP UPDATED', propSet, propSet.childArray[0].GetProperty('ValueArray'));
               if (app) {
@@ -483,6 +492,28 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   service.InvokeMethod("GetSalesRep", null, ai);
                 }
               },
+              updateFieldData(name, value) {
+                console.log('updateFieldData', arguments);
+                if (typeof value === 'undefined') {
+                  var rec = SiebelAppFacade.N19[appletName].getRecordSet()[SiebelAppFacade.N19[appletName].getSelection()];
+                  console.log(rec);
+                  value = rec[name];
+                  console.log(value);
+                }
+                switch(name) {
+                  case 'Name':
+                    this.caseName = value;
+                    break;
+                  case 'Status':
+                    this.caseStatus = value;
+                    this.caseStatusArr = [this.caseStatus];
+                    break;
+                  case 'Sub Status':
+                    this.caseSubStatus = value;
+                    this.caseSubStatusArr = [this.caseSubStatus];
+                    break;
+                }
+              },
               updatePrimary() {
                 console.log('<<< change case primary to <<<', this.caseSalesRep);
                 for (var i = 0; i < this.caseSalesRepArr.length; i++) {
@@ -538,7 +569,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 controlInfo = pm.ExecuteMethod("GetControl", 'InfoChanged');
                 controlName = pm.ExecuteMethod("GetControl", 'Name');
                 controlStatus = pm.ExecuteMethod("GetControl", 'Status');
-                controlSubStatus = pm.ExecuteMethod("GetControl", 'Sub Status');
                 controlCategory = pm.ExecuteMethod("GetControl", 'Category');
                 controlThreatLevel = pm.ExecuteMethod("GetControl", 'Threat Level');
 

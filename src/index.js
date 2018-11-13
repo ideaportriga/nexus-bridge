@@ -168,6 +168,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     }
 
     function _getNumRows() {
+      // visible in applet
       return pm.Get('GetNumRows');
     }
 
@@ -317,6 +318,46 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return applet.NotifyNewDataWS(name);
     }
 
+    function getStaticLOV(name) {
+      const control = _returnControls()[name];
+      const ret = [];
+      if ('1' === control.IsStaticBounded()) {
+        const arr = _getStaticLOV(control.GetRadioGroupPropSet().childArray);
+        for (let i = 0; i < arr.length; i += 1) {
+          ret.push(arr[i].DisplayName);
+        }
+        ret.sort();
+      }
+      console.log(ret); // eslint-disable-line no-console
+      return ret;
+    }
+
+    function getCurrentRecordModel(_controls) {
+      const arr = Object.keys(_controls); // eslint-disable-line no-console
+      const obj = getRecordSet()[getSelection()];
+
+      const appletControls = _returnControls();
+
+      for (let i = 0; i < arr.length; i += 1) {
+        const control = appletControls[arr[i]];
+        if (typeof control !== 'undefined') {
+          const controlName = control.GetName();
+          const controlInputName = control.GetInputName();
+          _controls[arr[i]] = { // eslint-disable-line no-param-reassign
+            value: obj[arr[i]],
+            readonly: !pm.ExecuteMethod('CanUpdate', controlName),
+            label: control.GetDisplayName(),
+            isPostChanges: control.IsPostChanges(),
+            required: _isRequired(controlInputName),
+            maxSize: control.GetMaxSize(),
+          };
+        }
+      }
+
+      console.log(_controls); // eslint-disable-line no-console
+      return true;
+    }
+
     return {
       returnControls: _returnControls,
       getRowListRowCount: _getRowListRowCount,
@@ -342,7 +383,9 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       deleteRecord,
       setControlValue,
       getDynamicLOV,
+      getStaticLOV,
       canInvokeMethod,
+      getCurrentRecordModel,
       NotifyNewDataWS: _NotifyNewDataWS,
       refresh: (name) => {
         const service = SiebelApp.S_App.GetService('N19 BS');

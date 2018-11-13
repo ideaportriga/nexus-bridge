@@ -281,11 +281,12 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
         // do we want to support setting to null
         value = value ? 'Y' : 'N'; // eslint-disable-line no-param-reassign
       }
-      console.log(control); // eslint-disable-line no-console
+      // TODO: should we use SetCellValue for list applets?
+      // console.log(control); // eslint-disable-line no-console
       pm.OnControlEvent(consts.get('PHYEVENT_CONTROL_FOCUS'), control);
       const ret = pm.OnControlEvent(consts.get('PHYEVENT_CONTROL_BLUR'), control, value);
       if (!ret) {
-        console.log(`Value ${value} was not set for ${control}`); // eslint-disable-line no-console
+        console.log(`Value ${value} was not set for ${control.toString()}`); // eslint-disable-line no-console
         // todo: do we need to put back the old value
       }
       return ret;
@@ -337,7 +338,22 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       setControlValue,
       getDynamicLOV,
       NotifyNewDataWS: _NotifyNewDataWS,
-      // canInvokeMethod
+      refresh: (name) => {
+        const service = SiebelApp.S_App.GetService('N19 BS');
+        if (service) {
+          const inPropSet = SiebelApp.S_App.NewPropertySet();
+          inPropSet.SetProperty('name', name);
+          service.InvokeMethod('Refresh', inPropSet, {});
+        }
+      },
+      requery: (name) => {
+        const service = SiebelApp.S_App.GetService('N19 BS');
+        if (service) {
+          const inPropSet = SiebelApp.S_App.NewPropertySet();
+          inPropSet.SetProperty('name', name);
+          service.InvokeMethod('Requery', inPropSet, {});
+        }
+      },
     };
   };
 }

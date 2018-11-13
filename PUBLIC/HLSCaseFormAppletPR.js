@@ -19,10 +19,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var pm;
         var divId;
         var appletName;
+        var helper;
 
+        //get rid of it
         var controlInfo;
         var controlName;
-        var controlCategory;
         var controlStatus;
         var controlThreatLevel;
 
@@ -31,6 +32,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           //hide the server rendered html, better to remove, but not now
           pm = this.GetPM();
           divId = "s_" + pm.Get("GetFullId") + "_div";
+          document.getElementById(divId).classList.add('siebui-applet', 'siebui-active');
           document.querySelector('#' + divId + ' form').style.display = 'none';
           //document.querySelector('#' + divId + ' form').parentNode.removeChild('form');
 
@@ -62,6 +64,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
           SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
+          helper = SiebelAppFacade.N19[appletName];
 
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_GENERIC"), function (propSet) {
             var type = propSet.GetProperty(consts.get("SWE_PROP_NOTI_TYPE"));
@@ -301,12 +304,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           app = new Vue({
             el: '#app',
             mounted: function () {
-              controlCategory = pm.ExecuteMethod("GetControl", 'Category');
-              var arr = controlCategory.GetRadioGroupPropSet().childArray;
-              for (var i = 0; i < arr.length; i++) {
-                this.caseCategoryArr.push(arr[i].propArray.DisplayName);
-              }
-              this.caseCategoryArr.sort();
               this.afterSelection();
               $('.application--wrap').css({ 'min-height': 'auto' });
             },
@@ -316,6 +313,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   return !!value || 'Required.';
                 }
               },
+              /*
               controls: {
                 Description: {
                   value: '122',
@@ -333,6 +331,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   required: false
                 }
               },
+              */
               snackbar: false,
               caseName: '',
               caseStatus: '',
@@ -393,13 +392,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   var currentValue = currentRecord.Status;
                   this.caseStatusArr = [];
                   this.caseStatus = '';
-                setTimeout(function () {
+                  setTimeout(function () {
                     console.log('!!!!!!!!', currentRecord.Status, appletName);
-                    //SiebelAppFacade.N19[appletName].setControlValue('Status',  currentValue);
                     this.caseStatusArr = [currentRecord.Status];
                     this.caseStatus = currentRecord.Status;
                     SiebelAppFacade.N19[appletName].setControlValue('Status',  currentValue); //seems it is not needed
-                    //pm.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), controlStatus, currentRecord.Status);
                   }.bind(this))
                 }
               },
@@ -442,14 +439,14 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }.bind(this));
               },
               nextButtonClick: function () {
-                if (!pm.ExecuteMethod("CanInvokeMethod", "GotoNextSet")) {
+                if (!SiebelAppFacade.N19[appletName].canInvokeMethod("GotoNextSet")) {
                   alert('GotoNextSet is not allowed to invoke ');
                 } else {
                   SiebelAppFacade.N19[appletName].nextRecord();
                 }
               },
               prevButtonClick: function () {
-                if (!pm.ExecuteMethod("CanInvokeMethod", "GotoPreviousSet")) {
+                if (!SiebelAppFacade.N19[appletName].canInvokeMethod("GotoPreviousSet")) {
                   alert('GotoPreviousSet is not allowed to invoke ');
                 } else {
                   SiebelAppFacade.N19[appletName].prevRecord();
@@ -539,19 +536,25 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   value = rec[name];
                   console.log(rec, value);
                 }
-                switch(name) {
-                  case 'Name':
-                    this.caseName = value;
-                    break;
-                  case 'Status':
-                    // this.caseStatus = value;
-                    // this.caseStatusArr = [this.caseStatus];
-                    break;
-                  case 'Sub Status':
-                    // this.caseSubStatus = value;
-                    // this.caseSubStatusArr = [this.caseSubStatus];
-                    break;
-                }
+                  switch(name) {
+                    case 'Name':
+                      this.caseName = value;
+                      break;
+                    case 'Status':
+                      this.caseStatus = value;
+                      this.caseStatusArr = [this.caseStatus];
+                      break;
+                    case 'Sub Status':
+                      this.caseSubStatus = value;
+                      this.caseSubStatusArr = [this.caseSubStatus];
+                      break;
+                    case 'Info Changed Flag':
+                      this.infoChanged = value === 'Y';
+                      break;
+                    case 'Category':
+                      this.caseCategory = value;
+                      break;
+                  }
               },
               updatePrimary() {
                 console.log('<<<<<<<<< change case primary to <<<', this.caseSalesRep, this.caseSalesRepArr, this.caseSalesRepPrimary);
@@ -614,11 +617,21 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
               },
               afterSelection: function () {
+                this.controls = helper.getControls();
+                if (0 === this.caseCategoryArr.length) {
+                  debugger;
+                  var arr = this.controls['Category'].staticLOV;
+                  for (var i = 0; i < arr.length; i++) {
+                    this.caseCategoryArr.push(arr[i].DisplayName);
+                  }
+                  this.caseCategoryArr.sort();
+                }
+
+                //get controls?
                 console.log('>>>>>>>>> AFTER SELECTION');
                 controlInfo = pm.ExecuteMethod("GetControl", 'InfoChanged');
                 controlName = pm.ExecuteMethod("GetControl", 'Name');
                 controlStatus = pm.ExecuteMethod("GetControl", 'Status');
-                controlCategory = pm.ExecuteMethod("GetControl", 'Category');
                 controlThreatLevel = pm.ExecuteMethod("GetControl", 'Threat Level');
 
                 this.canUpdateName = pm.ExecuteMethod("CanUpdate", controlName.GetName());

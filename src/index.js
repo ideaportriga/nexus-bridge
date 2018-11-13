@@ -52,6 +52,10 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       // the same - ? // return pm.Get('GetControls');
     }
 
+    function canInvokeMethod(method) {
+      return pm.ExecuteMethod('CanInvokeMethod', method);
+    }
+
     function _isSkipControl(type) {
       // https://docs.oracle.com/cd/E74890_01/books/ConfigOpenUI/appendix_a_api002.htm
       // maybe we need to exclude more types
@@ -127,8 +131,9 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
         }
         // add values to be displayed in the static pick list
         if ('1' === obj.staticPick) {
-          obj.staticValue = _getStaticLOV(control.GetRadioGroupPropSet().childArray);
+          obj.staticLOV = _getStaticLOV(control.GetRadioGroupPropSet().childArray);
         }
+        obj.staticValue = obj.staticLOV; // if somebody already uses it
         controls[controlName] = obj;
       }
       console.log('returns controls -', controls); // eslint-disable-line no-console
@@ -171,7 +176,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     }
 
     function _navigate(method) {
-      if (!pm.ExecuteMethod('CanInvokeMethod', method)) {
+      if (!canInvokeMethod(method)) {
         return false;
       }
       const ps = SiebelApp.S_App.NewPropertySet();
@@ -337,6 +342,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       deleteRecord,
       setControlValue,
       getDynamicLOV,
+      canInvokeMethod,
       NotifyNewDataWS: _NotifyNewDataWS,
       refresh: (name) => {
         const service = SiebelApp.S_App.GetService('N19 BS');

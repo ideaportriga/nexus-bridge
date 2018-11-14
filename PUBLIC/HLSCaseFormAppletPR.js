@@ -16,21 +16,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
         SiebelJS.Extend(HLSCaseFormAppletPR, SiebelAppFacade.PhysicalRenderer);
         var app;
-        var pm;
         var divId;
-        var appletName;
-        var helper;
-
-        //get rid of it
-        var controlInfo;
-        var controlName;
-        var controlStatus;
-        var controlThreatLevel;
+        var n19helper;
 
         HLSCaseFormAppletPR.prototype.Init = function () {
 
           //hide the server rendered html, better to remove, but not now
-          pm = this.GetPM();
+          var pm = this.GetPM();
           divId = "s_" + pm.Get("GetFullId") + "_div";
           document.getElementById(divId).classList.add('siebui-applet', 'siebui-active');
           document.querySelector('#' + divId + ' form').style.display = 'none';
@@ -39,7 +31,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           //todo: restore in EndLife?
           //todo: use applet.prototype.RepopulateField instead of it?
           SiebelAppFacade.N19notifyNewFieldData = SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData;
-          SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = function(name, value) {
+          SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = function (name, value) {
             // console.log('>>>>> new field data in notify object', arguments);
             if (app) {
               app.updateFieldData(name, value);
@@ -48,7 +40,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           }
 
           SiebelAppFacade.N19notifyNewPrimary = SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary;
-          SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary = function() {
+          SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary = function () {
             console.log('>>>>> new primary in notify object', arguments);
             if (this.GetAppletRegistry()[0].GetName() === 'Contact Team Mvg Applet') {
               if (app) {
@@ -60,11 +52,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
 
-          appletName = pm.Get("GetName");
+          var appletName = pm.Get("GetName");
 
           SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
           SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
-          helper = SiebelAppFacade.N19[appletName];
+          n19helper = SiebelAppFacade.N19[appletName];
 
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_GENERIC"), function (propSet) {
             var type = propSet.GetProperty(consts.get("SWE_PROP_NOTI_TYPE"));
@@ -82,7 +74,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log('SWE_PROP_BC_NOTI_DELETE_WORKSET', arguments);
             // there is an only option FOR NOW to get a new record creation
             // need timeout to allow a new record to be created
-            setTimeout(function() { // use INSERT_WS_DATA
+            setTimeout(function () { // use INSERT_WS_DATA
               if (app) {
                 app.afterSelection();
               }
@@ -107,8 +99,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               if (app) {
                 var arr = [];
                 CCFMiscUtil_StringToArray(propSet.childArray[0].GetProperty('ValueArray'), arr);
-                setTimeout(function(){
-                  app.updateSalesRep(arr[0]); // TODO: I don't need it in this demo
+                setTimeout(function () {
+                  app.updateSalesRep(arr[0]);
                 });
               }
             }
@@ -205,12 +197,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           this.AttachPMBinding('isControlPopupOpen', (...args) => {
             // combobox and probably pickapplets also?
-            // console.log('>>><<<isControlPopupOpen', args); // eslint-disable-line no-console
           });
         }
 
-        HLSCaseFormAppletPR.prototype.UpdatePick = function() {
-          // console.log('update pick called'); //todo - move into N19Helper?
+        HLSCaseFormAppletPR.prototype.UpdatePick = function () {
+          // todo - move into N19Helper? or refactore the approach
         }
 
         HLSCaseFormAppletPR.prototype.preInvokeMethod = function (methodName, args, lp, returnStructure) {
@@ -313,46 +304,37 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   return !!value || 'Required.';
                 }
               },
-              /*
               controls: {
-                Description: {
-                  value: '122',
-                  readonly: false,
-                  label: 'Description',
-                  isPostChanges: false,
-                  required: false,
-                  maxSize: 2000
-                },
-                'Threat Level' : {
-                  value: 'Low',
-                  readonly: false,
-                  label: 'Threat Level',
-                  isPostChanges: false,
-                  required: false
-                }
+                Name: {},
+                Status: {},
+                'Sub Status': {},
+                InfoChanged: {},
+                Description: {},
+                Category: {},
+                'Threat Level': {},
+                'Sales Rep': {}
               },
-              */
-              snackbar: false,
               caseName: '',
               caseStatus: '',
               caseSubStatus: '',
               caseCategory: '',
               infoChanged: false,
+              caseDescription: '',
               canUpdateName: true,
               canUpdateThreatLevel: true,
+              snackbar: false,
               caseStatusArr: [],
               caseSubStatusArr: [],
               caseCategoryArr: [],
-              caseDescription: '',
               caseThreatLevelNum: 0,
               caseThreatLevel: '',
-              threatLevel: ['Low', 'Medium', 'High'],
+              caseThreatLevelArr: ['Low', 'Medium', 'High'],
               caseSalesRepArr: [],
               caseSalesRep: '',
               caseSalesRepPrimary: ''
             },
             computed: {
-              ratingColor: function() {
+              ratingColor: function () {
                 return this.canUpdateThreatLevel ? 'red' : 'grey';
               }
             },
@@ -360,48 +342,47 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               changeDescription(val) {
                 // todo: make this method universal
                 // console.log('changeDescription', arguments);
-                SiebelAppFacade.N19[appletName].setControlValue('Description', val);
+                n19helper.setControlValue('Description', val);
               },
               changeThreatLevel(val) {
-                this.caseThreatLevel = val > 0 ? this.threatLevel[val-1] : '';
-                SiebelAppFacade.N19[appletName].setControlValue('Threat Level', this.caseThreatLevel);
+                this.caseThreatLevel = val > 0 ? this.caseThreatLevelArr[val - 1] : '';
+                n19helper.setControlValue('Threat Level', this.caseThreatLevel);
               },
               changeSubStatus: function (val) {
-                SiebelAppFacade.N19[appletName].setControlValue('Sub Status', val);
+                n19helper.setControlValue('Sub Status', val);
               },
               changeCategory: function (val) {
-                SiebelAppFacade.N19[appletName].setControlValue('Category', val);
+                n19helper.setControlValue('Category', val);
               },
               changeName: function (value) {
-                SiebelAppFacade.N19[appletName].setControlValue('Name', value);
+                n19helper.setControlValue('Name', value);
               },
               changeInfoCheck: function (value) {
-                SiebelAppFacade.N19[appletName].setControlValue('InfoChanged',  value);
-                if (controlInfo.IsPostChanges()) {
-                  this.canUpdateName = pm.ExecuteMethod("CanUpdate", controlName.GetName());
+                n19helper.setControlValue('InfoChanged', value);
+                if (this.controls.InfoChanged.isPostChanges) {
+                  this.afterSelection();
                 }
               },
               changeStatus: function (value) {
-                var isChanged = SiebelAppFacade.N19[appletName].setControlValue('Status',  value);
-                if (isChanged && controlStatus.IsPostChanges()) {
+                var isChanged = n19helper.setControlValue('Status', value);
+                if (isChanged && this.controls.Status.isPostChanges) {
                   console.log('change status post changes');
                   this.afterSelection();
                 } else {
                   //is it the only option for rollback - todo
-                  var currentRecord = pm.Get("GetRecordSet")[pm.Get("GetSelection")];
-                  var currentValue = currentRecord.Status;
+                  var currentValue = n19helper.getCurrentRecord().Status;
                   this.caseStatusArr = [];
                   this.caseStatus = '';
                   setTimeout(function () {
-                    console.log('!!!!!!!!', currentRecord.Status, appletName);
-                    this.caseStatusArr = [currentRecord.Status];
-                    this.caseStatus = currentRecord.Status;
-                    SiebelAppFacade.N19[appletName].setControlValue('Status',  currentValue); //seems it is not needed
+                    console.log('!!!!!!!!', currentValue);
+                    this.caseStatusArr = [currentValue];
+                    this.caseStatus = currentValue;
+                    //n19helper.setControlValue('Status', currentValue); //TODO: seems it is not needed
                   }.bind(this))
                 }
               },
               clickSubStatus: function () {
-                var arr = SiebelAppFacade.N19[appletName].getDynamicLOV('Sub Status');
+                var arr = n19helper.getDynamicLOV('Sub Status');
                 this.caseSubStatusArr = this.caseSubStatus ? [this.caseSubStatus] : [];
                 for (var i = 0; i < arr.length; i++) {
                   if ((arr[i] != '') && (arr[i] != this.caseSubStatus)) {
@@ -410,7 +391,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
               },
               clickStatus: function () {
-                var arr = SiebelAppFacade.N19[appletName].getDynamicLOV('Status');
+                var arr = n19helper.getDynamicLOV('Status');
                 this.caseStatusArr = [this.caseStatus];
                 for (var i = 0; i < arr.length; i++) {
                   if ((arr[i] != '') && (arr[i] != this.caseStatus)) {
@@ -418,59 +399,45 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   }
                 }
               },
-              escapeOnName: function() {
-                this.caseName = pm.Get("GetRecordSet")[pm.Get("GetSelection")].Name;
+              escapeOnName: function () {
+                this.caseName = n19helper.getCurrentRecord().Name;
               },
-              handleClear: function() { // this is needed because clearing set the model value to null
+              handleClear: function () { // this is needed because clearing set the model value to null
                 this.caseName = '';     // maybe it is not needed if we handle it at N19
                 this.changeName();
               },
               newButtonClick: function () {
-                SiebelAppFacade.N19[appletName].newRecord(function() {
+                n19helper.newRecord(function () {
                   this.afterSelection();
-                  setTimeout(function() {
+                  setTimeout(function () {
                     this.$refs.caseName.focus();
                   }.bind(this))
                 }.bind(this));
               },
               saveButtonClick: function () {
-                SiebelAppFacade.N19[appletName].writeRecord(function() {
+                n19helper.writeRecord(function () {
                   this.snackbar = true;
                 }.bind(this));
               },
               nextButtonClick: function () {
-                if (!SiebelAppFacade.N19[appletName].canInvokeMethod("GotoNextSet")) {
-                  alert('GotoNextSet is not allowed to invoke ');
+                if (!n19helper.canInvokeMethod("GotoNextSet")) {
+                  alert('GotoNextSet is not allowed to invoke');
                 } else {
-                  SiebelAppFacade.N19[appletName].nextRecord();
+                  n19helper.nextRecord();
                 }
               },
               prevButtonClick: function () {
-                if (!SiebelAppFacade.N19[appletName].canInvokeMethod("GotoPreviousSet")) {
-                  alert('GotoPreviousSet is not allowed to invoke ');
+                if (!n19helper.canInvokeMethod("GotoPreviousSet")) {
+                  alert('GotoPreviousSet is not allowed to invoke');
                 } else {
-                  SiebelAppFacade.N19[appletName].prevRecord();
+                  n19helper.prevRecord();
                 }
               },
-              getSalesRep: function(val) {
-                /*
-                if (pm.Get("GetBusComp").insertPending) {
-                  if (val) {
-                    if (!this.caseSalesRepArr.some(e => e.login === val)) {
-                      this.caseSalesRepArr.push({
-                        firstName: '',
-                        lastName: '',
-                        primary: false,
-                        login: val
-                      });
-                    }
-                  }
-                  return;
-                } */
-
+              getSalesRep: function (val) {
                 //if we have several components?
+                //it applies if we are insert pending
                 if (SiebelApp.S_App.GetActiveBusObj().GetBusCompByName('Position')) {
-                  setTimeout(function(){
+                  setTimeout(function () {
                     var arr = SiebelApp.S_App.GetActiveBusObj().GetBusCompByName('Position').GetRecordSet();
                     if (arr) {
                       this.caseSalesRepArr = [];
@@ -486,7 +453,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                           this.caseSalesRepPrimary = arr[i]["Active Login Name"];
                         }
                       }
-                      this.caseSalesRepArr.sort(function(a, b){
+                      this.caseSalesRepArr.sort(function (a, b) {
                         return (a.login > b.login) ? -1 : 1;
                       });
                     }
@@ -494,8 +461,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   return;
                 }
 
-                setTimeout(function() {
                   //we don't have an object yet
+                  setTimeout(function () {
                   var service = SiebelApp.S_App.GetService("N19 BS");
                   if (service) {
                     var ai = {
@@ -518,7 +485,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                               this.caseSalesRepPrimary = resultSet.GetChild(i).GetProperty('Login');
                             }
                           }
-                          this.caseSalesRepArr.sort(function(a, b){
+                          this.caseSalesRepArr.sort(function (a, b) {
                             return (a.login > b.login) ? -1 : 1;
                           });
                         }
@@ -530,31 +497,33 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
               },
               updateFieldData(name, value) {
+                //todo : make universal
+                //todo : do I need a field name in current record model
                 console.log('updateFieldData', arguments);
                 if (typeof value === 'undefined') {
-                  var rec = SiebelAppFacade.N19[appletName].getRecordSet()[SiebelAppFacade.N19[appletName].getSelection()];
+                  var rec = n19helper.getCurrentRecord();
                   value = rec[name];
                   console.log(rec, value);
                 }
-                  switch(name) {
-                    case 'Name':
-                      this.caseName = value;
-                      break;
-                    case 'Status':
-                      this.caseStatus = value;
-                      this.caseStatusArr = [this.caseStatus];
-                      break;
-                    case 'Sub Status':
-                      this.caseSubStatus = value;
-                      this.caseSubStatusArr = [this.caseSubStatus];
-                      break;
-                    case 'Info Changed Flag':
-                      this.infoChanged = value === 'Y';
-                      break;
-                    case 'Category':
-                      this.caseCategory = value;
-                      break;
-                  }
+                switch (name) {
+                  case 'Name':
+                    this.caseName = value;
+                    break;
+                  case 'Status':
+                    this.caseStatus = value;
+                    this.caseStatusArr = [this.caseStatus];
+                    break;
+                  case 'Sub Status':
+                    this.caseSubStatus = value;
+                    this.caseSubStatusArr = [this.caseSubStatus];
+                    break;
+                  case 'Info Changed Flag':
+                    this.infoChanged = value === 'Y';
+                    break;
+                  case 'Category':
+                    this.caseCategory = value;
+                    break;
+                }
               },
               updatePrimary() {
                 console.log('<<<<<<<<< change case primary to <<<', this.caseSalesRep, this.caseSalesRepArr, this.caseSalesRepPrimary);
@@ -577,12 +546,12 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< update sales rep', val);
                 if (val != this.caseSalesRep) {
                   this.caseSalesRep = val;
-                  this.getSalesRep(val); //cycled calling of update sales rep
+                  this.getSalesRep(val);
                 }
               },
               addSalesRep() {
                 console.log('addSalesRep', arguments);
-                SiebelAppFacade.N19[appletName].showMvgApplet('Sales Rep');
+                n19helper.showMvgApplet('Sales Rep');
               },
               clickDeleteSalesRep(salesRep) {
                 console.log('>>> clickDeleteSalesRep input', salesRep, salesRep.login, this.caseSalesRepArr.length);
@@ -595,7 +564,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     break;
                   }
                 }
-                if ((pm.Get("GetBusComp").insertPending)) {
+                if (n19helper.insertPending) {
                   return; //skip update
                 }
                 if (index > -1) {
@@ -609,7 +578,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                       scope: this,
                       cb: function (method, psInput, psOutput) {
                         console.log('BS output to get the sales reps...', psOutput);
-                        SiebelAppFacade.N19[appletName].NotifyNewDataWS('Sales Rep');
+                        n19helper.NotifyNewDataWS('Sales Rep');
                       }
                     };
                     service.InvokeMethod("DeleteSalesRep", psInput, ai);
@@ -617,64 +586,37 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
               },
               afterSelection: function () {
-                this.controls = helper.getControls();
+                console.log('>>>>>>>>>>>>>>>>>>> AFTER SELECTION STARTED....');
+                n19helper.getCurrentRecordModel(this.controls);
+
                 if (0 === this.caseCategoryArr.length) {
-                  debugger;
-                  var arr = this.controls['Category'].staticLOV;
-                  for (var i = 0; i < arr.length; i++) {
-                    this.caseCategoryArr.push(arr[i].DisplayName);
-                  }
-                  this.caseCategoryArr.sort();
+                  this.caseCategoryArr = n19helper.getStaticLOV('Category');
                 }
 
-                //get controls?
-                console.log('>>>>>>>>> AFTER SELECTION');
-                controlInfo = pm.ExecuteMethod("GetControl", 'InfoChanged');
-                controlName = pm.ExecuteMethod("GetControl", 'Name');
-                controlStatus = pm.ExecuteMethod("GetControl", 'Status');
-                controlThreatLevel = pm.ExecuteMethod("GetControl", 'Threat Level');
-
-                this.canUpdateName = pm.ExecuteMethod("CanUpdate", controlName.GetName());
-                this.canUpdateThreatLevel = pm.ExecuteMethod("CanUpdate", controlThreatLevel.GetName());
-
-                var i = [pm.Get('GetSelection')];
-                if (i > -1) {
-                  var currentRecord = pm.Get('GetRecordSet')[i];
-                  this.infoChanged = currentRecord['Info Changed Flag'] === 'Y';
-                  this.caseName = currentRecord.Name;
-                  this.caseStatus = currentRecord.Status;
-                  this.caseSubStatus = currentRecord['Sub Status'];
-                  this.caseStatusArr = [this.caseStatus];
-                  this.caseSubStatusArr = [this.caseSubStatus];
-                  this.caseCategory = currentRecord.Category;
-                  this.caseDescription = currentRecord.Description;
-                  this.caseThreatLevel = currentRecord['Threat Level'];
-                  this.caseThreatLevelNum = this.threatLevel.indexOf(this.caseThreatLevel) + 1;
-                  this.caseSalesRep = currentRecord['Sales Rep'];
-                  console.log('before calling sales rep', this.caseSalesRep );
-                  if (pm.Get("GetBusComp").insertPending) {
-                    console.log('skipped calling sales rep BS because insert pending');
-                    this.caseSalesRepArr = [{
-                      firstName: '',
-                      lastName: '',
-                      primary: true,
-                      login: this.caseSalesRep
-                    }];
-                  } else {
-                    this.getSalesRep();
-                  }
-                } else { // no records displayed
-                  this.infoChanged = false;
-                  this.caseName = '';
-                  this.caseStatus = '';
-                  this.caseSubStatus = '';
-                  this.caseStatusArr = [];
-                  this.caseSubStatusArr = [];
-                  this.caseCategory = '';
-                  this.caseDescription = '';
-                  this.caseThreatLevel = '';
-                  this.caseSalesRep = '';
-                  this.caseSalesRepArr = [];
+                this.canUpdateName = this.controls.Name.readonly;
+                this.canUpdateThreatLevel = this.controls['Threat Level'].readonly;
+                this.infoChanged = this.controls.InfoChanged.readonly;
+                this.caseName = this.controls.Name.value;
+                this.caseStatus = this.controls.Status.value;
+                this.caseSubStatus = this.controls['Sub Status'].value;
+                this.caseStatusArr = [this.caseStatus];
+                this.caseSubStatusArr = [this.caseSubStatus];
+                this.caseCategory = this.controls.Category.value;
+                this.caseDescription = this.controls.Description.value;
+                this.caseThreatLevel = this.controls['Threat Level'].value;
+                this.caseThreatLevelNum = this.caseThreatLevelArr.indexOf(this.caseThreatLevel) + 1;
+                this.caseSalesRep = this.controls['Sales Rep'].value;
+                if (n19helper.insertPending()) {
+                  console.log('skipped calling sales rep BS because insert pending');
+                  // or get it from the current buscomp?
+                  this.caseSalesRepArr = [{
+                    firstName: '',
+                    lastName: '',
+                    primary: true,
+                    login: this.caseSalesRep
+                  }];
+                } else {
+                  this.getSalesRep();
                 }
               }
             }
@@ -688,9 +630,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             app = null;
           }
           // $("link[href*='vuetify.min.css']").remove();
-          if (SiebelAppFacade.N19[appletName]) {
-            delete SiebelAppFacade.N19[appletName];
-          }
+          n19helper = null; // or delete it from the facade
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.EndLife.apply(this, arguments);
         }
 

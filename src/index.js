@@ -332,25 +332,64 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return ret;
     }
 
+    function _getControlValue(control, value) {
+      let ret = value;
+      if (consts.get('SWE_CTRL_CHECKBOX') === control.GetUIType()) {
+        // convert Y/N/null -> true/false/null
+        // do we need to send null?
+        switch (value) {
+          case 'Y':
+            ret = true;
+            break;
+          case 'N':
+            ret = false;
+            break;
+          default:
+            ret = null;
+        }
+      }
+      return ret;
+    }
+
+    function getCurrentRecord() {
+      // todo: check if record exists
+      return pm.Get('GetRecordSet')[pm.Get('GetSelection')];
+    }
+
     function getCurrentRecordModel(_controls) {
       const arr = Object.keys(_controls); // eslint-disable-line no-console
-      const obj = getRecordSet()[getSelection()];
-
+      const index = getSelection();
       const appletControls = _returnControls();
+      const isRecord = index > -1;
+      let obj;
+      if (isRecord) {
+        obj = getRecordSet()[index];
+      }
 
       for (let i = 0; i < arr.length; i += 1) {
         const control = appletControls[arr[i]];
         if (typeof control !== 'undefined') {
           const controlName = control.GetName();
           const controlInputName = control.GetInputName();
-          _controls[arr[i]] = { // eslint-disable-line no-param-reassign
-            value: obj[arr[i]],
-            readonly: !pm.ExecuteMethod('CanUpdate', controlName),
-            label: control.GetDisplayName(),
-            isPostChanges: control.IsPostChanges(),
-            required: _isRequired(controlInputName),
-            maxSize: control.GetMaxSize(),
-          };
+          if (isRecord) {
+            _controls[arr[i]] = { // eslint-disable-line no-param-reassign
+              value: _getControlValue(control, obj[arr[i]]),
+              readonly: !pm.ExecuteMethod('CanUpdate', controlName),
+              label: control.GetDisplayName(),
+              isPostChanges: control.IsPostChanges(),
+              required: _isRequired(controlInputName),
+              maxSize: control.GetMaxSize(),
+            };
+          } else { // no record
+            _controls[arr[i]] = { // eslint-disable-line no-param-reassign
+              value: null, // is it a right value
+              readonly: true,
+              label: control.GetDisplayName(),
+              isPostChanges: control.IsPostChanges(),
+              required: _isRequired(controlInputName),
+              maxSize: control.GetMaxSize(),
+            };
+          }
         }
       }
 
@@ -387,6 +426,8 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       canInvokeMethod,
       getCurrentRecordModel,
       NotifyNewDataWS: _NotifyNewDataWS,
+      getCurrentRecord,
+      insertPending: () => pm.Get('GetBusComp').insertPending,
       refresh: (name) => {
         const service = SiebelApp.S_App.GetService('N19 BS');
         if (service) {

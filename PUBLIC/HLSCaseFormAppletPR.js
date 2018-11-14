@@ -237,23 +237,23 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-alert :value="true" type="info">HLS Case Form Applet rendered by VUE.JS PR</v-alert>                                                       \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
-                  <v-text-field :rules="[rules.required]" v-on:input="changeName" ref="caseName" :disabled="!canUpdateName" label="Case Name" v-model="caseName" clearable v-on:keyup.esc="escapeOnName" v-on:click:clear="handleClear" counter="100"></v-text-field> \n\
+                  <v-text-field :rules="[rules.required]" v-on:input="changeValue(\'Name\')" ref="caseName" :disabled="controls.Name.readonly" :label="controls.Name.label" v-model="controls.Name.value" clearable v-on:keyup.esc="escapeOnName" v-on:click:clear="handleClear" :counter="controls.Name.maxSize"></v-text-field> \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
-                  <v-switch v-on:change="changeInfoCheck" label="Case Name ReadOnly (configured in Siebel Tools)" v-model="infoChanged"></v-switch>             \n\
+                  <v-switch v-on:change="changeValue(\'InfoChanged\')" :label="controls.InfoChanged.label" v-model="controls.InfoChanged.value" :disabled="controls.InfoChanged.readonly"></v-switch>  \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
-                  <v-select box :items="caseStatusArr" v-on:click.native="clickStatus" v-on:change="changeStatus" v-model="caseStatus" label="Status"></v-select> \n\
+                  <v-select box :items="caseStatusArr" v-on:click.native="clickStatus" v-on:change="changeValue(\'Status\')" v-model="controls.Status.value" :label="controls.Status.label" :disbaled="controls.Status.readonly"></v-select> \n\
                 </v-flex>                                                                                                                                                         \n\
                 <v-flex md4 pa-2>                                                                                                                                                 \n\
-                  <v-select box :items="caseSubStatusArr" v-on:click.native="clickSubStatus" v-on:change="changeSubStatus" v-model="caseSubStatus" label="SubStatus"></v-select>  \n\
+                  <v-select box :disabled="controls[\'Sub Status\'].readonly" :items="caseSubStatusArr" v-on:click.native="clickSubStatus" v-on:change="changeValue(\'Sub Status\')" v-model="controls[\'Sub Status\'].value" :label="controls[\'Sub Status\'].label"></v-select>  \n\
                 </v-flex>                                                                                                                                                         \n\
                 <v-flex md4 pa-2>                                                                                                                                                 \n\
-                  <v-autocomplete v-model="caseCategory" :items="caseCategoryArr" v-on:change="changeCategory" label="Category">                  \n\
+                  <v-autocomplete v-model="controls.Category.value" :disabled="controls.Category.readonly" :items="caseCategoryArr" v-on:change="changeValue(\'Category\')" :label="controls.Category.label"> \n\
                 </v-flex>                                                                                                                                                         \n\
                 <v-flex md6 pa-2>                                                                                                                                                 \n\
-                <v-label>Threat Level: {{this.caseThreatLevel}}</v-label><span>                                                                                                   \n\
-                  <v-rating :background-color="ratingColor" :color="ratingColor" :readonly="!canUpdateThreatLevel" v-on:input="changeThreatLevel" v-model="caseThreatLevelNum" clearable length="3" label="Threat Level"></v-rating>  \n\
+                <v-label>Threat Level: {{this.controls[\'Threat Level\'].value}}</v-label><span>                                                                                                   \n\
+                  <v-rating :background-color="ratingColor" :color="ratingColor" :readonly="controls[\'Threat Level\'].readonly" v-on:input="changeThreatLevel" v-model="caseThreatLevelNum" clearable length="3" label="Threat Level"></v-rating>  \n\
                 </span></v-flex>                                                                                                                                \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
                   <v-label>Sales Rep:</v-label>                                                                                                                 \n\
@@ -264,8 +264,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-btn flat icon v-on:click="addSalesRep" color="indigo"><v-icon>edit</v-icon></v-btn>                                                        \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
-<!--                  <v-textarea v-on:change="changeDescription(\'Description\')" rows="7" :disabled="controls.Description.readonly" :label="controls.Description.label" v-model="controls.Description.value" counter="2000" box name="input-7-1"></v-textarea> -->\n\
-                  <v-textarea v-on:change="changeDescription" rows="7" label="Description" v-model="caseDescription" counter="2000" box name="input-7-1"></v-textarea> \n\
+                  <v-textarea v-on:change="changeValue(\'Description\')" rows="7" :disabled="controls.Description.readonly" :label="controls.Description.label" v-model="controls.Description.value" :counter="controls.Description.maxSize" box name="input-7-1"></v-textarea> \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
                   <v-divider></v-divider>                                                                                                                       \n\
@@ -314,20 +313,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 'Threat Level': {},
                 'Sales Rep': {}
               },
-              caseName: '',
-              caseStatus: '',
-              caseSubStatus: '',
-              caseCategory: '',
-              infoChanged: false,
-              caseDescription: '',
-              canUpdateName: true,
-              canUpdateThreatLevel: true,
+              caseThreatLevelNum: 0,
               snackbar: false,
               caseStatusArr: [],
               caseSubStatusArr: [],
               caseCategoryArr: [],
-              caseThreatLevelNum: 0,
-              caseThreatLevel: '',
               caseThreatLevelArr: ['Low', 'Medium', 'High'],
               caseSalesRepArr: [],
               caseSalesRep: '',
@@ -335,76 +325,51 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             },
             computed: {
               ratingColor: function () {
-                return this.canUpdateThreatLevel ? 'red' : 'grey';
+                return this.controls['Threat Level'].readonly ? 'grey' : 'red';
               }
             },
             methods: {
-              changeDescription(val) {
-                // todo: make this method universal
-                // console.log('changeDescription', arguments);
-                n19helper.setControlValue('Description', val);
-              },
-              changeThreatLevel(val) {
-                this.caseThreatLevel = val > 0 ? this.caseThreatLevelArr[val - 1] : '';
-                n19helper.setControlValue('Threat Level', this.caseThreatLevel);
-              },
-              changeSubStatus: function (val) {
-                n19helper.setControlValue('Sub Status', val);
-              },
-              changeCategory: function (val) {
-                n19helper.setControlValue('Category', val);
-              },
-              changeName: function (value) {
-                n19helper.setControlValue('Name', value);
-              },
-              changeInfoCheck: function (value) {
-                n19helper.setControlValue('InfoChanged', value);
-                if (this.controls.InfoChanged.isPostChanges) {
+              changeValue(name) {
+                var isChanged = n19helper.setControlValue(name, this.controls[name].value);
+                if (isChanged && this.controls[name].isPostChanges) {
                   this.afterSelection();
-                }
-              },
-              changeStatus: function (value) {
-                var isChanged = n19helper.setControlValue('Status', value);
-                if (isChanged && this.controls.Status.isPostChanges) {
-                  console.log('change status post changes');
-                  this.afterSelection();
-                } else {
-                  //is it the only option for rollback - todo
-                  var currentValue = n19helper.getCurrentRecord().Status;
-                  this.caseStatusArr = [];
-                  this.caseStatus = '';
-                  setTimeout(function () {
-                    console.log('!!!!!!!!', currentValue);
-                    this.caseStatusArr = [currentValue];
-                    this.caseStatus = currentValue;
-                    //n19helper.setControlValue('Status', currentValue); //TODO: seems it is not needed
+                };
+                if (!isChanged) {
+                  var currentValue = n19helper.getCurrentRecord()[name];
+                  this.controls[name].value = '';
+                  setTimeout(function () { //todo: use next tick
+                    this.controls[name].value = currentValue;
                   }.bind(this))
                 }
               },
+              changeThreatLevel(val) {
+                n19helper.setControlValue('Threat Level', val > 0 ? this.caseThreatLevelArr[val - 1] : '');
+              },
               clickSubStatus: function () {
                 var arr = n19helper.getDynamicLOV('Sub Status');
-                this.caseSubStatusArr = this.caseSubStatus ? [this.caseSubStatus] : [];
+                this.caseSubStatusArr = this.controls['Sub Status'].value ? [this.controls['Sub Status'].value] : [];
                 for (var i = 0; i < arr.length; i++) {
-                  if ((arr[i] != '') && (arr[i] != this.caseSubStatus)) {
+                  if ((arr[i] != '') && (arr[i] != this.controls['Sub Status'].value)) {
                     this.caseSubStatusArr.push(arr[i]);
                   }
                 }
               },
               clickStatus: function () {
                 var arr = n19helper.getDynamicLOV('Status');
-                this.caseStatusArr = [this.caseStatus];
+                this.caseStatusArr = [this.controls.Status.value];
                 for (var i = 0; i < arr.length; i++) {
-                  if ((arr[i] != '') && (arr[i] != this.caseStatus)) {
+                  if ((arr[i] != '') && (arr[i] != this.controls.Status.value)) {
                     this.caseStatusArr.push(arr[i]);
                   }
                 }
               },
               escapeOnName: function () {
-                this.caseName = n19helper.getCurrentRecord().Name;
+                this.controls.Name.value = n19helper.getCurrentRecord().Name;
+                this.changeValue('Name');
               },
               handleClear: function () { // this is needed because clearing set the model value to null
-                this.caseName = '';     // maybe it is not needed if we handle it at N19
-                this.changeName();
+                this.controls.Name.value = '';     // maybe it is not needed if we handle it inside N19
+                this.changeValue('Name');
               },
               newButtonClick: function () {
                 n19helper.newRecord(function () {
@@ -417,6 +382,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               saveButtonClick: function () {
                 n19helper.writeRecord(function () {
                   this.snackbar = true;
+                  this.afterSelection();
                 }.bind(this));
               },
               nextButtonClick: function () {
@@ -461,8 +427,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   return;
                 }
 
-                  //we don't have an object yet
-                  setTimeout(function () {
+                //we don't have an object yet
+                setTimeout(function () {
                   var service = SiebelApp.S_App.GetService("N19 BS");
                   if (service) {
                     var ai = {
@@ -507,18 +473,20 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
                 switch (name) {
                   case 'Name':
-                    this.caseName = value;
+                    this.controls.Name.value = value;
                     break;
                   case 'Status':
-                    this.caseStatus = value;
-                    this.caseStatusArr = [this.caseStatus];
+                    if (value !== this.controls.Status.value) { //test on 13603969 //how do I know that value is actually already set
+                      this.controls.Status.value = value;
+                      this.caseStatusArr = [value];
+                    }
                     break;
                   case 'Sub Status':
-                    this.caseSubStatus = value;
-                    this.caseSubStatusArr = [this.caseSubStatus];
+                    this.controls['Sub Status'].value = value;
+                    this.caseSubStatusArr = [value];
                     break;
                   case 'Info Changed Flag':
-                    this.infoChanged = value === 'Y';
+                    this.controls.InfoChanged.value = value === 'Y';
                     break;
                   case 'Category':
                     this.caseCategory = value;
@@ -593,18 +561,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   this.caseCategoryArr = n19helper.getStaticLOV('Category');
                 }
 
-                this.canUpdateName = this.controls.Name.readonly;
-                this.canUpdateThreatLevel = this.controls['Threat Level'].readonly;
-                this.infoChanged = this.controls.InfoChanged.readonly;
-                this.caseName = this.controls.Name.value;
-                this.caseStatus = this.controls.Status.value;
-                this.caseSubStatus = this.controls['Sub Status'].value;
-                this.caseStatusArr = [this.caseStatus];
-                this.caseSubStatusArr = [this.caseSubStatus];
-                this.caseCategory = this.controls.Category.value;
-                this.caseDescription = this.controls.Description.value;
-                this.caseThreatLevel = this.controls['Threat Level'].value;
-                this.caseThreatLevelNum = this.caseThreatLevelArr.indexOf(this.caseThreatLevel) + 1;
+                this.caseThreatLevelNum = this.caseThreatLevelArr.indexOf(this.controls['Threat Level'].value) + 1;
+                this.caseStatusArr = [this.controls.Status.value];
+                this.caseSubStatusArr = [this.controls['Sub Status'].value];
                 this.caseSalesRep = this.controls['Sales Rep'].value;
                 if (n19helper.insertPending()) {
                   console.log('skipped calling sales rep BS because insert pending');
@@ -615,7 +574,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     primary: true,
                     login: this.caseSalesRep
                   }];
-                } else {
+                } else if (this.controls.isRecord) {
                   this.getSalesRep();
                 }
               }

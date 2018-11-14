@@ -360,9 +360,9 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       const arr = Object.keys(_controls); // eslint-disable-line no-console
       const index = getSelection();
       const appletControls = _returnControls();
-      const isRecord = index > -1;
+      _controls.isRecord = index > -1; // eslint-disable-line no-param-reassign
       let obj;
-      if (isRecord) {
+      if (_controls.isRecord) {
         obj = getRecordSet()[index];
       }
 
@@ -371,7 +371,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
         if (typeof control !== 'undefined') {
           const controlName = control.GetName();
           const controlInputName = control.GetInputName();
-          if (isRecord) {
+          if (_controls.isRecord) {
             _controls[arr[i]] = { // eslint-disable-line no-param-reassign
               value: _getControlValue(control, obj[arr[i]]),
               readonly: !pm.ExecuteMethod('CanUpdate', controlName),
@@ -382,7 +382,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
             };
           } else { // no record
             _controls[arr[i]] = { // eslint-disable-line no-param-reassign
-              value: null, // is it a right value
+              value: '', // is it a right value
               readonly: true,
               label: control.GetDisplayName(),
               isPostChanges: control.IsPostChanges(),

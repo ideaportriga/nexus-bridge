@@ -72,9 +72,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'), function (ps) {
             console.log('SWE_PROP_BC_NOTI_STATE_CHANGED', arguments, ps.GetProperty('state'));
-            // nr to handle the undo record
             // do we need 'activeRow'
-            if ('activeRow' === ps.GetProperty('state') || consts.get('SWE_PROP_BC_NOTI_NEW_RECORD') === ps.GetProperty('state')) {
+            if ('activeRow' === ps.GetProperty('state')) {
               console.log('>>>SWE_PROP_BC_NOTI_STATE_CHANGED', arguments);
               if (app) {
                 app.afterSelection();
@@ -121,8 +120,16 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log('SWE_PROP_BC_NOTI_NEW_DATA', arguments);
           });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'), function () {
-            console.log('SWE_PROP_BC_NOTI_DELETE_RECORD', arguments);
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'), function (propSet) {
+            var bSetup = propSet.GetProperty('bSetup');
+            console.log('SWE_PROP_BC_NOTI_DELETE_RECORD', arguments, bSetup);
+
+            // in demo called twice, first time bSetup is "true", second time is "false"
+            if (bSetup === "false") {
+              if (app) {
+                app.afterSelection();
+              }
+            }
             // called twice on undo in demo - because of 2 applets?
           });
 
@@ -133,7 +140,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET'), function () {
             console.log('SWE_PROP_BC_NOTI_INSERT_WORKSET', arguments);
             if (app) {
-            //  app.afterSelection();
+              //  app.afterSelection();
             }
           });
 
@@ -155,6 +162,17 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log('SWE_PROP_BC_NOTI_SELECTION_MODE_CHANGE', arguments);
           });
 
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_BEGIN_QUERY'), function () {
+            console.log('SWE_PROP_BC_NOTI_BEGIN_QUERY', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_QUERYSPEC'), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_QUERYSPEC', arguments);
+          });
+
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_QUERYSPEC'), function () {
+            console.log('SWE_PROP_BC_NOTI_NEW_FIELD_QUERYSPEC', arguments);
+          });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END_QUERY'), function () {
             console.log('SWE_PROP_BC_NOTI_END_QUERY', arguments);
@@ -195,6 +213,12 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           this.AttachPMBinding('isControlPopupOpen', (...args) => {
             // combobox and probably pickapplets also?
           });
+
+          this.AttachPMBinding("UpdateAppletMessage", function () {
+            // handle Columns Displayed in list applet
+            // works also on query
+          }, { scope: this });
+
         }
 
         HLSCaseFormAppletPR.prototype.UpdatePick = function () {
@@ -218,7 +242,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           document.getElementById('_sweview').title = '';
           //$('#_swecontent').css({ 'height': 'auto' });
-
           //is it a good enough place to initialize VUE.JS?
           putVue(divId);
         }
@@ -258,7 +281,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-chip slot="activator" :close="salesRep.login!=caseSalesRepPrimary" @input="clickDeleteSalesRep(salesRep)"><v-avatar :class="{teal : salesRep.login!=caseSalesRepPrimary}">   \n\
                   <v-icon v-if="salesRep.login==caseSalesRepPrimary">check_circle</v-icon>{{salesRep.login==caseSalesRepPrimary ? "" : salesRep.login[0]}}</v-avatar>{{salesRep.login}}</v-chip>  \n\
                   <span>{{salesRep.firstName + " " + salesRep.lastName}}</span></v-tooltip>                                                                     \n\
-                  <v-btn flat icon v-on:click="addSalesRep" color="indigo"><v-icon>edit</v-icon></v-btn>                                                        \n\
+                  <v-btn flat icon v-on:click="showMvgApplet" color="indigo"><v-icon>edit</v-icon></v-btn>                                                        \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
                   <v-textarea v-on:change="changeValue(\'Description\')" rows="7" :disabled="controls.Description.readonly" :label="controls.Description.label" v-model="controls.Description.value" :counter="controls.Description.maxSize" box name="input-7-1"></v-textarea> \n\
@@ -269,7 +292,10 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 <v-flex md1 pa-2>                                                                                                                               \n\
                   <v-btn v-on:click="saveButtonClick" color="primary"><v-icon>save</v-icon>Save!</v-btn>                                                        \n\
                 </v-flex>                                                                                                                                       \n\
-                <v-flex md9 pa-2>                                                                                                                               \n\
+                <v-flex md1 pa-2>                                                                                                                               \n\
+                  <v-btn v-on:click="deleteButtonClick" color="primary"><v-icon>delete</v-icon>Delete!</v-btn>                                                        \n\
+                </v-flex>                                                                                                                                       \n\
+                <v-flex md7 pa-2>                                                                                                                               \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
                   <v-tooltip top><v-btn slot="activator" v-on:click="prevButtonClick" color="primary"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>  \n\
@@ -372,10 +398,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               newButtonClick: function () {
                 n19helper.newRecord(function () {
-                  setTimeout(function(){
+                  setTimeout(function () {
                     this.$refs.caseName.focus();
                   }.bind(this));
                 }.bind(this));
+              },
+              deleteButtonClick: function () {
+                n19helper.deleteRecord();
               },
               saveButtonClick: function () {
                 n19helper.writeRecord(function () {
@@ -397,9 +426,66 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   n19helper.prevRecord();
                 }
               },
+              updateFieldData(name, value) {
+                console.log('updateFieldData', arguments);
+                if (typeof value === 'undefined') {
+                  // do we need to do something when it is undefined?
+                  value = n19helper.getCurrentRecord()[name];
+                }
+                var control = this.fieldToControlsMap[name];
+
+                if (control && value) {
+                  value = n19helper.getControlValue(control.uiType, value);
+                  if ('Threat Level' === name) {
+                    this.caseThreatLevelNum = this.caseThreatLevelArr.indexOf(value) + 1;
+                  }
+                  if (value == this.controls[control.name].value) {
+                    return;
+                  }
+                  this.controls[control.name].value = value;
+                  if ('Status' === name) {
+                    this.caseStatusArr = [value];
+                  } else if ('Sub Status' === name) {
+                    this.caseSubStatusArr = [value];
+                  }
+                  if (control.isPostChanges) {
+                    Vue.nextTick(function () {
+                      this.afterSelection();
+                    }.bind(this));
+                  }
+                }
+                //this.controls.InfoChanged.value = value === 'Y';
+              },
+              showMvgApplet() {
+                console.log('showMvgApplet', arguments);
+                n19helper.showMvgApplet('Sales Rep');
+              },
+              updatePrimary() {
+                console.log('<<<<<<<<< change case primary <<<', this.caseSalesRep, this.caseSalesRepArr, this.caseSalesRepPrimary);
+                // todo : check if current primary is ok
+                if (SiebelApp.S_App.GetActiveBusObj().GetBusCompByName('Position')) {
+                  var arr = SiebelApp.S_App.GetActiveBusObj().GetBusCompByName('Position').GetRecordSet();
+                  for (var i = 0; i < arr.length; i++) {
+                    if (arr[i]['SSA Primary Field'] == 'Y') {
+                      this.caseSalesRepPrimary = arr[i]['Active Login Name'];
+                      break;
+                    }
+                  }
+                } else {
+                  this.caseSalesRepPrimary = this.caseSalesRep
+                }
+              },
+              updateSalesRep(val) {
+                console.log('<<< update sales rep', val);
+                if (val != this.caseSalesRep) {
+                  // todo : check if array already contains this Sales Rep
+                  this.caseSalesRep = val;
+                  this.getSalesRep(val);
+                }
+              },
               getSalesRep: function (val) {
-                //if we have several components?
-                //it applies if we are insert pending
+                //todo: if we have several mvg links on the same business component, are we going to be confused?
+                //it effective aslo when we are insert pending
                 if (SiebelApp.S_App.GetActiveBusObj().GetBusCompByName('Position')) {
                   setTimeout(function () {
                     var arr = SiebelApp.S_App.GetActiveBusObj().GetBusCompByName('Position').GetRecordSet();
@@ -425,7 +511,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   return;
                 }
 
-                //we don't have an object yet
+                //we don't have an object yet in memory, so query the server
                 setTimeout(function () {
                   var service = SiebelApp.S_App.GetService("N19 BS");
                   if (service) {
@@ -460,66 +546,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }.bind(this));
 
               },
-              updateFieldData(name, value) {
-                console.log('updateFieldData', arguments);
-                if (typeof value === 'undefined') {
-                  // do we need to do something when it is undefined?
-                  value = n19helper.getCurrentRecord()[name];
-                }
-                var control = this.fieldToControlsMap[name];
-
-                if (control && value) {
-                  value = n19helper.getControlValue(control.uiType, value);
-                  if ('Threat Level' === name) {
-                    this.caseThreatLevelNum = this.caseThreatLevelArr.indexOf(value) + 1;
-                  }
-                  if (value == this.controls[control.name].value ) {
-                    return;
-                  }
-                  this.controls[control.name].value = value;
-                  if ('Status' === name) {
-                    this.caseStatusArr = [value];
-                  } else if ('Sub Status' === name) {
-                    this.caseSubStatusArr = [value];
-                  }
-                  if (control.isPostChanges) {
-                    Vue.nextTick(function() {
-                      this.afterSelection();
-                    }.bind(this));
-                  }
-                }
-                //this.controls.InfoChanged.value = value === 'Y';
-              },
-              updatePrimary() {
-                console.log('<<<<<<<<< change case primary to <<<', this.caseSalesRep, this.caseSalesRepArr, this.caseSalesRepPrimary);
-                // todo : check if current primary is ok
-                if (SiebelApp.S_App.GetActiveBusObj().GetBusCompByName('Position')) {
-                  var arr = SiebelApp.S_App.GetActiveBusObj().GetBusCompByName('Position').GetRecordSet();
-                  for (var i = 0; i < arr.length; i++) {
-                    if (arr[i]['SSA Primary Field'] == 'Y') {
-                      this.caseSalesRepPrimary = arr[i]['Active Login Name'];
-                      break;
-                    }
-                  }
-                } else {
-                  if (this.caseSalesRepPrimary != this.caseSalesRep) {
-                    this.caseSalesRepPrimary = this.caseSalesRep
-                  }
-                }
-              },
-              updateSalesRep(val) {
-                console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< update sales rep', val);
-                if (val != this.caseSalesRep) {
-                  this.caseSalesRep = val;
-                  this.getSalesRep(val);
-                }
-              },
-              addSalesRep() {
-                console.log('addSalesRep', arguments);
-                n19helper.showMvgApplet('Sales Rep');
-              },
               clickDeleteSalesRep(salesRep) {
                 console.log('>>> clickDeleteSalesRep input', salesRep, salesRep.login, this.caseSalesRepArr.length);
+                // DELETE FROM ARRAY
                 var index = -1;
                 for (var i = 0; i < this.caseSalesRepArr.length; i++) {
                   console.log(this.caseSalesRepArr[i].login);
@@ -529,25 +558,32 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     break;
                   }
                 }
-                if (n19helper.insertPending) {
-                  return; //skip update
+                // NOTHING IS FOUND
+                if (index === -1) {
+                  return;
                 }
-                if (index > -1) {
-                  var service = SiebelApp.S_App.GetService("N19 BS");
-                  if (service) {
-                    var psInput = SiebelApp.S_App.NewPropertySet();
-                    psInput.SetProperty('Login', salesRep.login);
-                    var ai = {
-                      async: true,
-                      selfbusy: true,
-                      scope: this,
-                      cb: function (method, psInput, psOutput) {
-                        console.log('BS output to get the sales reps...', psOutput);
-                        n19helper.NotifyNewDataWS('Sales Rep');
-                      }
-                    };
-                    service.InvokeMethod("DeleteSalesRep", psInput, ai);
-                  }
+
+                // WE ARE CREATING A NEW RECORD - CHECK THE INSTANCE OF POSITION BC
+                if (n19helper.insertPending()) {
+                  return;
+                }
+
+                // DELETE USING BS
+                var service = SiebelApp.S_App.GetService("N19 BS");
+                if (service) {
+                  var psInput = SiebelApp.S_App.NewPropertySet();
+                  psInput.SetProperty('Login', salesRep.login);
+                  var ai = {
+                    async: true,
+                    selfbusy: true,
+                    scope: this,
+                    cb: function (method, psInput, psOutput) {
+                      console.log('BS output to DELETE a sales rep...', psOutput);
+                      n19helper.NotifyNewDataWS('Sales Rep');
+                    }
+                  };
+                  console.log('BS input to DELETE a sales rep...', psInput);
+                  service.InvokeMethod("DeleteSalesRep", psInput, ai);
                 }
               },
               afterSelection: function () {

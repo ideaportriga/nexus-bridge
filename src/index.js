@@ -447,6 +447,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       getCurrentRecord,
       getFieldToControlsMap,
       insertPending: () => pm.Get('GetBusComp').insertPending,
+      __deleteRecords: () => pm.ExecuteMethod('InvokeMethod', 'DeleteRecords'),
       refresh: (name) => {
         const service = SiebelApp.S_App.GetService('N19 BS');
         if (service) {

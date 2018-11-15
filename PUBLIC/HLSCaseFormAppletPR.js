@@ -33,21 +33,21 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           SiebelAppFacade.N19notifyNewFieldData = SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData;
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = function (name, value) {
             // console.log('>>>>> new field data in notify object', arguments);
+            SiebelAppFacade.N19notifyNewFieldData.apply(this, arguments);
             if (app) {
               app.updateFieldData(name, value);
             }
-            SiebelAppFacade.N19notifyNewFieldData.apply(this, arguments);
           }
 
           SiebelAppFacade.N19notifyNewPrimary = SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary;
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary = function () {
             console.log('>>>>> new primary in notify object', arguments);
+            SiebelAppFacade.N19notifyNewPrimary.apply(this, arguments);
             if (this.GetAppletRegistry()[0].GetName() === 'Contact Team Mvg Applet') {
               if (app) {
                 app.updatePrimary();
               }
             }
-            SiebelAppFacade.N19notifyNewPrimary.apply(this, arguments);
           }
 
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
@@ -70,20 +70,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_WORKSET'), function () {
-            console.log('SWE_PROP_BC_NOTI_DELETE_WORKSET', arguments);
-            // there is an only option FOR NOW to get a new record creation
-            // need timeout to allow a new record to be created
-            setTimeout(function () { // use INSERT_WS_DATA
-              if (app) {
-                app.afterSelection();
-              }
-            });
-          });
-
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'), function (ps) {
-            console.log('SWE_PROP_BC_NOTI_STATE_CHANGED', arguments);
-            if ('activeRow' === ps.GetProperty('state')) {
+            console.log('SWE_PROP_BC_NOTI_STATE_CHANGED', arguments, ps.GetProperty('state'));
+            // nr to handle the undo record
+            // do we need 'activeRow'
+            if ('activeRow' === ps.GetProperty('state') || consts.get('SWE_PROP_BC_NOTI_NEW_RECORD') === ps.GetProperty('state')) {
               console.log('>>>SWE_PROP_BC_NOTI_STATE_CHANGED', arguments);
               if (app) {
                 app.afterSelection();
@@ -132,6 +123,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'), function () {
             console.log('SWE_PROP_BC_NOTI_DELETE_RECORD', arguments);
+            // called twice on undo in demo - because of 2 applets?
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_PRIMARY'), function () {
@@ -139,8 +131,10 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET'), function () {
-            //todo: get a new record here?
             console.log('SWE_PROP_BC_NOTI_INSERT_WORKSET', arguments);
+            if (app) {
+            //  app.afterSelection();
+            }
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET_FIELD_VALUES'), function () {
@@ -168,6 +162,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD"), function () {
             console.log('SWE_PROP_BC_NOTI_NEW_RECORD', arguments);
+            if (app) {
+              app.afterSelection();
+            }
           });
 
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD_DATA"), function () {
@@ -240,7 +237,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-text-field :rules="[rules.required]" v-on:input="changeValue(\'Name\')" ref="caseName" :disabled="controls.Name.readonly" :label="controls.Name.label" v-model="controls.Name.value" clearable v-on:keyup.esc="escapeOnName" v-on:click:clear="handleClear" :counter="controls.Name.maxSize"></v-text-field> \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
-                  <v-switch v-on:change="changeValue(\'InfoChanged\')" :label="controls.InfoChanged.label" v-model="controls.InfoChanged.value" :disabled="controls.InfoChanged.readonly"></v-switch>  \n\
+                  <v-switch v-on:change="changeValue(\'InfoChanged\')" :label="controls.InfoChanged.label" v-model="controls.InfoChanged.value" :disabled="controls.InfoChanged.readonly"></v-switch> \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
                   <v-select box :items="caseStatusArr" v-on:click.native="clickStatus" v-on:change="changeValue(\'Status\')" v-model="controls.Status.value" :label="controls.Status.label" :disbaled="controls.Status.readonly"></v-select> \n\
@@ -252,14 +249,14 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-autocomplete v-model="controls.Category.value" :disabled="controls.Category.readonly" :items="caseCategoryArr" v-on:change="changeValue(\'Category\')" :label="controls.Category.label"> \n\
                 </v-flex>                                                                                                                                                         \n\
                 <v-flex md6 pa-2>                                                                                                                                                 \n\
-                <v-label>Threat Level: {{this.controls[\'Threat Level\'].value}}</v-label><span>                                                                                                   \n\
+                <v-label>Threat Level: {{this.controls[\'Threat Level\'].value}}</v-label><span>                                                                                  \n\
                   <v-rating :background-color="ratingColor" :color="ratingColor" :readonly="controls[\'Threat Level\'].readonly" v-on:input="changeThreatLevel" v-model="caseThreatLevelNum" clearable length="3" label="Threat Level"></v-rating>  \n\
                 </span></v-flex>                                                                                                                                \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
                   <v-label>Sales Rep:</v-label>                                                                                                                 \n\
                   <v-tooltip top v-for="salesRep in caseSalesRepArr" >                                                                                          \n\
-                  <v-chip slot="activator" :close="salesRep.login!=caseSalesRepPrimary" @input="clickDeleteSalesRep(salesRep)"><v-avatar :class="{teal : salesRep.login!=caseSalesRepPrimary}">  \n\
-                  <v-icon v-if="salesRep.login==caseSalesRepPrimary">check_circle</v-icon>{{salesRep.login==caseSalesRepPrimary ? "" : salesRep.login[0]}}</v-avatar>{{salesRep.login}}</v-chip>      \n\
+                  <v-chip slot="activator" :close="salesRep.login!=caseSalesRepPrimary" @input="clickDeleteSalesRep(salesRep)"><v-avatar :class="{teal : salesRep.login!=caseSalesRepPrimary}">   \n\
+                  <v-icon v-if="salesRep.login==caseSalesRepPrimary">check_circle</v-icon>{{salesRep.login==caseSalesRepPrimary ? "" : salesRep.login[0]}}</v-avatar>{{salesRep.login}}</v-chip>  \n\
                   <span>{{salesRep.firstName + " " + salesRep.lastName}}</span></v-tooltip>                                                                     \n\
                   <v-btn flat icon v-on:click="addSalesRep" color="indigo"><v-icon>edit</v-icon></v-btn>                                                        \n\
                 </v-flex>                                                                                                                                       \n\
@@ -294,6 +291,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           app = new Vue({
             el: '#app',
             mounted: function () {
+              this.fieldToControlsMap = n19helper.getFieldToControlsMap(this.controls);
               this.afterSelection();
               $('.application--wrap').css({ 'min-height': 'auto' });
             },
@@ -330,6 +328,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             },
             methods: {
               changeValue(name) {
+                console.log('change value is called .....................................');
                 var isChanged = n19helper.setControlValue(name, this.controls[name].value);
                 if (isChanged && this.controls[name].isPostChanges) {
                   this.afterSelection();
@@ -373,10 +372,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               newButtonClick: function () {
                 n19helper.newRecord(function () {
-                  this.afterSelection();
-                  setTimeout(function () {
+                  setTimeout(function(){
                     this.$refs.caseName.focus();
-                  }.bind(this))
+                  }.bind(this));
                 }.bind(this));
               },
               saveButtonClick: function () {
@@ -463,35 +461,34 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
               },
               updateFieldData(name, value) {
-                //todo : make universal
-                //todo : do I need a field name in current record model
                 console.log('updateFieldData', arguments);
                 if (typeof value === 'undefined') {
-                  var rec = n19helper.getCurrentRecord();
-                  value = rec[name];
-                  console.log(rec, value);
+                  // do we need to do something when it is undefined?
+                  value = n19helper.getCurrentRecord()[name];
                 }
-                switch (name) {
-                  case 'Name':
-                    this.controls.Name.value = value;
-                    break;
-                  case 'Status':
-                    if (value !== this.controls.Status.value) { //test on 13603969 //how do I know that value is actually already set
-                      this.controls.Status.value = value;
-                      this.caseStatusArr = [value];
-                    }
-                    break;
-                  case 'Sub Status':
-                    this.controls['Sub Status'].value = value;
+                var control = this.fieldToControlsMap[name];
+
+                if (control && value) {
+                  value = n19helper.getControlValue(control.uiType, value);
+                  if ('Threat Level' === name) {
+                    this.caseThreatLevelNum = this.caseThreatLevelArr.indexOf(value) + 1;
+                  }
+                  if (value == this.controls[control.name].value ) {
+                    return;
+                  }
+                  this.controls[control.name].value = value;
+                  if ('Status' === name) {
+                    this.caseStatusArr = [value];
+                  } else if ('Sub Status' === name) {
                     this.caseSubStatusArr = [value];
-                    break;
-                  case 'Info Changed Flag':
-                    this.controls.InfoChanged.value = value === 'Y';
-                    break;
-                  case 'Category':
-                    this.caseCategory = value;
-                    break;
+                  }
+                  if (control.isPostChanges) {
+                    Vue.nextTick(function() {
+                      this.afterSelection();
+                    }.bind(this));
+                  }
                 }
+                //this.controls.InfoChanged.value = value === 'Y';
               },
               updatePrimary() {
                 console.log('<<<<<<<<< change case primary to <<<', this.caseSalesRep, this.caseSalesRepArr, this.caseSalesRepPrimary);
@@ -556,6 +553,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               afterSelection: function () {
                 console.log('>>>>>>>>>>>>>>>>>>> AFTER SELECTION STARTED....');
                 n19helper.getCurrentRecordModel(this.controls);
+                console.log(this.controls);
 
                 if (0 === this.caseCategoryArr.length) {
                   this.caseCategoryArr = n19helper.getStaticLOV('Category');

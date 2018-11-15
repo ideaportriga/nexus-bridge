@@ -332,9 +332,9 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return ret;
     }
 
-    function _getControlValue(control, value) {
+    function _getControlValue(controlUiType, value) {
       let ret = value;
-      if (consts.get('SWE_CTRL_CHECKBOX') === control.GetUIType()) {
+      if (consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
         // convert Y/N/null -> true/false/null
         // do we need to send null?
         switch (value) {
@@ -357,11 +357,11 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     }
 
     function getCurrentRecordModel(_controls) {
-      const arr = Object.keys(_controls); // eslint-disable-line no-console
+      const arr = Object.keys(_controls);
       const index = getSelection();
       const appletControls = _returnControls();
       _controls.isRecord = index > -1; // eslint-disable-line no-param-reassign
-      let obj;
+      let obj = {};
       if (_controls.isRecord) {
         obj = getRecordSet()[index];
       }
@@ -371,9 +371,10 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
         if (typeof control !== 'undefined') {
           const controlName = control.GetName();
           const controlInputName = control.GetInputName();
+          const controlFieldName = control.GetFieldName();
           if (_controls.isRecord) {
             _controls[arr[i]] = { // eslint-disable-line no-param-reassign
-              value: _getControlValue(control, obj[arr[i]]),
+              value: _getControlValue(control.GetUIType(), obj[controlFieldName]),
               readonly: !pm.ExecuteMethod('CanUpdate', controlName),
               label: control.GetDisplayName(),
               isPostChanges: control.IsPostChanges(),
@@ -397,12 +398,29 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return true;
     }
 
+    function getFieldToControlsMap(_controls) {
+      const ret = {};
+      const appletControls = _returnControls();
+      const arr = Object.keys(_controls);
+      for (let i = 0; i < arr.length; i += 1) {
+        const control = appletControls[arr[i]];
+        ret[control.GetFieldName()] = {
+          name: control.GetName(),
+          isPostChanges: control.IsPostChanges(),
+          uiType: control.GetUIType(),
+        };
+      }
+      console.log(ret); // eslint-disable-line no-console
+      return ret;
+    }
+
     return {
       returnControls: _returnControls,
       getRowListRowCount: _getRowListRowCount,
       getNumRows: _getNumRows,
       setActiveControl: _setActiveControl,
       showMvgApplet: _showMvgApplet,
+      getControlValue: _getControlValue,
       isInQueryMode,
       getAppletType,
       getControls,
@@ -427,6 +445,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       getCurrentRecordModel,
       NotifyNewDataWS: _NotifyNewDataWS,
       getCurrentRecord,
+      getFieldToControlsMap,
       insertPending: () => pm.Get('GetBusComp').insertPending,
       refresh: (name) => {
         const service = SiebelApp.S_App.GetService('N19 BS');

@@ -448,6 +448,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       getFieldToControlsMap,
       insertPending: () => pm.Get('GetBusComp').insertPending,
       __deleteRecords: () => pm.ExecuteMethod('InvokeMethod', 'DeleteRecords'),
+      __setPopupVisible: val => SiebelApp.S_App.GetPopupPM().ExecuteMethod('SetPopupVisible', val),
       refresh: (name) => {
         const service = SiebelApp.S_App.GetService('N19 BS');
         if (service) {

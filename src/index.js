@@ -398,6 +398,47 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return true;
     }
 
+    function _getControlInputNameForQuery() {
+      const appletControls = _returnControls();
+      const arr = Object.keys(appletControls);
+      for (let i = 0; i < arr.length; i += 1) {
+        const control = appletControls[arr[i]];
+        const controlUiType = control.GetUIType();
+        if (!_isSkipControl(controlUiType)) {
+          return control.GetInputName();
+        }
+      }
+      throw new Error('cannot find a control for query');
+    }
+
+    function searchById(rowId, cb) {
+      pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false); // ?
+
+      const method = 'ExecuteQuery';
+
+      const ai = {
+        scope: this,
+        async: true,
+        mask: false,
+        selfbusy: false,
+        args: [],
+      };
+
+      if (typeof cb === 'function') {
+        ai.cb = cb;
+      }
+
+      const psOutput = SiebelApp.S_App.NewPropertySet();
+
+      const psInput = SiebelApp.S_App.NewPropertySet();
+      psInput.SetProperty(_getControlInputNameForQuery(), `Id="${rowId}"`);
+
+      ai.args.push(method);
+      ai.args.push(psInput.Clone());
+
+      return applet.CallServerApplet(method, psInput, psOutput, ai);
+    }
+
     function getFieldToControlsMap(_controls) {
       const ret = {};
       const appletControls = _returnControls();
@@ -446,7 +487,12 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       NotifyNewDataWS: _NotifyNewDataWS,
       getCurrentRecord,
       getFieldToControlsMap,
+      searchById,
       insertPending: () => pm.Get('GetBusComp').insertPending,
+      __clearQuery: () => {
+        pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false);
+        pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, false);
+      },
       __deleteRecords: () => pm.ExecuteMethod('InvokeMethod', 'DeleteRecords'),
       __setPopupVisible: val => SiebelApp.S_App.GetPopupPM().ExecuteMethod('SetPopupVisible', val),
       refresh: (name) => {
@@ -464,7 +510,100 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
           inPropSet.SetProperty('name', name);
           service.InvokeMethod('Requery', inPropSet, {});
         }
+      }, /* __r1: () => {
+      const n = {
+          async: true,
+          selfbusy: true,
+          cb: (...args) => {
+            console.log('<<callback returend', args)
+          }
+        };
+        const i = _returnControls()['Sales Rep'];
+        const s = i.GetHeight();
+        const o = i.GetWidth();
+        const r = SiebelApp.S_App.NewPropertySet();
+        let u = i.GetInputName();
+        r.SetProperty(consts.get("SWE_FIELD_STR"), u);
+        r.SetProperty(consts.get("SWE_METHOD_STR"), "EditField");
+        r.SetProperty(consts.get("SWE_SHOW_POPUP_STR"), "false");
+        r.SetProperty(consts.get("SWE_HEIGHT_STR"), s);
+        r.SetProperty(consts.get("SWE_WIDTH_STR"), o);
+        r.SetProperty("SWECSP", "false");
+        applet.InvokeMethod("EditField", r, n);
       },
+      __r2: () => {
+        const T = {
+          async: true,
+          selfbusy: true,
+          cb: (...args) => {
+            console.log('<<callback returend', args)
+          },
+          args: [],
+          mask: false
+        };
+
+        const control = _returnControls()['Sales Rep'];
+        const l = SiebelApp.S_App.NewPropertySet();
+        l.SetProperty(consts.get("SWE_FIELD_STR"), control.GetInputName());
+        l.SetProperty(consts.get("SWE_METHOD_STR"), "EditField");
+        l.SetProperty(consts.get("SWE_SHOW_POPUP_STR"), "false");
+        l.SetProperty(consts.get("SWE_HEIGHT_STR"), control.GetHeight());
+        l.SetProperty(consts.get("SWE_WIDTH_STR"), control.GetWidth());
+        l.SetProperty("SWECSP", "false");
+        T.args.push('EditField');
+        T.args.push(l);
+        var k = CCFMiscUtil_CreatePropSet();
+        applet.CallServerApplet('EditField', l, k, T);
+      },
+      __r3: () => {
+        // CallServerApplet = function(n, r, i, s)
+        // consts.get("SWE_EDIT_FIELD")
+        const control = _returnControls()['Sales Rep'];
+
+        const s = {
+          async: true,
+          selfbusy: true,
+          cb: (...args) => {
+            console.log('<<callback returend', args)
+          },
+          args: [],
+          mask: false
+        };
+        const l = SiebelApp.S_App.NewPropertySet();
+        l.SetProperty(consts.get("SWE_FIELD_STR"), control.GetInputName());
+        l.SetProperty(consts.get("SWE_METHOD_STR"), "EditField");
+        l.SetProperty(consts.get("SWE_SHOW_POPUP_STR"), "false");
+        l.SetProperty(consts.get("SWE_HEIGHT_STR"), control.GetHeight());
+        l.SetProperty(consts.get("SWE_WIDTH_STR"), control.GetWidth());
+        l.SetProperty("SWECSP", "false");
+        s.args.push('EditField');
+        s.args.push(l);
+
+        const u = SiebelApp.S_App.NewPropertySet();
+        u.SetProperty(consts.get("SWE_FIELD_STR"), control.GetInputName());
+        u.SetProperty(consts.get("SWE_METHOD_STR"), "EditField");
+        u.SetProperty(consts.get("SWE_SHOW_POPUP_STR"), "false");
+        u.SetProperty(consts.get("SWE_HEIGHT_STR"), control.GetHeight());
+        u.SetProperty(consts.get("SWE_WIDTH_STR"), control.GetWidth());
+        u.SetProperty("SWECSP", "false");
+        u.SetProperty(consts.get("SWE_CMD_ARG"), consts.get("SWE_CMD_INVOKE_METHOD_STR"));
+        u.SetProperty(consts.get("SWE_VIEW_ID_ARG"), applet.GetView().GetBusObj().GetZone());
+        u.SetProperty(consts.get("SWE_VIEW_ARG"), applet.GetView().GetName());
+        u.SetProperty(consts.get("SWE_APPLET_STR"), applet.GetName());
+        u.SetProperty(consts.get("SWE_METHOD_STR"), 'EditField');
+        var a = applet.GetBusComp().GetIdValue();
+        u.SetProperty(consts.get("SWE_ROW_ID_STR"), a);
+        u.SetProperty(consts.get("SWE_REQ_ROW_ID_STR"), "1");
+        applet.GetRowIds(u);
+        u.SetProperty(consts.get("SWE_ACTIVE_APPLET_STR"), applet.GetName());
+        u.SetProperty(consts.get("SWE_NEED_CONTEXT_STR"), "true");
+        u.SetProperty(consts.get("SWE_COUNT_STR"), SiebelApp.S_App.GetSWEReqCount());
+        //SiebelApp.S_App.OfflineCallMethod("SetNewRecord", this, u),
+        var i = CCFMiscUtil_CreatePropSet();
+        var o = !0;
+        SiebelApp.S_App.CallServer(u, i, o, s);
+
+      } */
     };
   };
 }

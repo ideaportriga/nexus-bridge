@@ -4,6 +4,7 @@
   "description": "",
   "main": "./src/index.js",
   "scripts": {
+    "dev": "webpack --config webpack.config.js --mode production",
     "build": "npm run lint && webpack --config webpack.config.js --mode production",
     "lint": "eslint ./src/*.js --color",
     "babel": "babel ./src/*.js -d build",

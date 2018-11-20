@@ -40,9 +40,13 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       }
     });
 
-    pm.AttachPMBinding('isControlPopupOpen', (...args) => {
-      console.log('>>>isControlPopupOpen', args); // eslint-disable-line no-console
-    });
+    // pm.AttachPMBinding('isControlPopupOpen', (...args) => {
+    //  console.log('>>>isControlPopupOpen', args); // eslint-disable-line no-console
+    // });
+
+    function _getControl(name) {
+      return applet.GetControl(name);
+    }
 
     function _returnControls() {
       if (isListApplet) {
@@ -79,7 +83,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     }
 
     function _setActiveControl(name) {
-      return applet.SetActiveControl(_returnControls()[name]);
+      return applet.SetActiveControl(_getControl(name));
     }
 
     function _showMvgApplet(name) {
@@ -91,10 +95,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     }
 
     function getAppletType() {
-      if (isListApplet) {
-        return 'list';
-      }
-      return 'form';
+      return isListApplet ? 'list' : 'form';
     }
 
     function getControls() {
@@ -125,7 +126,9 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
           fieldName: control.GetFieldName(),
         };
         if (isListApplet) {
-          obj.readOnly = !pm.ExecuteMethod('CanUpdate', pm.GetRenderer().GetColumnHelper().GetActualControlName(controlName));
+          // ?
+          obj.readOnly = !pm.ExecuteMethod('CanUpdate',
+            pm.GetRenderer().GetColumnHelper().GetActualControlName(controlName));
         } else {
           obj.readOnly = !pm.ExecuteMethod('CanUpdate', controlName);
         }
@@ -140,18 +143,17 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return controls;
     }
 
-    function _getControlByName(name) {
-      // check if controls are not empty
-      if (Object.keys(controls).length === 0) {
-        controls = getControls();
-      }
-      const control = controls[name];
-      if (!control) {
-        throw new Error(`control is not found - ${name}`);
-      }
-      console.log(control); // eslint-disable-line no-console
-      return control;
-    }
+    // function _getControlByName(name) {
+    // check if controls are not empty
+    //  if (Object.keys(controls).length === 0) {
+    //    controls = getControls();
+    //  }
+    //  const control = controls[name];
+    //  if (!control) {
+    //    throw new Error(`control is not found - ${name}`);
+    //  }
+    //  return control;
+    // }
 
     function getRecordSet() {
       return pm.Get('GetRecordSet');
@@ -278,17 +280,22 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       // return _invokeCommandManager('*Browser Applet* *DeleteRecord* * ', cb);
     }
 
-    function setControlValue(name, value) {
-      // !!! TODO: If value is null, nothing happens, should we convert null to ''?
-      const control = _returnControls()[name];
-      // TODO: Check if control is found
-      if (consts.get('SWE_CTRL_CHECKBOX') === control.GetUIType()) {
+    function _getValueForControl(controlUiType, value) { // from external system
+      // DateTime, numbers, and phone
+      if (consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
         // convert true/false => Y/N
         // do we want to support setting to null
         value = value ? 'Y' : 'N'; // eslint-disable-line no-param-reassign
       }
+      return value;
+    }
+
+    function setControlValue(name, value) {
+      // !!! TODO: If value is null, nothing happens, should we convert null to ''?
+      const control = _getControl(name);
+      // TODO: Check if control is found
+      value = _getValueForControl(control.GetUIType(), value); // eslint-disable-line no-param-reassign
       // TODO: should we use SetCellValue for list applets?
-      // console.log(control); // eslint-disable-line no-console
       pm.OnControlEvent(consts.get('PHYEVENT_CONTROL_FOCUS'), control);
       const ret = pm.OnControlEvent(consts.get('PHYEVENT_CONTROL_BLUR'), control, value);
       if (!ret) {
@@ -299,15 +306,16 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     }
 
     function getDynamicLOV(name) {
-      const control = _getControlByName(name);
-      lov[control.inputName] = {};
+      const control = _getControl(name);
+      const controlInputName = control.GetInputName();
+      lov[controlInputName] = {};
       const ps = SiebelApp.S_App.NewPropertySet();
-      ps.SetProperty('SWEField', control.inputName);
+      ps.SetProperty('SWEField', controlInputName);
       ps.SetProperty('SWEJI', false);
       const ret = applet.InvokeMethod('GetQuickPickInfo', ps);
       // is it possible to get something different than true
       console.log(ret); // eslint-disable-line no-console
-      return lov[control.inputName];
+      return lov[controlInputName];
     }
 
     function isInQueryMode() {
@@ -319,7 +327,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     }
 
     function getStaticLOV(name) {
-      const control = _returnControls()[name];
+      const control = _getControl(name);
       const ret = [];
       if ('1' === control.IsStaticBounded()) {
         const arr = _getStaticLOV(control.GetRadioGroupPropSet().childArray);
@@ -332,7 +340,8 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return ret;
     }
 
-    function _getControlValue(controlUiType, value) {
+    function _getControlValue(controlUiType, value) { // to be exposed externally
+      // todo: datetime
       let ret = value;
       if (consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
         // convert Y/N/null -> true/false/null
@@ -411,11 +420,14 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       throw new Error('cannot find a control for query');
     }
 
-    function searchById(rowId, cb) {
-      pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false); // ?
+    function _newQuery() {
+      return pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false);
+    }
+
+    function queryById(rowId, cb) {
+      _newQuery(); // ?
 
       const method = 'ExecuteQuery';
-
       const ai = {
         scope: this,
         async: true,
@@ -423,19 +435,48 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
         selfbusy: false,
         args: [],
       };
-
       if (typeof cb === 'function') {
         ai.cb = cb;
       }
 
       const psOutput = SiebelApp.S_App.NewPropertySet();
-
       const psInput = SiebelApp.S_App.NewPropertySet();
       psInput.SetProperty(_getControlInputNameForQuery(), `Id="${rowId}"`);
 
       ai.args.push(method);
       ai.args.push(psInput.Clone());
 
+      return applet.CallServerApplet(method, psInput, psOutput, ai);
+    }
+
+    function query(params, cb) {
+      _newQuery();
+
+      const method = 'ExecuteQuery';
+      const ai = {
+        scope: this,
+        async: true,
+        mask: false,
+        selfbusy: false,
+        args: [],
+      };
+      if (typeof cb === 'function') {
+        ai.cb = cb;
+      }
+
+      const psOutput = SiebelApp.S_App.NewPropertySet();
+      const psInput = SiebelApp.S_App.NewPropertySet();
+      const arr = Object.keys(params);
+      console.log(arr); // eslint-disable-line no-console
+      const _controls = _returnControls();
+      for (let i = 0; i < arr.length; i += 1) {
+        const control = _controls[arr[i]];
+        psInput.SetProperty(control.GetInputName(), _getValueForControl(control.GetUIType(), params[arr[i]]));
+      }
+      ai.args.push(method);
+      ai.args.push(psInput.Clone());
+
+      console.log(psInput); // eslint-disable-line no-console
       return applet.CallServerApplet(method, psInput, psOutput, ai);
     }
 
@@ -459,7 +500,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       returnControls: _returnControls,
       getRowListRowCount: _getRowListRowCount,
       getNumRows: _getNumRows,
-      setActiveControl: _setActiveControl,
+      // setActiveControl: _setActiveControl,
       showMvgApplet: _showMvgApplet,
       getControlValue: _getControlValue,
       isInQueryMode,
@@ -487,9 +528,10 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       NotifyNewDataWS: _NotifyNewDataWS,
       getCurrentRecord,
       getFieldToControlsMap,
-      searchById,
+      queryById,
+      query,
       insertPending: () => pm.Get('GetBusComp').insertPending,
-      __clearQuery: () => {
+      __clearQuery: () => { // todo : could we get it calling query without parameters
         pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false);
         pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, false);
       },

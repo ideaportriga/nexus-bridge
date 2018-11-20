@@ -21,6 +21,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
         HLSCaseFormAppletPR.prototype.Init = function () {
 
+          // do not display the applet
+          // SiebelApp.S_App.ProcessNewPopup = function() {
+          //   console.log('>>>ProcessNewPopup', arguments);
+          // }
+
           //hide the server rendered html, better to remove, but not now
           var pm = this.GetPM();
           divId = "s_" + pm.Get("GetFullId") + "_div";

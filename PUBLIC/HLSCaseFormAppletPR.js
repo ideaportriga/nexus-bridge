@@ -18,17 +18,33 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var app;
         var divId;
         var n19helper;
+        var skipVue = true;
 
         HLSCaseFormAppletPR.prototype.Init = function () {
+          SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
 
-          // do not display the applet
+          var viewName = SiebelApp.S_App.GetActiveView().GetName();
+          skipVue = viewName.indexOf('List View') === -1;
+
+          if (skipVue) {
+            return;
+          }
+
+          var pm = this.GetPM();
+
+          // initialize helper
+          var appletName = pm.Get('GetName');
+          SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
+          SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
+          n19helper = SiebelAppFacade.N19[appletName];
+
+          // do not display the shuttle applet
           // SiebelApp.S_App.ProcessNewPopup = function() {
           //   console.log('>>>ProcessNewPopup', arguments);
           // }
 
           //hide the server rendered html, better to remove, but not now
-          var pm = this.GetPM();
-          divId = "s_" + pm.Get("GetFullId") + "_div";
+          divId = "s_" + pm.Get('GetFullId') + "_div";
           document.getElementById(divId).classList.add('siebui-applet', 'siebui-active');
           document.querySelector('#' + divId + ' form').style.display = 'none';
           //document.querySelector('#' + divId + ' form').parentNode.removeChild('form');
@@ -54,14 +70,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               }
             }
           }
-
-          SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
-
-          var appletName = pm.Get("GetName");
-
-          SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
-          SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
-          n19helper = SiebelAppFacade.N19[appletName];
 
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_GENERIC"), function (propSet) {
             var type = propSet.GetProperty(consts.get("SWE_PROP_NOTI_TYPE"));
@@ -154,7 +162,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log('SWE_PROP_BC_NOTI_INSERT_WORKSET_FIELD_VALUES', arguments);
           });
 
-
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_EXECUTE'), function () {
             console.log('SWE_PROP_BC_NOTI_EXECUTE', arguments);
           });
@@ -235,15 +242,22 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         }
 
         HLSCaseFormAppletPR.prototype.ShowUI = function () {
-          //SiebelAppFacade.HLSCaseFormAppletPR.superclass.ShowUI.apply(this, arguments);
+          if (skipVue) {
+            SiebelAppFacade.HLSCaseFormAppletPR.superclass.ShowUI.apply(this, arguments);
+          }
         }
 
         HLSCaseFormAppletPR.prototype.BindEvents = function () {
-          //SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindEvents.apply(this, arguments);
+          if (skipVue) {
+            SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindEvents.apply(this, arguments);
+          }
         }
 
         HLSCaseFormAppletPR.prototype.BindData = function (bRefresh) {
-          //SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindData.apply(this, arguments);
+          if (skipVue) {
+            SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindData.apply(this, arguments);
+            return;
+          }
 
           document.getElementById('_sweview').title = '';
           //$('#_swecontent').css({ 'height': 'auto' });
@@ -262,7 +276,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-alert :value="true" type="info">HLS Case Form Applet rendered by VUE.JS PR</v-alert>                                                       \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
-                  <v-text-field :rules="controls.Name.required ? [\'Required\'] : []" v-on:input="changeValue(\'Name\')" ref="caseName" :disabled="controls.Name.readonly" :label="controls.Name.label" v-model="controls.Name.value" clearable v-on:keyup.esc="escapeOnName" v-on:click:clear="handleClear" :counter="controls.Name.maxSize"></v-text-field> \n\
+                  <v-text-field prepend-icon="play_arrow" @click:prepend="doDrillDown" :rules="controls.Name.required ? [\'Required\'] : []" v-on:input="changeValue(\'Name\')" ref="caseName" :disabled="controls.Name.readonly" :label="controls.Name.label" v-model="controls.Name.value" clearable v-on:keyup.esc="escapeOnName" v-on:click:clear="handleClear" :counter="controls.Name.maxSize"></v-text-field> \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md6 pa-2>                                                                                                                               \n\
                   <v-switch v-on:change="changeValue(\'InfoChanged\')" :label="controls.InfoChanged.label" v-model="controls.InfoChanged.value" :disabled="controls.InfoChanged.readonly"></v-switch> \n\
@@ -302,6 +316,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md7 pa-2>                                                                                                                               \n\
                 </v-flex>                                                                                                                                       \n\
+                <v-flex md1 pa-2>                                                                                                                               \n\
+                  <v-btn v-on:click="gotoButtonClick" color="primary"><v-icon>language</v-icon>Goto!</v-btn>                                                        \n\
+                </v-flex>                                                                                                                                                                         \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
                   <v-tooltip top><v-btn slot="activator" v-on:click="prevButtonClick" color="primary"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>  \n\
                 </v-flex>                                                                                                                                                                         \n\
@@ -353,6 +370,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               }
             },
             methods: {
+              doDrillDown() {
+                if (SiebelAppFacade.N19['HLS Case List Applet']) {
+                  SiebelAppFacade.N19['HLS Case List Applet'].drilldown('Name');
+                }
+              },
               changeValue(name) {
                 console.log('change value is called .....................................');
                 var isChanged = n19helper.setControlValue(name, this.controls[name].value);
@@ -405,6 +427,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               deleteButtonClick: function () {
                 n19helper.deleteRecord();
+              },
+              gotoButtonClick: function () {
+                n19helper.gotoView('PUB GOV Case Activity Plans View', 'HLS Case Form Applet');
               },
               saveButtonClick: function () {
                 n19helper.writeRecord(function () {

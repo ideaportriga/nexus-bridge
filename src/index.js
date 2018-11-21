@@ -11,7 +11,6 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     const appletId = `s_${pm.Get('GetFullId')}_div`;
     const required = []; // will be empty for list applet
     const lov = {};
-    let controls = {};
 
     // populate required
     if (!isListApplet) {
@@ -100,7 +99,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
 
     function getControls() {
       console.log('get controls started...'); // eslint-disable-line no-console
-      controls = {};
+      const controls = {};
       const appletControls = _returnControls();
       const arr = Object.keys(appletControls);
       for (let i = 0; i < arr.length; i += 1) {
@@ -116,14 +115,15 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
           label: control.GetDisplayName(),
           uiType: controlUiType,
           required: _isRequired(controlInputName),
-          boundedPick: control.IsBoundedPick(),
-          staticPick: control.IsStaticBounded(),
+          boundedPick: control.IsBoundedPick() === '1',
+          staticPick: control.IsStaticBounded() === '1',
           pickApplet: control.GetPickApplet(),
           inputName: controlInputName,
           isPostChanges: control.IsPostChanges(),
           maxSize: control.GetMaxSize(),
           maxChars: control.GetMaxChars(),
           fieldName: control.GetFieldName(),
+          isLink: pm.ExecuteMethod('CanNavigate', controlName),
         };
         if (isListApplet) {
           // ?
@@ -133,10 +133,10 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
           obj.readOnly = !pm.ExecuteMethod('CanUpdate', controlName);
         }
         // add values to be displayed in the static pick list
-        if ('1' === obj.staticPick) {
+        if (obj.staticPick) {
           obj.staticLOV = _getStaticLOV(control.GetRadioGroupPropSet().childArray);
         }
-        obj.staticValue = obj.staticLOV; // if somebody already uses it
+        // obj.staticValue = obj.staticLOV; // if somebody already uses it
         controls[controlName] = obj;
       }
       console.log('returns controls -', controls); // eslint-disable-line no-console
@@ -186,10 +186,10 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       ps.SetProperty('SWEApplet', appletName);
       ps.SetProperty('SWEView', viewName);
       const ret = applet.InvokeControlMethod(method, ps, {});
-      if (ret) {
-        // if navigation was successfull, we need to get the new controls
-        controls = {};
-      }
+      // if (ret) {
+      // if navigation was successfull, we need to get the new controls
+      // controls = {};
+      // }
       return ret;
     }
 
@@ -385,6 +385,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
             _controls[arr[i]] = { // eslint-disable-line no-param-reassign
               value: _getControlValue(control.GetUIType(), obj[controlFieldName]),
               readonly: !pm.ExecuteMethod('CanUpdate', controlName),
+              isLink: pm.ExecuteMethod('CanNavigate', controlName),
               label: control.GetDisplayName(),
               isPostChanges: control.IsPostChanges(),
               required: _isRequired(controlInputName),
@@ -394,6 +395,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
             _controls[arr[i]] = { // eslint-disable-line no-param-reassign
               value: '', // is it a right value
               readonly: true,
+              isLink: false,
               label: control.GetDisplayName(),
               isPostChanges: control.IsPostChanges(),
               required: _isRequired(controlInputName),
@@ -425,6 +427,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     }
 
     function queryById(rowId, cb) {
+      // maybe check if it is already in query mode
       _newQuery(); // ?
 
       const method = 'ExecuteQuery';
@@ -450,6 +453,8 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     }
 
     function query(params, cb) {
+      // maybe skip the new query if Object.keys(params).length is 0
+      // maybe check if it is already in query mode
       _newQuery();
 
       const method = 'ExecuteQuery';
@@ -496,6 +501,28 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return ret;
     }
 
+    function drilldown(name) {
+      // todo: check isLink of control?
+      // name is control name, not field
+      // index is not effective, and drilldown anyway happens on last selected record
+
+      // check if it ListApplet?
+      if (!isListApplet) {
+        return false;
+      }
+      const index = getSelection();
+      return pm.ExecuteMethod('OnDrillDown', name, index);
+    }
+
+    function gotoView(targetViewName, targetAppletName, id) {
+      // todo: get the applet name from the view definition
+      const rowId = typeof id === 'undefined' ? getRawRecordSet()[getSelection()].Id : id;
+      let SWECmd = `GotoView&SWEView=${targetViewName}&SWEApplet0=${targetAppletName}`;
+      SWECmd += `&SWEBU=1&SWEKeepContext=FALSE&SWERowId0=${rowId}`;
+      SWECmd = encodeURI(SWECmd);
+      SiebelApp.S_App.GotoView(targetViewName, '', SWECmd, '');
+    }
+
     return {
       returnControls: _returnControls,
       getRowListRowCount: _getRowListRowCount,
@@ -509,6 +536,8 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       getRecordSet,
       getRawRecordSet,
       getSelection,
+      drilldown,
+      gotoView,
       nextRecord,
       nextRecordSet,
       prevRecord,
@@ -649,3 +678,27 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     };
   };
 }
+/*
+y.prototype.OnDrillDown = function(e, t) {
+  var n = CCFMiscUtil_CreatePropSet(),
+      s = this.GetListOfColumns(),
+      a = this.GetView(),
+      f = !0,
+      l = !1,
+      c;
+  a && !a.SetActiveApplet(this) && (a.ProcessError(), f = !1);
+  if (f) {
+      this.GetBusComp().SetCurRow(this.GetName(), t - 1);
+      if (this.PostChangesToBC(!0, null)) {
+          for (var h in s)
+            s.hasOwnProperty(h) && e === h && (c = s[h]);
+          n.SetProperty(r, c.GetSpanPrefix() + t),
+          n.SetProperty(consts.get("SWE_ROW_STR"), t), this.GetRowIds(n),
+          n.SetProperty(consts.get("SWE_APPLET_STR"), this.GetName()),
+          n.SetProperty(consts.get("SWE_ACTIVE_APPLET_STR"), this.GetName()),
+          n.SetProperty(consts.get("SWE_BCF_FIELD"), e),
+          l = this.InvokeMethod("Drilldown", n, !0)
+      }
+  }
+  return l
+} */

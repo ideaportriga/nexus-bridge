@@ -529,6 +529,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       getNumRows: _getNumRows,
       // setActiveControl: _setActiveControl,
       showMvgApplet: _showMvgApplet,
+      showPickApplet: _showMvgApplet,
       getControlValue: _getControlValue,
       isInQueryMode,
       getAppletType,
@@ -560,12 +561,13 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       queryById,
       query,
       insertPending: () => pm.Get('GetBusComp').insertPending,
-      __clearQuery: () => { // todo : could we get it calling query without parameters
+      __clearQuery: () => { // todo : could we get it calling the query methods with empty object
         pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false);
         pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, false);
       },
-      __deleteRecords: () => pm.ExecuteMethod('InvokeMethod', 'DeleteRecords'),
+      __pickRecord: () => pm.ExecuteMethod('InvokeMethod', 'PickRecord'),
       __setPopupVisible: val => SiebelApp.S_App.GetPopupPM().ExecuteMethod('SetPopupVisible', val),
+      __deleteRecords: () => pm.ExecuteMethod('InvokeMethod', 'DeleteRecords'),
       refresh: (name) => {
         const service = SiebelApp.S_App.GetService('N19 BS');
         if (service) {

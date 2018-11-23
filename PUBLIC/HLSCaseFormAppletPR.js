@@ -38,11 +38,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
           n19helper = SiebelAppFacade.N19[appletName];
 
-          // do not display the shuttle applet
-          // SiebelApp.S_App.ProcessNewPopup = function() {
-          //   console.log('>>>ProcessNewPopup', arguments);
-          // }
-
           //hide the server rendered html, better to remove, but not now
           divId = "s_" + pm.Get('GetFullId') + "_div";
           document.getElementById(divId).classList.add('siebui-applet', 'siebui-active');
@@ -69,6 +64,14 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               }
             }
           }
+
+          // do not display the shuttle applet
+          SiebelAppFacade.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
+          SiebelApp.S_App.ProcessNewPopup = function(ps) {
+            console.log('>>>>>>>>>>>>> ProcessNewPopup', SiebelApp.S_App.GetPopupPM().Get('isPopupMVGSelected'));
+            return SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);
+          }
+
 
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_GENERIC"), function (propSet) {
             var type = propSet.GetProperty(consts.get("SWE_PROP_NOTI_TYPE"));
@@ -648,6 +651,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         HLSCaseFormAppletPR.prototype.EndLife = function () {
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = SiebelAppFacade.N19notifyNewFieldData;
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary = SiebelAppFacade.N19notifyNewPrimary;
+          SiebelApp.S_App.ProcessNewPopup = SiebelAppFacade.N19processNewPopup;
+
           if (app) {
             app.$destroy(true);
             $('#app').remove();

@@ -65,13 +65,51 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           }
 
+          SiebelApp.S_App.GetPopupPM().AddMethod('SetPopupVisible', function(methodname, inputpropset, context, returnstructure){
+            console.log('!!!!!!!!!!!!!!!!!!! SetPopupVisible', arguments);
+            console.log(methodname, inputpropset, context, returnstructure);
+            SiebelAppFacade.__log();
+            console.log(n19helper._getActiveControlName());
+            if (n19helper._getActiveControlName() === 'Sales Rep') {
+            //  returnstructure["CancelOperation"] = true;
+            }
+          }, {sequence: true,scope: SiebelApp.S_App.GetPopupPM()});
+
+          SiebelAppFacade.__log = function() {
+            var popupPM = SiebelApp.S_App.GetPopupPM();
+
+            console.log('state', popupPM.Get('state'));
+            console.log('url', popupPM.Get('url'));
+            console.log('content', popupPM.Get('content'));
+            console.log('currPopups', popupPM.Get('currPopups'));
+            console.log('prevPopups', popupPM.Get('prevPopups'));
+            console.log('isControlPopupOpen', popupPM.Get('isControlPopupOpen'));
+            console.log('isPopupMVGSelected', popupPM.Get('isPopupMVGSelected'));
+            console.log('isPopupPick', popupPM.Get('isPopupPick'));
+            console.log('PickAppletObject', popupPM.Get('PickAppletObject'));
+            console.log('baseParentAppletId', popupPM.Get('baseParentAppletId'));
+            console.log('isPopupAssoc', popupPM.Get('isPopupAssoc'));
+            console.log('AssocAppletObject', popupPM.Get('AssocAppletObject'));
+            console.log('MVGSelectedAppletObject', popupPM.Get('MVGSelectedAppletObject'));
+            console.log('isPopupMVGAssoc', popupPM.Get('isPopupMVGAssoc'));
+            console.log('MVGAssocAppletObject', popupPM.Get('MVGAssocAppletObject'));
+            console.log('MVGAssocParentAppletObject', popupPM.Get('MVGAssocParentAppletObject'));
+            console.log('parentAppletId', popupPM.Get('parentAppletId'));
+            console.log('isPopupNonStandard', popupPM.Get('isPopupNonStandard'));
+            console.log('NonStandardAppletObject', popupPM.Get('NonStandardAppletObject'));
+          }
+
           // do not display the shuttle applet
           SiebelAppFacade.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
           SiebelApp.S_App.ProcessNewPopup = function(ps) {
-            console.log('>>>>>>>>>>>>> ProcessNewPopup', SiebelApp.S_App.GetPopupPM().Get('isPopupMVGSelected'));
-            return SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);
+            console.log('>>>>>>>>>>>>> ProcessNewPopup', ps);
+            SiebelAppFacade.__log();
+            //return "refreshpopup";
+            var ret = SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);
+            console.log('<<<<<<<<<<<< ProcessNewPopup', ps, ret);
+            SiebelAppFacade.__log();
+            return ret;
           }
-
 
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_GENERIC"), function (propSet) {
             var type = propSet.GetProperty(consts.get("SWE_PROP_NOTI_TYPE"));

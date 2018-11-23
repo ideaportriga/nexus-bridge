@@ -553,4 +553,13 @@ SiebelAppFacade.N19Helper = class {
   __deleteRecords() {
     return this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecords');
   }
+
+  __closePopupApplet() {
+    // todo: check if open ??
+    return this.pm.ExecuteMethod('InvokeMethod', 'CloseApplet');
+  }
+
+  _getActiveControlName() {
+    return this.pm.Get('GetActiveControl').GetName();
+  }
 };

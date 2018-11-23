@@ -47,7 +47,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return applet.GetControl(name);
     }
 
-    function _returnControls() {
+    function returnControls() {
       if (isListApplet) {
         return applet.GetListOfColumns();
       }
@@ -100,7 +100,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     function getControls() {
       console.log('get controls started...'); // eslint-disable-line no-console
       const controls = {};
-      const appletControls = _returnControls();
+      const appletControls = returnControls();
       const arr = Object.keys(appletControls);
       for (let i = 0; i < arr.length; i += 1) {
         const control = appletControls[arr[i]];
@@ -163,13 +163,13 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return pm.Get('GetRawRecordSet');
     }
 
-    function _getRowListRowCount() {
+    function getRowListRowCount() {
       // how much applet can display (specified in Siebel Tools)
       // 10/20
       return pm.Get('GetRowListRowCount');
     }
 
-    function _getNumRows() {
+    function getNumRows() {
       // visible in applet
       return pm.Get('GetNumRows');
     }
@@ -209,7 +209,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
         if (!pm.ExecuteMethod('CanInvokeMethod', 'PositionOnRow')) {
           return false;
         }
-        if (_getNumRows() < index + 1) {
+        if (getNumRows() < index + 1) {
           return false;
         }
         return pm.ExecuteMethod('HandleRowSelect', index, false, false);
@@ -340,7 +340,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       return ret;
     }
 
-    function _getControlValue(controlUiType, value) { // to be exposed externally
+    function getControlValue(controlUiType, value) { // to be exposed externally
       // todo: datetime
       let ret = value;
       if (consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
@@ -368,7 +368,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     function getCurrentRecordModel(_controls) {
       const arr = Object.keys(_controls);
       const index = getSelection();
-      const appletControls = _returnControls();
+      const appletControls = returnControls();
       _controls.isRecord = index > -1; // eslint-disable-line no-param-reassign
       let obj = {};
       if (_controls.isRecord) {
@@ -383,7 +383,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
           const controlFieldName = control.GetFieldName();
           if (_controls.isRecord) {
             _controls[arr[i]] = { // eslint-disable-line no-param-reassign
-              value: _getControlValue(control.GetUIType(), obj[controlFieldName]),
+              value: getControlValue(control.GetUIType(), obj[controlFieldName]),
               readonly: !pm.ExecuteMethod('CanUpdate', controlName),
               isLink: pm.ExecuteMethod('CanNavigate', controlName),
               label: control.GetDisplayName(),
@@ -410,7 +410,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
     }
 
     function _getControlInputNameForQuery() {
-      const appletControls = _returnControls();
+      const appletControls = returnControls();
       const arr = Object.keys(appletControls);
       for (let i = 0; i < arr.length; i += 1) {
         const control = appletControls[arr[i]];
@@ -473,7 +473,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       const psInput = SiebelApp.S_App.NewPropertySet();
       const arr = Object.keys(params);
       console.log(arr); // eslint-disable-line no-console
-      const _controls = _returnControls();
+      const _controls = returnControls();
       for (let i = 0; i < arr.length; i += 1) {
         const control = _controls[arr[i]];
         psInput.SetProperty(control.GetInputName(), _getValueForControl(control.GetUIType(), params[arr[i]]));
@@ -487,7 +487,7 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
 
     function getFieldToControlsMap(_controls) {
       const ret = {};
-      const appletControls = _returnControls();
+      const appletControls = returnControls();
       const arr = Object.keys(_controls);
       for (let i = 0; i < arr.length; i += 1) {
         const control = appletControls[arr[i]];
@@ -523,14 +523,64 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       SiebelApp.S_App.GotoView(targetViewName, '', SWECmd, '');
     }
 
+    function insertPending() {
+      return pm.Get('GetBusComp').insertPending;
+    }
+
+    function showMvgApplet(input) {
+      return _showMvgApplet(input);
+    }
+
+    function showPickApplet(input) {
+      return _showMvgApplet(input);
+    }
+
+    function requery(name) {
+      const service = SiebelApp.S_App.GetService('N19 BS');
+      if (service) {
+        const inPropSet = SiebelApp.S_App.NewPropertySet();
+        inPropSet.SetProperty('name', name);
+        service.InvokeMethod('Requery', inPropSet, {});
+      }
+    }
+
+    function refresh(name) {
+      const service = SiebelApp.S_App.GetService('N19 BS');
+      if (service) {
+        const inPropSet = SiebelApp.S_App.NewPropertySet();
+        inPropSet.SetProperty('name', name);
+        service.InvokeMethod('Refresh', inPropSet, {});
+      }
+    }
+
+    function __clearQuery() { // todo : could we get it calling the query methods with empty object
+      pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false);
+      pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, false);
+    }
+
+    function __pickRecord() {
+      return pm.ExecuteMethod('InvokeMethod', 'PickRecord');
+    }
+
+    function __setPopupVisible(val) {
+      return SiebelApp.S_App.GetPopupPM().ExecuteMethod('SetPopupVisible', val);
+    }
+
+    function __deleteRecords() {
+      return pm.ExecuteMethod('InvokeMethod', 'DeleteRecords');
+    }
+
     return {
-      returnControls: _returnControls,
-      getRowListRowCount: _getRowListRowCount,
-      getNumRows: _getNumRows,
-      // setActiveControl: _setActiveControl,
-      showMvgApplet: _showMvgApplet,
-      showPickApplet: _showMvgApplet,
-      getControlValue: _getControlValue,
+      __clearQuery,
+      __pickRecord,
+      __setPopupVisible,
+      __deleteRecords,
+      returnControls,
+      getRowListRowCount,
+      getNumRows,
+      showMvgApplet,
+      showPickApplet,
+      getControlValue,
       isInQueryMode,
       getAppletType,
       getControls,
@@ -555,152 +605,14 @@ if (typeof (SiebelAppFacade.N19Helper) === 'undefined') {
       getStaticLOV,
       canInvokeMethod,
       getCurrentRecordModel,
-      NotifyNewDataWS: _NotifyNewDataWS,
+      _NotifyNewDataWS,
       getCurrentRecord,
       getFieldToControlsMap,
       queryById,
       query,
-      insertPending: () => pm.Get('GetBusComp').insertPending,
-      __clearQuery: () => { // todo : could we get it calling the query methods with empty object
-        pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false);
-        pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, false);
-      },
-      __pickRecord: () => pm.ExecuteMethod('InvokeMethod', 'PickRecord'),
-      __setPopupVisible: val => SiebelApp.S_App.GetPopupPM().ExecuteMethod('SetPopupVisible', val),
-      __deleteRecords: () => pm.ExecuteMethod('InvokeMethod', 'DeleteRecords'),
-      refresh: (name) => {
-        const service = SiebelApp.S_App.GetService('N19 BS');
-        if (service) {
-          const inPropSet = SiebelApp.S_App.NewPropertySet();
-          inPropSet.SetProperty('name', name);
-          service.InvokeMethod('Refresh', inPropSet, {});
-        }
-      },
-      requery: (name) => {
-        const service = SiebelApp.S_App.GetService('N19 BS');
-        if (service) {
-          const inPropSet = SiebelApp.S_App.NewPropertySet();
-          inPropSet.SetProperty('name', name);
-          service.InvokeMethod('Requery', inPropSet, {});
-        }
-      }, /* __r1: () => {
-      const n = {
-          async: true,
-          selfbusy: true,
-          cb: (...args) => {
-            console.log('<<callback returend', args)
-          }
-        };
-        const i = _returnControls()['Sales Rep'];
-        const s = i.GetHeight();
-        const o = i.GetWidth();
-        const r = SiebelApp.S_App.NewPropertySet();
-        let u = i.GetInputName();
-        r.SetProperty(consts.get("SWE_FIELD_STR"), u);
-        r.SetProperty(consts.get("SWE_METHOD_STR"), "EditField");
-        r.SetProperty(consts.get("SWE_SHOW_POPUP_STR"), "false");
-        r.SetProperty(consts.get("SWE_HEIGHT_STR"), s);
-        r.SetProperty(consts.get("SWE_WIDTH_STR"), o);
-        r.SetProperty("SWECSP", "false");
-        applet.InvokeMethod("EditField", r, n);
-      },
-      __r2: () => {
-        const T = {
-          async: true,
-          selfbusy: true,
-          cb: (...args) => {
-            console.log('<<callback returend', args)
-          },
-          args: [],
-          mask: false
-        };
-
-        const control = _returnControls()['Sales Rep'];
-        const l = SiebelApp.S_App.NewPropertySet();
-        l.SetProperty(consts.get("SWE_FIELD_STR"), control.GetInputName());
-        l.SetProperty(consts.get("SWE_METHOD_STR"), "EditField");
-        l.SetProperty(consts.get("SWE_SHOW_POPUP_STR"), "false");
-        l.SetProperty(consts.get("SWE_HEIGHT_STR"), control.GetHeight());
-        l.SetProperty(consts.get("SWE_WIDTH_STR"), control.GetWidth());
-        l.SetProperty("SWECSP", "false");
-        T.args.push('EditField');
-        T.args.push(l);
-        var k = CCFMiscUtil_CreatePropSet();
-        applet.CallServerApplet('EditField', l, k, T);
-      },
-      __r3: () => {
-        // CallServerApplet = function(n, r, i, s)
-        // consts.get("SWE_EDIT_FIELD")
-        const control = _returnControls()['Sales Rep'];
-
-        const s = {
-          async: true,
-          selfbusy: true,
-          cb: (...args) => {
-            console.log('<<callback returend', args)
-          },
-          args: [],
-          mask: false
-        };
-        const l = SiebelApp.S_App.NewPropertySet();
-        l.SetProperty(consts.get("SWE_FIELD_STR"), control.GetInputName());
-        l.SetProperty(consts.get("SWE_METHOD_STR"), "EditField");
-        l.SetProperty(consts.get("SWE_SHOW_POPUP_STR"), "false");
-        l.SetProperty(consts.get("SWE_HEIGHT_STR"), control.GetHeight());
-        l.SetProperty(consts.get("SWE_WIDTH_STR"), control.GetWidth());
-        l.SetProperty("SWECSP", "false");
-        s.args.push('EditField');
-        s.args.push(l);
-
-        const u = SiebelApp.S_App.NewPropertySet();
-        u.SetProperty(consts.get("SWE_FIELD_STR"), control.GetInputName());
-        u.SetProperty(consts.get("SWE_METHOD_STR"), "EditField");
-        u.SetProperty(consts.get("SWE_SHOW_POPUP_STR"), "false");
-        u.SetProperty(consts.get("SWE_HEIGHT_STR"), control.GetHeight());
-        u.SetProperty(consts.get("SWE_WIDTH_STR"), control.GetWidth());
-        u.SetProperty("SWECSP", "false");
-        u.SetProperty(consts.get("SWE_CMD_ARG"), consts.get("SWE_CMD_INVOKE_METHOD_STR"));
-        u.SetProperty(consts.get("SWE_VIEW_ID_ARG"), applet.GetView().GetBusObj().GetZone());
-        u.SetProperty(consts.get("SWE_VIEW_ARG"), applet.GetView().GetName());
-        u.SetProperty(consts.get("SWE_APPLET_STR"), applet.GetName());
-        u.SetProperty(consts.get("SWE_METHOD_STR"), 'EditField');
-        var a = applet.GetBusComp().GetIdValue();
-        u.SetProperty(consts.get("SWE_ROW_ID_STR"), a);
-        u.SetProperty(consts.get("SWE_REQ_ROW_ID_STR"), "1");
-        applet.GetRowIds(u);
-        u.SetProperty(consts.get("SWE_ACTIVE_APPLET_STR"), applet.GetName());
-        u.SetProperty(consts.get("SWE_NEED_CONTEXT_STR"), "true");
-        u.SetProperty(consts.get("SWE_COUNT_STR"), SiebelApp.S_App.GetSWEReqCount());
-        //SiebelApp.S_App.OfflineCallMethod("SetNewRecord", this, u),
-        var i = CCFMiscUtil_CreatePropSet();
-        var o = !0;
-        SiebelApp.S_App.CallServer(u, i, o, s);
-
-      } */
+      insertPending,
+      refresh,
+      requery,
     };
   };
 }
-/*
-y.prototype.OnDrillDown = function(e, t) {
-  var n = CCFMiscUtil_CreatePropSet(),
-      s = this.GetListOfColumns(),
-      a = this.GetView(),
-      f = !0,
-      l = !1,
-      c;
-  a && !a.SetActiveApplet(this) && (a.ProcessError(), f = !1);
-  if (f) {
-      this.GetBusComp().SetCurRow(this.GetName(), t - 1);
-      if (this.PostChangesToBC(!0, null)) {
-          for (var h in s)
-            s.hasOwnProperty(h) && e === h && (c = s[h]);
-          n.SetProperty(r, c.GetSpanPrefix() + t),
-          n.SetProperty(consts.get("SWE_ROW_STR"), t), this.GetRowIds(n),
-          n.SetProperty(consts.get("SWE_APPLET_STR"), this.GetName()),
-          n.SetProperty(consts.get("SWE_ACTIVE_APPLET_STR"), this.GetName()),
-          n.SetProperty(consts.get("SWE_BCF_FIELD"), e),
-          l = this.InvokeMethod("Drilldown", n, !0)
-      }
-  }
-  return l
-} */

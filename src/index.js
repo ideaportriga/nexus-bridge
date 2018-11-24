@@ -554,6 +554,10 @@ SiebelAppFacade.N19Helper = class {
     return this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecords');
   }
 
+  __addRecords() {
+    return this.pm.ExecuteMethod('InvokeMethod', 'AddRecords');
+  }
+
   __closePopupApplet() {
     // todo: check if open ??
     return this.pm.ExecuteMethod('InvokeMethod', 'CloseApplet');

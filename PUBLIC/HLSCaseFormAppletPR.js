@@ -65,14 +65,33 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           }
 
+          // SiebelAppFacade.N19loadContent = SiebelApp.contentUpdater.loadContent;
+          // SiebelApp.contentUpdater.loadContent = function() {
+          //   return SiebelAppFacade.N19loadContent.apply(SiebelApp.contentUpdater, arguments);
+          // };
+
           SiebelApp.S_App.GetPopupPM().AddMethod('SetPopupVisible', function(methodname, inputpropset, context, returnstructure){
             console.log('!!!!!!!!!!!!!!!!!!! SetPopupVisible', arguments);
             console.log(methodname, inputpropset, context, returnstructure);
             SiebelAppFacade.__log();
             console.log(n19helper._getActiveControlName());
             if (n19helper._getActiveControlName() === 'Sales Rep') {
-            //  returnstructure["CancelOperation"] = true;
+              // returnstructure["CancelOperation"] = true;
+              // setTimeout(function() {
+              //   $('.ui-widget-overlay').remove();
+              //   $("div[name=popup]").parent().css( {display: "none"} );
+              //   $("div[name=popup]").dialog( "option", "modal", false );
+              // });
             }
+            if (n19helper._getActiveControlName() === 'Audit Employee Last Name') {
+              // returnstructure["CancelOperation"] = true;
+              // setTimeout(function() {
+              //   $('.ui-widget-overlay').remove();
+              //   $("div[name=popup]").parent().css( {display: "none"} );
+              //   $("div[name=popup]").dialog( "option", "modal", false );
+              // });
+            }
+
           }, {sequence: true,scope: SiebelApp.S_App.GetPopupPM()});
 
           SiebelAppFacade.__log = function() {
@@ -103,6 +122,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           SiebelAppFacade.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
           SiebelApp.S_App.ProcessNewPopup = function(ps) {
             console.log('>>>>>>>>>>>>> ProcessNewPopup', ps);
+            console.log(location.origin + ps.GetProperty('URL'));
+            debugger;
             SiebelAppFacade.__log();
             //return "refreshpopup";
             var ret = SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);
@@ -690,6 +711,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = SiebelAppFacade.N19notifyNewFieldData;
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary = SiebelAppFacade.N19notifyNewPrimary;
           SiebelApp.S_App.ProcessNewPopup = SiebelAppFacade.N19processNewPopup;
+          // SiebelApp.contentUpdater.loadContent = SiebelAppFacade.N19loadContent;
 
           if (app) {
             app.$destroy(true);

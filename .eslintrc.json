@@ -6,7 +6,7 @@
   ],
   "parserOptions": {
     "ecmaVersion": 2017,
-    "sourceType": "script"
+    "sourceType": "module"
   },
   "env": {
     "es6": true,
@@ -28,6 +28,7 @@
     "SiebelApp": false,
     "Namespace": false,
     "consts": false,
+    "utils": false,
     "CCFMiscUtil_StringToArray": false
   }
 }

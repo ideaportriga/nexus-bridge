@@ -67,14 +67,14 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           // SiebelAppFacade.N19loadContent = SiebelApp.contentUpdater.loadContent;
           // SiebelApp.contentUpdater.loadContent = function() {
-          //   return SiebelAppFacade.N19loadContent.apply(SiebelApp.contentUpdater, arguments);
+          //  return SiebelAppFacade.N19loadContent.apply(SiebelApp.contentUpdater, arguments);
           // };
 
           SiebelApp.S_App.GetPopupPM().AddMethod('SetPopupVisible', function(methodname, inputpropset, context, returnstructure){
             console.log('!!!!!!!!!!!!!!!!!!! SetPopupVisible', arguments);
             console.log(methodname, inputpropset, context, returnstructure);
-            SiebelAppFacade.__log();
             console.log(n19helper._getActiveControlName());
+            SiebelAppFacade.__log();
             if (n19helper._getActiveControlName() === 'Sales Rep') {
               // returnstructure["CancelOperation"] = true;
               // setTimeout(function() {
@@ -123,7 +123,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           SiebelApp.S_App.ProcessNewPopup = function(ps) {
             console.log('>>>>>>>>>>>>> ProcessNewPopup', ps);
             console.log(location.origin + ps.GetProperty('URL'));
-            debugger;
             SiebelAppFacade.__log();
             //return "refreshpopup";
             var ret = SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);
@@ -373,21 +372,24 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-divider></v-divider>                                                                                                                       \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn v-on:click="saveButtonClick" color="primary"><v-icon>save</v-icon>Save!</v-btn>                                                        \n\
+                  <v-btn block v-on:click="saveButtonClick" color="primary"><v-icon>save</v-icon>Save!</v-btn>                                                        \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn v-on:click="deleteButtonClick" color="primary"><v-icon>delete</v-icon>Delete!</v-btn>                                                  \n\
-                </v-flex>                                                                                                                                       \n\
-                <v-flex md7 pa-2>                                                                                                                               \n\
+                  <v-btn block v-on:click="deleteButtonClick" color="primary"><v-icon>delete</v-icon>Delete!</v-btn>                                                  \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn v-on:click="gotoButtonClick" color="primary"><v-icon>language</v-icon>Goto!</v-btn>                                                    \n\
+                  <v-btn block v-on:click="testButtonClick" color="primary"><v-icon>pan_tool</v-icon>Test!</v-btn>                                                    \n\
+                </v-flex>                                                                                                                                       \n\
+                <v-flex md6 pa-2>                                                                                                                               \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-tooltip top><v-btn slot="activator" v-on:click="prevButtonClick" color="primary"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>  \n\
+                  <v-btn block v-on:click="gotoButtonClick" color="primary"><v-icon>language</v-icon>Goto!</v-btn>                                                    \n\
+                </v-flex>                                                                                                                                       \n\
+                <v-flex md1 pa-2>                                                                                                                               \n\
+                  <v-tooltip top><v-btn block slot="activator" v-on:click="prevButtonClick" color="primary"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>  \n\
                 </v-flex>                                                                                                                                                                         \n\
                 <v-flex md1 pa-2>                                                                                                                                                                 \n\
-                  <v-tooltip top><v-btn slot="activator" v-on:click="nextButtonClick" color="primary"><v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>    \n\
+                  <v-tooltip top><v-btn block slot="activator" v-on:click="nextButtonClick" color="primary"><v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>    \n\
                 </v-flex>                                                                                     \n\
                 <v-fab-transition>                                                                            \n\
                   <v-btn v-on:click="newButtonClick" v-show="true" color="pink" dark fixed bottom right fab>  \n\
@@ -435,6 +437,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               }
             },
             methods: {
+              testButtonClick() {
+                n19helper.view.SetActiveAppletInternal(n19helper.applet);
+                n19helper._setActiveControl('Audit Employee Last Name');
+
+                var n19test = new SiebelAppFacade.N19test(n19helper.pm, n19helper.applet);
+                n19test.editPopup();
+              },
               openPickApplet() {
                 n19helper.showPickApplet('Audit Employee Last Name');
               },

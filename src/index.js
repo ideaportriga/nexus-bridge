@@ -1,7 +1,14 @@
 // for now only for form and list applets
 
+import N19test from './n19test';
+
 SiebelAppFacade.N19Helper = class {
   constructor(settings) {
+    SiebelAppFacade.N19test = N19test;
+
+    // const n19test = new N19test(settings);
+    // console.log(n19test);
+
     this.pm = settings.pm;
     this.appletName = this.pm.Get('GetName');
     this.view = SiebelApp.S_App.GetActiveView();
@@ -84,9 +91,9 @@ SiebelAppFacade.N19Helper = class {
   _showMvgApplet(name) {
     this.view.SetActiveAppletInternal(this.applet);
     this._setActiveControl(name);
-    const ps = SiebelApp.S_App.NewPropertySet();
+    // const ps = SiebelApp.S_App.NewPropertySet();
     // pm.OnControlEvent( consts.get( "PHYEVENT_INVOKE_MVG" ), control )
-    return this.applet.InvokeMethod('EditPopup', ps, false);
+    return this.applet.InvokeMethod('EditPopup', null, false);
   }
 
   getAppletType() {

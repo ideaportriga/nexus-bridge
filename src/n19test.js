@@ -20,25 +20,25 @@ class N19test { // eslint-disable-line no-unused-vars
           const control = controls[c];
           if (control === s) {
             switch (control.GetUIType()) {
-              case this.consts.get('SWE_CTRL_COMBOBOX'):
+              case _self.consts.get('SWE_CTRL_COMBOBOX'):
                 this.FieldDropdown(e);
                 break;
-              case this.consts.get('SWE_CTRL_CURRENCY_CALC'):
+              case _self.consts.get('SWE_CTRL_CURRENCY_CALC'):
                 control.ShowPopup();
                 break;
-              case this.consts.get('SWE_CTRL_CALC'):
-              case this.consts.get('SWE_CTRL_DATE_PICK'):
-              case this.consts.get('SWE_CTRL_DATE_TIME_PICK'):
-              case this.consts.get('SWE_CTRL_DATE_TZ_PICK'):
+              case _self.consts.get('SWE_CTRL_CALC'):
+              case _self.consts.get('SWE_CTRL_DATE_PICK'):
+              case _self.consts.get('SWE_CTRL_DATE_TIME_PICK'):
+              case _self.consts.get('SWE_CTRL_DATE_TZ_PICK'):
                 this.ShowPopup(control);
                 break;
-              case this.consts.get('SWE_CTRL_TEXT'):
+              case _self.consts.get('SWE_CTRL_TEXT'):
                 if (control.GetPopupType() !== this.consts.get('SWE_CTRL_DETAIL')) {
                   break;
                 }
-              case this.consts.get('SWE_CTRL_MVG'): // eslint-disable-line no-fallthrough
-              case this.consts.get('SWE_CTRL_PICK'):
-              case this.consts.get('SWE_CTRL_EFFDAT'):
+              case _self.consts.get('SWE_CTRL_MVG'): // eslint-disable-line no-fallthrough
+              case _self.consts.get('SWE_CTRL_PICK'):
+              case _self.consts.get('SWE_CTRL_EFFDAT'):
                 ai.async = !0;
                 ai.selfbusy = !0;
                 SiebelApp.S_App.uiStatus.Busy({

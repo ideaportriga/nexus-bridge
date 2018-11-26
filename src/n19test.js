@@ -2,6 +2,9 @@ class N19test { // eslint-disable-line no-unused-vars
   constructor(pm, applet) {
     this.pm = pm;
     this.applet = applet;
+
+    this.consts = SiebelJS.Dependency('SiebelApp.Constants');
+
     console.log('N19test created', this.pm, this.applet); // eslint-disable-line no-console
   }
 
@@ -17,25 +20,25 @@ class N19test { // eslint-disable-line no-unused-vars
           const control = controls[c];
           if (control === s) {
             switch (control.GetUIType()) {
-              case consts.get('SWE_CTRL_COMBOBOX'):
+              case this.consts.get('SWE_CTRL_COMBOBOX'):
                 this.FieldDropdown(e);
                 break;
-              case consts.get('SWE_CTRL_CURRENCY_CALC'):
+              case this.consts.get('SWE_CTRL_CURRENCY_CALC'):
                 control.ShowPopup();
                 break;
-              case consts.get('SWE_CTRL_CALC'):
-              case consts.get('SWE_CTRL_DATE_PICK'):
-              case consts.get('SWE_CTRL_DATE_TIME_PICK'):
-              case consts.get('SWE_CTRL_DATE_TZ_PICK'):
+              case this.consts.get('SWE_CTRL_CALC'):
+              case this.consts.get('SWE_CTRL_DATE_PICK'):
+              case this.consts.get('SWE_CTRL_DATE_TIME_PICK'):
+              case this.consts.get('SWE_CTRL_DATE_TZ_PICK'):
                 this.ShowPopup(control);
                 break;
-              case consts.get('SWE_CTRL_TEXT'):
-                if (control.GetPopupType() !== consts.get('SWE_CTRL_DETAIL')) {
+              case this.consts.get('SWE_CTRL_TEXT'):
+                if (control.GetPopupType() !== this.consts.get('SWE_CTRL_DETAIL')) {
                   break;
                 }
-              case consts.get('SWE_CTRL_MVG'): // eslint-disable-line no-fallthrough
-              case consts.get('SWE_CTRL_PICK'):
-              case consts.get('SWE_CTRL_EFFDAT'):
+              case this.consts.get('SWE_CTRL_MVG'): // eslint-disable-line no-fallthrough
+              case this.consts.get('SWE_CTRL_PICK'):
+              case this.consts.get('SWE_CTRL_EFFDAT'):
                 ai.async = !0;
                 ai.selfbusy = !0;
                 SiebelApp.S_App.uiStatus.Busy({
@@ -67,11 +70,11 @@ class N19test { // eslint-disable-line no-unused-vars
     const height = activeControl.GetHeight();
     const width = activeControl.GetWidth();
     const inputName = activeControl.GetInputName();
-    ps.SetProperty(consts.get('SWE_FIELD_STR'), inputName);
-    ps.SetProperty(consts.get('SWE_METHOD_STR'), 'EditField');
-    ps.SetProperty(consts.get('SWE_SHOW_POPUP_STR'), 'true');
-    ps.SetProperty(consts.get('SWE_HEIGHT_STR'), height);
-    ps.SetProperty(consts.get('SWE_WIDTH_STR'), width);
+    ps.SetProperty(this.consts.get('SWE_FIELD_STR'), inputName);
+    ps.SetProperty(this.consts.get('SWE_METHOD_STR'), 'EditField');
+    ps.SetProperty(this.consts.get('SWE_SHOW_POPUP_STR'), 'true');
+    ps.SetProperty(this.consts.get('SWE_HEIGHT_STR'), height);
+    ps.SetProperty(this.consts.get('SWE_WIDTH_STR'), width);
     ps.SetProperty('SWECSP', 'false');
     // this.applet.InvokeMethod('EditField', ps, ai);
     this.editField(ps, ai);
@@ -107,7 +110,7 @@ class N19test { // eslint-disable-line no-unused-vars
       g = this.applet.PostExecute.call(this, ...args);
       e.push(g);
       i.cb.apply(i.scope || null, e);
-      if (!r1 || n === consts.get('SWE_RPC_PROP_STATUS_ERROR')) {
+      if (!r1 || n === this.consts.get('SWE_RPC_PROP_STATUS_ERROR')) {
         SiebelApp.S_App.ErrorObject.SetErrorSuppressState(!0);
         this.ProcessError();
       }

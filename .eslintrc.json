@@ -24,11 +24,9 @@
     "class-methods-use-this": 0
   },
   "globals": {
-    "SiebelAppFacade": false,
     "SiebelApp": false,
-    "Namespace": false,
-    "consts": false,
-    "utils": false,
+    "SiebelAppFacade": false,
+    "SiebelJS": false,
     "CCFMiscUtil_StringToArray": false
   }
 }

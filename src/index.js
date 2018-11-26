@@ -9,6 +9,8 @@ SiebelAppFacade.N19Helper = class {
     // const n19test = new N19test(settings);
     // console.log(n19test);
 
+    this.consts = SiebelJS.Dependency('SiebelApp.Constants');
+
     this.pm = settings.pm;
     this.appletName = this.pm.Get('GetName');
     this.view = SiebelApp.S_App.GetActiveView();
@@ -30,11 +32,11 @@ SiebelAppFacade.N19Helper = class {
     }
 
     // listener to get dynamic LOVs
-    this.pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_GENERIC'), (propSet) => {
-      const type = propSet.GetProperty(consts.get('SWE_PROP_NOTI_TYPE'));
+    this.pm.AttachNotificationHandler(this.consts.get('SWE_PROP_BC_NOTI_GENERIC'), (propSet) => {
+      const type = propSet.GetProperty(this.consts.get('SWE_PROP_NOTI_TYPE'));
       if (type === 'GetQuickPickInfo') {
         const arr = [];
-        CCFMiscUtil_StringToArray(propSet.GetProperty(consts.get('SWE_PROP_ARGS_ARRAY')), arr);
+        CCFMiscUtil_StringToArray(propSet.GetProperty(this.consts.get('SWE_PROP_ARGS_ARRAY')), arr);
         console.log(arr); // eslint-disable-line no-console
         if (this.viewName === arr[1] && this.appletName === arr[2]) {
           this.lov[arr[3]] = arr.splice(5).filter(el => el !== '');
@@ -273,7 +275,7 @@ SiebelAppFacade.N19Helper = class {
 
   _getValueForControl(controlUiType, value) { // from external system
     // DateTime, numbers, and phone
-    if (consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
+    if (this.consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
       // convert true/false => Y/N
       // do we want to support setting to null
       value = value ? 'Y' : 'N'; // eslint-disable-line no-param-reassign
@@ -287,8 +289,8 @@ SiebelAppFacade.N19Helper = class {
     // TODO: Check if control is found
     value = this._getValueForControl(control.GetUIType(), value); // eslint-disable-line no-param-reassign
     // TODO: should we use SetCellValue for list applets?
-    this.pm.OnControlEvent(consts.get('PHYEVENT_CONTROL_FOCUS'), control);
-    const ret = this.pm.OnControlEvent(consts.get('PHYEVENT_CONTROL_BLUR'), control, value);
+    this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_FOCUS'), control);
+    const ret = this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_BLUR'), control, value);
     if (!ret) {
       console.log(`Value ${value} was not set for ${control.toString()}`); // eslint-disable-line no-console
       // todo: do we need to put back the old value
@@ -334,7 +336,7 @@ SiebelAppFacade.N19Helper = class {
   getControlValue(controlUiType, value) { // to be exposed externally
     // todo: datetime
     let ret = value;
-    if (consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
+    if (this.consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
       // convert Y/N/null -> true/false/null
       // do we need to send null?
       switch (value) {

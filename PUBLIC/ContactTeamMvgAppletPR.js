@@ -39,6 +39,9 @@ if (typeof (SiebelAppFacade.ContactTeamMvgAppletPR) === "undefined") {
         }
 
         ContactTeamMvgAppletPR.prototype.EndLife = function () {
+          if (SiebelAppFacade.N19 && SiebelAppFacade.N19[appletName]) {
+            delete SiebelAppFacade.N19[appletName];
+          }
           SiebelJS.Log(this.GetPM().Get("GetName") + ": ContactTeamMvgAppletPR:      EndLife method reached.");
           SiebelAppFacade.ContactTeamMvgAppletPR.superclass.EndLife.apply(this, arguments);
         }

@@ -11,6 +11,7 @@ if (typeof (SiebelAppFacade.PharmaEmployeePickAppletPR) === "undefined") {
 
         SiebelJS.Extend(PharmaEmployeePickAppletPR, SiebelAppFacade.JQGridRenderer);
         var n19helper;
+        var appletName;
 
         PharmaEmployeePickAppletPR.prototype.Init = function () {
           SiebelAppFacade.PharmaEmployeePickAppletPR.superclass.Init.apply(this, arguments);
@@ -18,7 +19,7 @@ if (typeof (SiebelAppFacade.PharmaEmployeePickAppletPR) === "undefined") {
           var pm = this.GetPM();
 
           // initialize helper
-          var appletName = pm.Get('GetName');
+          appletName = pm.Get('GetName');
           SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
           SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
           n19helper = SiebelAppFacade.N19[appletName];
@@ -41,6 +42,10 @@ if (typeof (SiebelAppFacade.PharmaEmployeePickAppletPR) === "undefined") {
 
         PharmaEmployeePickAppletPR.prototype.EndLife = function () {
           n19helper = null;
+          if (SiebelAppFacade.N19 && SiebelAppFacade.N19[appletName]) {
+            delete SiebelAppFacade.N19[appletName];
+          }
+
           SiebelAppFacade.PharmaEmployeePickAppletPR.superclass.EndLife.apply(this, arguments);
         }
 

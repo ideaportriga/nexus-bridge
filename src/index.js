@@ -573,6 +573,7 @@ SiebelAppFacade.N19Helper = class {
   }
 
   _getActiveControlName() {
-    return this.pm.Get('GetActiveControl').GetName();
+    const activeControl = this.pm.Get('GetActiveControl');
+    return activeControl ? activeControl.GetName() : '';
   }
 };

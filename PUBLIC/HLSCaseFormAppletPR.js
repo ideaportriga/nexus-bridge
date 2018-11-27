@@ -19,6 +19,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var divId;
         var n19helper;
         var skipVue = true;
+        var hidePopupApplet = false;
 
         HLSCaseFormAppletPR.prototype.Init = function () {
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
@@ -86,7 +87,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             if (n19helper._getActiveControlName() === 'Audit Employee Last Name') {
               if (SiebelApp.S_App.GetPopupPM().Get('state') === consts.get('POPUP_STATE_VISIBLE')) {
                 console.log('CALLING SETUP OF POPUP PM');
-                //does it clear the cache?
+                // does it clear the cache?
                 SiebelApp.S_App.GetPopupPM().Init(); //restore
                 SiebelApp.S_App.GetPopupPM().Setup(); //restore
               }
@@ -132,7 +133,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             SiebelAppFacade.__log();
             // var ret = SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);  //return "refreshpopup";
             var n19test = new SiebelAppFacade.N19test(n19helper.pm, n19helper.applet);
-            var ret = n19test.processNewPopup(ps);
+            var ret = n19test.processNewPopup(ps, hidePopupApplet);
             n19test = null;
             console.log('<<<<<<<<<<<< ProcessNewPopup', ps, ret);
             SiebelAppFacade.__log();
@@ -446,6 +447,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             },
             methods: {
               testButtonClick() {
+                hidePopupApplet = true;
+
                 n19helper.view.SetActiveAppletInternal(n19helper.applet);
                 n19helper._setActiveControl('Audit Employee Last Name');
 
@@ -454,6 +457,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 n19test = null;
               },
               openPickApplet() {
+                hidePopupApplet = false;
                 n19helper.showPickApplet('Audit Employee Last Name');
               },
               doDrillDown() {

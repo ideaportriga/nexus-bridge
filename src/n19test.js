@@ -383,7 +383,7 @@ class N19test { // eslint-disable-line no-unused-vars
     return ret;
   }
 
-  pmProcessNewPopup(ps) {
+  pmProcessNewPopup(ps, hide) {
     let u;
     let v = !1;
 
@@ -451,12 +451,12 @@ class N19test { // eslint-disable-line no-unused-vars
     }
 
     // popupPM.ExecuteMethod('OpenPopup', u, height, width, !1, !1, !1);
-    this.u(u, height, width, !1, !1, !1);
+    this.u(u, height, width, !1, !1, !1, hide);
 
     return !0;
   }
 
-  u(url, height, width, i, s, o) {
+  u(url, height, width, i, s, o, hide) {
     try {
       const popupPM = SiebelApp.S_App.GetPopupPM();
 
@@ -480,9 +480,13 @@ class N19test { // eslint-disable-line no-unused-vars
       popupPM.SetProperty('height', height);
       popupPM.SetProperty('width', width);
 
-      SiebelApp.S_App.GetPopupPM().AddProperty('state', 'visible'); // ????
-      // popupPM.ExecuteMethod('SetPopupVisible', !0);
-      this.a();
+
+      if (hide) {
+        SiebelApp.S_App.GetPopupPM().AddProperty('state', 'visible'); // ????
+        this.a();
+      } else {
+        popupPM.ExecuteMethod('SetPopupVisible', !0);
+      }
 
       if (o === undefined || !o) {
         popupPM.SetProperty('url', url);
@@ -547,7 +551,7 @@ class N19test { // eslint-disable-line no-unused-vars
       setTimeout(() => {
         $('div[name=popup]').removeData('InitDlg');
       }, 2);
-      $('div[name=popup]').dialog('open');
+      // $('div[name=popup]').dialog('open'); // to hide the dialog
       $('div[name=popup]').parents('div.ui-dialog').children('div.ui-dialog-titlebar').styleShow();
       $('div[name=popup]').dialog('option', 'height', 'auto')
         .dialog('option', 'width', 'auto')
@@ -649,11 +653,11 @@ class N19test { // eslint-disable-line no-unused-vars
     }
   }
 
-  processNewPopup(ps) {
+  processNewPopup(ps, hide) {
     SiebelApp.S_App.SetShowNewPage(!0);
     SiebelApp.S_App.GetPopupPM().SetProperty('CanProcessLayout', !1);
     // SiebelApp.S_App.GetPopupPM().ExecuteMethod('ProcessNewPopup', ps);
-    this.pmProcessNewPopup(ps);
+    this.pmProcessNewPopup(ps, hide);
     return 'refreshpopup';
   }
 }

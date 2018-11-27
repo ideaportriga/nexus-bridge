@@ -27,6 +27,8 @@
     "SiebelApp": false,
     "SiebelAppFacade": false,
     "SiebelJS": false,
-    "CCFMiscUtil_StringToArray": false
+    "CCFMiscUtil_StringToArray": false,
+    "HtmlDecode": false,
+    "$": false
   }
 }

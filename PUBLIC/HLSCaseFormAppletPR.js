@@ -84,6 +84,12 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               // });
             }
             if (n19helper._getActiveControlName() === 'Audit Employee Last Name') {
+              if (SiebelApp.S_App.GetPopupPM().Get('state') === consts.get('POPUP_STATE_VISIBLE')) {
+                console.log('CALLING SETUP OF POPUP PM');
+                //does it clear the cache?
+                SiebelApp.S_App.GetPopupPM().Init(); //restore
+                SiebelApp.S_App.GetPopupPM().Setup(); //restore
+              }
               // returnstructure["CancelOperation"] = true;
               // setTimeout(function() {
               //   $('.ui-widget-overlay').remove();
@@ -124,8 +130,10 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log('>>>>>>>>>>>>> ProcessNewPopup', ps);
             console.log(location.origin + ps.GetProperty('URL'));
             SiebelAppFacade.__log();
-            //return "refreshpopup";
-            var ret = SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);
+            // var ret = SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);  //return "refreshpopup";
+            var n19test = new SiebelAppFacade.N19test(n19helper.pm, n19helper.applet);
+            var ret = n19test.processNewPopup(ps);
+            n19test = null;
             console.log('<<<<<<<<<<<< ProcessNewPopup', ps, ret);
             SiebelAppFacade.__log();
             return ret;
@@ -443,6 +451,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
                 var n19test = new SiebelAppFacade.N19test(n19helper.pm, n19helper.applet);
                 n19test.editPopup();
+                n19test = null;
               },
               openPickApplet() {
                 n19helper.showPickApplet('Audit Employee Last Name');

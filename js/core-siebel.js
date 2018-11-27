@@ -4564,7 +4564,9 @@ typeof SiebelApp.Service == "undefined" && (Namespace("SiebelApp.Service"), Sieb
           } else o = !1;
           return o
       }, m
-  }()), typeof SiebelAppFacade.PresentationModel == "undefined" && (SiebelJS.Namespace("SiebelAppFacade.PresentationModel"), SiebelAppFacade.PresentationModel = function() {
+  }()), typeof SiebelAppFacade.PresentationModel == "undefined" && (SiebelJS.Namespace("SiebelAppFacade.PresentationModel"),
+
+  SiebelAppFacade.PresentationModel = function() {
       function w() {
           SiebelAppFacade.PresentationModel.superclass.constructor.apply(this, arguments), this.retryWaitForObjInfoProcessing = 0, this.GetStateUIMap().CtrlInfo = {}, this.GetStateUIMap.QueryMode = !1
       }
@@ -5028,21 +5030,54 @@ typeof SiebelApp.Service == "undefined" && (Namespace("SiebelApp.Service"), Sieb
       }
       var e = SiebelJS.Dependency("SiebelApp.Utils"),
           t = SiebelJS.Dependency("SiebelApp.Constants");
-      return SiebelJS.Extend(n, SiebelAppFacade.PresentationModel), n.prototype.Init = function() {
-          this.AddProperty("state", t.get("POPUP_STATE_UNLOADED")), this.AddProperty("noHide", !1), this.AddProperty("height", 0), this.AddProperty("width", 0), this.AddProperty("source", t.get("POPUP_SOURCE_HI")), this.AddProperty("closeByXDisabled", !1), this.AddProperty("isPrevPopupVisible", !1), this.AddProperty("isPopupClosedByX", !1), this.AddProperty("currPopups", []), this.AddProperty("prevPopups", []), this.AddProperty("url", ""), this.AddProperty("isSIPopup", !1), this.AddProperty("content", ""), this.AddProperty("isCurrencyOpen", !1), this.AddProperty("IsCancelQryPopupOpen", !1), this.AddProperty("CanProcessLayout", !0), this.AddProperty("isPopupSI", !1), this.AddProperty("forceClosePopup", !1), this.AddMethod("SetPopupVisible", r), this.AddMethod("ProcessNewPopup", i), this.AddMethod("ProcessClearPopup", s), this.AddMethod("OnExecuteQuery", function() {}), this.AddMethod("ClearPopup", o), this.AddMethod("OpenPopup", u), this
-              .AddMethod("OnLoadPopupContent", a), this.AddMethod("StandAlonePopup", function(e, t, n) {}), this.AddMethod("UnloadPopup", function() {}), this.AttachEventHandler("ClosePopupByX", l, {
+      return SiebelJS.Extend(n, SiebelAppFacade.PresentationModel),
+      n.prototype.Init = function() {
+          this.AddProperty("state", t.get("POPUP_STATE_UNLOADED"));
+          this.AddProperty("noHide", !1);
+          this.AddProperty("height", 0);
+          this.AddProperty("width", 0);
+          this.AddProperty("source", t.get("POPUP_SOURCE_HI"));
+          this.AddProperty("closeByXDisabled", !1);
+          this.AddProperty("isPrevPopupVisible", !1);
+          this.AddProperty("isPopupClosedByX", !1);
+          this.AddProperty("currPopups", []);
+          this.AddProperty("prevPopups", []);
+          this.AddProperty("url", "");
+          this.AddProperty("isSIPopup", !1);
+          this.AddProperty("content", "");
+          this.AddProperty("isCurrencyOpen", !1);
+          this.AddProperty("IsCancelQryPopupOpen", !1);
+          this.AddProperty("CanProcessLayout", !0);
+          this.AddProperty("isPopupSI", !1);
+          this.AddProperty("forceClosePopup", !1);
+
+          this.AddMethod("SetPopupVisible", r);
+          this.AddMethod("ProcessNewPopup", i);
+          this.AddMethod("ProcessClearPopup", s);
+          this.AddMethod("OnExecuteQuery", function() {});
+          this.AddMethod("ClearPopup", o);
+          this.AddMethod("OpenPopup", u);
+          this.AddMethod("OnLoadPopupContent", a);
+          this.AddMethod("StandAlonePopup", function(e, t, n) {});
+          this.AddMethod("UnloadPopup", function() {});
+          this.AttachEventHandler("ClosePopupByX", l, {
                   core: !0
-              }), this.AttachPreProxyExecuteBinding("ALL", function(e, n, r) {
-                  t.get("CLOSE_BY_X") === String(n.GetProperty(t.get("SWE_CMD_ARG"))) ? (this.ExecuteMethod("ClearPopup"), this.SetProperty("isPopupClosedByX", !0)) : t.get("SWSE_CANCEL_QUERY") === String(n.GetProperty(t.get("SWSE_CMD_STR"))) && (this.ExecuteMethod("ClearPopup"), this.SetProperty("isPopupClosedByX", !0), this.SetProperty("IsCancelQryPopupOpen", !1))
-              })
-      }, n.prototype.PostExecute = function(e, t, n) {
+          });
+          this.AttachPreProxyExecuteBinding("ALL", function(e, n, r) {
+            t.get("CLOSE_BY_X") === String(n.GetProperty(t.get("SWE_CMD_ARG"))) ? (this.ExecuteMethod("ClearPopup"), this.SetProperty("isPopupClosedByX", !0)) : t.get("SWSE_CANCEL_QUERY") === String(n.GetProperty(t.get("SWSE_CMD_STR"))) && (this.ExecuteMethod("ClearPopup"), this.SetProperty("isPopupClosedByX", !0), this.SetProperty("IsCancelQryPopupOpen", !1))
+          })
+      },
+      n.prototype.PostExecute = function(e, t, n) {
           this.HandlePreExecute(e, t, n), this.HandlePostExecute(e, t, n)
-      }, n.prototype.Setup = function(e) {
-          var t = new SiebelAppFacade.PopupRenderer(this);
-          this.GetRenderer = function() {
-              return t
-          }, this.Show()
-      }, n.prototype.IsPopupStarted = function() {
+      },
+      n.prototype.Setup = function(e) {
+        var t = new SiebelAppFacade.PopupRenderer(this);
+        this.GetRenderer = function() {
+          return t
+        };
+        this.Show();
+      },
+      n.prototype.IsPopupStarted = function() {
           return e.IndexOf([t.get("POPUP_STATE_STARTED"), t.get("POPUP_STATE_LOADED"), t.get("POPUP_STATE_VISIBLE")], this.Get("state")) !== -1
       }, n
   }(), define("siebel/pmodel", [], function() {

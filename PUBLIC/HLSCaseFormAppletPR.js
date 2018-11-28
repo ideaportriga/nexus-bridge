@@ -22,6 +22,20 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var hidePopupApplet = false;
         var appletName;
 
+        // just temp to make it available in Dev Console
+        SiebelAppFacade.N19updateSalesRep = function() {
+          if (app) {
+            app.getSalesRep();
+          }
+        }
+
+        // just temp to make it available in Dev Console
+        SiebelAppFacade.N19afterSelection = function() {
+          if (app) {
+            app.afterSelection();
+          }
+        }
+
         HLSCaseFormAppletPR.prototype.Init = function () {
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
 
@@ -79,7 +93,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                console.log(n19helper._getActiveControlName());
               SiebelAppFacade.__log();
               if (n19helper._getActiveControlName() === 'Sales Rep') {
-                // returnstructure["CancelOperation"] = true;
+                console.log('CALLING SETUP OF POPUP PM');
+                // does it clear the cache?
+                SiebelApp.S_App.GetPopupPM().Init(); //restore
+                SiebelApp.S_App.GetPopupPM().Setup(); //restore
+              // returnstructure["CancelOperation"] = true;
                 // setTimeout(function() {
                 //   $('.ui-widget-overlay').remove();
                 //   $("div[name=popup]").parent().css( {display: "none"} );
@@ -469,10 +487,12 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 n19helper.showPickApplet('Audit Employee Last Name');
               },
               showMvgApplet() {
+                hidePopupApplet = false;
                 n19helper.showMvgApplet('Sales Rep');
               },
               testButtonClickShuttle() {
-
+                hidePopupApplet = true;
+                n19helper.showMvgApplet('Sales Rep');
               },
               doDrillDown() {
                 if (SiebelAppFacade.N19['HLS Case List Applet']) {

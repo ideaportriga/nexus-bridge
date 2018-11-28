@@ -359,6 +359,9 @@ SiebelAppFacade.N19Helper = class {
   }
 
   getCurrentRecordModel(_controls) {
+    if (!_controls) {
+      return false;
+    }
     const arr = Object.keys(_controls);
     const index = this.getSelection();
     const appletControls = this.returnControls();
@@ -559,16 +562,33 @@ SiebelAppFacade.N19Helper = class {
     return SiebelApp.S_App.GetPopupPM().ExecuteMethod('SetPopupVisible', val);
   }
 
-  __deleteRecords() {
-    return this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecords');
+  __deleteRecords(cb) {
+    // method is not allowed to delete the primary
+    //  in this case it returns "Method DeleteRecords is not allowed here" SBL-UIF-00348
+    // todo: check canInvokeMethod ??
+
+    const ret = this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecords');
+
+    if (typeof cb === 'function') {
+      cb();
+    }
+
+    return ret;
   }
 
-  __addRecords() {
-    return this.pm.ExecuteMethod('InvokeMethod', 'AddRecords');
+  __addRecords(cb) {
+    const ret = this.pm.ExecuteMethod('InvokeMethod', 'AddRecords');
+
+    if (typeof cb === 'function') {
+      cb();
+    }
+
+    return ret;
   }
 
   __closePopupApplet() {
     // todo: check if open ??
+    // todo: check if it is popup applet?
     return this.pm.ExecuteMethod('InvokeMethod', 'CloseApplet');
   }
 

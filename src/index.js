@@ -2,12 +2,12 @@
 
 import N19test from './n19test';
 
+const popupApplet = new WeakMap();
+
 SiebelAppFacade.N19Helper = class {
   constructor(settings) {
     SiebelAppFacade.N19test = N19test; // to make it available in PR
-
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
-
     this.pm = settings.pm;
     this.appletName = this.pm.Get('GetName');
     this.view = SiebelApp.S_App.GetActiveView();
@@ -40,8 +40,14 @@ SiebelAppFacade.N19Helper = class {
       }
     });
 
+    popupApplet.set(this, {});
+
     // eslint-disable-next-line no-console
     console.log(`${this.constructor.name} Started....`, this.appletName);
+  } // end of constructor
+
+  __getPopupApplet() {
+    return popupApplet.get(this);
   }
 
   _getControl(name) {
@@ -583,5 +589,13 @@ SiebelAppFacade.N19Helper = class {
   _getActiveControlName() {
     const activeControl = this.pm.Get('GetActiveControl');
     return activeControl ? activeControl.GetName() : '';
+  }
+
+  __getViewTitle() {
+    return this.view.GetTitle(); // how GetViewSummary is different
+  }
+
+  __getAppletTitle() {
+    return this.applet.GetAppletLabel(); // how GetAppletSummary is different
   }
 };

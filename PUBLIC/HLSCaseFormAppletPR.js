@@ -410,7 +410,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-btn block v-on:click="deleteButtonClick" color="primary"><v-icon>delete</v-icon>Delete!</v-btn>                                                  \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="testButtonClick" color="primary"><v-icon>pan_tool</v-icon>Pick!</v-btn>                                                    \n\
+                  <v-btn block v-on:click="testButtonClick" color="primary"><v-icon>pan_tool</v-icon>Test!</v-btn>                                                    \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
                   <v-btn block v-on:click="testButtonClickShuttle" color="primary"><v-icon>pan_tool</v-icon>Shuttle!</v-btn>                                                    \n\
@@ -474,13 +474,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             methods: {
               testButtonClick() {
                 hidePopupApplet = true;
-                n19helper.showPickApplet('Audit Employee Last Name');
 
-                //n19helper.view.SetActiveAppletInternal(n19helper.applet);
-                //n19helper._setActiveControl('Audit Employee Last Name');
-                //var n19test = new SiebelAppFacade.N19test(n19helper.pm, n19helper.applet);
-                //n19test.editPopup();
-                //n19test = null;
+                n19helper.view.SetActiveAppletInternal(n19helper.applet);
+                n19helper._setActiveControl('Audit Employee Last Name');
+
+                var n19test = new SiebelAppFacade.N19test(n19helper.pm, n19helper.applet);
+                n19test.editPopup();
+                n19test = null;
               },
               openPickApplet() {
                 hidePopupApplet = false;

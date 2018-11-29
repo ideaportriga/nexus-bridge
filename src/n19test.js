@@ -6,7 +6,7 @@ class N19test { // eslint-disable-line no-unused-vars
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.utils = SiebelJS.Dependency('SiebelApp.Utils');
 
-    console.log('N19test created', this.pm, this.applet); // eslint-disable-line no-console
+    console.log(`${this.constructor.name} started...`); // eslint-disable-line no-console
   }
 
   M(e, n, r, _self) {

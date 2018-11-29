@@ -2,15 +2,12 @@
 
 import N19test from './n19test';
 
+const popupApplet = new WeakMap();
+
 SiebelAppFacade.N19Helper = class {
   constructor(settings) {
-    SiebelAppFacade.N19test = N19test;
-
-    // const n19test = new N19test(settings);
-    // console.log(n19test);
-
+    SiebelAppFacade.N19test = N19test; // to make it available in PR
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
-
     this.pm = settings.pm;
     this.appletName = this.pm.Get('GetName');
     this.view = SiebelApp.S_App.GetActiveView();
@@ -37,15 +34,20 @@ SiebelAppFacade.N19Helper = class {
       if (type === 'GetQuickPickInfo') {
         const arr = [];
         CCFMiscUtil_StringToArray(propSet.GetProperty(this.consts.get('SWE_PROP_ARGS_ARRAY')), arr);
-        console.log(arr); // eslint-disable-line no-console
         if (this.viewName === arr[1] && this.appletName === arr[2]) {
           this.lov[arr[3]] = arr.splice(5).filter(el => el !== '');
         }
       }
     });
 
+    popupApplet.set(this, {});
+
     // eslint-disable-next-line no-console
-    console.log('N19Helper Started....', this.appletName, this.isListApplet, this.appletId, this.required);
+    console.log(`${this.constructor.name} Started....`, this.appletName);
+  } // end of constructor
+
+  __getPopupApplet() {
+    return popupApplet.get(this);
   }
 
   _getControl(name) {
@@ -64,6 +66,7 @@ SiebelAppFacade.N19Helper = class {
     return this.pm.ExecuteMethod('CanInvokeMethod', method);
   }
 
+  // called into the getControls to reduce the amount of the returned controls
   _isSkipControl(type) {
     // https://docs.oracle.com/cd/E74890_01/books/ConfigOpenUI/appendix_a_api002.htm
     // maybe we need to exclude more types
@@ -93,9 +96,8 @@ SiebelAppFacade.N19Helper = class {
   _showMvgApplet(name) {
     this.view.SetActiveAppletInternal(this.applet);
     this._setActiveControl(name);
-    // const ps = SiebelApp.S_App.NewPropertySet();
-    // pm.OnControlEvent( consts.get( "PHYEVENT_INVOKE_MVG" ), control )
-    return this.applet.InvokeMethod('EditPopup', null, false);
+    // return this.applet.InvokeMethod('EditPopup', null, false);
+    return this.pm.OnControlEvent(this.consts.get('PHYEVENT_INVOKE_MVG'), this._getControl(name));
   }
 
   getAppletType() {
@@ -103,7 +105,6 @@ SiebelAppFacade.N19Helper = class {
   }
 
   getControls() {
-    console.log('get controls started...'); // eslint-disable-line no-console
     const controls = {};
     const appletControls = this.returnControls();
     const arr = Object.keys(appletControls);
@@ -144,7 +145,6 @@ SiebelAppFacade.N19Helper = class {
       // obj.staticValue = obj.staticLOV; // if somebody already uses it
       controls[controlName] = obj;
     }
-    console.log('returns controls -', controls); // eslint-disable-line no-console
     return controls;
   }
 
@@ -305,9 +305,8 @@ SiebelAppFacade.N19Helper = class {
     const ps = SiebelApp.S_App.NewPropertySet();
     ps.SetProperty('SWEField', controlInputName);
     ps.SetProperty('SWEJI', false);
-    const ret = this.applet.InvokeMethod('GetQuickPickInfo', ps);
+    this.applet.InvokeMethod('GetQuickPickInfo', ps);
     // is it possible to get something different than true
-    console.log(ret); // eslint-disable-line no-console
     return this.lov[controlInputName];
   }
 
@@ -329,7 +328,6 @@ SiebelAppFacade.N19Helper = class {
       }
       ret.sort();
     }
-    console.log(ret); // eslint-disable-line no-console
     return ret;
   }
 
@@ -401,11 +399,10 @@ SiebelAppFacade.N19Helper = class {
       }
     }
 
-    console.log(_controls); // eslint-disable-line no-console
     return true;
   }
 
-  _getControlInputNameForQuery() {
+  _getControlInputNameForIdQuery() {
     const appletControls = this.returnControls();
     const arr = Object.keys(appletControls);
     for (let i = 0; i < arr.length; i += 1) {
@@ -440,7 +437,7 @@ SiebelAppFacade.N19Helper = class {
 
     const psOutput = SiebelApp.S_App.NewPropertySet();
     const psInput = SiebelApp.S_App.NewPropertySet();
-    psInput.SetProperty(this._getControlInputNameForQuery(), `Id="${rowId}"`);
+    psInput.SetProperty(this._getControlInputNameForIdQuery(), `Id="${rowId}"`);
 
     ai.args.push(method);
     ai.args.push(psInput.Clone());
@@ -468,7 +465,6 @@ SiebelAppFacade.N19Helper = class {
     const psOutput = SiebelApp.S_App.NewPropertySet();
     const psInput = SiebelApp.S_App.NewPropertySet();
     const arr = Object.keys(params);
-    console.log(arr); // eslint-disable-line no-console
     const _controls = this.returnControls();
     for (let i = 0; i < arr.length; i += 1) {
       const control = _controls[arr[i]];
@@ -477,7 +473,6 @@ SiebelAppFacade.N19Helper = class {
     ai.args.push(method);
     ai.args.push(psInput.Clone());
 
-    console.log(psInput); // eslint-disable-line no-console
     return this.applet.CallServerApplet(method, psInput, psOutput, ai);
   }
 
@@ -493,7 +488,6 @@ SiebelAppFacade.N19Helper = class {
         uiType: control.GetUIType(),
       };
     }
-    console.log(ret); // eslint-disable-line no-console
     return ret;
   }
 
@@ -586,14 +580,31 @@ SiebelAppFacade.N19Helper = class {
     return ret;
   }
 
-  __closePopupApplet() {
-    // todo: check if open ??
-    // todo: check if it is popup applet?
+  closePopupApplet() {
+    // todo: check if I am a popup applet?
     return this.pm.ExecuteMethod('InvokeMethod', 'CloseApplet');
   }
 
   _getActiveControlName() {
     const activeControl = this.pm.Get('GetActiveControl');
     return activeControl ? activeControl.GetName() : '';
+  }
+
+  __getViewTitle() {
+    return this.view.GetTitle(); // how GetViewSummary is different
+  }
+
+  __getAppletTitle() {
+    return this.applet.GetAppletLabel(); // how GetAppletSummary is different
+  }
+
+  _getPopupInfo() {
+    // check if I am a parent and
+    // const popup = SiebelApp.S_App.GetPopupPM();
+    const { availableApplet } = SiebelApp.MvgBeautifier;
+    if (availableApplet) {
+      return availableApplet.GetName();
+    }
+    return false;
   }
 };

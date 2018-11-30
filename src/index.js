@@ -1,10 +1,10 @@
 // for now only for form and list applets
 
-import N19test from './n19test';
+import N19popup from './n19popup';
 
 SiebelAppFacade.N19Helper = class {
   constructor(settings) {
-    SiebelAppFacade.N19test = N19test; // to make it available in PR
+    SiebelAppFacade.N19popup = N19popup; // to make it available in PR
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.pm = settings.pm;
     this.appletName = this.pm.Get('GetName');
@@ -119,8 +119,11 @@ SiebelAppFacade.N19Helper = class {
       // maybe do not close if the applet to be opened if the same as opened?
       SiebelAppFacade.N19[appletName].closeApplet(); // todo: check if closed?
     }
-    // return this.applet.InvokeMethod('EditPopup', null, false);
-    return this.pm.OnControlEvent(this.consts.get('PHYEVENT_INVOKE_MVG'), this._getControl(name));
+    // return this.applet.InvokeMethod('EditPopup', null, false); // async
+    // return this.pm.OnControlEvent(this.consts.get('PHYEVENT_INVOKE_MVG'), this._getControl(name)); // async
+    // return this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // async
+
+    return this.applet.InvokeMethod('EditPopup', null, false);
   }
 
   getAppletType() {

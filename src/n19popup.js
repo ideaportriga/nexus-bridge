@@ -1,6 +1,5 @@
-class N19test { // eslint-disable-line no-unused-vars
-  constructor(pm, applet) {
-    this.pm = pm;
+class N19popup { // eslint-disable-line no-unused-vars
+  constructor(applet) {
     this.applet = applet;
 
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
@@ -662,4 +661,4 @@ class N19test { // eslint-disable-line no-unused-vars
   }
 }
 
-export default N19test;
+export default N19popup;

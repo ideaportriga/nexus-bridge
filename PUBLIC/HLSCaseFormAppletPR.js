@@ -88,15 +88,15 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           SiebelApp.S_App.GetPopupPM().AddMethod('SetPopupVisible', function (methodname, inputpropset, context, returnstructure) {
              console.log('!!!!!!!!!!!!!!!!!!! SetPopupVisible', arguments);
-             console.log(methodname, inputpropset, context, returnstructure);
+             console.log(methodname, inputpropset, context, returnstructure, hidePopupApplet);
              if (n19helper) {
                console.log(n19helper._getActiveControlName());
-              SiebelAppFacade.__log();
               if (n19helper._getActiveControlName() === 'Sales Rep') {
                 console.log('CALLING SETUP OF POPUP PM');
                 // does it clear the cache?
-                SiebelApp.S_App.GetPopupPM().Init(); //restore
-                SiebelApp.S_App.GetPopupPM().Setup(); //restore
+                debugger;
+                SiebelApp.S_App.GetPopupPM().Init();
+                SiebelApp.S_App.GetPopupPM().Setup();
               // returnstructure["CancelOperation"] = true;
                 // setTimeout(function() {
                 //   $('.ui-widget-overlay').remove();
@@ -108,8 +108,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 if (SiebelApp.S_App.GetPopupPM().Get('state') === consts.get('POPUP_STATE_VISIBLE')) {
                   console.log('CALLING SETUP OF POPUP PM');
                   // does it clear the cache?
-                  SiebelApp.S_App.GetPopupPM().Init(); //restore
-                  SiebelApp.S_App.GetPopupPM().Setup(); //restore
+                  debugger;
+                  SiebelApp.S_App.GetPopupPM().Init();
+                  SiebelApp.S_App.GetPopupPM().Setup();
                 }
                 // returnstructure["CancelOperation"] = true;
                 // setTimeout(function() {
@@ -119,39 +120,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 // });
               }
             }
-          }, { sequence: true, scope: SiebelApp.S_App.GetPopupPM() });
-
-          SiebelAppFacade.__log = function () {
-            var popupPM = SiebelApp.S_App.GetPopupPM();
-
-            console.log('state', popupPM.Get('state'));
-            console.log('url', popupPM.Get('url'));
-            console.log('content', popupPM.Get('content'));
-            console.log('currPopups', popupPM.Get('currPopups'));
-            console.log('prevPopups', popupPM.Get('prevPopups'));
-            console.log('isControlPopupOpen', popupPM.Get('isControlPopupOpen'));
-            console.log('isPopupMVGSelected', popupPM.Get('isPopupMVGSelected'));
-            console.log('isPopupPick', popupPM.Get('isPopupPick'));
-            console.log('PickAppletObject', popupPM.Get('PickAppletObject'));
-            console.log('baseParentAppletId', popupPM.Get('baseParentAppletId'));
-            console.log('isPopupAssoc', popupPM.Get('isPopupAssoc'));
-            console.log('AssocAppletObject', popupPM.Get('AssocAppletObject'));
-            console.log('MVGSelectedAppletObject', popupPM.Get('MVGSelectedAppletObject'));
-            console.log('isPopupMVGAssoc', popupPM.Get('isPopupMVGAssoc'));
-            console.log('MVGAssocAppletObject', popupPM.Get('MVGAssocAppletObject'));
-            console.log('MVGAssocParentAppletObject', popupPM.Get('MVGAssocParentAppletObject'));
-            console.log('parentAppletId', popupPM.Get('parentAppletId'));
-            console.log('isPopupNonStandard', popupPM.Get('isPopupNonStandard'));
-            console.log('NonStandardAppletObject', popupPM.Get('NonStandardAppletObject'));
-          }
+          }, { sequence: true, scope: SiebelApp.S_App.GetPopupPM(), _hide: hidePopupApplet });
 
           // do not display the shuttle applet
           SiebelAppFacade.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
           SiebelApp.S_App.ProcessNewPopup = function (ps) {
             console.log('>>>>>>>>>>>>> ProcessNewPopup', ps);
-            console.log(location.origin + ps.GetProperty('URL'));
-            SiebelAppFacade.__log();
-            if (SiebelApp.S_App.GetActiveView().GetActiveApplet().GetName() === appletName) {
+            if (SiebelApp.S_App.GetActiveView().GetActiveApplet().GetName() === appletName && hidePopupApplet) {
               var n19test = new SiebelAppFacade.N19test(n19helper.pm, n19helper.applet);
               var ret = n19test.processNewPopup(ps, hidePopupApplet);
               n19test = null;
@@ -159,7 +134,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               var ret = SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);  //return "refreshpopup";
             }
             console.log('<<<<<<<<<<<< ProcessNewPopup', ps, ret);
-            SiebelAppFacade.__log();
             return ret;
           }
 

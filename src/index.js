@@ -2,8 +2,6 @@
 
 import N19test from './n19test';
 
-const popupApplet = new WeakMap();
-
 SiebelAppFacade.N19Helper = class {
   constructor(settings) {
     SiebelAppFacade.N19test = N19test; // to make it available in PR
@@ -40,14 +38,8 @@ SiebelAppFacade.N19Helper = class {
       }
     });
 
-    popupApplet.set(this, {});
-
     // eslint-disable-next-line no-console
-    console.log(`${this.constructor.name} Started....`, this.appletName);
-  } // end of constructor
-
-  __getPopupApplet() {
-    return popupApplet.get(this);
+    console.log(`${this.constructor.name} started....`, this.appletName);
   }
 
   _getControl(name) {
@@ -93,9 +85,40 @@ SiebelAppFacade.N19Helper = class {
     return this.applet.SetActiveControl(this._getControl(name));
   }
 
+  _isPopupOpen() {
+    // this code will close the applet even if this applet was originated by another applet
+    const currPopups = SiebelApp.S_App.GetPopupPM().Get('currPopups');
+    if (0 === currPopups.length) {
+      return { isOpen: false };
+    }
+    if (1 === currPopups.length) {
+      return { isOpen: true, appletName: currPopups[0].GetName() };
+    }
+    if (2 === currPopups.length) {
+      // this is a shuttle or
+      // maybe we opened a popup applet on the top of pick applet - TODO: // test it
+      //      test it  - maybe we need to close the several applets
+      for (let i = 0; i < currPopups.length; i += 1) {
+        if (typeof currPopups[1].GetPopupAppletName === 'function') {
+          return { isOpen: true, appletName: currPopups[i].GetName() };
+        }
+      }
+      throw new Error('Mvg applet is not found...');
+    }
+    // todo: test if we can get to here
+    //    maybe when we open a new applet on top of the shuttle applet
+    throw new Error('how did I get here...');
+  }
+
   _showMvgApplet(name) {
-    this.view.SetActiveAppletInternal(this.applet);
+    this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
     this._setActiveControl(name);
+    const { isOpen, appletName } = this._isPopupOpen();
+    if (isOpen) {
+      console.log(`closing ${appletName} in _showMvgApplet...`); // eslint-disable-line no-console
+      // maybe do not close if the applet to be opened if the same as opened?
+      SiebelAppFacade.N19[appletName].closeApplet(); // todo: check if closed?
+    }
     // return this.applet.InvokeMethod('EditPopup', null, false);
     return this.pm.OnControlEvent(this.consts.get('PHYEVENT_INVOKE_MVG'), this._getControl(name));
   }
@@ -310,14 +333,6 @@ SiebelAppFacade.N19Helper = class {
     return this.lov[controlInputName];
   }
 
-  isInQueryMode() {
-    return this.pm.Get('IsInQueryMode');
-  }
-
-  _NotifyNewDataWS(name) {
-    return this.applet.NotifyNewDataWS(name);
-  }
-
   getStaticLOV(name) {
     const control = this._getControl(name);
     const ret = [];
@@ -409,7 +424,11 @@ SiebelAppFacade.N19Helper = class {
       const control = appletControls[arr[i]];
       const controlUiType = control.GetUIType();
       if (!this._isSkipControl(controlUiType)) {
-        return control.GetInputName();
+        // skipping also JCheckbox
+        // todo: do we need to skip also date?
+        if (controlUiType !== this.consts.get('SWE_CTRL_CHECKBOX')) {
+          return control.GetInputName();
+        }
       }
     }
     throw new Error('cannot find a control for query');
@@ -543,23 +562,17 @@ SiebelAppFacade.N19Helper = class {
     }
   }
 
-  __clearQuery() { // todo : could we get it calling the query methods with empty object
-    this.pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false);
-    this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, false);
-  }
-
-  __pickRecord() {
+  pickRecord() {
+    // todo : check if it a pick applet
+    // todo : check CanInokeMethod
     return this.pm.ExecuteMethod('InvokeMethod', 'PickRecord');
   }
 
-  __setPopupVisible(val) {
-    return SiebelApp.S_App.GetPopupPM().ExecuteMethod('SetPopupVisible', val);
-  }
-
-  __deleteRecords(cb) {
+  deleteRecords(cb) {
     // method is not allowed to delete the primary
     //  in this case it returns "Method DeleteRecords is not allowed here" SBL-UIF-00348
     // todo: check canInvokeMethod ??
+    // todo: check if it is a Mvg?
 
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecords');
 
@@ -570,7 +583,7 @@ SiebelAppFacade.N19Helper = class {
     return ret;
   }
 
-  __addRecords(cb) {
+  addRecords(cb) {
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'AddRecords');
 
     if (typeof cb === 'function') {
@@ -580,14 +593,24 @@ SiebelAppFacade.N19Helper = class {
     return ret;
   }
 
-  closePopupApplet() {
-    // todo: check if I am a popup applet?
-    return this.pm.ExecuteMethod('InvokeMethod', 'CloseApplet');
+  closeApplet() {
+    const isPopupApplet = typeof this.applet.GetPopupAppletName === 'function';
+    const isPickApplet = typeof this.applet.GetPickAppletName === 'function';
+
+    if (isPopupApplet || isPickApplet) {
+      // todo : check canInvokeMethod
+      return this.pm.ExecuteMethod('InvokeMethod', 'CloseApplet');
+    }
+    throw new Error('This applet is neither pick nor popup');
   }
 
   _getActiveControlName() {
     const activeControl = this.pm.Get('GetActiveControl');
     return activeControl ? activeControl.GetName() : '';
+  }
+
+  __setPopupVisible(val) {
+    return SiebelApp.S_App.GetPopupPM().ExecuteMethod('SetPopupVisible', val);
   }
 
   __getViewTitle() {
@@ -598,13 +621,16 @@ SiebelAppFacade.N19Helper = class {
     return this.applet.GetAppletLabel(); // how GetAppletSummary is different
   }
 
-  _getPopupInfo() {
-    // check if I am a parent and
-    // const popup = SiebelApp.S_App.GetPopupPM();
-    const { availableApplet } = SiebelApp.MvgBeautifier;
-    if (availableApplet) {
-      return availableApplet.GetName();
-    }
-    return false;
+  __clearQuery() { // todo : could we get it calling the query methods with empty object
+    this.pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false);
+    this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, false);
+  }
+
+  _isInQueryMode() {
+    return this.pm.Get('IsInQueryMode');
+  }
+
+  _NotifyNewDataWS(name) {
+    return this.applet.NotifyNewDataWS(name);
   }
 };

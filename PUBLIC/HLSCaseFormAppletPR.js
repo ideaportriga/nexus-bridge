@@ -23,14 +23,14 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var appletName;
 
         // just temp to make it available in Dev Console
-        SiebelAppFacade.N19updateSalesRep = function() {
+        SiebelAppFacade.N19updateSalesRep = function () {
           if (app) {
             app.getSalesRep();
           }
         }
 
         // just temp to make it available in Dev Console
-        SiebelAppFacade.N19afterSelection = function() {
+        SiebelAppFacade.N19afterSelection = function () {
           if (app) {
             app.afterSelection();
           }
@@ -87,30 +87,28 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           // };
 
           SiebelApp.S_App.GetPopupPM().AddMethod('SetPopupVisible', function (methodname, inputpropset, context, returnstructure) {
-             console.log('!!!!!!!!!!!!!!!!!!! SetPopupVisible', arguments);
-             console.log(methodname, inputpropset, context, returnstructure, hidePopupApplet);
-             if (n19helper) {
-               console.log(n19helper._getActiveControlName());
+            console.log('!!!!!!!!!!!!!!!!!!! SetPopupVisible', arguments);
+            console.log(methodname, inputpropset, context, returnstructure, hidePopupApplet);
+            if (n19helper) {
+              console.log(n19helper._getActiveControlName());
               if (n19helper._getActiveControlName() === 'Sales Rep') {
-                console.log('CALLING SETUP OF POPUP PM');
-                // does it clear the cache?
-                debugger;
-                SiebelApp.S_App.GetPopupPM().Init();
-                SiebelApp.S_App.GetPopupPM().Setup();
-              // returnstructure["CancelOperation"] = true;
-                // setTimeout(function() {
-                //   $('.ui-widget-overlay').remove();
-                //   $("div[name=popup]").parent().css( {display: "none"} );
-                //   $("div[name=popup]").dialog( "option", "modal", false );
-                // });
+                if (SiebelApp.S_App.GetPopupPM().Get('state') === consts.get('POPUP_STATE_VISIBLE')) {
+                  console.log('CALLING SETUP OF POPUP PM');
+                  // does it clear the cache?
+                  if (!hidePopupApplet) { // todo: and check if it is should be restored?
+                    SiebelApp.S_App.GetPopupPM().Init();
+                    SiebelApp.S_App.GetPopupPM().Setup();
+                  }
+                }
               }
               if (n19helper._getActiveControlName() === 'Audit Employee Last Name') {
                 if (SiebelApp.S_App.GetPopupPM().Get('state') === consts.get('POPUP_STATE_VISIBLE')) {
                   console.log('CALLING SETUP OF POPUP PM');
                   // does it clear the cache?
-                  debugger;
-                  SiebelApp.S_App.GetPopupPM().Init();
-                  SiebelApp.S_App.GetPopupPM().Setup();
+                  if (!hidePopupApplet) { // todo: and check if it is should be restored?
+                    SiebelApp.S_App.GetPopupPM().Init();
+                    SiebelApp.S_App.GetPopupPM().Setup();
+                  }
                 }
                 // returnstructure["CancelOperation"] = true;
                 // setTimeout(function() {

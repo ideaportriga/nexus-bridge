@@ -39,7 +39,7 @@ SiebelAppFacade.N19Helper = class {
     });
 
     // eslint-disable-next-line no-console
-    console.log(`${this.constructor.name} started....`, this.appletName);
+    console.log('N19Helper started....', this.appletName);
   }
 
   _getControl(name) {
@@ -123,7 +123,11 @@ SiebelAppFacade.N19Helper = class {
     // return this.pm.OnControlEvent(this.consts.get('PHYEVENT_INVOKE_MVG'), this._getControl(name)); // async
     // return this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // async
 
-    return this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false);
+    const ret = this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false);
+    console.log('pm execute method return value', ret);
+
+    return ret;
+    // return new Promise
   }
 
   getAppletType() {

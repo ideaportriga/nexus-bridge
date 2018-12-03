@@ -21,6 +21,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var skipVue = true;
         var hidePopupApplet = false;
         var appletName;
+        var cb;
+        var promiseInProgress = false;
 
         // just temp to make it available in Dev Console
         SiebelAppFacade.N19updateSalesRep = function () {
@@ -109,7 +111,12 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             var ret = SiebelAppFacade.N19viewLoaded.apply(SiebelApp.contentUpdater, arguments);
 
             console.log(ret, arguments);
-            debugger;
+
+            if (typeof cb === 'function') {
+              cb();
+              cb = null;
+            }
+
 
             return ret;
           }
@@ -479,11 +486,14 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               testButtonClick() {
                 hidePopupApplet = true;
                 n19helper.showPickApplet('Audit Employee Last Name');
-                if (!SiebelAppFacade.N19['Pharma Employee Pick Applet']) {
-                  alert('Pharma Employee Pick Applet is not found in SiebelAppFacade');
-                }
-                if (Object.keys(SiebelAppFacade.N19).length !== 3) {
-                  alert('SiebelAppFacade length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
+                cb = function() {
+                  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+                  if (!SiebelAppFacade.N19['Pharma Employee Pick Applet']) {
+                    alert('Pharma Employee Pick Applet is not found in SiebelAppFacade');
+                  }
+                  if (Object.keys(SiebelAppFacade.N19).length !== 3) {
+                    alert('SiebelAppFacade length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
+                  }
                 }
 
                 //n19helper.view.SetActiveAppletInternal(n19helper.applet);
@@ -495,14 +505,17 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               testButtonClickShuttle() {
                 hidePopupApplet = true;
                 n19helper.showMvgApplet('Sales Rep');
-                if (!SiebelAppFacade.N19['Contact Team Mvg Applet']) {
-                  alert('Contact Team Mvg Applet is not found in SiebelAppFacade');
-                }
-                if (!SiebelAppFacade.N19['Team Member Assoc Applet']) {
-                  alert('Team Member Assoc Applet is not found in SiebelAppFacade');
-                }
-                if (Object.keys(SiebelAppFacade.N19).length !== 4) {
-                  alert('SiebelAppFacade length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
+                cb = function() {
+                  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+                  if (!SiebelAppFacade.N19['Contact Team Mvg Applet']) {
+                    alert('Contact Team Mvg Applet is not found in SiebelAppFacade');
+                  }
+                  if (!SiebelAppFacade.N19['Team Member Assoc Applet']) {
+                    alert('Team Member Assoc Applet is not found in SiebelAppFacade');
+                  }
+                  if (Object.keys(SiebelAppFacade.N19).length !== 4) {
+                    alert('SiebelAppFacade length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
+                  }
                 }
               },
               openPickApplet() {

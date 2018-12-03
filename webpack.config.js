@@ -20,7 +20,9 @@ module.exports = (env, argv) => {
   }
 
   let config = {
-    entry: __dirname + '/src/index.js',
+    entry: {
+      main: ['core-js/fn/promise', __dirname + '/src/index.js']
+    },
     devtool: 'source-map',
     output: {
       path: "C:\\Siebel\\16.0.0.0.0\\Client\\public\\SCRIPTS\\siebel\\custom",

@@ -21,7 +21,8 @@
     "no-useless-escape": 1,
     "max-len": [1, 120],
     "no-multiple-empty-lines": [2, { "max": 2, "maxEOF": 2 }],
-    "class-methods-use-this": 0
+    "class-methods-use-this": 0,
+    "no-return-assign": 1
   },
   "globals": {
     "SiebelApp": false,

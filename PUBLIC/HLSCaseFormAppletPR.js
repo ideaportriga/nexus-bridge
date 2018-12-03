@@ -21,8 +21,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var skipVue = true;
         var hidePopupApplet = false;
         var appletName;
-        var cb;
-        var promiseInProgress = false;
+        var resolvePromise = {
+          cb: null
+        };
 
         // just temp to make it available in Dev Console
         SiebelAppFacade.N19updateSalesRep = function () {
@@ -49,23 +50,23 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           }
 
           var pm = this.GetPM();
-          pm.AddMethod("InvokeMethod", function(method) {
+          pm.AddMethod("InvokeMethod", function (method) {
             console.log('InvokeMethod sequence true', method)
-          }, {sequence:true, scope:this});
+          }, { sequence: true, scope: this });
 
-          pm.AddMethod("InvokeMethod", function(method) {
+          pm.AddMethod("InvokeMethod", function (method) {
             console.log('InvokeMethod sequence false', method)
-          }, {sequence:true, scope:this});
+          }, { sequence: true, scope: this });
 
-          pm.AddMethod("PostExecute", function(method) {
+          pm.AddMethod("PostExecute", function (method) {
             console.log('PostExecute sequence true', arguments)
-          }, {sequence:true, scope:this});
+          }, { sequence: true, scope: this });
 
-          pm.AddMethod("PostExecute", function(method) {
+          pm.AddMethod("PostExecute", function (method) {
             console.log('PostExecute sequence false', arguments)
-          }, {sequence:true, scope:this});
+          }, { sequence: true, scope: this });
 
-          pm.AttachPostProxyExecuteBinding("ALL", function(){
+          pm.AttachPostProxyExecuteBinding("ALL", function () {
             console.log('AttachPostProxyExecuteBinding<<<', arguments)
           });
 
@@ -107,16 +108,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           //  return SiebelAppFacade.N19loadContent.apply(SiebelApp.contentUpdater, arguments);
           // };
           SiebelAppFacade.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded;
-          SiebelApp.contentUpdater.viewLoaded = function() {
+          SiebelApp.contentUpdater.viewLoaded = function () {
             var ret = SiebelAppFacade.N19viewLoaded.apply(SiebelApp.contentUpdater, arguments);
 
-            console.log(ret, arguments);
-
-            if (typeof cb === 'function') {
-              cb();
-              cb = null;
+            console.log(ret, arguments, typeof resolvePromise.cb, resolvePromise.cb);
+            if (typeof resolvePromise.cb === 'function') {
+              resolvePromise.cb();
             }
-
 
             return ret;
           }
@@ -484,18 +482,20 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             },
             methods: {
               testButtonClick() {
-                hidePopupApplet = true;
-                n19helper.showPickApplet('Audit Employee Last Name');
-                cb = function() {
-                  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-                  if (!SiebelAppFacade.N19['Pharma Employee Pick Applet']) {
-                    alert('Pharma Employee Pick Applet is not found in SiebelAppFacade');
-                  }
-                  if (Object.keys(SiebelAppFacade.N19).length !== 3) {
-                    alert('SiebelAppFacade length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
-                  }
+                if (resolvePromise.cb === null) {
+                  hidePopupApplet = true;
+                  // todo: check if promise is not resolved yet?
+                  n19helper.showPickApplet('Audit Employee Last Name', resolvePromise).then(function () {
+                    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+                    if (!SiebelAppFacade.N19['Pharma Employee Pick Applet']) {
+                      alert('Pharma Employee Pick Applet is not found in SiebelAppFacade');
+                    }
+                    if (Object.keys(SiebelAppFacade.N19).length !== 3) {
+                      alert('SiebelAppFacade length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
+                    }
+                    resolvePromise.cb = null;
+                  })
                 }
-
                 //n19helper.view.SetActiveAppletInternal(n19helper.applet);
                 //n19helper._setActiveControl('Audit Employee Last Name');
                 //var n19popup = new SiebelAppFacade.N19popup(n19helper.pm, n19helper.applet);
@@ -503,28 +503,30 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 //n19popup = null;
               },
               testButtonClickShuttle() {
-                hidePopupApplet = true;
-                n19helper.showMvgApplet('Sales Rep');
-                cb = function() {
-                  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-                  if (!SiebelAppFacade.N19['Contact Team Mvg Applet']) {
-                    alert('Contact Team Mvg Applet is not found in SiebelAppFacade');
-                  }
-                  if (!SiebelAppFacade.N19['Team Member Assoc Applet']) {
-                    alert('Team Member Assoc Applet is not found in SiebelAppFacade');
-                  }
-                  if (Object.keys(SiebelAppFacade.N19).length !== 4) {
-                    alert('SiebelAppFacade length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
-                  }
+                if (resolvePromise.cb === null) {
+                  hidePopupApplet = true;
+                  n19helper.showMvgApplet('Sales Rep', resolvePromise).then(function () {
+                    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+                    if (!SiebelAppFacade.N19['Contact Team Mvg Applet']) {
+                      alert('Contact Team Mvg Applet is not found in SiebelAppFacade');
+                    }
+                    if (!SiebelAppFacade.N19['Team Member Assoc Applet']) {
+                      alert('Team Member Assoc Applet is not found in SiebelAppFacade');
+                    }
+                    if (Object.keys(SiebelAppFacade.N19).length !== 4) {
+                      alert('SiebelAppFacade length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
+                    }
+                    resolvePromise.cb = null;
+                  });
                 }
               },
               openPickApplet() {
                 hidePopupApplet = false;
-                n19helper.showPickApplet('Audit Employee Last Name');
+                n19helper.showPickApplet('Audit Employee Last Name', resolvePromise); //todo: make promise ??
               },
               showMvgApplet() {
                 hidePopupApplet = false;
-                n19helper.showMvgApplet('Sales Rep');
+                n19helper.showMvgApplet('Sales Rep', resolvePromise);
               },
               doDrillDown() {
                 if (SiebelAppFacade.N19['HLS Case List Applet']) {

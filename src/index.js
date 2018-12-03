@@ -110,7 +110,7 @@ SiebelAppFacade.N19Helper = class {
     throw new Error('how did I get here...');
   }
 
-  _showMvgApplet(name) {
+  _showMvgApplet(name, resolvePromise) { // eslint-disable-line no-unused-vars
     this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
     this._setActiveControl(name);
     const { isOpen, appletName } = this._isPopupOpen();
@@ -123,11 +123,12 @@ SiebelAppFacade.N19Helper = class {
     // return this.pm.OnControlEvent(this.consts.get('PHYEVENT_INVOKE_MVG'), this._getControl(name)); // async
     // return this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // async
 
-    const ret = this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false);
-    console.log('pm execute method return value', ret);
+    // const ret = this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false);
+    // console.log('pm execute method return value', ret);
+    // return ret;
+    this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false);
 
-    return ret;
-    // return new Promise
+    return new Promise(resolve => resolvePromise.cb = resolve); // eslint-disable-line no-param-reassign
   }
 
   getAppletType() {
@@ -543,12 +544,12 @@ SiebelAppFacade.N19Helper = class {
     return this.pm.Get('GetBusComp').insertPending;
   }
 
-  showMvgApplet(input) {
-    return this._showMvgApplet(input);
+  showMvgApplet(input, resolvePromise) {
+    return this._showMvgApplet(input, resolvePromise);
   }
 
-  showPickApplet(input) {
-    return this._showMvgApplet(input);
+  showPickApplet(input, resolvePromise) {
+    return this._showMvgApplet(input, resolvePromise);
   }
 
   requery(name) {

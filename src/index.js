@@ -123,7 +123,7 @@ SiebelAppFacade.N19Helper = class {
     // return this.pm.OnControlEvent(this.consts.get('PHYEVENT_INVOKE_MVG'), this._getControl(name)); // async
     // return this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // async
 
-    return this.applet.InvokeMethod('EditPopup', null, false);
+    return this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false);
   }
 
   getAppletType() {

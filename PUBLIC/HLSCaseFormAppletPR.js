@@ -47,6 +47,25 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           }
 
           var pm = this.GetPM();
+          pm.AddMethod("InvokeMethod", function(method) {
+            console.log('InvokeMethod sequence true', method)
+          }, {sequence:true, scope:this});
+
+          pm.AddMethod("InvokeMethod", function(method) {
+            console.log('InvokeMethod sequence false', method)
+          }, {sequence:true, scope:this});
+
+          pm.AddMethod("PostExecute", function(method) {
+            console.log('PostExecute sequence true', arguments)
+          }, {sequence:true, scope:this});
+
+          pm.AddMethod("PostExecute", function(method) {
+            console.log('PostExecute sequence false', arguments)
+          }, {sequence:true, scope:this});
+
+          pm.AttachPostProxyExecuteBinding("ALL", function(){
+            console.log('AttachPostProxyExecuteBinding<<<', arguments)
+          });
 
           // initialize helper
           appletName = pm.Get('GetName');
@@ -85,6 +104,15 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           // SiebelApp.contentUpdater.loadContent = function() {
           //  return SiebelAppFacade.N19loadContent.apply(SiebelApp.contentUpdater, arguments);
           // };
+          SiebelAppFacade.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded;
+          SiebelApp.contentUpdater.viewLoaded = function() {
+            var ret = SiebelAppFacade.N19viewLoaded.apply(SiebelApp.contentUpdater, arguments);
+
+            console.log(ret, arguments);
+            debugger;
+
+            return ret;
+          }
 
           SiebelApp.S_App.GetPopupPM().AddMethod('SetPopupVisible', function (methodname, inputpropset, context, returnstructure) {
             console.log('!!!!!!!!!!!!!!!!!!! SetPopupVisible', arguments);
@@ -118,7 +146,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 // });
               }
             }
-          }, { sequence: true, scope: SiebelApp.S_App.GetPopupPM(), _hide: hidePopupApplet });
+          }, { sequence: true, scope: SiebelApp.S_App.GetPopupPM() });
 
           // do not display the shuttle applet
           SiebelAppFacade.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
@@ -130,6 +158,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               n19popup = null;
             } else {
               var ret = SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);  //return "refreshpopup";
+              // at this moment we have SiebelApp.S_App.GetPopupPM().Get('url')
             }
             console.log('<<<<<<<<<<<< ProcessNewPopup', ps, ret);
             return ret;
@@ -297,8 +326,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
         }
 
-        HLSCaseFormAppletPR.prototype.UpdatePick = function () {
-          // todo - move into N19Helper? or refactore the approach
+        SiebelApp.S_App.Applet.prototype.FireInvokeMethod = function () {
+          // execute browsers scripts
+          // SiebelAppFacade.HLSCaseFormAppletPR.superclass.FireInvokeMethod.apply(this, arguments);
+          console.log('Fire Invoke Method', arguments);
+
         }
 
         HLSCaseFormAppletPR.prototype.preInvokeMethod = function (methodName, args, lp, returnStructure) {
@@ -751,6 +783,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = SiebelAppFacade.N19notifyNewFieldData;
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary = SiebelAppFacade.N19notifyNewPrimary;
           SiebelApp.S_App.ProcessNewPopup = SiebelAppFacade.N19processNewPopup;
+          SiebelApp.contentUpdater.viewLoaded = SiebelAppFacade.N19viewLoaded;
           // SiebelApp.contentUpdater.loadContent = SiebelAppFacade.N19loadContent;
 
           if (app) {

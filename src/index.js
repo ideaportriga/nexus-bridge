@@ -128,7 +128,10 @@ SiebelAppFacade.N19Helper = class {
     // return ret;
     this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false);
 
-    return new Promise(resolve => resolvePromise.cb = resolve); // eslint-disable-line no-param-reassign
+    if (resolvePromise) {
+      return new Promise(resolve => resolvePromise.cb = resolve); // eslint-disable-line no-param-reassign
+    }
+    return true;
   }
 
   getAppletType() {
@@ -206,11 +209,13 @@ SiebelAppFacade.N19Helper = class {
     if (!this.canInvokeMethod(method)) {
       return false;
     }
-    const ps = SiebelApp.S_App.NewPropertySet();
-    ps.SetProperty('SWEApplet', this.appletName);
-    ps.SetProperty('SWEView', this.viewName);
-    const ret = this.applet.InvokeControlMethod(method, ps, {});
-    // if (ret) {
+    // const ps = SiebelApp.S_App.NewPropertySet();
+    // ps.SetProperty('SWEApplet', this.appletName);
+    // ps.SetProperty('SWEView', this.viewName);
+    // const ret = this.applet.InvokeControlMethod(method, ps, {});
+    // const ret = this.applet.InvokeMethod(method, ps, false); // false makes it synchronous
+    const ret = this.pm.ExecuteMethod('InvokeMethod', method, null, false); // false makes it synchronous
+    // if (ret) { // not always true when the navigation was successful
     // if navigation was successfull, we need to get the new controls
     // controls = {};
     // }
@@ -218,6 +223,8 @@ SiebelAppFacade.N19Helper = class {
   }
 
   nextRecord() {
+    // returns undefined for GotoNext when navigation was successful
+    // return false if the last record achieved
     return this._navigate(this.isListApplet ? 'GotoNext' : 'GotoNextSet');
   }
 
@@ -421,7 +428,7 @@ SiebelAppFacade.N19Helper = class {
         }
       }
     }
-
+    // todo: do we need to return true or better to return also the object?
     return true;
   }
 
@@ -592,6 +599,7 @@ SiebelAppFacade.N19Helper = class {
   }
 
   addRecords(cb) {
+    // check if the applet is MVG, canInvokeMethod
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'AddRecords');
 
     if (typeof cb === 'function') {
@@ -640,5 +648,15 @@ SiebelAppFacade.N19Helper = class {
 
   _NotifyNewDataWS(name) {
     return this.applet.NotifyNewDataWS(name);
+  }
+
+  _firstRecord() { // temp method, assumes that no scrolling happened
+    if (this.isListApplet) {
+      if (this.getSelection() !== 0) {
+        return this.positionOnRow(0);
+      }
+      return true;
+    }
+    return false;
   }
 };

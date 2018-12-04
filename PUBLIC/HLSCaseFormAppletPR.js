@@ -331,12 +331,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
         }
 
-        SiebelApp.S_App.Applet.prototype.FireInvokeMethod = function () {
-          // execute browsers scripts
-          // SiebelAppFacade.HLSCaseFormAppletPR.superclass.FireInvokeMethod.apply(this, arguments);
-          console.log('Fire Invoke Method', arguments);
-
-        }
+        // SiebelApp.S_App.Applet.prototype.FireInvokeMethod = function () {
+        //   // execute browsers scripts
+        //   // SiebelAppFacade.HLSCaseFormAppletPR.superclass.FireInvokeMethod.apply(this, arguments);
+        //  console.log('Fire Invoke Method', arguments);
+        // }
 
         HLSCaseFormAppletPR.prototype.preInvokeMethod = function (methodName, args, lp, returnStructure) {
           SiebelJS.Log(this.GetPM().Get("GetName") + ": HLSCaseFormAppletPR:      preInvokeMethod -  " + methodName);
@@ -486,6 +485,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   hidePopupApplet = true;
                   // todo: check if promise is not resolved yet?
                   n19helper.showPickApplet('Audit Employee Last Name', resolvePromise).then(function () {
+                    resolvePromise.cb = null;
                     console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
                     if (!SiebelAppFacade.N19['Pharma Employee Pick Applet']) {
                       alert('Pharma Employee Pick Applet is not found in SiebelAppFacade');
@@ -493,8 +493,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     if (Object.keys(SiebelAppFacade.N19).length !== 3) {
                       alert('SiebelAppFacade length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
                     }
-                    resolvePromise.cb = null;
                   })
+                } else {
+                  alert('resolvePromise.cb is not null');
                 }
                 //n19helper.view.SetActiveAppletInternal(n19helper.applet);
                 //n19helper._setActiveControl('Audit Employee Last Name');
@@ -506,6 +507,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 if (resolvePromise.cb === null) {
                   hidePopupApplet = true;
                   n19helper.showMvgApplet('Sales Rep', resolvePromise).then(function () {
+                    resolvePromise.cb = null;
                     console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
                     if (!SiebelAppFacade.N19['Contact Team Mvg Applet']) {
                       alert('Contact Team Mvg Applet is not found in SiebelAppFacade');
@@ -516,17 +518,36 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     if (Object.keys(SiebelAppFacade.N19).length !== 4) {
                       alert('SiebelAppFacade length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
                     }
-                    resolvePromise.cb = null;
+                    // list all MVG shuttle, delete all team members except primary
+                    console.log(SiebelAppFacade.N19['Contact Team Mvg Applet'].getSelection());
+                    var isRecord = SiebelAppFacade.N19['Contact Team Mvg Applet']._firstRecord();
+                    while (isRecord) {
+                      var obj = {'SSA Primary Field': {}};
+                      SiebelAppFacade.N19['Contact Team Mvg Applet'].getCurrentRecordModel(obj);
+                      var value = obj['SSA Primary Field'].value;
+                      if (value) { // the record is not primary
+                        console.log ('record primary');
+                        var isRecord = SiebelAppFacade.N19['Contact Team Mvg Applet'].nextRecord();
+                      } else {
+                        console.log ('record IS NOT primary');
+                        isRecord = SiebelAppFacade.N19['Contact Team Mvg Applet'].deleteRecords(() => {
+                          console.log('DELETE RECORDS CALLBACK');
+                        });
+                        var isRecord = SiebelAppFacade.N19['Contact Team Mvg Applet']._firstRecord();
+                      }
+                    }
                   });
+                } else {
+                  alert('resolvePromise.cb is not null');
                 }
               },
               openPickApplet() {
                 hidePopupApplet = false;
-                n19helper.showPickApplet('Audit Employee Last Name', resolvePromise); //todo: make promise ??
+                n19helper.showPickApplet('Audit Employee Last Name'); //todo: make promise ??
               },
               showMvgApplet() {
                 hidePopupApplet = false;
-                n19helper.showMvgApplet('Sales Rep', resolvePromise);
+                n19helper.showMvgApplet('Sales Rep');
               },
               doDrillDown() {
                 if (SiebelAppFacade.N19['HLS Case List Applet']) {

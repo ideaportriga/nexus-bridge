@@ -22,6 +22,10 @@ if (typeof (SiebelAppFacade.NexusDefaultListAppletPR) === "undefined") {
           SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
         }
 
+        // NexusDefaultListAppletPR.prototype.preInvokeMethod = function (methodName, args, lp, returnStructure) {
+        //   SiebelJS.Log(this.GetPM().Get("GetName") + ": NexusDefaultListAppletPR:      preInvokeMethod -  " + methodName);
+        // }
+
         NexusDefaultListAppletPR.prototype.ShowUI = function () {
           SiebelAppFacade.NexusDefaultListAppletPR.superclass.ShowUI.apply(this, arguments);
         }

@@ -24,19 +24,17 @@ class N19popup { // eslint-disable-line no-unused-vars
     popupPM.SetProperty('isPopupMVGSelected', !1);
     popupPM.SetProperty('isPopupAssoc', !1);
     popupPM.SetProperty('currPopups', []);
-
-    const isSiPopup = ps.GetProperty(this.consts.get('SWE_IS_SI_POPUP'));
-    popupPM.SetProperty('isSIPopup', this.utils.IsTrue(isSiPopup));
-
-    let url = ps.GetProperty('URL');
+    popupPM.SetProperty('isSIPopup', ps.GetProperty(this.consts.get('SWE_IS_SI_POPUP')));
 
     if (popupPM.Get('state') === this.consts.get('POPUP_STATE_UNLOADED')) {
       if (!popupPM.GetRenderer()) {
         popupPM.Setup();
       }
     }
+
+    let url = ps.GetProperty('URL');
     url = this.f(url);
-    const u = SiebelApp.S_App.GetPageURL() + url.split('start.swe')[1];
+    url = SiebelApp.S_App.GetPageURL() + url.split('start.swe')[1];
 
     const activeView = SiebelApp.S_App.GetActiveView();
     if (activeView) {
@@ -47,54 +45,22 @@ class N19popup { // eslint-disable-line no-unused-vars
     }
 
     // popupPM.ExecuteMethod('OpenPopup', u, height, width, !1, !1, !1);
-    this.u(u, 0, 0, !1, !1, !1, hide);
-
-    return !0;
+    this.u(url, hide);
   }
 
-  u(url, height, width, i, s, o, hide) {
-    try {
-      const popupPM = SiebelApp.S_App.GetPopupPM();
+  u(url, hide) {
+    const popupPM = SiebelApp.S_App.GetPopupPM();
 
-      if (popupPM.Get('state') === this.consts.get('POPUP_STATE_VISIBLE')) {
-        popupPM.SetProperty('isPrevPopupVisible', !0);
-        popupPM.ExecuteMethod('SetPopupVisible', !1, !0);
-      } else {
-        popupPM.SetProperty('isPrevPopupVisible', !1);
-      }
+    popupPM.SetProperty('isPrevPopupVisible', !1);
 
-      height = height === undefined ? 0 : parseFloat(height); // eslint-disable-line no-param-reassign
-      width = width === undefined ? 0 : parseFloat(width); // eslint-disable-line no-param-reassign
-
-      if (height <= 0) {
-        height = parseFloat(this.consts.get('DEFAULT_POPUP_HEIGHT')); // eslint-disable-line no-param-reassign
-      }
-      if (width <= 0) {
-        width = parseFloat(this.consts.get('DEFAULT_POPUP_WIDTH')); // eslint-disable-line no-param-reassign
-      }
-      popupPM.SetProperty('noHide', !1);
-      popupPM.SetProperty('height', height);
-      popupPM.SetProperty('width', width);
-
-
-      if (hide) {
-        SiebelApp.S_App.GetPopupPM().AddProperty('state', 'visible'); // ????
-        this.a();
-      } else {
-        popupPM.ExecuteMethod('SetPopupVisible', !0);
-      }
-
-      if (o === undefined || !o) {
-        popupPM.SetProperty('url', url);
-      } else {
-        popupPM.SetProperty('content', url);
-      }
-
-      return !0;
-    } catch (f) {
-      alert('inside catch f');
-      return !1;
+    if (hide) {
+      SiebelApp.S_App.GetPopupPM().AddProperty('state', 'visible'); // ????
+      this.a();
+    } else {
+      popupPM.ExecuteMethod('SetPopupVisible', !0);
     }
+
+    popupPM.SetProperty('url', url);
   }
 
   a() { // called on the change the state - ORIGINAL PROCEDURE

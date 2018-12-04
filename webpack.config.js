@@ -21,7 +21,8 @@ module.exports = (env, argv) => {
 
   let config = {
     entry: {
-      main: ['core-js/fn/promise', __dirname + '/src/index.js']
+    //  main: ['core-js/fn/promise', __dirname + '/src/index.js']
+      main: [__dirname + '/src/index.js']
     },
     devtool: 'source-map',
     output: {

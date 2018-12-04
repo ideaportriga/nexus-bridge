@@ -17,14 +17,7 @@ class N19popup { // eslint-disable-line no-unused-vars
   }
 
   pmProcessNewPopup(ps, hide) {
-    let u;
-    let v = !1;
-
     const popupPM = SiebelApp.S_App.GetPopupPM();
-
-    if (popupPM.Get('state') === this.consts.get('POPUP_STATE_VISIBLE')) {
-      popupPM.SetProperty('prevPopups', popupPM.Get('currPopups'));
-    }
 
     popupPM.SetProperty('isPopupPick', !1);
     popupPM.SetProperty('isPopupMVGAssoc', !1);
@@ -32,48 +25,18 @@ class N19popup { // eslint-disable-line no-unused-vars
     popupPM.SetProperty('isPopupAssoc', !1);
     popupPM.SetProperty('currPopups', []);
 
-    const height = Number(ps.GetProperty(this.consts.get('SWE_POP_HEIGHT_STR'))) || 0;
-    const width = Number(ps.GetProperty(this.consts.get('SWE_POP_WIDTH_STR'))) || 0;
     const isSiPopup = ps.GetProperty(this.consts.get('SWE_IS_SI_POPUP'));
     popupPM.SetProperty('isSIPopup', this.utils.IsTrue(isSiPopup));
 
-    const fullPopup = ps.GetProperty(this.consts.get('SWE_FULL_POPUP_WINDOW_STR'));
     let url = ps.GetProperty('URL');
-    const freePopup = ps.GetProperty(this.consts.get('SWE_FREE_POPUP_STR'));
-    const o = ps.GetProperty(this.consts.get('SWE_LINK_TARGET_STR'));
-    const left = parseInt(screen.availWidth / 2 - (width || 800) / 2, 10); // eslint-disable-line no-restricted-globals
-    const top = parseInt(screen.availHeight / 2 - (height || 600) / 2, 10); // eslint-disable-line no-restricted-globals
-    //    let p = 'width=' + (width || 800) + ',height=' + (height || 600) + ',left=' + c + ',top=' + h + ',screenX=' + c + ',screenY=' + h;
-    let p = `width=${width || 800},height=${height || 600},left=${left},top=${top},screenX=${left},screenY=${top}`;
-
-    if (fullPopup) {
-      p += ',scrollbars=yes,resizable=yes,location=yes,toolbar=yes,menubar=yes,status=yes';
-    } else {
-      p += ',scrollbars=yes,resizable=yes';
-    }
 
     if (popupPM.Get('state') === this.consts.get('POPUP_STATE_UNLOADED')) {
       if (!popupPM.GetRenderer()) {
         popupPM.Setup();
-        v = !0;
       }
     }
-
-    if (freePopup || fullPopup || (url && !url.match(/.swe\?/))) {
-      popupPM.ExecuteMethod('StandAlonePopup', url, p, o);
-      SiebelApp.S_App.uiStatus.Free();
-      return !0;
-    }
-
-    if (popupPM.Get('state') === this.consts.get('POPUP_STATE_UNLOADED') && !v) {
-      popupPM.Show();
-    }
-    if (url.indexOf('start.swe') === -1) {
-      u = SiebelApp.S_App.GetPageURL().split('start.swe')[0] + url + this.consts.get('SWE_ARG_START') + this.f('');
-    } else {
-      url = this.f(url);
-      u = SiebelApp.S_App.GetPageURL() + url.split('start.swe')[1];
-    }
+    url = this.f(url);
+    const u = SiebelApp.S_App.GetPageURL() + url.split('start.swe')[1];
 
     const activeView = SiebelApp.S_App.GetActiveView();
     if (activeView) {
@@ -84,7 +47,7 @@ class N19popup { // eslint-disable-line no-unused-vars
     }
 
     // popupPM.ExecuteMethod('OpenPopup', u, height, width, !1, !1, !1);
-    this.u(u, height, width, !1, !1, !1, hide);
+    this.u(u, 0, 0, !1, !1, !1, hide);
 
     return !0;
   }
@@ -129,6 +92,7 @@ class N19popup { // eslint-disable-line no-unused-vars
 
       return !0;
     } catch (f) {
+      alert('inside catch f');
       return !1;
     }
   }
@@ -157,28 +121,28 @@ class N19popup { // eslint-disable-line no-unused-vars
           }
         }
       }
-      const p = SiebelApp.S_App.GetPopupPM();
-      p.SetProperty('isPopupPick', null);
-      p.SetProperty('PickAppletObject', null);
-      p.SetProperty('baseParentAppletId', null);
-      p.SetProperty('isPopupAssoc', null);
-      p.SetProperty('AssocAppletObject', null);
-      p.SetProperty('baseParentAppletId', null);
-      p.SetProperty('isPopupMVGSelected', null);
-      p.SetProperty('MVGSelectedAppletObject', null);
-      p.SetProperty('baseParentAppletId', null);
-      p.SetProperty('isPopupMVGAssoc', null);
-      p.SetProperty('MVGAssocAppletObject', null);
-      p.SetProperty('MVGAssocParentAppletObject', null);
-      p.SetProperty('parentAppletId', null);
-      p.SetProperty('baseParentAppletId', null);
-      p.SetProperty('isPopupNonStandard', null);
-      p.SetProperty('NonStandardAppletObject', null);
+      const popupPM = SiebelApp.S_App.GetPopupPM();
+      popupPM.SetProperty('isPopupPick', null);
+      popupPM.SetProperty('PickAppletObject', null);
+      popupPM.SetProperty('baseParentAppletId', null);
+      popupPM.SetProperty('isPopupAssoc', null);
+      popupPM.SetProperty('AssocAppletObject', null);
+      popupPM.SetProperty('baseParentAppletId', null);
+      popupPM.SetProperty('isPopupMVGSelected', null);
+      popupPM.SetProperty('MVGSelectedAppletObject', null);
+      popupPM.SetProperty('baseParentAppletId', null);
+      popupPM.SetProperty('isPopupMVGAssoc', null);
+      popupPM.SetProperty('MVGAssocAppletObject', null);
+      popupPM.SetProperty('MVGAssocParentAppletObject', null);
+      popupPM.SetProperty('parentAppletId', null);
+      popupPM.SetProperty('baseParentAppletId', null);
+      popupPM.SetProperty('isPopupNonStandard', null);
+      popupPM.SetProperty('NonStandardAppletObject', null);
       o.children().remove().end().dialog('option', 'buttons', {})
         .parent()
         .find('div.ui-dialog-buttonset')
         .empty();
-      popupPR.GetPM().SetProperty('isCurrencyOpen', !1);
+      popupPM.SetProperty('isCurrencyOpen', !1);
     } else if (e === this.consts.get('POPUP_STATE_VISIBLE')) {
       $('div[name=popup]').data('InitDlg', !0);
       setTimeout(() => {
@@ -195,63 +159,6 @@ class N19popup { // eslint-disable-line no-unused-vars
         my: 'center',
         at: 'center',
         of: window,
-      });
-      const d = popupPR.GetPM();
-      let v;
-      let m;
-      $('.ui-widget-overlay').droppable({
-        drop: (event, t) => {
-          if (t.draggable && (t.draggable.is('tr.jqgrow') || t.draggable.is('.siebui-tile'))) {
-            const n = t.draggable.attr('id');
-            let r = !1;
-            // if (n > 0) {
-            //   var i = t.draggable.parent().parent().jqGrid('getRowData', n);
-            // }
-            const s1 = $(`#s_${d.Get('baseParentAppletId')}_div`);
-            let o1;
-            let u;
-            if (s1.length > 0) {
-              o1 = s1.offset().top + s1.height();
-              u = s1.offset().left + s1.width();
-            }
-            if (s1.offset().left < event.originalEvent.clientX && event.originalEvent.clientX < u && s1.offset().top < event.originalEvent.clientY && event.originalEvent.clientY < o1) {
-              if (d.Get('isPopupPick')) {
-                v = d.Get('PickAppletObject');
-              }
-              v.GetPModel().ExecuteMethod('SetSelectionOnDragNDrop', n);
-              r = v.GetPModel().ExecuteMethod('HandleDragNDropInPopup', 'PickRecord');
-              if (d.Get('isPopupMVGAssoc')) {
-                m = d.Get('MVGAssocParentAppletObject');
-                if (!d.Get('ismultislectmode')) {
-                  m.GetPModel().ExecuteMethod('SetSelectionOnDragNDrop', n);
-                }
-                const a = m.GetPModel().ExecuteMethod('HandleDragNDropInPopup', 'AddRecords');
-                if (a) {
-                  r = m.GetPModel().ExecuteMethod('HandleDragNDropInPopup', 'CloseApplet');
-                }
-              }
-              if (d.Get('isPopupAssoc')) {
-                v = d.Get('AssocAppletObject');
-                if (!d.Get('ismultislectmode')) {
-                  v.GetPModel().ExecuteMethod('SetSelectionOnDragNDrop', n);
-                }
-                r = v.GetPModel().ExecuteMethod('HandleDragNDropInPopup', 'AddRecord');
-              }
-              if (r) {
-                t.draggable.detach();
-                d.SetProperty('isPopupPick', !1);
-                d.SetProperty('isPopupMVGAssoc', !1);
-                d.SetProperty('isPopupMVGSelected', !1);
-                d.SetProperty('isPopupAssoc', !1);
-              } else {
-                t.draggable.animate(t.draggable.data().origPosition, 'slow');
-              }
-            } else {
-              t.draggable.animate(t.draggable.data().origPosition, 'slow');
-            }
-            d.SetProperty('ismultislectmode', !1);
-          }
-        },
       });
       this.h.call(this);
       SiebelApp.S_App.uiStatus.LocalBusy({

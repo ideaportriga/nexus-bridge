@@ -19,7 +19,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var divId;
         var n19helper;
         var skipVue = true;
-        var hidePopupApplet = false;
         var appletName;
         var resolvePromise = {
           cb: null
@@ -101,11 +100,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           }
 
-          // SiebelAppFacade.N19loadContent = SiebelApp.contentUpdater.loadContent;
-          // SiebelApp.contentUpdater.loadContent = function() {
-          //  return SiebelAppFacade.N19loadContent.apply(SiebelApp.contentUpdater, arguments);
-          // };
-
           SiebelAppFacade.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded;
           SiebelApp.contentUpdater.viewLoaded = function () {
             var ret = SiebelAppFacade.N19viewLoaded.apply(SiebelApp.contentUpdater, arguments);
@@ -117,51 +111,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             return ret;
           }
 
-          SiebelApp.S_App.GetPopupPM().AddMethod('SetPopupVisible', function (methodname, inputpropset, context, returnstructure) {
-            console.log('SetPopupVisible', methodname, inputpropset, context, returnstructure, hidePopupApplet);
-            if (n19helper) {
-              console.log(n19helper._getActiveControlName());
-              if (n19helper._getActiveControlName() === 'Sales Rep') {
-                if (SiebelApp.S_App.GetPopupPM().Get('state') === consts.get('POPUP_STATE_VISIBLE')) {
-                  console.log('CALLING SETUP OF POPUP PM');
-                  if (!hidePopupApplet) { // todo: and check if it is should be restored?
-                    SiebelApp.S_App.GetPopupPM().Init();
-                    SiebelApp.S_App.GetPopupPM().Setup();
-                  }
-                }
-              }
-              if (n19helper._getActiveControlName() === 'Audit Employee Last Name') {
-                if (SiebelApp.S_App.GetPopupPM().Get('state') === consts.get('POPUP_STATE_VISIBLE')) {
-                  console.log('CALLING SETUP OF POPUP PM');
-                  if (!hidePopupApplet) { // todo: and check if it is should be restored?
-                    SiebelApp.S_App.GetPopupPM().Init();
-                    SiebelApp.S_App.GetPopupPM().Setup();
-                  }
-                }
-                // old technique to hide the applet
-                // returnstructure["CancelOperation"] = true;
-                // setTimeout(function() {
-                //   $('.ui-widget-overlay').remove();
-                //   $("div[name=popup]").parent().css( {display: "none"} );
-                //   $("div[name=popup]").dialog( "option", "modal", false );
-                // });
-              }
-            }
-          }, { sequence: true, scope: SiebelApp.S_App.GetPopupPM() });
-
-          // do not display the shuttle applet
           SiebelAppFacade.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
           SiebelApp.S_App.ProcessNewPopup = function (ps) {
-            console.log('>>>>>>>>>>>>> ProcessNewPopup', ps);
-            if (SiebelApp.S_App.GetActiveView().GetActiveApplet().GetName() === appletName && hidePopupApplet) {
-              var n19popup = new SiebelAppFacade.N19popup(n19helper.applet);
-              var ret = n19popup.processNewPopup(ps, hidePopupApplet);
-              n19popup = null;
+            if (SiebelApp.S_App.GetActiveView().GetActiveApplet().GetName() === appletName && n19helper._isPopupHidden()) {
+              var ret = n19helper.processNewPopup(ps);
             } else {
               var ret = SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);  //return "refreshpopup";
-              // at this moment we got SiebelApp.S_App.GetPopupPM().Get('url')
             }
-            console.log('<<<<<<<<<<<< ProcessNewPopup', ps, ret);
             return ret;
           }
 
@@ -246,9 +202,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET'), function () {
             console.log('SWE_PROP_BC_NOTI_INSERT_WORKSET', arguments);
-            if (app) {
-              //  app.afterSelection();
-            }
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET_FIELD_VALUES'), function () {
@@ -477,9 +430,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             methods: {
               testButtonClick() {
                 if (resolvePromise.cb === null) {
-                  hidePopupApplet = true;
-                  // todo: check if promise is not resolved yet?
-                  n19helper.showPickApplet('Audit Employee Last Name', resolvePromise).then(function () {
+                  n19helper.showPickApplet('Audit Employee Last Name', true, resolvePromise).then(function () {
                     resolvePromise.cb = null;
                     if (!SiebelAppFacade.N19['Pharma Employee Pick Applet']) {
                       alert('Pharma Employee Pick Applet is not found in SiebelAppFacade');
@@ -494,8 +445,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               testButtonClickShuttle() {
                 if (resolvePromise.cb === null) {
-                  hidePopupApplet = true;
-                  n19helper.showMvgApplet('Sales Rep', resolvePromise).then(function () {
+                  n19helper.showMvgApplet('Sales Rep', true, resolvePromise).then(function () {
                     resolvePromise.cb = null;
                     if (!SiebelAppFacade.N19['Contact Team Mvg Applet']) {
                       alert('Contact Team Mvg Applet is not found in SiebelAppFacade');
@@ -530,11 +480,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
               },
               openPickApplet() {
-                hidePopupApplet = false;
                 n19helper.showPickApplet('Audit Employee Last Name');
               },
               showMvgApplet() {
-                hidePopupApplet = false;
                 n19helper.showMvgApplet('Sales Rep');
               },
               doDrillDown() {
@@ -759,8 +707,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 var appletName = ret.appletName;
                 if ('Sales Rep' !== controlName) {
                   if (resolvePromise.cb === null) {
-                    hidePopupApplet = true;
-                    n19helper.showMvgApplet('Sales Rep', resolvePromise).then(function(appletName) {
+                    n19helper.showMvgApplet('Sales Rep', true, resolvePromise).then(function(appletName) {
                       resolvePromise.cb = null;
                       this.deleteSalesRep(appletName, salesRep.id);
                     }.bind(this));
@@ -808,7 +755,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary = SiebelAppFacade.N19notifyNewPrimary;
           SiebelApp.S_App.ProcessNewPopup = SiebelAppFacade.N19processNewPopup;
           SiebelApp.contentUpdater.viewLoaded = SiebelAppFacade.N19viewLoaded;
-          // SiebelApp.contentUpdater.loadContent = SiebelAppFacade.N19loadContent;
 
           if (app) {
             app.$destroy(true);

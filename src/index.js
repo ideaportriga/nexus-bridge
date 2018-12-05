@@ -4,7 +4,6 @@ import N19popup from './n19popup';
 
 SiebelAppFacade.N19Helper = class {
   constructor(settings) {
-    SiebelAppFacade.N19popup = N19popup; // to make it available in PR
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.pm = settings.pm;
     this.appletName = this.pm.Get('GetName');
@@ -16,7 +15,7 @@ SiebelAppFacade.N19Helper = class {
     this.required = []; // will be empty for list applet
     this.lov = {};
 
-    // populate required
+    // populate the required array for form applets
     if (!this.isListApplet) {
       const appletInputs = document.getElementById(this.appletId).querySelectorAll('input');
       for (let i = 0; i < appletInputs.length; i += 1) {
@@ -40,6 +39,10 @@ SiebelAppFacade.N19Helper = class {
 
     // eslint-disable-next-line no-console
     console.log('N19Helper started....', this.appletName);
+
+    // do we need to instantiate it for every applet
+    this.n19popup = new N19popup();
+    this.isPopupHidden = false;
   }
 
   _getControl(name) {
@@ -111,15 +114,16 @@ SiebelAppFacade.N19Helper = class {
     // todo: maybe return also control name
   }
 
-  _showMvgApplet(name, resolvePromise) { // eslint-disable-line no-unused-vars
+  _showMvgApplet(name, hide, resolvePromise) { // eslint-disable-line no-unused-vars
     this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
     this._setActiveControl(name);
     const { isOpen, appletName } = this._isPopupOpen();
     if (isOpen) {
       console.log(`closing ${appletName} in _showMvgApplet...`); // eslint-disable-line no-console
       // maybe do not close if the applet to be opened if the same as opened - check control name returned
-      SiebelAppFacade.N19[appletName].closeApplet(); // todo: check if closed?
+      SiebelAppFacade.N19[appletName].closePopupApplet(this.isPopupHidden); // todo: check if closed?
     }
+    this.isPopupHidden = !!hide;
     // return this.applet.InvokeMethod('EditPopup', null, false); // async
     // return this.pm.OnControlEvent(this.consts.get('PHYEVENT_INVOKE_MVG'), this._getControl(name)); // async
     // return this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // async
@@ -135,8 +139,41 @@ SiebelAppFacade.N19Helper = class {
     return true;
   }
 
-  getAppletType() {
-    return this.isListApplet ? 'list' : 'form';
+  closePopupApplet(isPopupHidden) {
+    const isPopupApplet = typeof this.applet.GetPopupAppletName === 'function';
+    const isPickApplet = typeof this.applet.GetPickAppletName === 'function';
+
+    if (isPopupApplet || isPickApplet) {
+      // todo : check canInvokeMethod
+      const ret = this.pm.ExecuteMethod('InvokeMethod', 'CloseApplet');
+      if (isPopupHidden) { // it could be better if we don't have a Siebel Applet on the view
+        this.reInitPopup();
+      }
+      return ret;
+    }
+    throw new Error('This applet is neither pick nor popup');
+  }
+
+  reInitPopup() {
+    const popupPM = SiebelApp.S_App.GetPopupPM();
+    popupPM.Init();
+    popupPM.Setup();
+  }
+
+  processNewPopup(ps) {
+    return this.n19popup.processNewPopup(ps);
+  }
+
+  _isPopupHidden() { // temp method: todo: remove it
+    return this.isPopupHidden;
+  }
+
+  showMvgApplet(input, hide, resolvePromise) {
+    return this._showMvgApplet(input, hide, resolvePromise);
+  }
+
+  showPickApplet(input, hide, resolvePromise) {
+    return this._showMvgApplet(input, hide, resolvePromise);
   }
 
   getControls() {
@@ -557,14 +594,6 @@ SiebelAppFacade.N19Helper = class {
     return this.pm.Get('GetBusComp').insertPending;
   }
 
-  showMvgApplet(input, resolvePromise) {
-    return this._showMvgApplet(input, resolvePromise);
-  }
-
-  showPickApplet(input, resolvePromise) {
-    return this._showMvgApplet(input, resolvePromise);
-  }
-
   requery(name) {
     const service = SiebelApp.S_App.GetService('N19 BS');
     if (service) {
@@ -613,17 +642,6 @@ SiebelAppFacade.N19Helper = class {
     }
 
     return ret;
-  }
-
-  closeApplet() {
-    const isPopupApplet = typeof this.applet.GetPopupAppletName === 'function';
-    const isPickApplet = typeof this.applet.GetPickAppletName === 'function';
-
-    if (isPopupApplet || isPickApplet) {
-      // todo : check canInvokeMethod
-      return this.pm.ExecuteMethod('InvokeMethod', 'CloseApplet');
-    }
-    throw new Error('This applet is neither pick nor popup');
   }
 
   _getActiveControlName() {

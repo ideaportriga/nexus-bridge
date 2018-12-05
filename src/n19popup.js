@@ -1,14 +1,10 @@
-class N19popup { // eslint-disable-line no-unused-vars
-  constructor(applet) {
-    this.applet = applet;
-
+class N19popup {
+  constructor() {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
-    this.utils = SiebelJS.Dependency('SiebelApp.Utils');
-
     console.log(`${this.constructor.name} started...`); // eslint-disable-line no-console
   }
 
-  processNewPopup(ps, hide) {
+  processNewPopup(ps) {
     SiebelApp.S_App.SetShowNewPage(!0);
     const popupPM = SiebelApp.S_App.GetPopupPM();
 
@@ -33,12 +29,7 @@ class N19popup { // eslint-disable-line no-unused-vars
       }
     }
 
-    if (hide) {
-      popupPM.AddProperty('state', 'visible'); // todo: we need to restore the value?
-    } else {
-      // todo: we never get here?
-      popupPM.ExecuteMethod('SetPopupVisible', !0);
-    }
+    popupPM.AddProperty('state', 'visible'); // todo: we need also to restore the PM
 
     let url = ps.GetProperty('URL');
     url = SiebelApp.S_App.GetPageURL() + url.split('start.swe')[1];

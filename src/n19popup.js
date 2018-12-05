@@ -2,9 +2,11 @@ class N19popup {
   constructor() {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.isPopupHidden = false;
+    this.resolvePromise = null;
+
     console.log(`${this.constructor.name} started...`); // eslint-disable-line no-console
 
-    // it will be a singleton, so no cleanup
+    // it will be a singleton, so there is no cleanup
     SiebelAppFacade.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
     SiebelApp.S_App.ProcessNewPopup = (ps) => {
       let ret;
@@ -15,6 +17,21 @@ class N19popup {
       }
       return ret;
     };
+
+    SiebelAppFacade.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded;
+    SiebelApp.contentUpdater.viewLoaded = (...args) => {
+      const ret = SiebelAppFacade.N19viewLoaded.call(SiebelApp.contentUpdater, ...args);
+      if (typeof this.resolvePromise === 'function') {
+        const { appletName } = this.isPopupOpen();
+        this.resolvePromise(appletName);
+        this.resolvePromise = null;
+      }
+      return ret;
+    };
+  }
+
+  canOpenPopup() {
+    return typeof this.resolvePromise !== 'function';
   }
 
   processNewPopup(ps) {
@@ -97,10 +114,9 @@ class N19popup {
     // todo: test if we can get to here
     //    maybe when we open a new applet on top of the shuttle applet
     throw new Error('how did I get here...');
-    // todo: maybe return also control name
   }
 
-  showPopupApplet(hide, resolvePromise, pm) {
+  showPopupApplet(hide, cb, pm) {
     const { isOpen, appletName } = this.isPopupOpen();
     if (isOpen) {
       console.log(`closing ${appletName} in _showPopupApplet...`); // eslint-disable-line no-console
@@ -112,10 +128,11 @@ class N19popup {
 
     pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // seems we can also to call EditField
 
-    if (resolvePromise) {
-      return new Promise(resolve => resolvePromise.cb = resolve); // eslint-disable-line no-param-reassign
+    const ret = new Promise(resolve => this.resolvePromise = resolve); // eslint-disable-line no-param-assign
+    if (typeof cb === 'function') {
+      return ret.then(cb);
     }
-    return true;
+    return ret;
   }
 }
 

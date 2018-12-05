@@ -94,16 +94,21 @@ SiebelAppFacade.N19Helper = class {
     return this.applet.SetActiveControl(this._getControl(name));
   }
 
-  showMvgApplet(name, hide, resolvePromise) {
+  showPopupApplet(name, hide, cb) {
+    if (!this.n19popup.canOpenPopup()) {
+      return false;
+    }
     this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
     this._setActiveControl(name);
-    return this.n19popup.showPopupApplet(hide, resolvePromise, this.pm);
+    return this.n19popup.showPopupApplet(hide, cb, this.pm);
   }
 
-  showPickApplet(name, hide, resolvePromise) {
-    this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
-    this._setActiveControl(name);
-    return this.n19popup.showPopupApplet(hide, resolvePromise, this.pm);
+  showMvgApplet(name, hide, cb) {
+    return this.showPopupApplet(name, hide, cb);
+  }
+
+  showPickApplet(name, hide, cb) {
+    return this.showPopupApplet(name, hide, cb);
   }
 
   getControls() {

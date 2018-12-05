@@ -105,7 +105,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             var ret = SiebelAppFacade.N19viewLoaded.apply(SiebelApp.contentUpdater, arguments);
             console.log('view loaded', ret, arguments, typeof resolvePromise.cb, resolvePromise.cb);
             if (typeof resolvePromise.cb === 'function') {
-              var appletName = n19helper._isPopupOpen().appletName;
+              var appletName = n19helper.n19popup.isPopupOpen().appletName;
               resolvePromise.cb(appletName);
             }
             return ret;
@@ -670,7 +670,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               clickDeleteSalesRep(salesRep) {
                 console.log('>>> clickDeleteSalesRep input', salesRep, salesRep.login, this.caseSalesRepArr);
-                var ret = n19helper._isPopupOpen();
+                var ret = n19helper.n19popup.isPopupOpen();
                 var controlName = ret.controlName;
                 var appletName = ret.appletName;
                 if ('Sales Rep' !== controlName) {

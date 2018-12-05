@@ -73,6 +73,50 @@ class N19popup {
     }
     throw new Error('This applet is neither pick nor popup');
   }
+
+  isPopupOpen() {
+    // this code will close the applet even if this applet was originated by another applet
+    const currPopups = SiebelApp.S_App.GetPopupPM().Get('currPopups');
+    if (0 === currPopups.length) {
+      return { isOpen: false };
+    }
+    if (1 === currPopups.length) {
+      return { isOpen: true, appletName: currPopups[0].GetName(), controlName: currPopups[0].GetPopupControl() };
+    }
+    if (2 === currPopups.length) {
+      // this is a shuttle or
+      // maybe we opened a popup applet on the top of pick applet - TODO: // test it
+      //      test it  - maybe we need to close the several applets
+      for (let i = 0; i < currPopups.length; i += 1) {
+        if (typeof currPopups[1].GetPopupAppletName === 'function') {
+          return { isOpen: true, appletName: currPopups[i].GetName(), controlName: currPopups[i].GetPopupControl() };
+        }
+      }
+      throw new Error('Mvg applet is not found...');
+    }
+    // todo: test if we can get to here
+    //    maybe when we open a new applet on top of the shuttle applet
+    throw new Error('how did I get here...');
+    // todo: maybe return also control name
+  }
+
+  showPopupApplet(hide, resolvePromise, pm) {
+    const { isOpen, appletName } = this.isPopupOpen();
+    if (isOpen) {
+      console.log(`closing ${appletName} in _showPopupApplet...`); // eslint-disable-line no-console
+      // maybe do not close if the applet to be opened if the same as already opened?
+      this.closePopupApplet(SiebelAppFacade.N19[appletName].getApplet());
+      // todo: check if got it successfully closed?
+    }
+    this.isPopupHidden = !!hide;
+
+    pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // seems we can also to call EditField
+
+    if (resolvePromise) {
+      return new Promise(resolve => resolvePromise.cb = resolve); // eslint-disable-line no-param-reassign
+    }
+    return true;
+  }
 }
 
 export default N19popup;

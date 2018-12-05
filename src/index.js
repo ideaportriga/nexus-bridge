@@ -94,61 +94,16 @@ SiebelAppFacade.N19Helper = class {
     return this.applet.SetActiveControl(this._getControl(name));
   }
 
-  _isPopupOpen() {
-    // this code will close the applet even if this applet was originated by another applet
-    const currPopups = SiebelApp.S_App.GetPopupPM().Get('currPopups');
-    if (0 === currPopups.length) {
-      return { isOpen: false };
-    }
-    if (1 === currPopups.length) {
-      return { isOpen: true, appletName: currPopups[0].GetName(), controlName: currPopups[0].GetPopupControl() };
-    }
-    if (2 === currPopups.length) {
-      // this is a shuttle or
-      // maybe we opened a popup applet on the top of pick applet - TODO: // test it
-      //      test it  - maybe we need to close the several applets
-      for (let i = 0; i < currPopups.length; i += 1) {
-        if (typeof currPopups[1].GetPopupAppletName === 'function') {
-          return { isOpen: true, appletName: currPopups[i].GetName(), controlName: currPopups[i].GetPopupControl() };
-        }
-      }
-      throw new Error('Mvg applet is not found...');
-    }
-    // todo: test if we can get to here
-    //    maybe when we open a new applet on top of the shuttle applet
-    throw new Error('how did I get here...');
-    // todo: maybe return also control name
-  }
-
-  _showMvgApplet(name, hide, resolvePromise) { // eslint-disable-line no-unused-vars
-    const { isOpen, appletName } = this._isPopupOpen();
-    if (isOpen) {
-      console.log(`closing ${appletName} in _showMvgApplet...`); // eslint-disable-line no-console
-      // maybe do not close if the applet to be opened if the same as opened - check control name returned
-      this.n19popup.closePopupApplet(SiebelAppFacade.N19[appletName].getApplet());
-      // todo: check if got it successfully closed?
-    }
-    this.n19popup.isPopupHidden = !!hide;
-    // return this.applet.InvokeMethod('EditPopup', null, false); // async
-    // return this.pm.OnControlEvent(this.consts.get('PHYEVENT_INVOKE_MVG'), this._getControl(name)); // async
-    // return this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // async
-
+  showMvgApplet(name, hide, resolvePromise) {
     this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
     this._setActiveControl(name);
-    this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // seems we can call EditField sync
-
-    if (resolvePromise) {
-      return new Promise(resolve => resolvePromise.cb = resolve); // eslint-disable-line no-param-reassign
-    }
-    return true;
+    return this.n19popup.showPopupApplet(hide, resolvePromise, this.pm);
   }
 
-  showMvgApplet(input, hide, resolvePromise) {
-    return this._showMvgApplet(input, hide, resolvePromise);
-  }
-
-  showPickApplet(input, hide, resolvePromise) {
-    return this._showMvgApplet(input, hide, resolvePromise);
+  showPickApplet(name, hide, resolvePromise) {
+    this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
+    this._setActiveControl(name);
+    return this.n19popup.showPopupApplet(hide, resolvePromise, this.pm);
   }
 
   getControls() {
@@ -189,7 +144,6 @@ SiebelAppFacade.N19Helper = class {
       if (obj.staticPick) {
         obj.staticLOV = this._getStaticLOV(control.GetRadioGroupPropSet().childArray);
       }
-      // obj.staticValue = obj.staticLOV; // if somebody already uses it
       controls[controlName] = obj;
     }
     return controls;
@@ -228,10 +182,6 @@ SiebelAppFacade.N19Helper = class {
     // const ret = this.applet.InvokeControlMethod(method, ps, {});
     // const ret = this.applet.InvokeMethod(method, ps, false); // false makes it synchronous
     const ret = this.pm.ExecuteMethod('InvokeMethod', method, null, false); // false makes it synchronous
-    // if (ret) { // not always true when the navigation was successful
-    // if navigation was successfull, we need to get the new controls
-    // controls = {};
-    // }
     return ret;
   }
 
@@ -548,7 +498,6 @@ SiebelAppFacade.N19Helper = class {
     // name is control name, not field
     // index is not effective, and drilldown anyway happens on last selected record
 
-    // check if it ListApplet?
     if (!this.isListApplet) {
       return false;
     }
@@ -624,19 +573,15 @@ SiebelAppFacade.N19Helper = class {
     return activeControl ? activeControl.GetName() : '';
   }
 
-  __setPopupVisible(val) {
-    return SiebelApp.S_App.GetPopupPM().ExecuteMethod('SetPopupVisible', val);
-  }
-
-  __getViewTitle() {
+  _getViewTitle() {
     return this.view.GetTitle(); // how GetViewSummary is different
   }
 
-  __getAppletTitle() {
+  _getAppletTitle() {
     return this.applet.GetAppletLabel(); // how GetAppletSummary is different
   }
 
-  __clearQuery() { // todo : could we get it calling the query methods with empty object
+  _clearQuery() { // todo : could we get it calling the query methods with empty object
     this.pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false);
     this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, false);
   }
@@ -645,7 +590,7 @@ SiebelAppFacade.N19Helper = class {
     return this.pm.Get('IsInQueryMode');
   }
 
-  _NotifyNewDataWS(name) {
+  _NotifyNewDataWS(name) { // todo: we don't need this method if we don't have any Siebel applets
     return this.applet.NotifyNewDataWS(name);
   }
 

@@ -50,6 +50,29 @@ class N19popup {
 
     return 'refreshpopup';
   }
+
+  reInitPopup() {
+    const popupPM = SiebelApp.S_App.GetPopupPM();
+    popupPM.Init();
+    popupPM.Setup();
+  }
+
+  closePopupApplet(applet) {
+    const isPopupApplet = typeof applet.GetPopupAppletName === 'function';
+    const isPickApplet = typeof applet.GetPickAppletName === 'function';
+
+    if (isPopupApplet || isPickApplet) {
+      // todo : check canInvokeMethod
+      const ret = applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
+      // it could be better if we don't have a Siebel Applet on the view
+      // in this case, we would not need to reInitPopup
+      if (this.isPopupHidden) {
+        this.reInitPopup();
+      }
+      return ret;
+    }
+    throw new Error('This applet is neither pick nor popup');
+  }
 }
 
 export default N19popup;

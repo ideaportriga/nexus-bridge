@@ -47,6 +47,10 @@ SiebelAppFacade.N19Helper = class {
     this.n19popup = SiebelAppFacade.N19popup;
   }
 
+  getApplet() {
+    return this.applet;
+  }
+
   _getControl(name) {
     return this.applet.GetControl(name);
   }
@@ -117,53 +121,26 @@ SiebelAppFacade.N19Helper = class {
   }
 
   _showMvgApplet(name, hide, resolvePromise) { // eslint-disable-line no-unused-vars
-    this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
-    this._setActiveControl(name);
     const { isOpen, appletName } = this._isPopupOpen();
     if (isOpen) {
       console.log(`closing ${appletName} in _showMvgApplet...`); // eslint-disable-line no-console
       // maybe do not close if the applet to be opened if the same as opened - check control name returned
-      SiebelAppFacade.N19[appletName].closePopupApplet(this.n19popup.isPopupHidden); // todo: check if closed?
+      this.n19popup.closePopupApplet(SiebelAppFacade.N19[appletName].getApplet());
+      // todo: check if got it successfully closed?
     }
     this.n19popup.isPopupHidden = !!hide;
     // return this.applet.InvokeMethod('EditPopup', null, false); // async
     // return this.pm.OnControlEvent(this.consts.get('PHYEVENT_INVOKE_MVG'), this._getControl(name)); // async
     // return this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // async
 
-    // const ret = this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false);
-    // console.log('pm execute method return value', ret);
-    // return ret;
+    this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
+    this._setActiveControl(name);
     this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // seems we can call EditField sync
 
     if (resolvePromise) {
       return new Promise(resolve => resolvePromise.cb = resolve); // eslint-disable-line no-param-reassign
     }
     return true;
-  }
-
-  closePopupApplet(isPopupHidden) {
-    const isPopupApplet = typeof this.applet.GetPopupAppletName === 'function';
-    const isPickApplet = typeof this.applet.GetPickAppletName === 'function';
-
-    if (isPopupApplet || isPickApplet) {
-      // todo : check canInvokeMethod
-      const ret = this.pm.ExecuteMethod('InvokeMethod', 'CloseApplet');
-      if (isPopupHidden) { // it could be better if we don't have a Siebel Applet on the view
-        this.reInitPopup();
-      }
-      return ret;
-    }
-    throw new Error('This applet is neither pick nor popup');
-  }
-
-  reInitPopup() {
-    const popupPM = SiebelApp.S_App.GetPopupPM();
-    popupPM.Init();
-    popupPM.Setup();
-  }
-
-  processNewPopup(ps) {
-    return this.n19popup.processNewPopup(ps);
   }
 
   showMvgApplet(input, hide, resolvePromise) {

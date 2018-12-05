@@ -111,16 +111,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             return ret;
           }
 
-          SiebelAppFacade.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
-          SiebelApp.S_App.ProcessNewPopup = function (ps) {
-            if (SiebelApp.S_App.GetActiveView().GetActiveApplet().GetName() === appletName && n19helper._isPopupHidden()) {
-              var ret = n19helper.processNewPopup(ps);
-            } else {
-              var ret = SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);  //return "refreshpopup";
-            }
-            return ret;
-          }
-
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_GENERIC"), function (propSet) {
             var type = propSet.GetProperty(consts.get("SWE_PROP_NOTI_TYPE"));
             console.log('SWE_PROP_BC_NOTI_GENERIC ', type, propSet);
@@ -267,23 +257,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             sequence: true,
             scope: this
           });
-
-          this.AttachPMBinding('isControlPopupOpen', (...args) => {
-            // combobox and probably pickapplets also?
-          });
-
-          this.AttachPMBinding("UpdateAppletMessage", function () {
-            // handle Columns Displayed in list applet
-            // works also on query
-          }, { scope: this });
-
         }
-
-        // execute browser scripts
-        // SiebelApp.S_App.Applet.prototype.FireInvokeMethod = function () {
-        //  SiebelAppFacade.HLSCaseFormAppletPR.superclass.FireInvokeMethod.apply(this, arguments);
-        //  console.log('Fire Invoke Method', arguments);
-        // }
 
         HLSCaseFormAppletPR.prototype.preInvokeMethod = function (methodName, args, lp, returnStructure) {
           SiebelJS.Log(this.GetPM().Get("GetName") + ": HLSCaseFormAppletPR:      preInvokeMethod -  " + methodName);
@@ -308,8 +282,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           }
 
           document.getElementById('_sweview').title = '';
-          //$('#_swecontent').css({ 'height': 'auto' });
-          //is it a good enough place to initialize VUE.JS?
           putVue(divId);
         }
 
@@ -457,17 +429,14 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                       alert('SiebelAppFacade length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
                     }
                     // list all MVG shuttle, delete all team members except primary
-                    console.log(SiebelAppFacade.N19['Contact Team Mvg Applet'].getSelection());
                     var isRecord = SiebelAppFacade.N19['Contact Team Mvg Applet']._firstRecord();
                     while (isRecord) {
                       var obj = {'SSA Primary Field': {}};
                       SiebelAppFacade.N19['Contact Team Mvg Applet'].getCurrentRecordModel(obj);
                       var value = obj['SSA Primary Field'].value;
                       if (value) { // the record is not primary
-                        console.log ('record primary');
                         var isRecord = SiebelAppFacade.N19['Contact Team Mvg Applet'].nextRecord();
                       } else {
-                        console.log ('record IS NOT primary');
                         isRecord = SiebelAppFacade.N19['Contact Team Mvg Applet'].deleteRecords(() => {
                           console.log('DELETE RECORDS CALLBACK');
                         });
@@ -491,7 +460,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
               },
               changeValue(name) {
-                console.log('change value is called .....................................');
                 var isChanged = n19helper.setControlValue(name, this.controls[name].value);
                 if (isChanged && this.controls[name].isPostChanges) {
                   this.afterSelection();
@@ -646,7 +614,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   }.bind(this));
                   return;
                 }
-                //we don't have an object yet in memory, so query the server
+                //we don't have an object yet in memory, query the server
                 setTimeout(function () {
                   var service = SiebelApp.S_App.GetService("N19 BS");
                   if (service) {
@@ -722,7 +690,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               afterSelection: function () {
                 console.log('>>>>>>>>>>>>>>>>>>> AFTER SELECTION STARTED....');
                 n19helper.getCurrentRecordModel(this.controls);
-                console.log(this.controls);
 
                 if (0 === this.caseCategoryArr.length) {
                   this.caseCategoryArr = n19helper.getStaticLOV('Category');
@@ -753,7 +720,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         HLSCaseFormAppletPR.prototype.EndLife = function () {
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = SiebelAppFacade.N19notifyNewFieldData;
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary = SiebelAppFacade.N19notifyNewPrimary;
-          SiebelApp.S_App.ProcessNewPopup = SiebelAppFacade.N19processNewPopup;
+          // SiebelApp.S_App.ProcessNewPopup = SiebelAppFacade.N19processNewPopup;
           SiebelApp.contentUpdater.viewLoaded = SiebelAppFacade.N19viewLoaded;
 
           if (app) {

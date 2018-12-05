@@ -40,9 +40,11 @@ SiebelAppFacade.N19Helper = class {
     // eslint-disable-next-line no-console
     console.log('N19Helper started....', this.appletName);
 
-    // do we need to instantiate it for every applet
-    this.n19popup = new N19popup();
-    this.isPopupHidden = false;
+    // instantinate the n19popup
+    if (!SiebelAppFacade.N19popup) {
+      SiebelAppFacade.N19popup = new N19popup();
+    }
+    this.n19popup = SiebelAppFacade.N19popup;
   }
 
   _getControl(name) {
@@ -121,9 +123,9 @@ SiebelAppFacade.N19Helper = class {
     if (isOpen) {
       console.log(`closing ${appletName} in _showMvgApplet...`); // eslint-disable-line no-console
       // maybe do not close if the applet to be opened if the same as opened - check control name returned
-      SiebelAppFacade.N19[appletName].closePopupApplet(this.isPopupHidden); // todo: check if closed?
+      SiebelAppFacade.N19[appletName].closePopupApplet(this.n19popup.isPopupHidden); // todo: check if closed?
     }
-    this.isPopupHidden = !!hide;
+    this.n19popup.isPopupHidden = !!hide;
     // return this.applet.InvokeMethod('EditPopup', null, false); // async
     // return this.pm.OnControlEvent(this.consts.get('PHYEVENT_INVOKE_MVG'), this._getControl(name)); // async
     // return this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // async
@@ -162,10 +164,6 @@ SiebelAppFacade.N19Helper = class {
 
   processNewPopup(ps) {
     return this.n19popup.processNewPopup(ps);
-  }
-
-  _isPopupHidden() { // temp method: todo: remove it
-    return this.isPopupHidden;
   }
 
   showMvgApplet(input, hide, resolvePromise) {
@@ -350,7 +348,7 @@ SiebelAppFacade.N19Helper = class {
   }
 
   _getValueForControl(controlUiType, value) { // from external system
-    // DateTime, numbers, and phone
+    // TODO: DateTime, numbers, and phones
     if (this.consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
       // convert true/false => Y/N
       // do we want to support setting to null
@@ -360,7 +358,7 @@ SiebelAppFacade.N19Helper = class {
   }
 
   setControlValue(name, value) {
-    // !!! TODO: If value is null, nothing happens, should we convert null to ''?
+    // TODO: If value is null, nothing happens, should we convert null to ''?
     const control = this._getControl(name);
     // TODO: Check if control is found
     value = this._getValueForControl(control.GetUIType(), value); // eslint-disable-line no-param-reassign

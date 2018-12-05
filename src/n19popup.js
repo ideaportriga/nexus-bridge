@@ -1,7 +1,20 @@
 class N19popup {
   constructor() {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
+    this.isPopupHidden = false;
     console.log(`${this.constructor.name} started...`); // eslint-disable-line no-console
+
+    // it will be a singleton, so no cleanup
+    SiebelAppFacade.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
+    SiebelApp.S_App.ProcessNewPopup = (ps) => {
+      let ret;
+      if (this.isPopupHidden) {
+        ret = this.processNewPopup(ps);
+      } else {
+        ret = SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);
+      }
+      return ret;
+    };
   }
 
   processNewPopup(ps) {

@@ -491,11 +491,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 } else {
                   alert('resolvePromise.cb is not null');
                 }
-                //n19helper.view.SetActiveAppletInternal(n19helper.applet);
-                //n19helper._setActiveControl('Audit Employee Last Name');
-                //var n19popup = new SiebelAppFacade.N19popup(n19helper.pm, n19helper.applet);
-                //n19popup.editPopup();
-                //n19popup = null;
               },
               testButtonClickShuttle() {
                 if (resolvePromise.cb === null) {

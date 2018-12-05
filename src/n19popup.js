@@ -8,17 +8,11 @@ class N19popup { // eslint-disable-line no-unused-vars
     console.log(`${this.constructor.name} started...`); // eslint-disable-line no-console
   }
 
-  addSweSP(n) {
-    let ret = n;
-    if (ret.indexOf('.swe?') !== -1 && ret.indexOf(this.consts.get('SWE_SHOW_POPUP_STR')) === -1) {
-      ret = this.utils.AppendArgsToURL(ret, this.consts.get('SWE_SHOW_POPUP_STR'), this.consts.get('SWE_NUMERIC_TRUE'));
-    }
-    return ret;
-  }
-
-  pmProcessNewPopup(ps, hide) {
+  processNewPopup(ps, hide) {
+    SiebelApp.S_App.SetShowNewPage(!0);
     const popupPM = SiebelApp.S_App.GetPopupPM();
 
+    popupPM.SetProperty('CanProcessLayout', !1);
     popupPM.SetProperty('isPopupPick', false);
     popupPM.SetProperty('isPopupMVGAssoc', false);
     popupPM.SetProperty('isPopupMVGSelected', false);
@@ -27,15 +21,9 @@ class N19popup { // eslint-disable-line no-unused-vars
     popupPM.SetProperty('isSIPopup', ps.GetProperty(this.consts.get('SWE_IS_SI_POPUP')));
     popupPM.SetProperty('isPrevPopupVisible', !1);
 
-    // if (popupPM.Get('state') === this.consts.get('POPUP_STATE_UNLOADED')) {
     if (!popupPM.GetRenderer()) {
       popupPM.Setup();
     }
-    // }
-
-    let url = ps.GetProperty('URL');
-    // url = this.addSweSP(url);
-    url = SiebelApp.S_App.GetPageURL() + url.split('start.swe')[1];
 
     const activeView = SiebelApp.S_App.GetActiveView();
     if (activeView) {
@@ -52,14 +40,10 @@ class N19popup { // eslint-disable-line no-unused-vars
       popupPM.ExecuteMethod('SetPopupVisible', !0);
     }
 
+    let url = ps.GetProperty('URL');
+    url = SiebelApp.S_App.GetPageURL() + url.split('start.swe')[1];
     popupPM.SetProperty('url', url);
-  }
 
-  processNewPopup(ps, hide) {
-    SiebelApp.S_App.SetShowNewPage(!0);
-    SiebelApp.S_App.GetPopupPM().SetProperty('CanProcessLayout', !1);
-    // SiebelApp.S_App.GetPopupPM().ExecuteMethod('ProcessNewPopup', ps);
-    this.pmProcessNewPopup(ps, hide);
     return 'refreshpopup';
   }
 }

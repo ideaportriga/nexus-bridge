@@ -92,7 +92,7 @@ SiebelAppFacade.N19Helper = class {
       return { isOpen: false };
     }
     if (1 === currPopups.length) {
-      return { isOpen: true, appletName: currPopups[0].GetName() };
+      return { isOpen: true, appletName: currPopups[0].GetName(), controlName: currPopups[0].GetPopupControl() };
     }
     if (2 === currPopups.length) {
       // this is a shuttle or
@@ -100,7 +100,7 @@ SiebelAppFacade.N19Helper = class {
       //      test it  - maybe we need to close the several applets
       for (let i = 0; i < currPopups.length; i += 1) {
         if (typeof currPopups[1].GetPopupAppletName === 'function') {
-          return { isOpen: true, appletName: currPopups[i].GetName() };
+          return { isOpen: true, appletName: currPopups[i].GetName(), controlName: currPopups[i].GetPopupControl() };
         }
       }
       throw new Error('Mvg applet is not found...');
@@ -108,6 +108,7 @@ SiebelAppFacade.N19Helper = class {
     // todo: test if we can get to here
     //    maybe when we open a new applet on top of the shuttle applet
     throw new Error('how did I get here...');
+    // todo: maybe return also control name
   }
 
   _showMvgApplet(name, resolvePromise) { // eslint-disable-line no-unused-vars
@@ -116,7 +117,7 @@ SiebelAppFacade.N19Helper = class {
     const { isOpen, appletName } = this._isPopupOpen();
     if (isOpen) {
       console.log(`closing ${appletName} in _showMvgApplet...`); // eslint-disable-line no-console
-      // maybe do not close if the applet to be opened if the same as opened?
+      // maybe do not close if the applet to be opened if the same as opened - check control name returned
       SiebelAppFacade.N19[appletName].closeApplet(); // todo: check if closed?
     }
     // return this.applet.InvokeMethod('EditPopup', null, false); // async
@@ -126,7 +127,7 @@ SiebelAppFacade.N19Helper = class {
     // const ret = this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false);
     // console.log('pm execute method return value', ret);
     // return ret;
-    this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false);
+    this.pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // seems we can call EditField sync
 
     if (resolvePromise) {
       return new Promise(resolve => resolvePromise.cb = resolve); // eslint-disable-line no-param-reassign
@@ -381,11 +382,16 @@ SiebelAppFacade.N19Helper = class {
     return ret;
   }
 
-  getCurrentRecord() {
+  getCurrentRecord(raw) {
+    const index = this.getSelection();
     // todo: check if record exists
-    return this.pm.Get('GetRecordSet')[this.pm.Get('GetSelection')];
+    if (raw) {
+      return this.pm.Get('GetRawRecordSet')[index];
+    }
+    return this.pm.Get('GetRecordSet')[index];
   }
 
+  // todo : should we have a method that accepts a list of the fields?
   getCurrentRecordModel(_controls) {
     if (!_controls) {
       return false;
@@ -540,7 +546,7 @@ SiebelAppFacade.N19Helper = class {
 
   gotoView(targetViewName, targetAppletName, id) {
     // todo: get the applet name from the view definition
-    const rowId = typeof id === 'undefined' ? this.getRawRecordSet()[this.getSelection()].Id : id;
+    const rowId = typeof id === 'undefined' ? this.getCurrentRecord(true).Id : id;
     let SWECmd = `GotoView&SWEView=${targetViewName}&SWEApplet0=${targetAppletName}`;
     SWECmd += `&SWEBU=1&SWEKeepContext=FALSE&SWERowId0=${rowId}`;
     SWECmd = encodeURI(SWECmd);

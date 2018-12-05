@@ -31,8 +31,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             app.getSalesRep();
           }
         }
-
-        // just temp to make it available in Dev Console
         SiebelAppFacade.N19afterSelection = function () {
           if (app) {
             app.afterSelection();
@@ -50,24 +48,24 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           }
 
           var pm = this.GetPM();
-          pm.AddMethod("InvokeMethod", function (method) {
-            console.log('InvokeMethod sequence true', method)
+          pm.AddMethod('InvokeMethod', function (method) {
+            console.log('>>> InvokeMethod sequence true', method, arguments);
           }, { sequence: true, scope: this });
 
-          pm.AddMethod("InvokeMethod", function (method) {
-            console.log('InvokeMethod sequence false', method)
+          pm.AddMethod('InvokeMethod', function (method) {
+            console.log('>>> InvokeMethod sequence false', method, arguments);
+          }, { sequence: true, scope: this });
+
+          pm.AddMethod('PostExecute', function (method) {
+            console.log('>>> PostExecute sequence true', method, arguments);
           }, { sequence: true, scope: this });
 
           pm.AddMethod("PostExecute", function (method) {
-            console.log('PostExecute sequence true', arguments)
+            console.log('>>> PostExecute sequence false', method, arguments);
           }, { sequence: true, scope: this });
 
-          pm.AddMethod("PostExecute", function (method) {
-            console.log('PostExecute sequence false', arguments)
-          }, { sequence: true, scope: this });
-
-          pm.AttachPostProxyExecuteBinding("ALL", function () {
-            console.log('AttachPostProxyExecuteBinding<<<', arguments)
+          pm.AttachPostProxyExecuteBinding("ALL", function (method) {
+            console.log('>>> AttachPostProxyExecuteBinding', method, arguments);
           });
 
           // initialize helper
@@ -82,10 +80,10 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           document.querySelector('#' + divId + ' form').style.display = 'none';
           //document.querySelector('#' + divId + ' form').parentNode.removeChild('form');
 
-          //todo: use applet.prototype.RepopulateField instead of it?
+          //todo: maybe use applet.prototype.RepopulateField instead of it?
           SiebelAppFacade.N19notifyNewFieldData = SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData;
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = function (name, value) {
-            // console.log('>>>>> new field data in notify object', arguments);
+            console.log('>>>>> new field data in notify object', arguments);
             SiebelAppFacade.N19notifyNewFieldData.apply(this, arguments);
             if (app) {
               app.updateFieldData(name, value);
@@ -96,7 +94,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary = function () {
             console.log('>>>>> new primary in notify object', arguments);
             SiebelAppFacade.N19notifyNewPrimary.apply(this, arguments);
-            if (this.GetAppletRegistry()[0].GetName() === 'Contact Team Mvg Applet') {
+            if (this.GetAppletRegistry()[0].GetName() === 'Contact Team Mvg Applet') { // todo: change it
               if (app) {
                 app.updatePrimary();
               }
@@ -107,27 +105,25 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           // SiebelApp.contentUpdater.loadContent = function() {
           //  return SiebelAppFacade.N19loadContent.apply(SiebelApp.contentUpdater, arguments);
           // };
+
           SiebelAppFacade.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded;
           SiebelApp.contentUpdater.viewLoaded = function () {
             var ret = SiebelAppFacade.N19viewLoaded.apply(SiebelApp.contentUpdater, arguments);
-
-            console.log(ret, arguments, typeof resolvePromise.cb, resolvePromise.cb);
+            console.log('view loaded', ret, arguments, typeof resolvePromise.cb, resolvePromise.cb);
             if (typeof resolvePromise.cb === 'function') {
-              resolvePromise.cb();
+              var appletName = n19helper._isPopupOpen().appletName;
+              resolvePromise.cb(appletName);
             }
-
             return ret;
           }
 
           SiebelApp.S_App.GetPopupPM().AddMethod('SetPopupVisible', function (methodname, inputpropset, context, returnstructure) {
-            console.log('!!!!!!!!!!!!!!!!!!! SetPopupVisible', arguments);
-            console.log(methodname, inputpropset, context, returnstructure, hidePopupApplet);
+            console.log('SetPopupVisible', methodname, inputpropset, context, returnstructure, hidePopupApplet);
             if (n19helper) {
               console.log(n19helper._getActiveControlName());
               if (n19helper._getActiveControlName() === 'Sales Rep') {
                 if (SiebelApp.S_App.GetPopupPM().Get('state') === consts.get('POPUP_STATE_VISIBLE')) {
                   console.log('CALLING SETUP OF POPUP PM');
-                  // does it clear the cache?
                   if (!hidePopupApplet) { // todo: and check if it is should be restored?
                     SiebelApp.S_App.GetPopupPM().Init();
                     SiebelApp.S_App.GetPopupPM().Setup();
@@ -137,12 +133,12 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               if (n19helper._getActiveControlName() === 'Audit Employee Last Name') {
                 if (SiebelApp.S_App.GetPopupPM().Get('state') === consts.get('POPUP_STATE_VISIBLE')) {
                   console.log('CALLING SETUP OF POPUP PM');
-                  // does it clear the cache?
                   if (!hidePopupApplet) { // todo: and check if it is should be restored?
                     SiebelApp.S_App.GetPopupPM().Init();
                     SiebelApp.S_App.GetPopupPM().Setup();
                   }
                 }
+                // old technique to hide the applet
                 // returnstructure["CancelOperation"] = true;
                 // setTimeout(function() {
                 //   $('.ui-widget-overlay').remove();
@@ -163,7 +159,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               n19popup = null;
             } else {
               var ret = SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);  //return "refreshpopup";
-              // at this moment we have SiebelApp.S_App.GetPopupPM().Get('url')
+              // at this moment we got SiebelApp.S_App.GetPopupPM().Get('url')
             }
             console.log('<<<<<<<<<<<< ProcessNewPopup', ps, ret);
             return ret;
@@ -256,7 +252,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET_FIELD_VALUES'), function () {
-            //todo: get a new record here?
             console.log('SWE_PROP_BC_NOTI_INSERT_WORKSET_FIELD_VALUES', arguments);
           });
 
@@ -331,9 +326,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
         }
 
+        // execute browser scripts
         // SiebelApp.S_App.Applet.prototype.FireInvokeMethod = function () {
-        //   // execute browsers scripts
-        //   // SiebelAppFacade.HLSCaseFormAppletPR.superclass.FireInvokeMethod.apply(this, arguments);
+        //  SiebelAppFacade.HLSCaseFormAppletPR.superclass.FireInvokeMethod.apply(this, arguments);
         //  console.log('Fire Invoke Method', arguments);
         // }
 
@@ -486,7 +481,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   // todo: check if promise is not resolved yet?
                   n19helper.showPickApplet('Audit Employee Last Name', resolvePromise).then(function () {
                     resolvePromise.cb = null;
-                    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
                     if (!SiebelAppFacade.N19['Pharma Employee Pick Applet']) {
                       alert('Pharma Employee Pick Applet is not found in SiebelAppFacade');
                     }
@@ -508,7 +502,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   hidePopupApplet = true;
                   n19helper.showMvgApplet('Sales Rep', resolvePromise).then(function () {
                     resolvePromise.cb = null;
-                    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
                     if (!SiebelAppFacade.N19['Contact Team Mvg Applet']) {
                       alert('Contact Team Mvg Applet is not found in SiebelAppFacade');
                     }
@@ -543,7 +536,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               openPickApplet() {
                 hidePopupApplet = false;
-                n19helper.showPickApplet('Audit Employee Last Name'); //todo: make promise ??
+                n19helper.showPickApplet('Audit Employee Last Name');
               },
               showMvgApplet() {
                 hidePopupApplet = false;
@@ -695,7 +688,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                         var obj = {
                           firstName: arr[i]["Active First Name"],
                           lastName: arr[i]["Active Last Name"],
-                          login: arr[i]["Active Login Name"]
+                          login: arr[i]["Active Login Name"],
+                          id: arr[i].Id
                         }
                         this.caseSalesRepArr.push(obj);
                         if (arr[i]['SSA Primary Field'] == 'Y') {
@@ -709,7 +703,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   }.bind(this));
                   return;
                 }
-
                 //we don't have an object yet in memory, so query the server
                 setTimeout(function () {
                   var service = SiebelApp.S_App.GetService("N19 BS");
@@ -727,7 +720,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                             var obj = {
                               firstName: resultSet.GetChild(i).GetProperty('First'),
                               lastName: resultSet.GetChild(i).GetProperty('Last'),
-                              login: resultSet.GetChild(i).GetProperty('Login')
+                              login: resultSet.GetChild(i).GetProperty('Login'),
+                              id: resultSet.GetChild(i).GetProperty('Id')
                             }
                             this.caseSalesRepArr.push(obj);
                             if (resultSet.GetChild(i).GetProperty('Primary') === 'Y') {
@@ -745,44 +739,42 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }.bind(this));
 
               },
-              clickDeleteSalesRep(salesRep) {
-                console.log('>>> clickDeleteSalesRep input', salesRep, salesRep.login, this.caseSalesRepArr.length);
-                // DELETE FROM ARRAY
-                var index = -1;
-                for (var i = 0; i < this.caseSalesRepArr.length; i++) {
-                  console.log(this.caseSalesRepArr[i].login);
-                  if (this.caseSalesRepArr[i].login == salesRep.login) {
-                    index = i;
-                    this.caseSalesRepArr.splice(index, 1);
-                    break;
+              deleteSalesRep(appletName, id) {
+                var helper = SiebelAppFacade.N19[appletName];
+
+                var isRecord = helper._firstRecord();
+                while (isRecord) {
+                  var obj = helper.getCurrentRecord(true);
+                  // var recPrimary = obj['SSA Primary Field'];
+                  var recId = obj.Id;
+                  debugger;
+                  if (recId === id) {
+                    // check for primary
+                    helper.deleteRecords();
+                    return;
+                  } else {
+                    isRecord = helper.nextRecord();
                   }
                 }
-                // NOTHING IS FOUND
-                if (index === -1) {
-                  return;
-                }
-
-                // WE ARE CREATING A NEW RECORD - CHECK THE INSTANCE OF POSITION BC
-                if (n19helper.insertPending()) {
-                  return;
-                }
-
-                // DELETE USING BS
-                var service = SiebelApp.S_App.GetService("N19 BS");
-                if (service) {
-                  var psInput = SiebelApp.S_App.NewPropertySet();
-                  psInput.SetProperty('Login', salesRep.login);
-                  var ai = {
-                    async: true,
-                    selfbusy: true,
-                    scope: this,
-                    cb: function (method, psInput, psOutput) {
-                      console.log('BS output to DELETE a sales rep...', psOutput);
-                      n19helper.NotifyNewDataWS('Sales Rep');
-                    }
-                  };
-                  console.log('BS input to DELETE a sales rep...', psInput);
-                  service.InvokeMethod("DeleteSalesRep", psInput, ai);
+              },
+              clickDeleteSalesRep(salesRep) {
+                console.log('>>> clickDeleteSalesRep input', salesRep, salesRep.login, this.caseSalesRepArr);
+                var ret = n19helper._isPopupOpen();
+                var controlName = ret.controlName;
+                var appletName = ret.appletName;
+                if ('Sales Rep' !== controlName) {
+                  if (resolvePromise.cb === null) {
+                    hidePopupApplet = true;
+                    n19helper.showMvgApplet('Sales Rep', resolvePromise).then(function(appletName) {
+                      resolvePromise.cb = null;
+                      this.deleteSalesRep(appletName, salesRep.id);
+                    }.bind(this));
+                  } else {
+                    alert('resolvePromise.cb is not null');
+                  }
+                } else {
+                  alert('Applet already opened');
+                  this.deleteSalesRep(appletName, salesRep.id);
                 }
               },
               afterSelection: function () {
@@ -804,6 +796,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   this.caseSalesRepArr = [{
                     firstName: '',
                     lastName: '',
+                    id: '',
                     primary: true,
                     login: this.caseSalesRep
                   }];

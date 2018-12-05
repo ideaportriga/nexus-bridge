@@ -27,11 +27,11 @@ class N19popup { // eslint-disable-line no-unused-vars
     popupPM.SetProperty('isSIPopup', ps.GetProperty(this.consts.get('SWE_IS_SI_POPUP')));
     popupPM.SetProperty('isPrevPopupVisible', !1);
 
-    if (popupPM.Get('state') === this.consts.get('POPUP_STATE_UNLOADED')) {
-      if (!popupPM.GetRenderer()) {
-        popupPM.Setup();
-      }
+    // if (popupPM.Get('state') === this.consts.get('POPUP_STATE_UNLOADED')) {
+    if (!popupPM.GetRenderer()) {
+      popupPM.Setup();
     }
+    // }
 
     let url = ps.GetProperty('URL');
     // url = this.addSweSP(url);

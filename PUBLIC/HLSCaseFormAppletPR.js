@@ -72,9 +72,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           //hide the server rendered html, better to remove, but not now
           divId = "s_" + pm.Get('GetFullId') + "_div";
-          document.getElementById(divId).classList.add('siebui-applet', 'siebui-active');
           document.querySelector('#' + divId + ' form').style.display = 'none';
           //document.querySelector('#' + divId + ' form').parentNode.removeChild('form');
+
+          // for commite pending indicator
+          document.getElementById(divId).classList.add('siebui-applet', 'siebui-active');
 
           //todo: maybe use applet.prototype.RepopulateField instead of it?
           SiebelAppFacade.N19notifyNewFieldData = SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData;

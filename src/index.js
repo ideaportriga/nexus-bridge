@@ -99,6 +99,7 @@ SiebelAppFacade.N19Helper = class {
       return false;
     }
     this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
+    // todo : check if control is valid
     this._setActiveControl(name);
     return this.n19popup.showPopupApplet(hide, cb, this.pm);
   }

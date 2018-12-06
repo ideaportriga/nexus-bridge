@@ -1,5 +1,7 @@
 module.exports = (env, argv) => {
 
+  const webpack = require('webpack');
+
   const rules = [{
     test: /\.js$/,
     use: {
@@ -10,10 +12,14 @@ module.exports = (env, argv) => {
     }
   }];
 
+  let plugins = [];
   let main;
   let devtool;
   let filename;
-  if ('production' === argv.mode) { // remove console.log, add polyfill,
+  if ('production' === argv.mode) { // remove console.log, add polyfill
+    const PACKAGE = require('./package.json');
+    const banner = PACKAGE.name + ' - ' + PACKAGE.version;
+    plugins = [new webpack.BannerPlugin(banner)];
     rules.push({
       test: /\.js$/,
       use: {
@@ -43,7 +49,7 @@ module.exports = (env, argv) => {
     },
     resolve: {
     },
-    plugins: []
+    plugins
   };
 
   return config;

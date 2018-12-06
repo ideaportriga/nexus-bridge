@@ -10,27 +10,36 @@ module.exports = (env, argv) => {
     }
   }];
 
-  if ('production' === argv.mode) { // remove console.log
+  let main;
+  let devtool;
+  let filename;
+  if ('production' === argv.mode) { // remove console.log, add polyfill,
     rules.push({
       test: /\.js$/,
       use: {
         loader: 'strip-loader?strip[]=console.log'
       }
     });
+    main = ['core-js/fn/promise', __dirname + '/src/index.js'];
+    devtool = '';
+    filename = 'N19Helper.min.js';
+  } else { // this is a development mode
+    main = [__dirname + '/src/index.js'];
+    devtool = 'source-map';
+    filename = 'N19Helper.js';
   }
 
-  let config = {
+  const config = {
     entry: {
-    //  main: ['core-js/fn/promise', __dirname + '/src/index.js']
-      main: [__dirname + '/src/index.js']
+      main
     },
-    devtool: 'source-map',
+    devtool,
     output: {
-      path: "C:\\Siebel\\16.0.0.0.0\\Client\\public\\SCRIPTS\\siebel\\custom",
-      filename: 'N19Helper.js'
+      path: __dirname  + '/dist',
+      filename
     },
     module: {
-      rules: rules
+      rules
     },
     resolve: {
     },

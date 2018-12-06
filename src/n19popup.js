@@ -128,6 +128,7 @@ class N19popup {
 
     pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // seems we can also to call EditField
 
+    // eslint-disable-next-line no-return-assign
     const ret = new Promise(resolve => this.resolvePromise = resolve); // eslint-disable-line no-param-assign
     if (typeof cb === 'function') {
       return ret.then(cb);

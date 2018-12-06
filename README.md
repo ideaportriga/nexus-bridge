@@ -19,3 +19,8 @@ The `dist` folder contains the following files:
 
 ## Documentation
 [Wiki](/../wikis/home)
+
+## Structure
+* `src` - N19Helper files
+* `PUBLIC` - contains some crazy examples of usage, not applicable for review
+ 

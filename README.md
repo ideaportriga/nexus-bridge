@@ -18,4 +18,4 @@ The `dist` folder contains the following files:
 * `N19Helper.min.js` - created by `npm run build` 
 
 ## Documentation
-[Wiki](../wikis/home)
+[Wiki](/../wikis/home)

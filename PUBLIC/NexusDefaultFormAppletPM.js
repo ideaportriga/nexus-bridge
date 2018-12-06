@@ -21,7 +21,7 @@ if (typeof (SiebelAppFacade.NexusDefaultFormAppletPR) === "undefined") {
           SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
 
           //hide the server rendered html, better to remove, but not now
-          divId = "s_" + pm.Get('GetFullId') + "_div";
+          var divId = "s_" + pm.Get('GetFullId') + "_div";
           document.querySelector('#' + divId + ' form').style.display = 'none';
         }
 

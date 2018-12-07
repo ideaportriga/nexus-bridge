@@ -3,6 +3,8 @@ class N19popup {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.isPopupHidden = false;
     this.resolvePromise = null;
+    this.popupAppletN19 = null;
+    this.assocAppletN19 = null;
 
     console.log(`${this.constructor.name} started...`); // eslint-disable-line no-console
 
@@ -22,8 +24,25 @@ class N19popup {
     SiebelApp.contentUpdater.viewLoaded = (...args) => {
       const ret = SiebelAppFacade.N19viewLoaded.call(SiebelApp.contentUpdater, ...args);
       if (typeof this.resolvePromise === 'function') {
-        const { appletName } = this.isPopupOpen();
-        this.resolvePromise(appletName);
+        const { appletName } = this.isPopupOpen(); // todo: use here the properties set on promiseResolving?
+        if (!appletName) {
+          throw new Error('Open Applet Name is not found in resolvePromise');
+        }
+        const applet = this.getPopupApplet(appletName);
+        const pm = applet.GetPModel();
+        this.popupAppletN19 = new SiebelAppFacade.N19Helper({ pm, isPopup: true });
+        const obj = { appletName, popupAppletN19: this.popupAppletN19 };
+        // check if we have assoc
+        // we assume it is always assoc applet, but what about opening popup on the top of another - not tested it
+        const assocApplet = applet.GetPopupApplet();
+        if (assocApplet) {
+          this.assocAppletN19 = new SiebelAppFacade.N19Helper({
+            pm: assocApplet.GetPModel(),
+            isPopup: true,
+          });
+          obj.assocAppletN19 = this.assocAppletN19;
+        }
+        this.resolvePromise(obj);
         this.resolvePromise = null;
       }
       return ret;
@@ -86,13 +105,16 @@ class N19popup {
       if (this.isPopupHidden) {
         this.reInitPopup();
       }
+      //
+      this.popupAppletN19 = null;
+      this.assocAppletN19 = null;
       return ret;
     }
     throw new Error('This applet is neither pick nor popup');
   }
 
-  isPopupOpen() {
-    // this code will close the applet even if this applet was originated by another applet
+  isPopupOpen() { // todo: when we set some properties on resolve, do we need this method now
+    // todo: here reuse the properties that set when the Promise resolved
     const currPopups = SiebelApp.S_App.GetPopupPM().Get('currPopups');
     if (0 === currPopups.length) {
       return { isOpen: false };
@@ -113,15 +135,29 @@ class N19popup {
     }
     // todo: test if we can get to here
     //    maybe when we open a new applet on top of the shuttle applet
-    throw new Error('how did I get here...');
+    throw new Error('should not be here...');
+  }
+
+  getPopupAppletPM(appletName) {
+    const applet = this.getPopupApplet(appletName);
+    return applet.GetPModel();
+  }
+
+  getPopupApplet(appletName) {
+    const applet = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName];
+    if (!applet) {
+      throw new Error(`The ${appletName} is not found in applet map`);
+    }
+    return applet;
   }
 
   showPopupApplet(hide, cb, pm) {
-    const { isOpen, appletName } = this.isPopupOpen();
+    const { isOpen, appletName } = this.isPopupOpen(); // todo: use the properties set on promise resolving?
     if (isOpen) {
+      // this code will close the applet even if this applet was originated by another applet
       console.log(`closing ${appletName} in _showPopupApplet...`); // eslint-disable-line no-console
       // maybe do not close if the applet to be opened if the same as already opened?
-      this.closePopupApplet(SiebelAppFacade.N19[appletName].getApplet());
+      this.closePopupApplet(this.getPopupApplet(appletName));
       // todo: check if got it successfully closed?
     }
     this.isPopupHidden = !!hide;

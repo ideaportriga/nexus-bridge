@@ -117,6 +117,7 @@ function () {
 
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.pm = settings.pm;
+    this.isPopup = settings.isPopup;
     this.appletName = this.pm.Get('GetName');
     this.view = SiebelApp.S_App.GetActiveView();
     this.viewName = this.view.GetName();
@@ -155,11 +156,15 @@ function () {
 
     console.log('N19Helper started....', this.appletName); // instantinate the n19popup
 
-    if (!SiebelAppFacade.N19popup) {
-      SiebelAppFacade.N19popup = new _n19popup__WEBPACK_IMPORTED_MODULE_0__["default"]();
-    }
+    this.n19popup = null;
 
-    this.n19popup = SiebelAppFacade.N19popup;
+    if (!this.isPopup) {
+      if (!SiebelAppFacade.N19popup) {
+        SiebelAppFacade.N19popup = new _n19popup__WEBPACK_IMPORTED_MODULE_0__["default"]();
+      }
+
+      this.n19popup = SiebelAppFacade.N19popup;
+    }
   }
 
   _createClass(_class, [{
@@ -219,11 +224,17 @@ function () {
   }, {
     key: "showPopupApplet",
     value: function showPopupApplet(name, hide, cb) {
+      if (!this.n19popup) {
+        // if not initialized it is a popup (isPopup was true in constructor)
+        throw new Error('Openning popup on the popup is not supported now');
+      }
+
       if (!this.n19popup.canOpenPopup()) {
         return false;
       }
 
       this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
+      // todo : check if control is valid
 
       this._setActiveControl(name);
 
@@ -282,6 +293,13 @@ function () {
 
         if (obj.staticPick) {
           obj.staticLOV = this._getStaticLOV(control.GetRadioGroupPropSet().childArray);
+          obj.lovs = obj.staticLOV.reduce(function (accumulator, currentValue) {
+            accumulator.push({
+              lic: currentValue.FieldValue,
+              val: currentValue.DisplayName
+            });
+            return accumulator;
+          }, []);
         }
 
         controls[controlName] = obj;
@@ -879,6 +897,8 @@ function () {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.isPopupHidden = false;
     this.resolvePromise = null;
+    this.popupAppletN19 = null;
+    this.assocAppletN19 = null;
     console.log("".concat(this.constructor.name, " started...")); // eslint-disable-line no-console
     // it will be a singleton, so there is no cleanup
 
@@ -909,9 +929,37 @@ function () {
 
       if (typeof _this.resolvePromise === 'function') {
         var _this$isPopupOpen = _this.isPopupOpen(),
-            appletName = _this$isPopupOpen.appletName;
+            appletName = _this$isPopupOpen.appletName; // todo: use here the properties set on promiseResolving?
 
-        _this.resolvePromise(appletName);
+
+        if (!appletName) {
+          throw new Error('Open Applet Name is not found in resolvePromise');
+        }
+
+        var applet = _this.getPopupApplet(appletName);
+
+        var pm = applet.GetPModel();
+        _this.popupAppletN19 = new SiebelAppFacade.N19Helper({
+          pm: pm,
+          isPopup: true
+        });
+        var obj = {
+          appletName: appletName,
+          popupAppletN19: _this.popupAppletN19
+        }; // check if we have assoc
+        // we assume it is always assoc applet, but what about opening popup on the top of another - not tested it
+
+        var assocApplet = applet.GetPopupApplet();
+
+        if (assocApplet) {
+          _this.assocAppletN19 = new SiebelAppFacade.N19Helper({
+            pm: assocApplet.GetPModel(),
+            isPopup: true
+          });
+          obj.assocAppletN19 = _this.assocAppletN19;
+        }
+
+        _this.resolvePromise(obj);
 
         _this.resolvePromise = null;
       }
@@ -980,8 +1028,11 @@ function () {
 
         if (this.isPopupHidden) {
           this.reInitPopup();
-        }
+        } //
 
+
+        this.popupAppletN19 = null;
+        this.assocAppletN19 = null;
         return ret;
       }
 
@@ -990,7 +1041,8 @@ function () {
   }, {
     key: "isPopupOpen",
     value: function isPopupOpen() {
-      // this code will close the applet even if this applet was originated by another applet
+      // todo: when we set some properties on resolve, do we need this method now
+      // todo: here reuse the properties that set when the Promise resolved
       var currPopups = SiebelApp.S_App.GetPopupPM().Get('currPopups');
 
       if (0 === currPopups.length) {
@@ -1026,7 +1078,24 @@ function () {
       //    maybe when we open a new applet on top of the shuttle applet
 
 
-      throw new Error('how did I get here...');
+      throw new Error('should not be here...');
+    }
+  }, {
+    key: "getPopupAppletPM",
+    value: function getPopupAppletPM(appletName) {
+      var applet = this.getPopupApplet(appletName);
+      return applet.GetPModel();
+    }
+  }, {
+    key: "getPopupApplet",
+    value: function getPopupApplet(appletName) {
+      var applet = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName];
+
+      if (!applet) {
+        throw new Error("The ".concat(appletName, " is not found in applet map"));
+      }
+
+      return applet;
     }
   }, {
     key: "showPopupApplet",
@@ -1035,13 +1104,15 @@ function () {
 
       var _this$isPopupOpen2 = this.isPopupOpen(),
           isOpen = _this$isPopupOpen2.isOpen,
-          appletName = _this$isPopupOpen2.appletName;
+          appletName = _this$isPopupOpen2.appletName; // todo: use the properties set on promise resolving?
+
 
       if (isOpen) {
+        // this code will close the applet even if this applet was originated by another applet
         console.log("closing ".concat(appletName, " in _showPopupApplet...")); // eslint-disable-line no-console
         // maybe do not close if the applet to be opened if the same as already opened?
 
-        this.closePopupApplet(SiebelAppFacade.N19[appletName].getApplet()); // todo: check if got it successfully closed?
+        this.closePopupApplet(this.getPopupApplet(appletName)); // todo: check if got it successfully closed?
       }
 
       this.isPopupHidden = !!hide;

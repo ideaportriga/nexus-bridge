@@ -6,6 +6,7 @@ SiebelAppFacade.N19Helper = class {
   constructor(settings) {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.pm = settings.pm;
+    this.isPopup = settings.isPopup;
     this.appletName = this.pm.Get('GetName');
     this.view = SiebelApp.S_App.GetActiveView();
     this.viewName = this.view.GetName();
@@ -41,10 +42,13 @@ SiebelAppFacade.N19Helper = class {
     console.log('N19Helper started....', this.appletName);
 
     // instantinate the n19popup
-    if (!SiebelAppFacade.N19popup) {
-      SiebelAppFacade.N19popup = new N19popup();
+    this.n19popup = null;
+    if (!this.isPopup) {
+      if (!SiebelAppFacade.N19popup) {
+        SiebelAppFacade.N19popup = new N19popup();
+      }
+      this.n19popup = SiebelAppFacade.N19popup;
     }
-    this.n19popup = SiebelAppFacade.N19popup;
   }
 
   getApplet() {
@@ -95,6 +99,9 @@ SiebelAppFacade.N19Helper = class {
   }
 
   showPopupApplet(name, hide, cb) {
+    if (!this.n19popup) { // if not initialized it is a popup (isPopup was true in constructor)
+      throw new Error('Openning popup on the popup is not supported now');
+    }
     if (!this.n19popup.canOpenPopup()) {
       return false;
     }
@@ -149,6 +156,10 @@ SiebelAppFacade.N19Helper = class {
       // add values to be displayed in the static pick list
       if (obj.staticPick) {
         obj.staticLOV = this._getStaticLOV(control.GetRadioGroupPropSet().childArray);
+        obj.lovs = obj.staticLOV.reduce((accumulator, currentValue) => {
+          accumulator.push({ lic: currentValue.FieldValue, val: currentValue.DisplayName });
+          return accumulator;
+        }, []);
       }
       controls[controlName] = obj;
     }

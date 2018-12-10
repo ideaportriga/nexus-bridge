@@ -902,7 +902,7 @@ function () {
     console.log("".concat(this.constructor.name, " started...")); // eslint-disable-line no-console
     // it will be a singleton, so there is no cleanup
 
-    SiebelAppFacade.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
+    SiebelAppFacade.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup; // todo : remove it from SiebelAppFacade
 
     SiebelApp.S_App.ProcessNewPopup = function (ps) {
       var ret;
@@ -916,7 +916,7 @@ function () {
       return ret;
     };
 
-    SiebelAppFacade.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded;
+    SiebelAppFacade.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded; // todo : remove it from SiebelAppFacade
 
     SiebelApp.contentUpdater.viewLoaded = function () {
       var _SiebelAppFacade$N19v;
@@ -938,11 +938,13 @@ function () {
 
         var applet = _this.getPopupApplet(appletName);
 
-        var pm = applet.GetPModel();
+        var pm = applet.GetPModel(); // todo: avoid this circularity
+
         _this.popupAppletN19 = new SiebelAppFacade.N19Helper({
           pm: pm,
           isPopup: true
-        });
+        }); // todo : split N19Helper into 2 classes
+
         var obj = {
           appletName: appletName,
           popupAppletN19: _this.popupAppletN19

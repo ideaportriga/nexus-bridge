@@ -16,7 +16,7 @@ module.exports = (env, argv) => {
   let main;
   let devtool;
   let filename;
-  if ('production' === argv.mode) { // remove console.log, add polyfill
+  if ('production' === argv.mode) { // remove console.log, add polyfill, minify
     const PACKAGE = require('./package.json');
     const banner = PACKAGE.name + ' - ' + PACKAGE.version;
     plugins = [new webpack.BannerPlugin(banner)];

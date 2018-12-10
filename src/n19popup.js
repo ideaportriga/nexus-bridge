@@ -9,7 +9,7 @@ class N19popup {
     console.log(`${this.constructor.name} started...`); // eslint-disable-line no-console
 
     // it will be a singleton, so there is no cleanup
-    SiebelAppFacade.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
+    SiebelAppFacade.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup; // todo : remove it from SiebelAppFacade
     SiebelApp.S_App.ProcessNewPopup = (ps) => {
       let ret;
       if (this.isPopupHidden) {
@@ -20,7 +20,7 @@ class N19popup {
       return ret;
     };
 
-    SiebelAppFacade.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded;
+    SiebelAppFacade.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded; // todo : remove it from SiebelAppFacade
     SiebelApp.contentUpdater.viewLoaded = (...args) => {
       const ret = SiebelAppFacade.N19viewLoaded.call(SiebelApp.contentUpdater, ...args);
       if (typeof this.resolvePromise === 'function') {
@@ -30,7 +30,8 @@ class N19popup {
         }
         const applet = this.getPopupApplet(appletName);
         const pm = applet.GetPModel();
-        this.popupAppletN19 = new SiebelAppFacade.N19Helper({ pm, isPopup: true });
+        // todo: avoid this circularity
+        this.popupAppletN19 = new SiebelAppFacade.N19Helper({ pm, isPopup: true }); // todo : split N19Helper into 2 classes
         const obj = { appletName, popupAppletN19: this.popupAppletN19 };
         // check if we have assoc
         // we assume it is always assoc applet, but what about opening popup on the top of another - not tested it

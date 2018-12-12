@@ -12,7 +12,7 @@ if (typeof (SiebelAppFacade.n19_example_pr) === "undefined") {
   define("siebel/custom/example/n19_example_pr", ["siebel/phyrenderer", "siebel/custom/example/vue.js", "siebel/custom/example/vuetify.js"],
     function () {
       SiebelAppFacade.n19_example_pr = (function () {
-        var C, vueObj, proto, containerId = 'vue_sample';
+        var vueObj, containerId = 'vue_sample';
 
         function n19_example_pr(pm) {
           SiebelAppFacade.n19_example_pr.superclass.constructor.apply(this, arguments);
@@ -20,35 +20,32 @@ if (typeof (SiebelAppFacade.n19_example_pr) === "undefined") {
 
         SiebelJS.Extend(n19_example_pr, SiebelAppFacade.PhysicalRenderer);
 
-        proto = n19_example_pr.prototype;
-        proto.Init = function () {
+        n19_example_pr.prototype.Init = function () {
           importCss();
-          C = SiebelAppFacade.n19_example_pr.superclass;
-          C.Init.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
+          SiebelAppFacade.n19_example_pr.superclass.Init.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
         }
 
-        proto.ShowUI = function () {
+        n19_example_pr.prototype.ShowUI = function () {
           if (SiebelApp.S_App.GetActiveView().GetName() === "Account List View") { //Loading our applet only on List view
             vueObj = mountVueSample(containerId, this.GetPM());
             bindCustomEvents(vueObj, this.GetPM());
           } else {
-            C.ShowUI.apply(this, arguments); // Draws UI, drawing our custom applet only if on List view
+            SiebelAppFacade.n19_example_pr.superclass.ShowUI.apply(this, arguments); // Draws UI, drawing our custom applet only if on List view
           }
         }
 
-        proto.BindData = function (bRefresh) {
-          C.BindData.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
+        n19_example_pr.prototype.BindData = function (bRefresh) {
+          SiebelAppFacade.n19_example_pr.superclass.BindData.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
         }
 
-        proto.BindEvents = function () {
-          C.BindEvents.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
+        n19_example_pr.prototype.BindEvents = function () {
+          SiebelAppFacade.n19_example_pr.superclass.BindEvents.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
         }
 
-        proto.EndLife = function () {
+        n19_example_pr.prototype.EndLife = function () {
           //Cleanup before destroying applet object
           if (vueObj) vueObj.$destroy();
-
-          C.EndLife.apply(this, arguments); //Siebel applet cleanup
+          SiebelAppFacade.n19_example_pr.superclass.EndLife.apply(this, arguments); //Siebel applet cleanup
         }
 
         return n19_example_pr;
@@ -61,7 +58,6 @@ if (typeof (SiebelAppFacade.n19_example_pr) === "undefined") {
   Here just avoiding manifests
 */
 function importCss() {
-  /* $('head').prepend('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>'); */
   $('head').prepend('<link type="text/css"  rel="stylesheet" href="SCRIPTS/siebel/custom/example/vuetify.min.css"/>');
   $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
 }
@@ -100,8 +96,8 @@ function mountVueSample(elementId, pm) {
   addContainer(pm, elementId);
 
   return new Vue({
-    el: '#'+ elementId,
-    template: template,
+    el: '#' + elementId,
+    template: compiledTemplate,
     data: {
       snackbar: false,
       instance: API,
@@ -135,7 +131,7 @@ function mountVueSample(elementId, pm) {
       deleteRecord: function () { API.deleteRecord() },
 
       changeValue(name) {
-        if(API.setControlValue(name, this.controls[name].value)){
+        if (API.setControlValue(name, this.controls[name].value)) {
           if (this.controls[name].isPostChanges) this.selectInit();
         } else {
           var currentValue = API.getCurrentRecord()[name];
@@ -170,12 +166,12 @@ function mountVueSample(elementId, pm) {
         if (!this.accountStatusList.length) this.accountStatusList = API.getStaticLOV('AccountStatus');
         if (!this.accountTypeCodeList.length) this.accountTypeCodeList = API.getStaticLOV('AccountTypeCode');
         if (!this.accountTypeList.length) this.accountTypeList = API.getStaticLOV('Type');
-     
+
       },
 
       doDrillDown: function () { API.drilldown('Name'); },
 
-      beforeDestroy: function(){
+      beforeDestroy: function () {
         API = null;
       }
     }
@@ -191,7 +187,11 @@ function mountVueSample(elementId, pm) {
   contact your API through some global object. Glueing together webpack built js with requirejs without modifying
   by hand built file, workaround not know.
 */
-var template = `
+
+//https://babeljs.io/repl generated template
+var compiledTemplate = "\n       <div id=\"vue_sample\">\n         <v-app id=\"inspire\">\n           <v-snackbar v-model=\"snackbar\" :timeout=\"3000\" :top=\"true\">\n             Record saved\n             <v-btn color=\"pink\" flat @click=\"snackbar = false\">Close</v-btn>\n           </v-snackbar>\n           <v-container fluid>\n             <v-layout row wrap>\n               <v-flex md12 pa-2>\n                 <v-alert :value=\"true\" type=\"info\">{{instance.appletName}} rendered by VUE.JS PR</v-alert>\n               </v-flex>\n\n               <v-flex md8 pa-2>\n                <v-text-field \n                    @click:prepend=\"doDrillDown\" \n                    :rules=\"controls.Name.required ? ['Required'] : []\" \n                    v-on:input=\"changeValue('Name')\" \n                    ref=\"AccountName\" :disabled=\"controls.Name.readonly\" \n                    :label=\"controls.Name.label\" \n                    v-model=\"controls.Name.value\" \n                    clearable \n                    v-on:keyup.esc=\"escapeOnName\" \n                    v-on:click:clear=\"handleClear('Name')\" \n                    :counter=\"controls.Name.maxSize\"></v-text-field>\n                </v-flex>\n\n                <v-flex md3 pa-2>\n                  <v-switch \n                    v-on:change=\"changeValue('Fund Eligible Flag')\" \n                    :label=\"controls['Fund Eligible Flag'].label\" \n                    v-model=\"controls['Fund Eligible Flag'].value\" \n                    :disabled=\"controls['Fund Eligible Flag'].readonly\"></v-switch>\n                </v-flex>\n\n                <v-flex md3 pa-2>                                                                                                                                                 \n                  <v-autocomplete \n                    :rules=\"controls.AccountStatus.required ? ['Required'] : []\" \n                    v-model=\"controls.AccountStatus.value\" \n                    :disabled=\"controls.AccountStatus.readonly\" \n                    :items=\"accountStatusList\" \n                    v-on:change=\"changeValue('AccountStatus')\" \n                    :label=\"controls.AccountStatus.label\"/>\n                </v-flex>\n\n                <v-flex md3 pa-2>                                                                                                                                                 \n                  <v-autocomplete \n                    :rules=\"controls.AccountTypeCode.required ? ['Required'] : []\" \n                    v-model=\"controls.AccountTypeCode.value\" \n                    :disabled=\"controls.AccountTypeCode.readonly\" \n                    :items=\"accountTypeCodeList\" \n                    v-on:change=\"changeValue('AccountTypeCode')\" \n                    :label=\"controls.AccountTypeCode.label\"/>\n                </v-flex>\n\n                <v-flex md3 pa-2>                                                                                                                                                 \n                  <v-autocomplete \n                    :rules=\"controls.Type.required ? ['Required'] : []\" \n                    v-model=\"controls.Type.value\" \n                    :disabled=\"controls.Type.readonly\" \n                    :items=\"accountTypeList\" \n                    v-on:change=\"changeValue('Type')\" \n                    :label=\"controls.Type.label\"/>\n                </v-flex>\n              \n               <v-flex md12 pa-2>\n                  <v-divider></v-divider>\n                </v-flex>\n                <v-flex md1 pa-2>\n                  <v-btn block v-on:click=\"saveRecord\" color=\"primary\"><v-icon>save</v-icon>Save!</v-btn>\n                </v-flex>\n                <v-flex md1 pa-2>\n                  <v-btn block v-on:click=\"deleteRecord\" color=\"primary\"><v-icon>delete</v-icon>Delete!</v-btn>\n                </v-flex>\n                <v-flex md6 pa-2> </v-flex>\n                <v-flex md1 pa-2>\n                  <v-btn block v-on:click=\"gotoDetails\" color=\"primary\"><v-icon>language</v-icon>Goto!</v-btn>\n                </v-flex>\n                <v-flex md1 pa-2>\n                  <v-tooltip top><v-btn block slot=\"activator\" v-on:click=\"prevRecord\" color=\"primary\"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>\n                </v-flex>\n                <v-flex md1 pa-2>\n                  <v-tooltip top><v-btn block slot=\"activator\" v-on:click=\"nextRecord\" color=\"primary\"><v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>\n                </v-flex>\n\n             </v-layout>\n           </v-container>\n         </v-app>\n       </div>\n     ";
+
+/* var template = `
        <div id="vue_sample">
          <v-app id="inspire">
            <v-snackbar v-model="snackbar" :timeout="3000" :top="true">
@@ -280,4 +280,4 @@ var template = `
            </v-container>
          </v-app>
        </div>
-     `;
+     `; */

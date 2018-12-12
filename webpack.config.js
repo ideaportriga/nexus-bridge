@@ -13,8 +13,8 @@ module.exports = (env, argv) => {
   }];
 
   let plugins = [];
-  let main;
-  let devtool;
+  const main = ['@babel/polyfill', __dirname + '/src/index.js'];
+  let devtool = '';
   let filename;
   if ('production' === argv.mode) { // remove console.log, add polyfill, minify
     const PACKAGE = require('./package.json');
@@ -26,11 +26,8 @@ module.exports = (env, argv) => {
         loader: 'strip-loader?strip[]=console.log'
       }
     });
-    main = ['core-js/fn/promise', __dirname + '/src/index.js'];
-    devtool = '';
     filename = 'N19Helper.min.js';
   } else { // this is a development mode
-    main = [__dirname + '/src/index.js'];
     devtool = 'source-map';
     filename = 'N19Helper.js';
   }

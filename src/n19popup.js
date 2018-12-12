@@ -1,3 +1,5 @@
+// let mySingleton = null;
+
 class N19popup {
   constructor() {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
@@ -152,7 +154,7 @@ class N19popup {
     return applet;
   }
 
-  showPopupApplet(hide, cb, pm) {
+  async showPopupApplet(hide, cb, pm, sync) {
     const { isOpen, appletName } = this.isPopupOpen(); // todo: use the properties set on promise resolving?
     if (isOpen) {
       // this code will close the applet even if this applet was originated by another applet
@@ -166,9 +168,12 @@ class N19popup {
     pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // seems we can also to call EditField
 
     // eslint-disable-next-line no-return-assign
-    const ret = new Promise(resolve => this.resolvePromise = resolve); // eslint-disable-line no-param-assign
+    let ret = new Promise(resolve => this.resolvePromise = resolve); // eslint-disable-line no-param-assign
     if (typeof cb === 'function') {
-      return ret.then(cb);
+      ret = ret.then(cb);
+    }
+    if (sync) {
+      await ret;
     }
     return ret;
   }

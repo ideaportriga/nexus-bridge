@@ -329,9 +329,12 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-btn block v-on:click="testButtonClick" color="primary"><v-icon>pan_tool</v-icon>Pick!</v-btn>                                                    \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
+                  <v-btn block v-on:click="testButtonClickSync" color="primary"><v-icon>pan_tool</v-icon>Pick Sync!</v-btn>                                                    \n\
+                </v-flex>                                                                                                                                       \n\
+                <v-flex md1 pa-2>                                                                                                                               \n\
                   <v-btn block v-on:click="testButtonClickShuttle" color="primary"><v-icon>pan_tool</v-icon>Shuttle!</v-btn>                                                    \n\
                 </v-flex>                                                                                                                                       \n\
-                <v-flex md5 pa-2>                                                                                                                               \n\
+                <v-flex md4 pa-2>                                                                                                                               \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
                   <v-btn block v-on:click="gotoButtonClick" color="primary"><v-icon>language</v-icon>Goto!</v-btn>                                                    \n\
@@ -388,6 +391,28 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               }
             },
             methods: {
+              async testButtonClickSync() {
+                var obj = await n19helper.showPickApplet('Audit Employee Last Name', true, null, true);
+                console.log(obj)
+                if (obj.appletName != 'Pharma Employee Pick Applet') {
+                  alert('Pharma Employee Pick Applet is not created');
+                }
+                if (Object.keys(obj).length !== 2) {
+                  alert('obj length has not expected value - ' + Object.keys(obj).length);
+                }
+                var length = obj.popupAppletN19.getRecordSet().length;
+                if (length !== 10) {
+                  alert('The recordset length is not 10 as expected - ' + length);
+                }
+                obj.popupAppletN19.query({'Last Name': 'Abel'}, function() {
+                  var length = obj.popupAppletN19.getRecordSet().length;
+                  if (length !== 1) {
+                    alert('The recordset length is not 1 as expected - ' + length);
+                  } else {
+                    obj.popupAppletN19.pickRecord();
+                  }
+                });
+              },
               testButtonClick() {
                 var ret = n19helper.showPickApplet('Audit Employee Last Name', true, function (obj) {
                   if (obj.appletName != 'Pharma Employee Pick Applet') {

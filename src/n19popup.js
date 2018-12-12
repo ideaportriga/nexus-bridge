@@ -9,20 +9,20 @@ class N19popup {
     console.log(`${this.constructor.name} started...`); // eslint-disable-line no-console
 
     // it will be a singleton, so there is no cleanup
-    SiebelAppFacade.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup; // todo : remove it from SiebelAppFacade
+    this.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup; // todo : remove it from SiebelAppFacade
     SiebelApp.S_App.ProcessNewPopup = (ps) => {
       let ret;
       if (this.isPopupHidden) {
         ret = this.processNewPopup(ps);
       } else {
-        ret = SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);
+        ret = this.N19processNewPopup.call(SiebelApp.S_App, ps);
       }
       return ret;
     };
 
-    SiebelAppFacade.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded; // todo : remove it from SiebelAppFacade
+    this.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded;
     SiebelApp.contentUpdater.viewLoaded = (...args) => {
-      const ret = SiebelAppFacade.N19viewLoaded.call(SiebelApp.contentUpdater, ...args);
+      const ret = this.N19viewLoaded.call(SiebelApp.contentUpdater, ...args);
       if (typeof this.resolvePromise === 'function') {
         const { appletName } = this.isPopupOpen(); // todo: use here the properties set on promiseResolving?
         if (!appletName) {
@@ -161,7 +161,7 @@ class N19popup {
       this.closePopupApplet(this.getPopupApplet(appletName));
       // todo: check if got it successfully closed?
     }
-    this.isPopupHidden = !!hide;
+    this.isPopupHidden = !!hide; // todo: do we need to keep the show the applet
 
     pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // seems we can also to call EditField
 

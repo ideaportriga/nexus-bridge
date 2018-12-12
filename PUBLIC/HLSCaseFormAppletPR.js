@@ -396,6 +396,18 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   if (Object.keys(obj).length !== 2) {
                     alert('obj length has not expected value - ' + Object.keys(obj).length);
                   }
+                  var length = obj.popupAppletN19.getRecordSet().length;
+                  if (length !== 10) {
+                    alert('The recordset length is not 10 as expected - ' + length);
+                  }
+                  obj.popupAppletN19.query({'Last Name': 'Abel'}, function() {
+                    var length = obj.popupAppletN19.getRecordSet().length;
+                    if (length !== 1) {
+                      alert('The recordset length is not 1 as expected - ' + length);
+                    } else {
+                      obj.popupAppletN19.pickRecord();
+                    }
+                  })
                 });
                 if (!ret) {
                   alert('(testButtonClick)retured value is false')

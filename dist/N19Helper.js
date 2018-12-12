@@ -902,7 +902,7 @@ function () {
     console.log("".concat(this.constructor.name, " started...")); // eslint-disable-line no-console
     // it will be a singleton, so there is no cleanup
 
-    SiebelAppFacade.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup; // todo : remove it from SiebelAppFacade
+    this.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup; // todo : remove it from SiebelAppFacade
 
     SiebelApp.S_App.ProcessNewPopup = function (ps) {
       var ret;
@@ -910,22 +910,22 @@ function () {
       if (_this.isPopupHidden) {
         ret = _this.processNewPopup(ps);
       } else {
-        ret = SiebelAppFacade.N19processNewPopup.call(SiebelApp.S_App, ps);
+        ret = _this.N19processNewPopup.call(SiebelApp.S_App, ps);
       }
 
       return ret;
     };
 
-    SiebelAppFacade.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded; // todo : remove it from SiebelAppFacade
+    this.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded;
 
     SiebelApp.contentUpdater.viewLoaded = function () {
-      var _SiebelAppFacade$N19v;
+      var _this$N19viewLoaded;
 
       for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
 
-      var ret = (_SiebelAppFacade$N19v = SiebelAppFacade.N19viewLoaded).call.apply(_SiebelAppFacade$N19v, [SiebelApp.contentUpdater].concat(args));
+      var ret = (_this$N19viewLoaded = _this.N19viewLoaded).call.apply(_this$N19viewLoaded, [SiebelApp.contentUpdater].concat(args));
 
       if (typeof _this.resolvePromise === 'function') {
         var _this$isPopupOpen = _this.isPopupOpen(),
@@ -1117,7 +1117,8 @@ function () {
         this.closePopupApplet(this.getPopupApplet(appletName)); // todo: check if got it successfully closed?
       }
 
-      this.isPopupHidden = !!hide;
+      this.isPopupHidden = !!hide; // todo: do we need to keep the show the applet
+
       pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // seems we can also to call EditField
       // eslint-disable-next-line no-return-assign
 

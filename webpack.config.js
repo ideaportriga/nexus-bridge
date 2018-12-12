@@ -13,7 +13,7 @@ module.exports = (env, argv) => {
   }];
 
   let plugins = [];
-  const main = ['@babel/polyfill', __dirname + '/src/index.js'];
+  const main = [__dirname + '/src/index.js']; // '@babel/polyfill',
   let devtool = '';
   let filename;
   if ('production' === argv.mode) { // remove console.log, add polyfill, minify
@@ -27,6 +27,7 @@ module.exports = (env, argv) => {
       }
     });
     filename = 'N19Helper.min.js';
+    main.unshift('core-js/fn/promise');
   } else { // this is a development mode
     devtool = 'source-map';
     filename = 'N19Helper.js';

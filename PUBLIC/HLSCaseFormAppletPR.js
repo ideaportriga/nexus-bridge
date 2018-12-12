@@ -329,7 +329,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-btn block v-on:click="testButtonClick" color="primary"><v-icon>pan_tool</v-icon>Pick!</v-btn>                                                    \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="testButtonClickSync" color="primary"><v-icon>pan_tool</v-icon>Pick Sync!</v-btn>                                                    \n\
+                  <v-btn block v-on:click="testButtonClickPseudoSync" color="primary"><v-icon>pan_tool</v-icon>Pick Sync!</v-btn>                                                    \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
                   <v-btn block v-on:click="testButtonClickShuttle" color="primary"><v-icon>pan_tool</v-icon>Shuttle!</v-btn>                                                    \n\
@@ -391,9 +391,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               }
             },
             methods: {
-              async testButtonClickSync() {
-                var obj = await n19helper.showPickApplet('Audit Employee Last Name', true, null, true);
-                console.log(obj)
+              async testButtonClickPseudoSync() {
+                var obj = await n19helper.showPickApplet('Audit Employee Last Name', true, null);
                 if (obj.appletName != 'Pharma Employee Pick Applet') {
                   alert('Pharma Employee Pick Applet is not created');
                 }

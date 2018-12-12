@@ -154,7 +154,7 @@ class N19popup {
     return applet;
   }
 
-  async showPopupApplet(hide, cb, pm, sync) {
+  showPopupApplet(hide, cb, pm) {
     const { isOpen, appletName } = this.isPopupOpen(); // todo: use the properties set on promise resolving?
     if (isOpen) {
       // this code will close the applet even if this applet was originated by another applet
@@ -171,9 +171,6 @@ class N19popup {
     let ret = new Promise(resolve => this.resolvePromise = resolve); // eslint-disable-line no-param-assign
     if (typeof cb === 'function') {
       ret = ret.then(cb);
-    }
-    if (sync) {
-      await ret;
     }
     return ret;
   }

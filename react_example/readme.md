@@ -2,7 +2,7 @@
 * Copy content of 'n19_helper\react_example\siebel_folder' to 'siebel/custom/example_react/', references in files point to the example_react folder in the repository
 * Add references to file in Siebel Manifest files:
 	* siebel/custom/example_react/n19_example_pr.js
-	* siebel/custom/example_react/N19Helper.js
+	* siebel/custom/example_react/N19Helper.min.js
 
 * Add references in Siebel Manifest administration
 	* to 'SIS Account Entry Applet' pr

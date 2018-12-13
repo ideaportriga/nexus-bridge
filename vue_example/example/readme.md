@@ -2,7 +2,7 @@
 * Copy content of 'n19_helper\vue_example\example' to 'siebel/custom/example/', references in files point to the example folder in the repository
 * Add references to file in Siebel Manifest files:
 	* siebel/custom/example/n19_example_pr.js
-	* siebel/custom/example/N19Helper.js
+	* siebel/custom/example/N19Helper.min.js
 
 * Add references in Siebel Manifest administration
 	* to 'SIS Account Entry Applet' pr

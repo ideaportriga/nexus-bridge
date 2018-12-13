@@ -34,11 +34,11 @@ if (typeof (SiebelAppFacade.n19_example_pr) === "undefined") {
         }
 
         n19_example_pr.prototype.BindData = function (bRefresh) {
-          SiebelAppFacade.n19_example_pr.superclass.BindData.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
+          //SiebelAppFacade.n19_example_pr.superclass.BindData.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
         }
 
         n19_example_pr.prototype.BindEvents = function () {
-          SiebelAppFacade.n19_example_pr.superclass.BindEvents.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
+          //SiebelAppFacade.n19_example_pr.superclass.BindEvents.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
         }
 
         n19_example_pr.prototype.EndLife = function () {

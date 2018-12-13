@@ -242,7 +242,7 @@ SiebelAppFacade.N19Helper = class {
     return this._navigate('GotoPreviousSet');
   }
 
-  _invokeCommandManager(cmd, f) {
+  _invokeCommandManager(cmd, cb) {
     this.view.SetActiveAppletInternal(this.applet);
     // maybe we don't need to set active applet if send the command as below
     // "*Browser Applet* *UndoRecord*Service Request Detail Applet* "
@@ -252,8 +252,8 @@ SiebelAppFacade.N19Helper = class {
           console.log('response in callback', cmd, args); // eslint-disable-line no-console
           if (args[3]) {
             console.log(cmd, 'was successful'); // eslint-disable-line no-console
-            if (typeof f === 'function') {
-              f(cmd);
+            if (typeof cb === 'function') {
+              cb(cmd);
             }
           } else {
             console.log(cmd, 'WAS NOT successful'); // eslint-disable-line no-console

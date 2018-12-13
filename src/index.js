@@ -98,7 +98,7 @@ SiebelAppFacade.N19Helper = class {
     return this.applet.SetActiveControl(this._getControl(name));
   }
 
-  showPopupApplet(name, hide, cb) {
+  _showPopupApplet(name, hide, cb) {
     if (!this.n19popup) { // if not initialized it is a popup (isPopup was true in constructor)
       throw new Error('Openning popup on the popup is not supported now');
     }
@@ -112,11 +112,11 @@ SiebelAppFacade.N19Helper = class {
   }
 
   showMvgApplet(name, hide, cb) {
-    return this.showPopupApplet(name, hide, cb);
+    return this._showPopupApplet(name, hide, cb);
   }
 
   showPickApplet(name, hide, cb) {
-    return this.showPopupApplet(name, hide, cb);
+    return this._showPopupApplet(name, hide, cb);
   }
 
   getControls() {

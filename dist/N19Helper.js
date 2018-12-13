@@ -96,8 +96,6 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _n19popup__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./n19popup */ "./src/n19popup.js");
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -160,6 +158,7 @@ function () {
 
     if (!this.isPopup) {
       if (!SiebelAppFacade.N19popup) {
+        // use the internal variable to check singleton
         SiebelAppFacade.N19popup = new _n19popup__WEBPACK_IMPORTED_MODULE_0__["default"]();
       }
 
@@ -168,11 +167,6 @@ function () {
   }
 
   _createClass(_class, [{
-    key: "getApplet",
-    value: function getApplet() {
-      return this.applet;
-    }
-  }, {
     key: "_getControl",
     value: function _getControl(name) {
       return this.applet.GetControl(name);
@@ -222,8 +216,8 @@ function () {
       return this.applet.SetActiveControl(this._getControl(name));
     }
   }, {
-    key: "showPopupApplet",
-    value: function showPopupApplet(name, hide, cb) {
+    key: "_showPopupApplet",
+    value: function _showPopupApplet(name, hide, cb) {
       if (!this.n19popup) {
         // if not initialized it is a popup (isPopup was true in constructor)
         throw new Error('Openning popup on the popup is not supported now');
@@ -243,12 +237,12 @@ function () {
   }, {
     key: "showMvgApplet",
     value: function showMvgApplet(name, hide, cb) {
-      return this.showPopupApplet(name, hide, cb);
+      return this._showPopupApplet(name, hide, cb);
     }
   }, {
     key: "showPickApplet",
     value: function showPickApplet(name, hide, cb) {
-      return this.showPopupApplet(name, hide, cb);
+      return this._showPopupApplet(name, hide, cb);
     }
   }, {
     key: "getControls",
@@ -404,7 +398,7 @@ function () {
     }
   }, {
     key: "_invokeCommandManager",
-    value: function _invokeCommandManager(cmd, f) {
+    value: function _invokeCommandManager(cmd, _cb) {
       this.view.SetActiveAppletInternal(this.applet); // maybe we don't need to set active applet if send the command as below
       // "*Browser Applet* *UndoRecord*Service Request Detail Applet* "
 
@@ -421,8 +415,8 @@ function () {
             if (args[3]) {
               console.log(cmd, 'was successful'); // eslint-disable-line no-console
 
-              if (typeof f === 'function') {
-                f(cmd);
+              if (typeof _cb === 'function') {
+                _cb(cmd);
               }
             } else {
               console.log(cmd, 'WAS NOT successful'); // eslint-disable-line no-console
@@ -459,10 +453,8 @@ function () {
       return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord', null, false);
     }
   }, {
-    key: "deleteRecord",
-    value: function deleteRecord(cb) {
-      console.log(_typeof(cb)); // eslint-disable-line no-console
-
+    key: "deleteRecordSync",
+    value: function deleteRecordSync() {
       return this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecord', null, false); // return _invokeCommandManager('*Browser Applet* *DeleteRecord* * ', cb);
     }
   }, {
@@ -655,7 +647,7 @@ function () {
   }, {
     key: "queryById",
     value: function queryById(rowId, cb) {
-      // maybe check if it is already in query mode
+      // maybe check if it is already in query mode / cancel the query
       this._newQuery(); // ?
 
 
@@ -756,8 +748,8 @@ function () {
       SiebelApp.S_App.GotoView(targetViewName, '', SWECmd, '');
     }
   }, {
-    key: "insertPending",
-    value: function insertPending() {
+    key: "_insertPending",
+    value: function _insertPending() {
       return this.pm.Get('GetBusComp').insertPending;
     }
   }, {
@@ -797,11 +789,7 @@ function () {
       // todo: check canInvokeMethod ??
       // todo: check if it is a Mvg?
       var ret = this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecords');
-
-      if (typeof cb === 'function') {
-        cb();
-      }
-
+      typeof cb === 'function' && cb();
       return ret;
     }
   }, {
@@ -809,18 +797,8 @@ function () {
     value: function addRecords(cb) {
       // check if the applet is MVG, canInvokeMethod
       var ret = this.pm.ExecuteMethod('InvokeMethod', 'AddRecords');
-
-      if (typeof cb === 'function') {
-        cb();
-      }
-
+      typeof cb === 'function' && cb();
       return ret;
-    }
-  }, {
-    key: "_getActiveControlName",
-    value: function _getActiveControlName() {
-      var activeControl = this.pm.Get('GetActiveControl');
-      return activeControl ? activeControl.GetName() : '';
     }
   }, {
     key: "_getViewTitle",
@@ -831,38 +809,6 @@ function () {
     key: "_getAppletTitle",
     value: function _getAppletTitle() {
       return this.applet.GetAppletLabel(); // how GetAppletSummary is different
-    }
-  }, {
-    key: "_clearQuery",
-    value: function _clearQuery() {
-      // todo : could we get it calling the query methods with empty object
-      this.pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false);
-      this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, false);
-    }
-  }, {
-    key: "_isInQueryMode",
-    value: function _isInQueryMode() {
-      return this.pm.Get('IsInQueryMode');
-    }
-  }, {
-    key: "_NotifyNewDataWS",
-    value: function _NotifyNewDataWS(name) {
-      // todo: we don't need this method if we don't have any Siebel applets
-      return this.applet.NotifyNewDataWS(name);
-    }
-  }, {
-    key: "_firstRecord",
-    value: function _firstRecord() {
-      // temp method, assumes that no scrolling happened
-      if (this.isListApplet) {
-        if (this.getSelection() !== 0) {
-          return this.positionOnRow(0);
-        }
-
-        return true;
-      }
-
-      return false;
     }
   }]);
 

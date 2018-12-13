@@ -20,9 +20,10 @@
     "no-console": 1,
     "no-useless-escape": 1,
     "max-len": [1, 120],
-    "no-multiple-empty-lines": [2, { "max": 2, "maxEOF": 2 }],
+    "no-multiple-empty-lines": [2, { "max": 1, "maxEOF": 1 }],
     "class-methods-use-this": 0,
-    "no-return-assign": 1
+    "no-return-assign": 1,
+    "no-unused-expressions": 1
   },
   "globals": {
     "SiebelApp": false,

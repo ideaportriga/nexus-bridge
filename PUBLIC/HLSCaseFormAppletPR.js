@@ -530,7 +530,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }.bind(this));
               },
               deleteButtonClick: function () {
-                n19helper.deleteRecord();
+                n19helper.deleteRecordSync();
               },
               gotoButtonClick: function () {
                 n19helper.gotoView('PUB GOV Case Activity Plans View', 'HLS Case Form Applet');
@@ -714,7 +714,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 this.caseStatusArr = [this.controls.Status.value];
                 this.caseSubStatusArr = [this.controls['Sub Status'].value];
                 this.caseSalesRep = this.controls['Sales Rep'].value;
-                if (n19helper.insertPending()) {
+                if (n19helper._insertPending()) {
                   console.log('skipped calling sales rep BS because insert pending');
                   // or get it from the current buscomp?
                   this.caseSalesRepArr = [{

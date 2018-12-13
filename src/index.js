@@ -44,15 +44,11 @@ SiebelAppFacade.N19Helper = class {
     // instantinate the n19popup
     this.n19popup = null;
     if (!this.isPopup) {
-      if (!SiebelAppFacade.N19popup) {
+      if (!SiebelAppFacade.N19popup) { // use the internal variable to check singleton
         SiebelAppFacade.N19popup = new N19popup();
       }
       this.n19popup = SiebelAppFacade.N19popup;
     }
-  }
-
-  getApplet() {
-    return this.applet;
   }
 
   _getControl(name) {
@@ -285,8 +281,7 @@ SiebelAppFacade.N19Helper = class {
     return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord', null, false);
   }
 
-  deleteRecord(cb) {
-    console.log(typeof cb); // eslint-disable-line no-console
+  deleteRecordSync() {
     return this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecord', null, false);
     // return _invokeCommandManager('*Browser Applet* *DeleteRecord* * ', cb);
   }
@@ -439,7 +434,7 @@ SiebelAppFacade.N19Helper = class {
   }
 
   queryById(rowId, cb) {
-    // maybe check if it is already in query mode
+    // maybe check if it is already in query mode / cancel the query
     this._newQuery(); // ?
 
     const method = 'ExecuteQuery';
@@ -531,7 +526,7 @@ SiebelAppFacade.N19Helper = class {
     SiebelApp.S_App.GotoView(targetViewName, '', SWECmd, '');
   }
 
-  insertPending() {
+  _insertPending() {
     return this.pm.Get('GetBusComp').insertPending;
   }
 
@@ -566,28 +561,15 @@ SiebelAppFacade.N19Helper = class {
     // todo: check if it is a Mvg?
 
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecords');
-
-    if (typeof cb === 'function') {
-      cb();
-    }
-
+    typeof cb === 'function' && cb();
     return ret;
   }
 
   addRecords(cb) {
     // check if the applet is MVG, canInvokeMethod
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'AddRecords');
-
-    if (typeof cb === 'function') {
-      cb();
-    }
-
+    typeof cb === 'function' && cb();
     return ret;
-  }
-
-  _getActiveControlName() {
-    const activeControl = this.pm.Get('GetActiveControl');
-    return activeControl ? activeControl.GetName() : '';
   }
 
   _getViewTitle() {
@@ -596,28 +578,5 @@ SiebelAppFacade.N19Helper = class {
 
   _getAppletTitle() {
     return this.applet.GetAppletLabel(); // how GetAppletSummary is different
-  }
-
-  _clearQuery() { // todo : could we get it calling the query methods with empty object
-    this.pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false);
-    this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, false);
-  }
-
-  _isInQueryMode() {
-    return this.pm.Get('IsInQueryMode');
-  }
-
-  _NotifyNewDataWS(name) { // todo: we don't need this method if we don't have any Siebel applets
-    return this.applet.NotifyNewDataWS(name);
-  }
-
-  _firstRecord() { // temp method, assumes that no scrolling happened
-    if (this.isListApplet) {
-      if (this.getSelection() !== 0) {
-        return this.positionOnRow(0);
-      }
-      return true;
-    }
-    return false;
   }
 };

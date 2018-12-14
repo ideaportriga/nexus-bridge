@@ -276,8 +276,8 @@ SiebelAppFacade.N19Helper = class {
     return ret;
   }
 
-  getDynamicLOV(name) {
-    const control = this._getControl(name);
+  getDynamicLOV(controlName) {
+    const control = this._getControl(controlName);
     const controlInputName = control.GetInputName();
     this.lov[controlInputName] = {};
     const ps = SiebelApp.S_App.NewPropertySet();
@@ -287,8 +287,8 @@ SiebelAppFacade.N19Helper = class {
     return this.lov[controlInputName];
   }
 
-  getStaticLOV(name) {
-    const control = this._getControl(name);
+  getStaticLOV(controlName) {
+    const control = this._getControl(controlName);
     const ret = [];
     if ('1' === control.IsStaticBounded()) {
       const arr = this._getStaticLOV(control.GetRadioGroupPropSet().childArray);

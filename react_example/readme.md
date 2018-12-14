@@ -6,7 +6,7 @@
 
 * Add references in Siebel Manifest administration
 	* to 'SIS Account Entry Applet' pr
-	* to 'PLATFORM INDEPENDENT' N19Helper.js
+	* to 'PLATFORM INDEPENDENT' N19Helper.min.js
 About manifests: https://docs.oracle.com/cd/E14004_01/books/config_open_ui/customizing23.html
 	
 * Use custom .srf with changes applied to Form Applet

@@ -26,20 +26,19 @@ if (typeof (SiebelAppFacade.n19_example_pr) === "undefined") {
         }
 
         n19_example_pr.prototype.ShowUI = function () {
-          if (SiebelApp.S_App.GetActiveView().GetName() === "Account List View") { //Loading our applet only on List view
+          if (SiebelApp.S_App.GetActiveView().GetName() === "N19 Account View") { //Loading our applet only on List view
             vueObj = mountVueSample(containerId, this.GetPM());
-            bindCustomEvents(vueObj, this.GetPM());
           } else {
             SiebelAppFacade.n19_example_pr.superclass.ShowUI.apply(this, arguments); // Draws UI, drawing our custom applet only if on List view
           }
         }
 
         n19_example_pr.prototype.BindData = function (bRefresh) {
-          SiebelAppFacade.n19_example_pr.superclass.BindData.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
+          //SiebelAppFacade.n19_example_pr.superclass.BindData.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
         }
 
         n19_example_pr.prototype.BindEvents = function () {
-          SiebelAppFacade.n19_example_pr.superclass.BindEvents.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
+          //SiebelAppFacade.n19_example_pr.superclass.BindEvents.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
         }
 
         n19_example_pr.prototype.EndLife = function () {
@@ -68,23 +67,6 @@ function addContainer(pm, vueId) {
   const $header = window.$(`#s_${siebeAppletId}_div`);
   $header.hide();
   $applet.prepend(`<div id='${vueId}'></div>`);
-}
-
-/* 
-  binding applet events to our vue applet
-*/
-function bindCustomEvents(vueForm, pm) {
-  pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW'), function () {
-    if (vueForm) vueForm.selectionInit();
-  });
-
-  pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'), function (propSet) {
-    if (propSet.GetProperty('bSetup') === "false" && vueForm) vueForm.afterSelection();
-  });
-
-  pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD"), function () {
-    if (vueForm) vueForm.afterSelection();
-  });
 }
 
 /*
@@ -127,7 +109,14 @@ function mountVueSample(elementId, pm) {
         });
       },
 
-      deleteRecord: function () { API.deleteRecord() },
+      deleteRecord: function () {
+        if (API.canInvokeMethod("DeleteRecord")) {
+          API.deleteRecord();
+          this.selectionInit();
+        } else {
+          alert('DeleteRecord record is not available');
+        }
+      },
 
       changeValue(name) {
         if (API.setControlValue(name, this.controls[name].value)) {
@@ -143,11 +132,23 @@ function mountVueSample(elementId, pm) {
         }
       },
 
-      nextRecord: function () { if (API.canInvokeMethod("GotoNextSet")) API.nextRecord(); },
+      nextRecord: function () {
+        if (API.canInvokeMethod("GotoNextSet")) {
+          API.nextRecord();
+          this.selectionInit();
+        } else {
+          alert('GotoNextSet record is not available');
+        }
+      },
 
-      prevRecord: function () { if (API.canInvokeMethod("GotoPreviousSet")) API.prevRecord(); },
-
-      gotoDetails: function () { API.gotoView('Account Detail - Contacts View', API.appletName); },
+      prevRecord: function () {
+        if (API.canInvokeMethod("GotoPreviousSet")) {
+          API.prevRecord();
+          this.selectionInit();
+        } else {
+          alert('GotoPreviousSet record is not available');
+        }
+      },
 
       escapeOnName: function () {
         this.controls.Name.value = API.getCurrentRecord().Name;
@@ -188,8 +189,7 @@ function mountVueSample(elementId, pm) {
 */
 
 //https://babeljs.io/repl
-var compiledTemplate = "\n       <div id=\"vue_sample\">\n         <v-app id=\"inspire\">\n           <v-snackbar v-model=\"snackbar\" :timeout=\"3000\" :top=\"true\">\n             Record saved\n             <v-btn color=\"pink\" flat @click=\"snackbar = false\">Close</v-btn>\n           </v-snackbar>\n           <v-container fluid>\n             <v-layout row wrap>\n               <v-flex md12 pa-2>\n                 <v-alert :value=\"true\" type=\"info\">{{instance.appletName}} rendered by VUE.JS PR</v-alert>\n               </v-flex>\n\n               <v-flex md8 pa-2>\n                <v-text-field \n                    @click:prepend=\"doDrillDown\" \n                    :rules=\"controls.Name.required ? ['Required'] : []\" \n                    v-on:input=\"changeValue('Name')\" \n                    ref=\"AccountName\" :disabled=\"controls.Name.readonly\" \n                    :label=\"controls.Name.label\" \n                    v-model=\"controls.Name.value\" \n                    clearable \n                    v-on:keyup.esc=\"escapeOnName\" \n                    v-on:click:clear=\"handleClear('Name')\" \n                    :counter=\"controls.Name.maxSize\"></v-text-field>\n                </v-flex>\n\n                <v-flex md3 pa-2>\n                  <v-switch \n                    v-on:change=\"changeValue('Fund Eligible Flag')\" \n                    :label=\"controls['Fund Eligible Flag'].label\" \n                    v-model=\"controls['Fund Eligible Flag'].value\" \n                    :disabled=\"controls['Fund Eligible Flag'].readonly\"></v-switch>\n                </v-flex>\n\n                <v-flex md3 pa-2>                                                                                                                                                 \n                  <v-autocomplete \n                    :rules=\"controls.AccountStatus.required ? ['Required'] : []\" \n                    v-model=\"controls.AccountStatus.value\" \n                    :disabled=\"controls.AccountStatus.readonly\" \n                    :items=\"accountStatusList\" \n                    v-on:change=\"changeValue('AccountStatus')\" \n                    :label=\"controls.AccountStatus.label\"/>\n                </v-flex>\n\n                <v-flex md3 pa-2>                                                                                                                                                 \n                  <v-autocomplete \n                    :rules=\"controls.AccountTypeCode.required ? ['Required'] : []\" \n                    v-model=\"controls.AccountTypeCode.value\" \n                    :disabled=\"controls.AccountTypeCode.readonly\" \n                    :items=\"accountTypeCodeList\" \n                    v-on:change=\"changeValue('AccountTypeCode')\" \n                    :label=\"controls.AccountTypeCode.label\"/>\n                </v-flex>\n\n                <v-flex md3 pa-2>                                                                                                                                                 \n                  <v-autocomplete \n                    :rules=\"controls.Type.required ? ['Required'] : []\" \n                    v-model=\"controls.Type.value\" \n                    :disabled=\"controls.Type.readonly\" \n                    :items=\"accountTypeList\" \n                    v-on:change=\"changeValue('Type')\" \n                    :label=\"controls.Type.label\"/>\n                </v-flex>\n              \n               <v-flex md12 pa-2>\n                  <v-divider></v-divider>\n                </v-flex>\n                <v-flex md1 pa-2>\n                  <v-btn block v-on:click=\"saveRecord\" color=\"primary\"><v-icon>save</v-icon>Save!</v-btn>\n                </v-flex>\n                <v-flex md1 pa-2>\n                  <v-btn block v-on:click=\"deleteRecord\" color=\"primary\"><v-icon>delete</v-icon>Delete!</v-btn>\n                </v-flex>\n                <v-flex md6 pa-2> </v-flex>\n                <v-flex md1 pa-2>\n                  <v-btn block v-on:click=\"gotoDetails\" color=\"primary\"><v-icon>language</v-icon>Goto!</v-btn>\n                </v-flex>\n                <v-flex md1 pa-2>\n                  <v-tooltip top><v-btn block slot=\"activator\" v-on:click=\"prevRecord\" color=\"primary\"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>\n                </v-flex>\n                <v-flex md1 pa-2>\n                  <v-tooltip top><v-btn block slot=\"activator\" v-on:click=\"nextRecord\" color=\"primary\"><v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>\n                </v-flex>\n\n             </v-layout>\n           </v-container>\n         </v-app>\n       </div>\n     ";
-
+var compiledTemplate = "\n       <div id=\"vue_sample\">\n         <v-app id=\"inspire\">\n           <v-snackbar v-model=\"snackbar\" :timeout=\"3000\" :top=\"true\">\n             Record saved\n             <v-btn color=\"pink\" flat @click=\"snackbar = false\">Close</v-btn>\n           </v-snackbar>\n           <v-container fluid>\n             <v-layout row wrap>\n               <v-flex md12 pa-2>\n                 <v-alert :value=\"true\" type=\"info\">{{instance.appletName}} rendered by VUE.JS PR</v-alert>\n               </v-flex>\n\n               <v-flex md8 pa-2>\n                <v-text-field \n                    @click:prepend=\"doDrillDown\" \n                    :rules=\"controls.Name.required ? ['Required'] : []\" \n                    v-on:input=\"changeValue('Name')\" \n                    ref=\"AccountName\" :disabled=\"controls.Name.readonly\" \n                    :label=\"controls.Name.label\" \n                    v-model=\"controls.Name.value\" \n                    clearable \n                    v-on:keyup.esc=\"escapeOnName\" \n                    v-on:click:clear=\"handleClear('Name')\" \n                    :counter=\"controls.Name.maxSize\"></v-text-field>\n                </v-flex>\n\n                <v-flex md3 pa-2>\n                  <v-switch \n                    v-on:change=\"changeValue('Fund Eligible Flag')\" \n                    :label=\"controls['Fund Eligible Flag'].label\" \n                    v-model=\"controls['Fund Eligible Flag'].value\" \n                    :disabled=\"controls['Fund Eligible Flag'].readonly\"></v-switch>\n                </v-flex>\n\n                <v-flex md3 pa-2>                                                                                                                                                 \n                  <v-autocomplete \n                    :rules=\"controls.AccountStatus.required ? ['Required'] : []\" \n                    v-model=\"controls.AccountStatus.value\" \n                    :disabled=\"controls.AccountStatus.readonly\" \n                    :items=\"accountStatusList\" \n                    v-on:change=\"changeValue('AccountStatus')\" \n                    :label=\"controls.AccountStatus.label\"/>\n                </v-flex>\n\n                <v-flex md3 pa-2>                                                                                                                                                 \n                  <v-autocomplete \n                    :rules=\"controls.AccountTypeCode.required ? ['Required'] : []\" \n                    v-model=\"controls.AccountTypeCode.value\" \n                    :disabled=\"controls.AccountTypeCode.readonly\" \n                    :items=\"accountTypeCodeList\" \n                    v-on:change=\"changeValue('AccountTypeCode')\" \n                    :label=\"controls.AccountTypeCode.label\"/>\n                </v-flex>\n\n                <v-flex md3 pa-2>                                                                                                                                                 \n                  <v-autocomplete \n                    :rules=\"controls.Type.required ? ['Required'] : []\" \n                    v-model=\"controls.Type.value\" \n                    :disabled=\"controls.Type.readonly\" \n                    :items=\"accountTypeList\" \n                    v-on:change=\"changeValue('Type')\" \n                    :label=\"controls.Type.label\"/>\n                </v-flex>\n              \n               <v-flex md12 pa-2>\n                  <v-divider></v-divider>\n                </v-flex>\n                <v-flex md1 pa-2>\n                  <v-btn block v-on:click=\"saveRecord\" color=\"primary\"><v-icon>save</v-icon>Save!</v-btn>\n                </v-flex>\n                <v-flex md1 pa-2>\n                  <v-btn block v-on:click=\"deleteRecord\" color=\"primary\"><v-icon>delete</v-icon>Delete!</v-btn>\n                </v-flex>\n                <v-flex md7 pa-2> </v-flex>\n                <v-flex md1 pa-2>\n                  <v-tooltip top><v-btn block slot=\"activator\" v-on:click=\"prevRecord\" color=\"primary\"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>\n                </v-flex>\n                <v-flex md1 pa-2>\n                  <v-tooltip top><v-btn block slot=\"activator\" v-on:click=\"nextRecord\" color=\"primary\"><v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>\n                </v-flex>\n\n             </v-layout>\n           </v-container>\n         </v-app>\n       </div>\n     ";
 /* var template = `
        <div id="vue_sample">
          <v-app id="inspire">
@@ -264,10 +264,7 @@ var compiledTemplate = "\n       <div id=\"vue_sample\">\n         <v-app id=\"i
                 <v-flex md1 pa-2>
                   <v-btn block v-on:click="deleteRecord" color="primary"><v-icon>delete</v-icon>Delete!</v-btn>
                 </v-flex>
-                <v-flex md6 pa-2> </v-flex>
-                <v-flex md1 pa-2>
-                  <v-btn block v-on:click="gotoDetails" color="primary"><v-icon>language</v-icon>Goto!</v-btn>
-                </v-flex>
+                <v-flex md7 pa-2> </v-flex>
                 <v-flex md1 pa-2>
                   <v-tooltip top><v-btn block slot="activator" v-on:click="prevRecord" color="primary"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>
                 </v-flex>

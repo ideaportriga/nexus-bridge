@@ -359,7 +359,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           app = new Vue({
             el: '#app',
             mounted: function () {
-              this.fieldToControlsMap = n19helper.getFieldToControlsMap(this.controls);
+              this.fieldToControlsMap = n19helper._getFieldToControlsMap(this.controls);
               this.afterSelection();
               $('.application--wrap').css({ 'min-height': 'auto' });
             },
@@ -564,7 +564,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 var control = this.fieldToControlsMap[name];
 
                 if (control && value) {
-                  value = n19helper.getControlValue(control.uiType, value);
+                  value = n19helper._getControlValue(control.uiType, value);
                   if ('Threat Level' === name) {
                     this.caseThreatLevelNum = this.caseThreatLevelArr.indexOf(value) + 1;
                   }

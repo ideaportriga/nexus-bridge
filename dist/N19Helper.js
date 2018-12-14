@@ -102,7 +102,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-// for now only for form and list applets
+// support form and list applets
 
 
 SiebelAppFacade.N19Helper =
@@ -150,15 +150,15 @@ function () {
           });
         }
       }
-    }); // eslint-disable-next-line no-console
-
-    console.log('N19Helper started....', this.appletName); // instantinate the n19popup
+    });
+    console.log('N19Helper started....', this.appletName); // eslint-disable-line no-console
+    // instantinate the n19popup
 
     this.n19popup = null;
 
     if (!this.isPopup) {
       if (!SiebelAppFacade.N19popup) {
-        // use the internal variable to check singleton
+        // todo: use the internal variable to check singleton
         SiebelAppFacade.N19popup = new _n19popup__WEBPACK_IMPORTED_MODULE_0__["default"]();
       }
 
@@ -172,18 +172,13 @@ function () {
       return this.applet.GetControl(name);
     }
   }, {
-    key: "returnControls",
-    value: function returnControls() {
+    key: "_returnControls",
+    value: function _returnControls() {
       if (this.isListApplet) {
         return this.applet.GetListOfColumns();
       }
 
-      return this.applet.GetControls(); // the same - ? // return pm.Get('GetControls');
-    }
-  }, {
-    key: "canInvokeMethod",
-    value: function canInvokeMethod(method) {
-      return this.pm.ExecuteMethod('CanInvokeMethod', method);
+      return this.applet.GetControls(); // pm.Get('GetControls');
     } // called into the getControls to reduce the amount of the returned controls
 
   }, {
@@ -196,7 +191,7 @@ function () {
   }, {
     key: "_isRequired",
     value: function _isRequired(inputName) {
-      // required is empty for list applets
+      // required is empty for list applets, hopefully for now
       return this.required.indexOf(inputName) > -1;
     }
   }, {
@@ -219,7 +214,7 @@ function () {
     key: "_showPopupApplet",
     value: function _showPopupApplet(name, hide, cb) {
       if (!this.n19popup) {
-        // if not initialized it is a popup (isPopup was true in constructor)
+        // it is a popup applet
         throw new Error('Openning popup on the popup is not supported now');
       }
 
@@ -228,11 +223,22 @@ function () {
       }
 
       this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
-      // todo : check if control is valid
 
       this._setActiveControl(name);
 
       return this.n19popup.showPopupApplet(hide, cb, this.pm);
+    }
+  }, {
+    key: "_getValueForControl",
+    value: function _getValueForControl(controlUiType, value) {
+      // TODO: DateTime, numbers, and phones?
+      if (this.consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
+        // convert true/false => Y/N
+        // do we want to support setting to null
+        value = value ? 'Y' : 'N'; // eslint-disable-line no-param-reassign
+      }
+
+      return value;
     }
   }, {
     key: "showMvgApplet",
@@ -245,10 +251,17 @@ function () {
       return this._showPopupApplet(name, hide, cb);
     }
   }, {
+    key: "canInvokeMethod",
+    value: function canInvokeMethod(method) {
+      return this.pm.ExecuteMethod('CanInvokeMethod', method);
+    }
+  }, {
     key: "getControls",
     value: function getControls() {
       var controls = {};
-      var appletControls = this.returnControls();
+
+      var appletControls = this._returnControls();
+
       var arr = Object.keys(appletControls);
 
       for (var i = 0; i < arr.length; i += 1) {
@@ -278,7 +291,6 @@ function () {
         };
 
         if (this.isListApplet) {
-          // ?
           obj.readOnly = !this.pm.ExecuteMethod('CanUpdate', this.pm.GetRenderer().GetColumnHelper().GetActualControlName(controlName));
         } else {
           obj.readOnly = !this.pm.ExecuteMethod('CanUpdate', controlName);
@@ -288,6 +300,7 @@ function () {
         if (obj.staticPick) {
           obj.staticLOV = this._getStaticLOV(control.GetRadioGroupPropSet().childArray);
           obj.lovs = obj.staticLOV.reduce(function (accumulator, currentValue) {
+            // normalized
             accumulator.push({
               lic: currentValue.FieldValue,
               val: currentValue.DisplayName
@@ -314,14 +327,13 @@ function () {
   }, {
     key: "getRowListRowCount",
     value: function getRowListRowCount() {
-      // how much applet can display (specified in Siebel Tools)
-      // 10/20
+      // how much applet can display (specified in Siebel Tools) - 10/20
       return this.pm.Get('GetRowListRowCount');
     }
   }, {
     key: "getNumRows",
     value: function getNumRows() {
-      // visible in applet
+      // currently visible in applet
       return this.pm.Get('GetNumRows');
     }
   }, {
@@ -334,22 +346,14 @@ function () {
     value: function _navigate(method) {
       if (!this.canInvokeMethod(method)) {
         return false;
-      } // const ps = SiebelApp.S_App.NewPropertySet();
-      // ps.SetProperty('SWEApplet', this.appletName);
-      // ps.SetProperty('SWEView', this.viewName);
-      // const ret = this.applet.InvokeControlMethod(method, ps, {});
-      // const ret = this.applet.InvokeMethod(method, ps, false); // false makes it synchronous
+      }
 
-
-      var ret = this.pm.ExecuteMethod('InvokeMethod', method, null, false); // false makes it synchronous
-
+      var ret = this.pm.ExecuteMethod('InvokeMethod', method, null, false);
       return ret;
     }
   }, {
     key: "nextRecord",
     value: function nextRecord() {
-      // returns undefined for GotoNext when navigation was successful
-      // return false if the last record achieved
       return this._navigate(this.isListApplet ? 'GotoNext' : 'GotoNextSet');
     }
   }, {
@@ -397,40 +401,12 @@ function () {
       return this._navigate('GotoPreviousSet');
     }
   }, {
-    key: "_invokeCommandManager",
-    value: function _invokeCommandManager(cmd, _cb) {
-      this.view.SetActiveAppletInternal(this.applet); // maybe we don't need to set active applet if send the command as below
-      // "*Browser Applet* *UndoRecord*Service Request Detail Applet* "
-
-      var ai = {
-        scope: {
-          cb: function cb() {
-            for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-              args[_key] = arguments[_key];
-            }
-
-            // eslint-disable-line func-names
-            console.log('response in callback', cmd, args); // eslint-disable-line no-console
-
-            if (args[3]) {
-              console.log(cmd, 'was successful'); // eslint-disable-line no-console
-
-              if (typeof _cb === 'function') {
-                _cb(cmd);
-              }
-            } else {
-              console.log(cmd, 'WAS NOT successful'); // eslint-disable-line no-console
-            }
-          }
-        }
-      }; // todo: Do we always need to sent true
-
-      return SiebelApp.CommandManager.GetInstance().InvokeCommand.call(null, cmd, true, ai);
-    }
-  }, {
     key: "newRecord",
     value: function newRecord(cb) {
-      return this._invokeCommandManager('*Browser Applet* *NewRecord* * ', cb);
+      return this.pm.ExecuteMethod('InvokeMethod', 'NewRecord', null, {
+        async: true,
+        cb: cb
+      });
     }
   }, {
     key: "newRecordSync",
@@ -438,14 +414,12 @@ function () {
       return this.pm.ExecuteMethod('InvokeMethod', 'NewRecord', null, false);
     }
   }, {
-    key: "undoRecord",
-    value: function undoRecord(cb) {
-      return this._invokeCommandManager('*Browser Applet* *UndoRecord* * ', cb);
-    }
-  }, {
     key: "writeRecord",
     value: function writeRecord(cb) {
-      return this._invokeCommandManager('*Browser Applet* *WriteRecord* * ', cb);
+      return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord', null, {
+        async: true,
+        cb: cb
+      });
     }
   }, {
     key: "writeRecordSync",
@@ -455,20 +429,7 @@ function () {
   }, {
     key: "deleteRecordSync",
     value: function deleteRecordSync() {
-      return this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecord', null, false); // return _invokeCommandManager('*Browser Applet* *DeleteRecord* * ', cb);
-    }
-  }, {
-    key: "_getValueForControl",
-    value: function _getValueForControl(controlUiType, value) {
-      // from external system
-      // TODO: DateTime, numbers, and phones
-      if (this.consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
-        // convert true/false => Y/N
-        // do we want to support setting to null
-        value = value ? 'Y' : 'N'; // eslint-disable-line no-param-reassign
-      }
-
-      return value;
+      return this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecord', null, false);
     }
   }, {
     key: "setControlValue",
@@ -485,7 +446,6 @@ function () {
 
       if (!ret) {
         console.log("Value ".concat(value, " was not set for ").concat(control.toString())); // eslint-disable-line no-console
-        // todo: do we need to put back the old value
       }
 
       return ret;
@@ -500,8 +460,7 @@ function () {
       var ps = SiebelApp.S_App.NewPropertySet();
       ps.SetProperty('SWEField', controlInputName);
       ps.SetProperty('SWEJI', false);
-      this.applet.InvokeMethod('GetQuickPickInfo', ps); // is it possible to get something different than true
-
+      this.applet.InvokeMethod('GetQuickPickInfo', ps);
       return this.lov[controlInputName];
     }
   }, {
@@ -524,10 +483,9 @@ function () {
       return ret;
     }
   }, {
-    key: "getControlValue",
-    value: function getControlValue(controlUiType, value) {
-      // to be exposed externally
-      // todo: datetime
+    key: "_getControlValue",
+    value: function _getControlValue(controlUiType, value) {
+      // todo: what about datetime?
       var ret = value;
 
       if (this.consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
@@ -550,6 +508,26 @@ function () {
       return ret;
     }
   }, {
+    key: "_getFieldToControlsMap",
+    value: function _getFieldToControlsMap(_controls) {
+      var ret = {};
+
+      var appletControls = this._returnControls();
+
+      var arr = Object.keys(_controls);
+
+      for (var i = 0; i < arr.length; i += 1) {
+        var control = appletControls[arr[i]];
+        ret[control.GetFieldName()] = {
+          name: control.GetName(),
+          isPostChanges: control.IsPostChanges(),
+          uiType: control.GetUIType()
+        };
+      }
+
+      return ret;
+    }
+  }, {
     key: "getCurrentRecord",
     value: function getCurrentRecord(raw) {
       var index = this.getSelection(); // todo: check if record exists
@@ -559,8 +537,7 @@ function () {
       }
 
       return this.pm.Get('GetRecordSet')[index];
-    } // todo : should we have a method that accepts a list of the fields?
-
+    }
   }, {
     key: "getCurrentRecordModel",
     value: function getCurrentRecordModel(_controls) {
@@ -570,7 +547,9 @@ function () {
 
       var arr = Object.keys(_controls);
       var index = this.getSelection();
-      var appletControls = this.returnControls();
+
+      var appletControls = this._returnControls();
+
       _controls.isRecord = index > -1; // eslint-disable-line no-param-reassign
 
       var obj = {};
@@ -590,7 +569,7 @@ function () {
           if (_controls.isRecord) {
             _controls[arr[i]] = {
               // eslint-disable-line no-param-reassign
-              value: this.getControlValue(control.GetUIType(), obj[controlFieldName]),
+              value: this._getControlValue(control.GetUIType(), obj[controlFieldName]),
               readonly: !this.pm.ExecuteMethod('CanUpdate', controlName),
               isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
               label: control.GetDisplayName(),
@@ -599,11 +578,10 @@ function () {
               maxSize: control.GetMaxSize()
             };
           } else {
-            // no record
+            // no record displayed
             _controls[arr[i]] = {
               // eslint-disable-line no-param-reassign
               value: '',
-              // is it a right value
               readonly: true,
               isLink: false,
               label: control.GetDisplayName(),
@@ -621,7 +599,8 @@ function () {
   }, {
     key: "_getControlInputNameForIdQuery",
     value: function _getControlInputNameForIdQuery() {
-      var appletControls = this.returnControls();
+      var appletControls = this._returnControls();
+
       var arr = Object.keys(appletControls);
 
       for (var i = 0; i < arr.length; i += 1) {
@@ -630,7 +609,7 @@ function () {
 
         if (!this._isSkipControl(controlUiType)) {
           // skipping also JCheckbox
-          // todo: do we need to skip also date?
+          // todo: check do we need to skip also date?
           if (controlUiType !== this.consts.get('SWE_CTRL_CHECKBOX')) {
             return control.GetInputName();
           }
@@ -648,8 +627,7 @@ function () {
     key: "queryById",
     value: function queryById(rowId, cb) {
       // maybe check if it is already in query mode / cancel the query
-      this._newQuery(); // ?
-
+      this._newQuery();
 
       var method = 'ExecuteQuery';
       var ai = {
@@ -674,8 +652,7 @@ function () {
   }, {
     key: "query",
     value: function query(params, cb) {
-      // maybe skip the new query if Object.keys(params).length is 0
-      // maybe check if it is already in query mode
+      // maybe check if it is already in query mode / cancel the query
       this._newQuery();
 
       var method = 'ExecuteQuery';
@@ -695,7 +672,7 @@ function () {
       var psInput = SiebelApp.S_App.NewPropertySet();
       var arr = Object.keys(params);
 
-      var _controls = this.returnControls();
+      var _controls = this._returnControls();
 
       for (var i = 0; i < arr.length; i += 1) {
         var control = _controls[arr[i]];
@@ -707,40 +684,21 @@ function () {
       return this.applet.CallServerApplet(method, psInput, psOutput, ai);
     }
   }, {
-    key: "getFieldToControlsMap",
-    value: function getFieldToControlsMap(_controls) {
-      var ret = {};
-      var appletControls = this.returnControls();
-      var arr = Object.keys(_controls);
-
-      for (var i = 0; i < arr.length; i += 1) {
-        var control = appletControls[arr[i]];
-        ret[control.GetFieldName()] = {
-          name: control.GetName(),
-          isPostChanges: control.IsPostChanges(),
-          uiType: control.GetUIType()
-        };
-      }
-
-      return ret;
-    }
-  }, {
     key: "drilldown",
-    value: function drilldown(name) {
+    value: function drilldown(controlName) {
       // todo: check isLink of control?
-      // name is control name, not field
       // index is not effective, and drilldown anyway happens on last selected record
       if (!this.isListApplet) {
         return false;
       }
 
       var index = this.getSelection();
-      return this.pm.ExecuteMethod('OnDrillDown', name, index);
+      return this.pm.ExecuteMethod('OnDrillDown', controlName, index);
     }
   }, {
     key: "gotoView",
     value: function gotoView(targetViewName, targetAppletName, id) {
-      // todo: get the applet name from the view definition
+      // todo: get the applet name from the view definition?
       var rowId = typeof id === 'undefined' ? this.getCurrentRecord(true).Id : id;
       var SWECmd = "GotoView&SWEView=".concat(targetViewName, "&SWEApplet0=").concat(targetAppletName);
       SWECmd += "&SWEBU=1&SWEKeepContext=FALSE&SWERowId0=".concat(rowId);
@@ -777,8 +735,7 @@ function () {
   }, {
     key: "pickRecord",
     value: function pickRecord() {
-      // todo : check if it a pick applet
-      // todo : check CanInokeMethod
+      // todo : check CanInokeMethod and/or is it pick
       return this.pm.ExecuteMethod('InvokeMethod', 'PickRecord');
     }
   }, {
@@ -786,8 +743,7 @@ function () {
     value: function deleteRecords(cb) {
       // method is not allowed to delete the primary
       //  in this case it returns "Method DeleteRecords is not allowed here" SBL-UIF-00348
-      // todo: check canInvokeMethod ??
-      // todo: check if it is a Mvg?
+      // todo: check canInvokeMethod and/or is it MVG
       var ret = this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecords');
       typeof cb === 'function' && cb();
       return ret;
@@ -795,20 +751,24 @@ function () {
   }, {
     key: "addRecords",
     value: function addRecords(cb) {
-      // check if the applet is MVG, canInvokeMethod
+      // todo: check canInvokeMethod and/or is it MVG. and if we have a record in assoc?
       var ret = this.pm.ExecuteMethod('InvokeMethod', 'AddRecords');
       typeof cb === 'function' && cb();
       return ret;
     }
   }, {
-    key: "_getViewTitle",
-    value: function _getViewTitle() {
-      return this.view.GetTitle(); // how GetViewSummary is different
-    }
-  }, {
-    key: "_getAppletTitle",
-    value: function _getAppletTitle() {
-      return this.applet.GetAppletLabel(); // how GetAppletSummary is different
+    key: "_firstRecord",
+    value: function _firstRecord() {
+      // temp method, assumes that no scrolling happened
+      if (this.isListApplet) {
+        if (this.getSelection() !== 0) {
+          return this.positionOnRow(0);
+        }
+
+        return true;
+      }
+
+      return false;
     }
   }]);
 
@@ -832,7 +792,6 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-// let mySingleton = null;
 var N19popup =
 /*#__PURE__*/
 function () {

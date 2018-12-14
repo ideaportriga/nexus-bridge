@@ -18,7 +18,7 @@ module.exports = (env, argv) => {
   let filename;
   if ('production' === argv.mode) { // remove console.log, add polyfill, minify
     const PACKAGE = require('./package.json');
-    const banner = PACKAGE.name + ' - ' + PACKAGE.version;
+    const banner = `${PACKAGE.name} - ${PACKAGE.version} - Released under the MIT License`;
     plugins = [new webpack.BannerPlugin(banner)];
     rules.push({
       test: /\.js$/,

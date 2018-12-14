@@ -1,5 +1,3 @@
-// let mySingleton = null;
-
 class N19popup {
   constructor() {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');

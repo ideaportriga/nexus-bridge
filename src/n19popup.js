@@ -107,24 +107,29 @@ class N19popup {
     popupPM.Setup();
   }
 
+  // todo: change the approach, use the class internal variables
   closePopupApplet(applet) {
-    const isPopupApplet = typeof applet.GetPopupAppletName === 'function';
-    const isPickApplet = typeof applet.GetPickAppletName === 'function';
-
-    if (isPopupApplet || isPickApplet) {
-      // todo : check canInvokeMethod
-      const ret = applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
-      // it could be better if we don't have a Siebel Applet on the view
-      // in this case, we would not need to reInitPopup
-      if (this.isPopupHidden) {
-        this.reInitPopup();
+    // todo : check canInvokeMethod
+    let ret;
+    if (applet) {
+      const isPopupApplet = typeof applet.GetPopupAppletName === 'function';
+      const isPickApplet = typeof applet.GetPickAppletName === 'function';
+      if (!isPopupApplet && !isPickApplet) {
+        throw new Error('This applet is neither pick nor popup');
       }
-      //
-      this.popupAppletN19 = null;
-      this.assocAppletN19 = null;
-      return ret;
+      ret = applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
+    } else {
+      // todo: !!! >> change this approach
+      ret = this.popupAppletN19.applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
     }
-    throw new Error('This applet is neither pick nor popup');
+    // it could be better if we don't have a Siebel Applet on the view
+    // in this case, we would not need to reInitPopup
+    if (this.isPopupHidden) {
+      this.reInitPopup();
+    }
+    this.popupAppletN19 = null;
+    this.assocAppletN19 = null;
+    return ret;
   }
 
   isPopupOpen() { // todo: when we set some properties on resolve, do we need this method now

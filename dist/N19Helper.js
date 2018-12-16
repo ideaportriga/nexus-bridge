@@ -214,6 +214,11 @@ function () {
       return value;
     }
   }, {
+    key: "closePopupApplet",
+    value: function closePopupApplet() {
+      return this.n19popup.closePopupApplet();
+    }
+  }, {
     key: "_showPopupApplet",
     value: function _showPopupApplet(name, hide, cb) {
       if (!this.n19popup) {
@@ -230,10 +235,6 @@ function () {
       this._setActiveControl(name);
 
       return this.n19popup.showPopupApplet(hide, cb, this.pm);
-    }
-  }, {
-    key: "closePopupApplet",
-    value: function closePopupApplet() {// TODO:
     }
   }, {
     key: "showMvgApplet",
@@ -975,29 +976,37 @@ function () {
       var popupPM = SiebelApp.S_App.GetPopupPM();
       popupPM.Init();
       popupPM.Setup();
-    }
+    } // todo: change the approach, use the class internal variables
+
   }, {
     key: "closePopupApplet",
     value: function closePopupApplet(applet) {
-      var isPopupApplet = typeof applet.GetPopupAppletName === 'function';
-      var isPickApplet = typeof applet.GetPickAppletName === 'function';
+      // todo : check canInvokeMethod
+      var ret;
 
-      if (isPopupApplet || isPickApplet) {
-        // todo : check canInvokeMethod
-        var ret = applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet'); // it could be better if we don't have a Siebel Applet on the view
-        // in this case, we would not need to reInitPopup
+      if (applet) {
+        var isPopupApplet = typeof applet.GetPopupAppletName === 'function';
+        var isPickApplet = typeof applet.GetPickAppletName === 'function';
 
-        if (this.isPopupHidden) {
-          this.reInitPopup();
-        } //
+        if (!isPopupApplet && !isPickApplet) {
+          throw new Error('This applet is neither pick nor popup');
+        }
+
+        ret = applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
+      } else {
+        // todo: !!! >> change this approach
+        ret = this.popupAppletN19.applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
+      } // it could be better if we don't have a Siebel Applet on the view
+      // in this case, we would not need to reInitPopup
 
 
-        this.popupAppletN19 = null;
-        this.assocAppletN19 = null;
-        return ret;
+      if (this.isPopupHidden) {
+        this.reInitPopup();
       }
 
-      throw new Error('This applet is neither pick nor popup');
+      this.popupAppletN19 = null;
+      this.assocAppletN19 = null;
+      return ret;
     }
   }, {
     key: "isPopupOpen",

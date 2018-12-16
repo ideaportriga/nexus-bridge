@@ -92,6 +92,10 @@ SiebelAppFacade.N19Helper = class {
     return value;
   }
 
+  closePopupApplet() {
+    return this.n19popup.closePopupApplet();
+  }
+
   _showPopupApplet(name, hide, cb) {
     if (!this.n19popup) { // it is a popup applet
       throw new Error('Openning popup on the popup is not supported now');

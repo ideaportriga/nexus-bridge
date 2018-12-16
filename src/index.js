@@ -40,14 +40,8 @@ SiebelAppFacade.N19Helper = class {
 
     console.log('N19Helper started....', this.appletName); // eslint-disable-line no-console
 
-    // instantinate the n19popup
-    this.n19popup = null;
-    if (!this.isPopup) {
-      if (!SiebelAppFacade.N19popup) { // todo: use the internal variable to check singleton
-        SiebelAppFacade.N19popup = new N19popup();
-      }
-      this.n19popup = SiebelAppFacade.N19popup;
-    }
+    // get the n19popup singleton instance
+    this.n19popup = N19popup.instance;
   }
 
   _getControl(name) {
@@ -88,18 +82,6 @@ SiebelAppFacade.N19Helper = class {
     return this.applet.SetActiveControl(this._getControl(name));
   }
 
-  _showPopupApplet(name, hide, cb) {
-    if (!this.n19popup) { // it is a popup applet
-      throw new Error('Openning popup on the popup is not supported now');
-    }
-    if (!this.n19popup.canOpenPopup()) {
-      return false;
-    }
-    this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
-    this._setActiveControl(name);
-    return this.n19popup.showPopupApplet(hide, cb, this.pm);
-  }
-
   _getValueForControl(controlUiType, value) {
     // TODO: DateTime, numbers, and phones?
     if (this.consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
@@ -108,6 +90,19 @@ SiebelAppFacade.N19Helper = class {
       value = value ? 'Y' : 'N'; // eslint-disable-line no-param-reassign
     }
     return value;
+  }
+
+  _showPopupApplet(name, hide, cb) {
+    if (!this.n19popup) { // it is a popup applet
+      throw new Error('Openning popup on the popup is not supported now');
+    }
+    if (!this.n19popup.canOpenPopup()) {
+      throw new Error('Cannot open popup!');
+      // return false;
+    }
+    this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
+    this._setActiveControl(name);
+    return this.n19popup.showPopupApplet(hide, cb, this.pm);
   }
 
   showMvgApplet(name, hide, cb) {
@@ -237,6 +232,11 @@ SiebelAppFacade.N19Helper = class {
   }
 
   newRecord(cb) {
+    const promise = new Promise(resolve => this._newRecord(resolve));
+    return typeof cb === 'function' ? promise.then(cb) : promise;
+  }
+
+  _newRecord(cb) {
     return this.pm.ExecuteMethod('InvokeMethod', 'NewRecord', null, {
       async: true,
       cb,
@@ -248,6 +248,11 @@ SiebelAppFacade.N19Helper = class {
   }
 
   writeRecord(cb) {
+    const promise = new Promise(resolve => this._writeRecord(resolve));
+    return typeof cb === 'function' ? promise.then(cb) : promise;
+  }
+
+  _writeRecord(cb) {
     return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord', null, {
       async: true,
       cb,
@@ -412,6 +417,11 @@ SiebelAppFacade.N19Helper = class {
   }
 
   queryById(rowId, cb) {
+    const promise = new Promise(resolve => this._queryById(rowId, resolve));
+    return typeof cb === 'function' ? promise.then(cb) : promise;
+  }
+
+  _queryById(rowId, cb) {
     // maybe check if it is already in query mode / cancel the query
     this._newQuery();
 
@@ -438,6 +448,11 @@ SiebelAppFacade.N19Helper = class {
   }
 
   query(params, cb) {
+    const promise = new Promise(resolve => this._query(params, resolve));
+    return typeof cb === 'function' ? promise.then(cb) : promise;
+  }
+
+  _query(params, cb) {
     // maybe check if it is already in query mode / cancel the query
     this._newQuery();
 

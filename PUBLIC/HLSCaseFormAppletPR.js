@@ -403,12 +403,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 if (length !== 10) {
                   alert('The recordset length is not 10 as expected - ' + length);
                 }
-                obj.popupAppletN19.query({'Last Name': 'Abel'}, function() {
+                obj.popupAppletN19.query({'Last Name': 'Abel'}).then(function() {
                   var length = obj.popupAppletN19.getRecordSet().length;
                   if (length !== 1) {
                     alert('The recordset length is not 1 as expected - ' + length);
                   } else {
                     obj.popupAppletN19.pickRecord();
+                    alert('PASSED');
                   }
                 });
               },
@@ -424,12 +425,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   if (length !== 10) {
                     alert('The recordset length is not 10 as expected - ' + length);
                   }
-                  obj.popupAppletN19.query({'Last Name': 'Abel'}, function() {
+                  obj.popupAppletN19.query({'Last Name': 'Abel'}).then(function() {
                     var length = obj.popupAppletN19.getRecordSet().length;
                     if (length !== 1) {
                       alert('The recordset length is not 1 as expected - ' + length);
                     } else {
                       obj.popupAppletN19.pickRecord();
+                      alert('PASSED');
                     }
                   })
                 });

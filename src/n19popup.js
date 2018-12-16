@@ -1,5 +1,18 @@
+const singleton = Symbol('singleton');
+const singletonEnforcer = Symbol('singletonEnforcer');
+
 class N19popup {
-  constructor() {
+  static get instance() {
+    if (!this[singleton]) {
+      this[singleton] = new N19popup(singletonEnforcer);
+    }
+    return this[singleton];
+  }
+
+  constructor(enforcer) {
+    if (enforcer !== singletonEnforcer) {
+      throw new Error('Instantiation failed: use Singleton.getInstance() instead of new.');
+    }
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.isPopupHidden = false;
     this.resolvePromise = null;

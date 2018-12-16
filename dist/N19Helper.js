@@ -152,18 +152,9 @@ function () {
       }
     });
     console.log('N19Helper started....', this.appletName); // eslint-disable-line no-console
-    // instantinate the n19popup
+    // get the n19popup singleton instance
 
-    this.n19popup = null;
-
-    if (!this.isPopup) {
-      if (!SiebelAppFacade.N19popup) {
-        // todo: use the internal variable to check singleton
-        SiebelAppFacade.N19popup = new _n19popup__WEBPACK_IMPORTED_MODULE_0__["default"]();
-      }
-
-      this.n19popup = SiebelAppFacade.N19popup;
-    }
+    this.n19popup = _n19popup__WEBPACK_IMPORTED_MODULE_0__["default"].instance;
   }
 
   _createClass(_class, [{
@@ -211,24 +202,6 @@ function () {
       return this.applet.SetActiveControl(this._getControl(name));
     }
   }, {
-    key: "_showPopupApplet",
-    value: function _showPopupApplet(name, hide, cb) {
-      if (!this.n19popup) {
-        // it is a popup applet
-        throw new Error('Openning popup on the popup is not supported now');
-      }
-
-      if (!this.n19popup.canOpenPopup()) {
-        return false;
-      }
-
-      this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
-
-      this._setActiveControl(name);
-
-      return this.n19popup.showPopupApplet(hide, cb, this.pm);
-    }
-  }, {
     key: "_getValueForControl",
     value: function _getValueForControl(controlUiType, value) {
       // TODO: DateTime, numbers, and phones?
@@ -239,6 +212,28 @@ function () {
       }
 
       return value;
+    }
+  }, {
+    key: "_showPopupApplet",
+    value: function _showPopupApplet(name, hide, cb) {
+      if (!this.n19popup) {
+        // it is a popup applet
+        throw new Error('Openning popup on the popup is not supported now');
+      }
+
+      if (!this.n19popup.canOpenPopup()) {
+        throw new Error('Cannot open popup!'); // return false;
+      }
+
+      this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
+
+      this._setActiveControl(name);
+
+      return this.n19popup.showPopupApplet(hide, cb, this.pm);
+    }
+  }, {
+    key: "closePopupApplet",
+    value: function closePopupApplet() {// TODO:
     }
   }, {
     key: "showMvgApplet",
@@ -403,6 +398,16 @@ function () {
   }, {
     key: "newRecord",
     value: function newRecord(cb) {
+      var _this2 = this;
+
+      var promise = new Promise(function (resolve) {
+        return _this2._newRecord(resolve);
+      });
+      return typeof cb === 'function' ? promise.then(cb) : promise;
+    }
+  }, {
+    key: "_newRecord",
+    value: function _newRecord(cb) {
       return this.pm.ExecuteMethod('InvokeMethod', 'NewRecord', null, {
         async: true,
         cb: cb
@@ -416,6 +421,16 @@ function () {
   }, {
     key: "writeRecord",
     value: function writeRecord(cb) {
+      var _this3 = this;
+
+      var promise = new Promise(function (resolve) {
+        return _this3._writeRecord(resolve);
+      });
+      return typeof cb === 'function' ? promise.then(cb) : promise;
+    }
+  }, {
+    key: "_writeRecord",
+    value: function _writeRecord(cb) {
       return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord', null, {
         async: true,
         cb: cb
@@ -452,8 +467,8 @@ function () {
     }
   }, {
     key: "getDynamicLOV",
-    value: function getDynamicLOV(name) {
-      var control = this._getControl(name);
+    value: function getDynamicLOV(controlName) {
+      var control = this._getControl(controlName);
 
       var controlInputName = control.GetInputName();
       this.lov[controlInputName] = {};
@@ -465,8 +480,8 @@ function () {
     }
   }, {
     key: "getStaticLOV",
-    value: function getStaticLOV(name) {
-      var control = this._getControl(name);
+    value: function getStaticLOV(controlName) {
+      var control = this._getControl(controlName);
 
       var ret = [];
 
@@ -626,6 +641,16 @@ function () {
   }, {
     key: "queryById",
     value: function queryById(rowId, cb) {
+      var _this4 = this;
+
+      var promise = new Promise(function (resolve) {
+        return _this4._queryById(rowId, resolve);
+      });
+      return typeof cb === 'function' ? promise.then(cb) : promise;
+    }
+  }, {
+    key: "_queryById",
+    value: function _queryById(rowId, cb) {
       // maybe check if it is already in query mode / cancel the query
       this._newQuery();
 
@@ -652,6 +677,16 @@ function () {
   }, {
     key: "query",
     value: function query(params, cb) {
+      var _this5 = this;
+
+      var promise = new Promise(function (resolve) {
+        return _this5._query(params, resolve);
+      });
+      return typeof cb === 'function' ? promise.then(cb) : promise;
+    }
+  }, {
+    key: "_query",
+    value: function _query(params, cb) {
       // maybe check if it is already in query mode / cancel the query
       this._newQuery();
 
@@ -792,13 +827,31 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+var singleton = Symbol('singleton');
+var singletonEnforcer = Symbol('singletonEnforcer');
+
 var N19popup =
 /*#__PURE__*/
 function () {
-  function N19popup() {
+  _createClass(N19popup, null, [{
+    key: "instance",
+    get: function get() {
+      if (!this[singleton]) {
+        this[singleton] = new N19popup(singletonEnforcer);
+      }
+
+      return this[singleton];
+    }
+  }]);
+
+  function N19popup(enforcer) {
     var _this = this;
 
     _classCallCheck(this, N19popup);
+
+    if (enforcer !== singletonEnforcer) {
+      throw new Error('Instantiation failed: use Singleton.getInstance() instead of new.');
+    }
 
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.isPopupHidden = false;
@@ -1054,7 +1107,7 @@ function () {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\apps\n19helper/src/index.js */"./src/index.js");
+module.exports = __webpack_require__(/*! C:\app\n19helper/src/index.js */"./src/index.js");
 
 
 /***/ })

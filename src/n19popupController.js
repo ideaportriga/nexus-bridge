@@ -1,10 +1,12 @@
+import N19popupApplet from './n19popupApplet';
+
 const singleton = Symbol('singleton');
 const singletonEnforcer = Symbol('singletonEnforcer');
 
-class N19popup {
+export default class N19popupController {
   static get instance() {
     if (!this[singleton]) {
-      this[singleton] = new N19popup(singletonEnforcer);
+      this[singleton] = new N19popupController(singletonEnforcer);
     }
     return this[singleton];
   }
@@ -22,7 +24,7 @@ class N19popup {
     console.log(`${this.constructor.name} started...`); // eslint-disable-line no-console
 
     // it will be a singleton, so there is no cleanup
-    this.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup; // todo : remove it from SiebelAppFacade
+    this.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
     SiebelApp.S_App.ProcessNewPopup = (ps) => {
       let ret;
       if (this.isPopupHidden) {
@@ -37,20 +39,21 @@ class N19popup {
     SiebelApp.contentUpdater.viewLoaded = (...args) => {
       const ret = this.N19viewLoaded.call(SiebelApp.contentUpdater, ...args);
       if (typeof this.resolvePromise === 'function') {
-        const { appletName } = this.isPopupOpen(); // todo: use here the properties set on promiseResolving?
+        // todo: use here the properties set on promiseResolving?
+        const { appletName } = N19popupController.IsPopupOpen();
         if (!appletName) {
           throw new Error('Open Applet Name is not found in resolvePromise');
         }
         const applet = this.getPopupApplet(appletName);
         const pm = applet.GetPModel();
         // todo: avoid this circularity
-        this.popupAppletN19 = new SiebelAppFacade.N19Helper({ pm, isPopup: true }); // todo : split N19Helper into 2 classes
+        this.popupAppletN19 = new N19popupApplet({ pm, isPopup: true }); // todo : split N19Helper into 2 classes
         const obj = { appletName, popupAppletN19: this.popupAppletN19 };
         // check if we have assoc
         // we assume it is always assoc applet, but what about opening popup on the top of another - not tested it
         const assocApplet = applet.GetPopupApplet();
         if (assocApplet) {
-          this.assocAppletN19 = new SiebelAppFacade.N19Helper({
+          this.assocAppletN19 = new N19popupApplet({
             pm: assocApplet.GetPModel(),
             isPopup: true,
           });
@@ -101,7 +104,7 @@ class N19popup {
     return 'refreshpopup';
   }
 
-  reInitPopup() {
+  static ReInitPopup() {
     const popupPM = SiebelApp.S_App.GetPopupPM();
     popupPM.Init();
     popupPM.Setup();
@@ -125,14 +128,14 @@ class N19popup {
     // it could be better if we don't have a Siebel Applet on the view
     // in this case, we would not need to reInitPopup
     if (this.isPopupHidden) {
-      this.reInitPopup();
+      N19popupController.ReInitPopup();
     }
     this.popupAppletN19 = null;
     this.assocAppletN19 = null;
     return ret;
   }
 
-  isPopupOpen() { // todo: when we set some properties on resolve, do we need this method now
+  static IsPopupOpen() { // todo: when we set some properties on resolve, do we need this method now
     // todo: here reuse the properties that set when the Promise resolved
     const currPopups = SiebelApp.S_App.GetPopupPM().Get('currPopups');
     if (0 === currPopups.length) {
@@ -162,7 +165,7 @@ class N19popup {
     return applet.GetPModel();
   }
 
-  getPopupApplet(appletName) {
+  static GetPopupApplet(appletName) {
     const applet = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName];
     if (!applet) {
       throw new Error(`The ${appletName} is not found in applet map`);
@@ -171,10 +174,11 @@ class N19popup {
   }
 
   showPopupApplet(hide, cb, pm) {
-    const { isOpen, appletName } = this.isPopupOpen(); // todo: use the properties set on promise resolving?
+    // todo: use the properties set on promise resolving?
+    const { isOpen, appletName } = N19popupController.IsPopupOpen();
     if (isOpen) {
       // this code will close the applet even if this applet was originated by another applet
-      console.log(`closing ${appletName} in _showPopupApplet...`); // eslint-disable-line no-console
+      console.log(`closing ${appletName} in showPopupApplet...`);
       // maybe do not close if the applet to be opened if the same as already opened?
       this.closePopupApplet(this.getPopupApplet(appletName));
       // todo: check if got it successfully closed?
@@ -192,4 +196,3 @@ class N19popup {
   }
 }
 
-export default N19popup;

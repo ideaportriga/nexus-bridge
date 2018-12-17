@@ -13,7 +13,7 @@ module.exports = (env, argv) => {
   }];
 
   let plugins = [];
-  const main = [__dirname + '/src/index.js']; // '@babel/polyfill',
+  const main = [__dirname + '/src/main.js']; // '@babel/polyfill',
   let devtool = '';
   let filename;
   if ('production' === argv.mode) { // remove console.log, add polyfill, minify

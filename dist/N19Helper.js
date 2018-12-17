@@ -86,32 +86,141 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/index.js":
-/*!**********************!*\
-  !*** ./src/index.js ***!
-  \**********************/
+/***/ "./src/main.js":
+/*!*********************!*\
+  !*** ./src/main.js ***!
+  \*********************/
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _n19popup__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./n19popup */ "./src/n19popup.js");
+/* harmony import */ var _n19baseApplet__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./n19baseApplet */ "./src/n19baseApplet.js");
+/* harmony import */ var _n19popupController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./n19popupController */ "./src/n19popupController.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-// support form and list applets
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
 
 
 SiebelAppFacade.N19Helper =
 /*#__PURE__*/
-function () {
+function (_N19baseApplet) {
+  _inherits(_class, _N19baseApplet);
+
   function _class(settings) {
-    var _this = this;
+    var _this;
 
     _classCallCheck(this, _class);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(_class).call(this, settings));
+    console.log('Nexus main class started....', _this.appletName); // eslint-disable-line no-console
+    // get the n19popupController singleton instance
+
+    _this.n19popupController = _n19popupController__WEBPACK_IMPORTED_MODULE_1__["default"].instance;
+    return _this;
+  }
+
+  _createClass(_class, [{
+    key: "closePopupApplet",
+    value: function closePopupApplet() {
+      return this.n19popupController.closePopupApplet();
+    }
+  }, {
+    key: "_showPopupApplet",
+    value: function _showPopupApplet(name, hide, cb) {
+      if (!this.n19popupController) {
+        // it is a popup applet
+        throw new Error('Openning popup on the popup is not supported now');
+      }
+
+      if (!this.n19popupController.canOpenPopup()) {
+        throw new Error('Cannot open popup!'); // return false;
+      }
+
+      this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
+
+      this._setActiveControl(name);
+
+      return this.n19popupController.showPopupApplet(hide, cb, this.pm);
+    }
+  }, {
+    key: "showMvgApplet",
+    value: function showMvgApplet(name, hide, cb) {
+      return this._showPopupApplet(name, hide, cb);
+    }
+  }, {
+    key: "showPickApplet",
+    value: function showPickApplet(name, hide, cb) {
+      return this._showPopupApplet(name, hide, cb);
+    }
+  }, {
+    key: "drilldown",
+    value: function drilldown(controlName) {
+      // todo: check isLink of control?
+      // index is not effective, and drilldown anyway happens on last selected record
+      if (!this.isListApplet) {
+        return false;
+      }
+
+      var index = this.getSelection();
+      return this.pm.ExecuteMethod('OnDrillDown', controlName, index);
+    }
+  }, {
+    key: "gotoView",
+    value: function gotoView(targetViewName, targetAppletName, id) {
+      // todo: get the applet name from the view definition?
+      var rowId = typeof id === 'undefined' ? this.getCurrentRecord(true).Id : id;
+      var SWECmd = "GotoView&SWEView=".concat(targetViewName, "&SWEApplet0=").concat(targetAppletName);
+      SWECmd += "&SWEBU=1&SWEKeepContext=FALSE&SWERowId0=".concat(rowId);
+      SWECmd = encodeURI(SWECmd);
+      SiebelApp.S_App.GotoView(targetViewName, '', SWECmd, '');
+    }
+  }]);
+
+  return _class;
+}(_n19baseApplet__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+/***/ }),
+
+/***/ "./src/n19baseApplet.js":
+/*!******************************!*\
+  !*** ./src/n19baseApplet.js ***!
+  \******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return N19baseApplet; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var N19baseApplet =
+/*#__PURE__*/
+function () {
+  function N19baseApplet(settings) {
+    var _this = this;
+
+    _classCallCheck(this, N19baseApplet);
 
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.pm = settings.pm;
@@ -151,13 +260,10 @@ function () {
         }
       }
     });
-    console.log('N19Helper started....', this.appletName); // eslint-disable-line no-console
-    // get the n19popup singleton instance
-
-    this.n19popup = _n19popup__WEBPACK_IMPORTED_MODULE_0__["default"].instance;
+    console.log("".concat(this.constructor.name, " started..."));
   }
 
-  _createClass(_class, [{
+  _createClass(N19baseApplet, [{
     key: "_getControl",
     value: function _getControl(name) {
       return this.applet.GetControl(name);
@@ -186,17 +292,6 @@ function () {
       return this.required.indexOf(inputName) > -1;
     }
   }, {
-    key: "_getStaticLOV",
-    value: function _getStaticLOV(arr) {
-      var ret = [];
-
-      for (var i = 0; i < arr.length; i += 1) {
-        ret.push(arr[i].propArray);
-      }
-
-      return ret;
-    }
-  }, {
     key: "_setActiveControl",
     value: function _setActiveControl(name) {
       return this.applet.SetActiveControl(this._getControl(name));
@@ -212,39 +307,6 @@ function () {
       }
 
       return value;
-    }
-  }, {
-    key: "closePopupApplet",
-    value: function closePopupApplet() {
-      return this.n19popup.closePopupApplet();
-    }
-  }, {
-    key: "_showPopupApplet",
-    value: function _showPopupApplet(name, hide, cb) {
-      if (!this.n19popup) {
-        // it is a popup applet
-        throw new Error('Openning popup on the popup is not supported now');
-      }
-
-      if (!this.n19popup.canOpenPopup()) {
-        throw new Error('Cannot open popup!'); // return false;
-      }
-
-      this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
-
-      this._setActiveControl(name);
-
-      return this.n19popup.showPopupApplet(hide, cb, this.pm);
-    }
-  }, {
-    key: "showMvgApplet",
-    value: function showMvgApplet(name, hide, cb) {
-      return this._showPopupApplet(name, hide, cb);
-    }
-  }, {
-    key: "showPickApplet",
-    value: function showPickApplet(name, hide, cb) {
-      return this._showPopupApplet(name, hide, cb);
     }
   }, {
     key: "canInvokeMethod",
@@ -294,7 +356,7 @@ function () {
 
 
         if (obj.staticPick) {
-          obj.staticLOV = this._getStaticLOV(control.GetRadioGroupPropSet().childArray);
+          obj.staticLOV = N19baseApplet.GetStaticLOV(control.GetRadioGroupPropSet().childArray);
           obj.lovs = obj.staticLOV.reduce(function (accumulator, currentValue) {
             // normalized
             accumulator.push({
@@ -487,7 +549,7 @@ function () {
       var ret = [];
 
       if ('1' === control.IsStaticBounded()) {
-        var arr = this._getStaticLOV(control.GetRadioGroupPropSet().childArray);
+        var arr = N19baseApplet.GetStaticLOV(control.GetRadioGroupPropSet().childArray);
 
         for (var i = 0; i < arr.length; i += 1) {
           ret.push(arr[i].DisplayName);
@@ -720,35 +782,24 @@ function () {
       return this.applet.CallServerApplet(method, psInput, psOutput, ai);
     }
   }, {
-    key: "drilldown",
-    value: function drilldown(controlName) {
-      // todo: check isLink of control?
-      // index is not effective, and drilldown anyway happens on last selected record
-      if (!this.isListApplet) {
-        return false;
-      }
-
-      var index = this.getSelection();
-      return this.pm.ExecuteMethod('OnDrillDown', controlName, index);
-    }
-  }, {
-    key: "gotoView",
-    value: function gotoView(targetViewName, targetAppletName, id) {
-      // todo: get the applet name from the view definition?
-      var rowId = typeof id === 'undefined' ? this.getCurrentRecord(true).Id : id;
-      var SWECmd = "GotoView&SWEView=".concat(targetViewName, "&SWEApplet0=").concat(targetAppletName);
-      SWECmd += "&SWEBU=1&SWEKeepContext=FALSE&SWERowId0=".concat(rowId);
-      SWECmd = encodeURI(SWECmd);
-      SiebelApp.S_App.GotoView(targetViewName, '', SWECmd, '');
-    }
-  }, {
     key: "_insertPending",
     value: function _insertPending() {
       return this.pm.Get('GetBusComp').insertPending;
     }
+  }], [{
+    key: "GetStaticLOV",
+    value: function GetStaticLOV(arr) {
+      var ret = [];
+
+      for (var i = 0; i < arr.length; i += 1) {
+        ret.push(arr[i].propArray);
+      }
+
+      return ret;
+    }
   }, {
-    key: "requery",
-    value: function requery(name) {
+    key: "Requery",
+    value: function Requery(name) {
       var service = SiebelApp.S_App.GetService('N19 BS');
 
       if (service) {
@@ -758,8 +809,8 @@ function () {
       }
     }
   }, {
-    key: "refresh",
-    value: function refresh(name) {
+    key: "Refresh",
+    value: function Refresh(name) {
       var service = SiebelApp.S_App.GetService('N19 BS');
 
       if (service) {
@@ -768,7 +819,63 @@ function () {
         service.InvokeMethod('Refresh', inPropSet, {});
       }
     }
-  }, {
+  }]);
+
+  return N19baseApplet;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/n19popupApplet.js":
+/*!*******************************!*\
+  !*** ./src/n19popupApplet.js ***!
+  \*******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return N19popupApplet; });
+/* harmony import */ var _n19baseApplet__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./n19baseApplet */ "./src/n19baseApplet.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var N19popupApplet =
+/*#__PURE__*/
+function (_N19baseApplet) {
+  _inherits(N19popupApplet, _N19baseApplet);
+
+  function N19popupApplet(settings) {
+    var _this;
+
+    _classCallCheck(this, N19popupApplet);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(N19popupApplet).call(this, settings));
+    console.log("".concat(_this.constructor.name, " started...")); // eslint-disable-line no-console
+
+    return _this;
+  }
+
+  _createClass(N19popupApplet, [{
     key: "pickRecord",
     value: function pickRecord() {
       // todo : check CanInokeMethod and/or is it pick
@@ -781,7 +888,11 @@ function () {
       //  in this case it returns "Method DeleteRecords is not allowed here" SBL-UIF-00348
       // todo: check canInvokeMethod and/or is it MVG
       var ret = this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecords');
-      typeof cb === 'function' && cb();
+
+      if (typeof cb === 'function') {
+        cb();
+      }
+
       return ret;
     }
   }, {
@@ -789,7 +900,11 @@ function () {
     value: function addRecords(cb) {
       // todo: check canInvokeMethod and/or is it MVG. and if we have a record in assoc?
       var ret = this.pm.ExecuteMethod('InvokeMethod', 'AddRecords');
-      typeof cb === 'function' && cb();
+
+      if (typeof cb === 'function') {
+        cb();
+      }
+
       return ret;
     }
   }, {
@@ -808,47 +923,52 @@ function () {
     }
   }]);
 
-  return _class;
-}();
+  return N19popupApplet;
+}(_n19baseApplet__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
 
 /***/ }),
 
-/***/ "./src/n19popup.js":
-/*!*************************!*\
-  !*** ./src/n19popup.js ***!
-  \*************************/
+/***/ "./src/n19popupController.js":
+/*!***********************************!*\
+  !*** ./src/n19popupController.js ***!
+  \***********************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return N19popupController; });
+/* harmony import */ var _n19popupApplet__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./n19popupApplet */ "./src/n19popupApplet.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+
 var singleton = Symbol('singleton');
 var singletonEnforcer = Symbol('singletonEnforcer');
 
-var N19popup =
+var N19popupController =
 /*#__PURE__*/
 function () {
-  _createClass(N19popup, null, [{
+  _createClass(N19popupController, null, [{
     key: "instance",
     get: function get() {
       if (!this[singleton]) {
-        this[singleton] = new N19popup(singletonEnforcer);
+        this[singleton] = new N19popupController(singletonEnforcer);
       }
 
       return this[singleton];
     }
   }]);
 
-  function N19popup(enforcer) {
+  function N19popupController(enforcer) {
     var _this = this;
 
-    _classCallCheck(this, N19popup);
+    _classCallCheck(this, N19popupController);
 
     if (enforcer !== singletonEnforcer) {
       throw new Error('Instantiation failed: use Singleton.getInstance() instead of new.');
@@ -862,7 +982,7 @@ function () {
     console.log("".concat(this.constructor.name, " started...")); // eslint-disable-line no-console
     // it will be a singleton, so there is no cleanup
 
-    this.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup; // todo : remove it from SiebelAppFacade
+    this.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
 
     SiebelApp.S_App.ProcessNewPopup = function (ps) {
       var ret;
@@ -888,9 +1008,9 @@ function () {
       var ret = (_this$N19viewLoaded = _this.N19viewLoaded).call.apply(_this$N19viewLoaded, [SiebelApp.contentUpdater].concat(args));
 
       if (typeof _this.resolvePromise === 'function') {
-        var _this$isPopupOpen = _this.isPopupOpen(),
-            appletName = _this$isPopupOpen.appletName; // todo: use here the properties set on promiseResolving?
-
+        // todo: use here the properties set on promiseResolving?
+        var _N19popupController$I = N19popupController.IsPopupOpen(),
+            appletName = _N19popupController$I.appletName;
 
         if (!appletName) {
           throw new Error('Open Applet Name is not found in resolvePromise');
@@ -900,7 +1020,7 @@ function () {
 
         var pm = applet.GetPModel(); // todo: avoid this circularity
 
-        _this.popupAppletN19 = new SiebelAppFacade.N19Helper({
+        _this.popupAppletN19 = new _n19popupApplet__WEBPACK_IMPORTED_MODULE_0__["default"]({
           pm: pm,
           isPopup: true
         }); // todo : split N19Helper into 2 classes
@@ -914,7 +1034,7 @@ function () {
         var assocApplet = applet.GetPopupApplet();
 
         if (assocApplet) {
-          _this.assocAppletN19 = new SiebelAppFacade.N19Helper({
+          _this.assocAppletN19 = new _n19popupApplet__WEBPACK_IMPORTED_MODULE_0__["default"]({
             pm: assocApplet.GetPModel(),
             isPopup: true
           });
@@ -930,7 +1050,7 @@ function () {
     };
   }
 
-  _createClass(N19popup, [{
+  _createClass(N19popupController, [{
     key: "canOpenPopup",
     value: function canOpenPopup() {
       return typeof this.resolvePromise !== 'function';
@@ -971,15 +1091,8 @@ function () {
       return 'refreshpopup';
     }
   }, {
-    key: "reInitPopup",
-    value: function reInitPopup() {
-      var popupPM = SiebelApp.S_App.GetPopupPM();
-      popupPM.Init();
-      popupPM.Setup();
-    } // todo: change the approach, use the class internal variables
-
-  }, {
     key: "closePopupApplet",
+    // todo: change the approach, use the class internal variables
     value: function closePopupApplet(applet) {
       // todo : check canInvokeMethod
       var ret;
@@ -1001,7 +1114,7 @@ function () {
 
 
       if (this.isPopupHidden) {
-        this.reInitPopup();
+        N19popupController.ReInitPopup();
       }
 
       this.popupAppletN19 = null;
@@ -1009,8 +1122,53 @@ function () {
       return ret;
     }
   }, {
-    key: "isPopupOpen",
-    value: function isPopupOpen() {
+    key: "getPopupAppletPM",
+    value: function getPopupAppletPM(appletName) {
+      var applet = this.getPopupApplet(appletName);
+      return applet.GetPModel();
+    }
+  }, {
+    key: "showPopupApplet",
+    value: function showPopupApplet(hide, cb, pm) {
+      var _this2 = this;
+
+      // todo: use the properties set on promise resolving?
+      var _N19popupController$I2 = N19popupController.IsPopupOpen(),
+          isOpen = _N19popupController$I2.isOpen,
+          appletName = _N19popupController$I2.appletName;
+
+      if (isOpen) {
+        // this code will close the applet even if this applet was originated by another applet
+        console.log("closing ".concat(appletName, " in showPopupApplet...")); // maybe do not close if the applet to be opened if the same as already opened?
+
+        this.closePopupApplet(this.getPopupApplet(appletName)); // todo: check if got it successfully closed?
+      }
+
+      this.isPopupHidden = !!hide; // todo: do we need to keep the show the applet
+
+      pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // seems we can also to call EditField
+      // eslint-disable-next-line no-return-assign
+
+      var ret = new Promise(function (resolve) {
+        return _this2.resolvePromise = resolve;
+      }); // eslint-disable-line no-param-assign
+
+      if (typeof cb === 'function') {
+        ret = ret.then(cb);
+      }
+
+      return ret;
+    }
+  }], [{
+    key: "ReInitPopup",
+    value: function ReInitPopup() {
+      var popupPM = SiebelApp.S_App.GetPopupPM();
+      popupPM.Init();
+      popupPM.Setup();
+    }
+  }, {
+    key: "IsPopupOpen",
+    value: function IsPopupOpen() {
       // todo: when we set some properties on resolve, do we need this method now
       // todo: here reuse the properties that set when the Promise resolved
       var currPopups = SiebelApp.S_App.GetPopupPM().Get('currPopups');
@@ -1051,14 +1209,8 @@ function () {
       throw new Error('should not be here...');
     }
   }, {
-    key: "getPopupAppletPM",
-    value: function getPopupAppletPM(appletName) {
-      var applet = this.getPopupApplet(appletName);
-      return applet.GetPModel();
-    }
-  }, {
-    key: "getPopupApplet",
-    value: function getPopupApplet(appletName) {
+    key: "GetPopupApplet",
+    value: function GetPopupApplet(appletName) {
       var applet = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName];
 
       if (!applet) {
@@ -1067,56 +1219,23 @@ function () {
 
       return applet;
     }
-  }, {
-    key: "showPopupApplet",
-    value: function showPopupApplet(hide, cb, pm) {
-      var _this2 = this;
-
-      var _this$isPopupOpen2 = this.isPopupOpen(),
-          isOpen = _this$isPopupOpen2.isOpen,
-          appletName = _this$isPopupOpen2.appletName; // todo: use the properties set on promise resolving?
-
-
-      if (isOpen) {
-        // this code will close the applet even if this applet was originated by another applet
-        console.log("closing ".concat(appletName, " in _showPopupApplet...")); // eslint-disable-line no-console
-        // maybe do not close if the applet to be opened if the same as already opened?
-
-        this.closePopupApplet(this.getPopupApplet(appletName)); // todo: check if got it successfully closed?
-      }
-
-      this.isPopupHidden = !!hide; // todo: do we need to keep the show the applet
-
-      pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // seems we can also to call EditField
-      // eslint-disable-next-line no-return-assign
-
-      var ret = new Promise(function (resolve) {
-        return _this2.resolvePromise = resolve;
-      }); // eslint-disable-line no-param-assign
-
-      if (typeof cb === 'function') {
-        ret = ret.then(cb);
-      }
-
-      return ret;
-    }
   }]);
 
-  return N19popup;
+  return N19popupController;
 }();
 
-/* harmony default export */ __webpack_exports__["default"] = (N19popup);
+
 
 /***/ }),
 
 /***/ 0:
-/*!****************************!*\
-  !*** multi ./src/index.js ***!
-  \****************************/
+/*!***************************!*\
+  !*** multi ./src/main.js ***!
+  \***************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\apps\n19helper/src/index.js */"./src/index.js");
+module.exports = __webpack_require__(/*! C:\apps\n19helper/src/main.js */"./src/main.js");
 
 
 /***/ })

@@ -1,8 +1,4 @@
-// support form and list applets
-
-import N19popup from './n19popup';
-
-SiebelAppFacade.N19Helper = class {
+export default class N19baseApplet {
   constructor(settings) {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.pm = settings.pm;
@@ -38,10 +34,7 @@ SiebelAppFacade.N19Helper = class {
       }
     });
 
-    console.log('N19Helper started....', this.appletName); // eslint-disable-line no-console
-
-    // get the n19popup singleton instance
-    this.n19popup = N19popup.instance;
+    console.log(`${this.constructor.name} started...`);
   }
 
   _getControl(name) {
@@ -70,7 +63,7 @@ SiebelAppFacade.N19Helper = class {
     return this.required.indexOf(inputName) > -1;
   }
 
-  _getStaticLOV(arr) {
+  static GetStaticLOV(arr) {
     const ret = [];
     for (let i = 0; i < arr.length; i += 1) {
       ret.push(arr[i].propArray);
@@ -90,31 +83,6 @@ SiebelAppFacade.N19Helper = class {
       value = value ? 'Y' : 'N'; // eslint-disable-line no-param-reassign
     }
     return value;
-  }
-
-  closePopupApplet() {
-    return this.n19popup.closePopupApplet();
-  }
-
-  _showPopupApplet(name, hide, cb) {
-    if (!this.n19popup) { // it is a popup applet
-      throw new Error('Openning popup on the popup is not supported now');
-    }
-    if (!this.n19popup.canOpenPopup()) {
-      throw new Error('Cannot open popup!');
-      // return false;
-    }
-    this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
-    this._setActiveControl(name);
-    return this.n19popup.showPopupApplet(hide, cb, this.pm);
-  }
-
-  showMvgApplet(name, hide, cb) {
-    return this._showPopupApplet(name, hide, cb);
-  }
-
-  showPickApplet(name, hide, cb) {
-    return this._showPopupApplet(name, hide, cb);
   }
 
   canInvokeMethod(method) {
@@ -156,7 +124,7 @@ SiebelAppFacade.N19Helper = class {
       }
       // add values to be displayed in the static pick list
       if (obj.staticPick) {
-        obj.staticLOV = this._getStaticLOV(control.GetRadioGroupPropSet().childArray);
+        obj.staticLOV = N19baseApplet.GetStaticLOV(control.GetRadioGroupPropSet().childArray);
         obj.lovs = obj.staticLOV.reduce((accumulator, currentValue) => { // normalized
           accumulator.push({ lic: currentValue.FieldValue, val: currentValue.DisplayName });
           return accumulator;
@@ -300,7 +268,7 @@ SiebelAppFacade.N19Helper = class {
     const control = this._getControl(controlName);
     const ret = [];
     if ('1' === control.IsStaticBounded()) {
-      const arr = this._getStaticLOV(control.GetRadioGroupPropSet().childArray);
+      const arr = N19baseApplet.GetStaticLOV(control.GetRadioGroupPropSet().childArray);
       for (let i = 0; i < arr.length; i += 1) {
         ret.push(arr[i].DisplayName);
       }
@@ -486,30 +454,11 @@ SiebelAppFacade.N19Helper = class {
     return this.applet.CallServerApplet(method, psInput, psOutput, ai);
   }
 
-  drilldown(controlName) {
-    // todo: check isLink of control?
-    // index is not effective, and drilldown anyway happens on last selected record
-    if (!this.isListApplet) {
-      return false;
-    }
-    const index = this.getSelection();
-    return this.pm.ExecuteMethod('OnDrillDown', controlName, index);
-  }
-
-  gotoView(targetViewName, targetAppletName, id) {
-    // todo: get the applet name from the view definition?
-    const rowId = typeof id === 'undefined' ? this.getCurrentRecord(true).Id : id;
-    let SWECmd = `GotoView&SWEView=${targetViewName}&SWEApplet0=${targetAppletName}`;
-    SWECmd += `&SWEBU=1&SWEKeepContext=FALSE&SWERowId0=${rowId}`;
-    SWECmd = encodeURI(SWECmd);
-    SiebelApp.S_App.GotoView(targetViewName, '', SWECmd, '');
-  }
-
   _insertPending() {
     return this.pm.Get('GetBusComp').insertPending;
   }
 
-  requery(name) {
+  static Requery(name) {
     const service = SiebelApp.S_App.GetService('N19 BS');
     if (service) {
       const inPropSet = SiebelApp.S_App.NewPropertySet();
@@ -518,7 +467,7 @@ SiebelAppFacade.N19Helper = class {
     }
   }
 
-  refresh(name) {
+  static Refresh(name) {
     const service = SiebelApp.S_App.GetService('N19 BS');
     if (service) {
       const inPropSet = SiebelApp.S_App.NewPropertySet();
@@ -526,35 +475,4 @@ SiebelAppFacade.N19Helper = class {
       service.InvokeMethod('Refresh', inPropSet, {});
     }
   }
-
-  pickRecord() {
-    // todo : check CanInokeMethod and/or is it pick
-    return this.pm.ExecuteMethod('InvokeMethod', 'PickRecord');
-  }
-
-  deleteRecords(cb) {
-    // method is not allowed to delete the primary
-    //  in this case it returns "Method DeleteRecords is not allowed here" SBL-UIF-00348
-    // todo: check canInvokeMethod and/or is it MVG
-    const ret = this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecords');
-    typeof cb === 'function' && cb();
-    return ret;
-  }
-
-  addRecords(cb) {
-    // todo: check canInvokeMethod and/or is it MVG. and if we have a record in assoc?
-    const ret = this.pm.ExecuteMethod('InvokeMethod', 'AddRecords');
-    typeof cb === 'function' && cb();
-    return ret;
-  }
-
-  _firstRecord() { // temp method, assumes that no scrolling happened
-    if (this.isListApplet) {
-      if (this.getSelection() !== 0) {
-        return this.positionOnRow(0);
-      }
-      return true;
-    }
-    return false;
-  }
-};
+}

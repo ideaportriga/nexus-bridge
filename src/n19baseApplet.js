@@ -2,7 +2,6 @@ export default class N19baseApplet {
   constructor(settings) {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.pm = settings.pm;
-    this.isPopup = settings.isPopup;
     this.appletName = this.pm.Get('GetName');
     this.view = SiebelApp.S_App.GetActiveView();
     this.viewName = this.view.GetName();
@@ -390,7 +389,8 @@ export default class N19baseApplet {
 
   queryById(rowId, cb) {
     const promise = new Promise(resolve => this._queryById(rowId, resolve));
-    return typeof cb === 'function' ? promise.then(cb) : promise;
+    const ret = promise.then(() => this.getRecordSet().length);
+    return typeof cb === 'function' ? ret.then(cb) : ret;
   }
 
   _queryById(rowId, cb) {
@@ -421,7 +421,8 @@ export default class N19baseApplet {
 
   query(params, cb) {
     const promise = new Promise(resolve => this._query(params, resolve));
-    return typeof cb === 'function' ? promise.then(cb) : promise;
+    const ret = promise.then(() => this.getRecordSet().length);
+    return typeof cb === 'function' ? ret.then(cb) : ret;
   }
 
   _query(params, cb) {

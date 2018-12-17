@@ -224,7 +224,6 @@ function () {
 
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.pm = settings.pm;
-    this.isPopup = settings.isPopup;
     this.appletName = this.pm.Get('GetName');
     this.view = SiebelApp.S_App.GetActiveView();
     this.viewName = this.view.GetName();
@@ -709,7 +708,10 @@ function () {
       var promise = new Promise(function (resolve) {
         return _this4._queryById(rowId, resolve);
       });
-      return typeof cb === 'function' ? promise.then(cb) : promise;
+      var ret = promise.then(function () {
+        return _this4.getRecordSet().length;
+      });
+      return typeof cb === 'function' ? ret.then(cb) : ret;
     }
   }, {
     key: "_queryById",
@@ -745,7 +747,10 @@ function () {
       var promise = new Promise(function (resolve) {
         return _this5._query(params, resolve);
       });
-      return typeof cb === 'function' ? promise.then(cb) : promise;
+      var ret = promise.then(function () {
+        return _this5.getRecordSet().length;
+      });
+      return typeof cb === 'function' ? ret.then(cb) : ret;
     }
   }, {
     key: "_query",
@@ -1016,13 +1021,11 @@ function () {
           throw new Error('Open Applet Name is not found in resolvePromise');
         }
 
-        var applet = _this.getPopupApplet(appletName);
-
+        var applet = N19popupController.GetPopupApplet(appletName);
         var pm = applet.GetPModel(); // todo: avoid this circularity
 
         _this.popupAppletN19 = new _n19popupApplet__WEBPACK_IMPORTED_MODULE_0__["default"]({
-          pm: pm,
-          isPopup: true
+          pm: pm
         }); // todo : split N19Helper into 2 classes
 
         var obj = {
@@ -1035,8 +1038,7 @@ function () {
 
         if (assocApplet) {
           _this.assocAppletN19 = new _n19popupApplet__WEBPACK_IMPORTED_MODULE_0__["default"]({
-            pm: assocApplet.GetPModel(),
-            isPopup: true
+            pm: assocApplet.GetPModel()
           });
           obj.assocAppletN19 = _this.assocAppletN19;
         }
@@ -1122,12 +1124,6 @@ function () {
       return ret;
     }
   }, {
-    key: "getPopupAppletPM",
-    value: function getPopupAppletPM(appletName) {
-      var applet = this.getPopupApplet(appletName);
-      return applet.GetPModel();
-    }
-  }, {
     key: "showPopupApplet",
     value: function showPopupApplet(hide, cb, pm) {
       var _this2 = this;
@@ -1141,7 +1137,7 @@ function () {
         // this code will close the applet even if this applet was originated by another applet
         console.log("closing ".concat(appletName, " in showPopupApplet...")); // maybe do not close if the applet to be opened if the same as already opened?
 
-        this.closePopupApplet(this.getPopupApplet(appletName)); // todo: check if got it successfully closed?
+        this.closePopupApplet(N19popupController.GetPopupApplet(appletName)); // todo: check if got it successfully closed?
       }
 
       this.isPopupHidden = !!hide; // todo: do we need to keep the show the applet
@@ -1207,7 +1203,11 @@ function () {
 
 
       throw new Error('should not be here...');
-    }
+    } // static getPopupAppletPM(appletName) {
+    //   const applet = N19popupController.GetPopupApplet(appletName);
+    //   return applet.GetPModel();
+    // }
+
   }, {
     key: "GetPopupApplet",
     value: function GetPopupApplet(appletName) {

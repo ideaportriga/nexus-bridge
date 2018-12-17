@@ -44,19 +44,16 @@ export default class N19popupController {
         if (!appletName) {
           throw new Error('Open Applet Name is not found in resolvePromise');
         }
-        const applet = this.getPopupApplet(appletName);
+        const applet = N19popupController.GetPopupApplet(appletName);
         const pm = applet.GetPModel();
         // todo: avoid this circularity
-        this.popupAppletN19 = new N19popupApplet({ pm, isPopup: true }); // todo : split N19Helper into 2 classes
+        this.popupAppletN19 = new N19popupApplet({ pm }); // todo : split N19Helper into 2 classes
         const obj = { appletName, popupAppletN19: this.popupAppletN19 };
         // check if we have assoc
         // we assume it is always assoc applet, but what about opening popup on the top of another - not tested it
         const assocApplet = applet.GetPopupApplet();
         if (assocApplet) {
-          this.assocAppletN19 = new N19popupApplet({
-            pm: assocApplet.GetPModel(),
-            isPopup: true,
-          });
+          this.assocAppletN19 = new N19popupApplet({ pm: assocApplet.GetPModel() });
           obj.assocAppletN19 = this.assocAppletN19;
         }
         this.resolvePromise(obj);
@@ -160,10 +157,10 @@ export default class N19popupController {
     throw new Error('should not be here...');
   }
 
-  getPopupAppletPM(appletName) {
-    const applet = this.getPopupApplet(appletName);
-    return applet.GetPModel();
-  }
+  // static getPopupAppletPM(appletName) {
+  //   const applet = N19popupController.GetPopupApplet(appletName);
+  //   return applet.GetPModel();
+  // }
 
   static GetPopupApplet(appletName) {
     const applet = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName];
@@ -180,7 +177,7 @@ export default class N19popupController {
       // this code will close the applet even if this applet was originated by another applet
       console.log(`closing ${appletName} in showPopupApplet...`);
       // maybe do not close if the applet to be opened if the same as already opened?
-      this.closePopupApplet(this.getPopupApplet(appletName));
+      this.closePopupApplet(N19popupController.GetPopupApplet(appletName));
       // todo: check if got it successfully closed?
     }
     this.isPopupHidden = !!hide; // todo: do we need to keep the show the applet
@@ -195,4 +192,3 @@ export default class N19popupController {
     return ret;
   }
 }
-

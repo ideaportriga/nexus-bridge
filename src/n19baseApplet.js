@@ -331,6 +331,7 @@ export default class N19baseApplet {
     let obj = {};
     if (_controls.isRecord) {
       obj = this.getRecordSet()[index];
+      _controls.id = this.getRawRecordSet()[index].Id;// eslint-disable-line no-param-reassign
     }
 
     for (let i = 0; i < arr.length; i += 1) {

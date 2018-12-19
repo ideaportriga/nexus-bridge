@@ -633,6 +633,7 @@ function () {
 
       if (_controls.isRecord) {
         obj = this.getRecordSet()[index];
+        _controls.id = this.getRawRecordSet()[index].Id; // eslint-disable-line no-param-reassign
       }
 
       for (var i = 0; i < arr.length; i += 1) {
@@ -876,6 +877,16 @@ function (_N19baseApplet) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(N19popupApplet).call(this, settings));
     console.log("".concat(_this.constructor.name, " started...")); // eslint-disable-line no-console
+
+    if (_this.isListApplet) {
+      _this.pm.GetRenderer().resize = function () {
+        return 0;
+      };
+
+      _this.pm.GetRenderer().GetSelectedRow = function () {
+        return 0;
+      };
+    }
 
     return _this;
   }

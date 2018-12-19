@@ -4,6 +4,11 @@ export default class N19popupApplet extends N19baseApplet {
   constructor(settings) {
     super(settings);
     console.log(`${this.constructor.name} started...`); // eslint-disable-line no-console
+
+    if (this.isListApplet) {
+      this.pm.GetRenderer().resize = () => 0;
+      this.pm.GetRenderer().GetSelectedRow = () => 0;
+    }
   }
 
   pickRecord() {

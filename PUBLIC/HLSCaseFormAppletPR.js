@@ -329,13 +329,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-btn block v-on:click="testButtonClick" color="primary"><v-icon>pan_tool</v-icon>Pick!</v-btn>                                                    \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="testButtonClickPseudoSync" color="primary"><v-icon>pan_tool</v-icon>Pick Sync!</v-btn>                                                    \n\
-                </v-flex>                                                                                                                                       \n\
-                <v-flex md1 pa-2>                                                                                                                               \n\
                   <v-btn block v-on:click="testButtonClickShuttle" color="primary"><v-icon>pan_tool</v-icon>Shuttle!</v-btn>                                                    \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
                   <v-btn block v-on:click="testButtonClickShuttle2" color="primary"><v-icon>pan_tool</v-icon>Shuttle2!</v-btn>                                                    \n\
+                </v-flex>                                                                                                                                       \n\
+                <v-flex md1 pa-2>                                                                                                                               \n\
+                  <v-btn block v-on:click="testButtonClickShuttle3" color="primary"><v-icon>pan_tool</v-icon>Shuttle3!</v-btn>                                                    \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md3 pa-2>                                                                                                                               \n\
                 </v-flex>                                                                                                                                       \n\
@@ -394,7 +394,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               }
             },
             methods: {
-              async testButtonClickPseudoSync() {
+              async testButtonClick() {
                 var obj = await n19helper.showPickApplet('Audit Employee Last Name', true, null);
                 if (obj.appletName != 'Pharma Employee Pick Applet') {
                   alert('Pharma Employee Pick Applet is not created');
@@ -406,94 +406,107 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 if (length !== 10) {
                   alert('The recordset length is not 10 as expected - ' + length);
                 }
-                obj.popupAppletN19.query({ 'Last Name': 'Abel' }).then(function () {
-                  var length = obj.popupAppletN19.getRecordSet().length;
-                  if (length !== 1) {
-                    alert('The recordset length is not 1 as expected - ' + length);
-                  } else {
-                    obj.popupAppletN19.pickRecord();
-                    alert('PASSED');
-                  }
-                });
-              },
-              testButtonClick() {
-                var ret = n19helper.showPickApplet('Audit Employee Last Name', true, function (obj) {
-                  if (obj.appletName != 'Pharma Employee Pick Applet') {
-                    alert('Pharma Employee Pick Applet is not created');
-                  }
-                  if (Object.keys(obj).length !== 2) {
-                    alert('obj length has not expected value - ' + Object.keys(obj).length);
-                  }
-                  var length = obj.popupAppletN19.getRecordSet().length;
-                  if (length !== 10) {
-                    alert('The recordset length is not 10 as expected - ' + length);
-                  }
-                  obj.popupAppletN19.query({ 'Last Name': 'Abel' }).then(function () {
-                    var length = obj.popupAppletN19.getRecordSet().length;
-                    if (length !== 1) {
-                      alert('The recordset length is not 1 as expected - ' + length);
-                    } else {
-                      obj.popupAppletN19.pickRecord();
-                      alert('PASSED');
-                    }
-                  })
-                });
-                if (!ret) {
-                  alert('(testButtonClick)retured value is false')
+                var found = await obj.popupAppletN19.query({ 'Last Name': 'Abel' })
+                if (found !== 1) {
+                  alert('Ary on Sample DB? The recordset length is not 1 as expected - ' + found);
+                } else {
+                  obj.popupAppletN19.pickRecord();
+                  alert('PASSED');
                 }
               },
-              testButtonClickShuttle() {
-                n19helper.showMvgApplet('Sales Rep', true).then(function (obj) {
-                  if (obj.appletName != 'Contact Team Mvg Applet') {
-                    alert('Contact Team Mvg Applet is not created');
-                  }
-                  if (Object.keys(obj).length !== 3) {
-                    alert('SiebelAppFacade length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
-                  }
-                  // list all MVG shuttle, delete all team members except primary
-                  var isRecord = obj.popupAppletN19._firstRecord();
-                  while (isRecord) {
-                    var controls = { 'SSA Primary Field': {} };
-                    obj.popupAppletN19.getCurrentRecordModel(controls);
-                    var value = controls['SSA Primary Field'].value;
-                    if (value) { // the record is not primary
-                      var isRecord = obj.popupAppletN19.nextRecord();
-                    } else {
-                      isRecord = obj.popupAppletN19.deleteRecords(() => {
-                        console.log('DELETE RECORDS CALLBACK');
-                      });
-                      var isRecord = obj.popupAppletN19._firstRecord();
-                    }
-                  }
-                  setTimeout(function() {
-                    alert('Finished');
-                  });
-                });
+              testShuttleOpened(obj) {
+                if (obj.appletName != 'Contact Team Mvg Applet') {
+                  alert('Contact Team Mvg Applet is not created');
+                }
+                if (Object.keys(obj).length !== 3) {
+                  alert('Returned object length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
+                }
               },
-              testButtonClickShuttle2() {
-                n19helper.showMvgApplet('Sales Rep', true).then(async function (obj) {
-                  if (obj.appletName != 'Contact Team Mvg Applet') {
-                    alert('Contact Team Mvg Applet is not created');
+              getControlForOpenPopup() {
+                var controlName = '';
+                if (n19helper.n19popupController.popupAppletN19) {
+                  var controlName = n19helper.n19popupController.popupAppletN19.applet.GetPopupControl();
+                }
+                return controlName;
+              },
+              async testButtonClickShuttle() {
+                var controlName = this.getControlForOpenPopup();
+                if ('Sales Rep' !== controlName) {
+                  var obj = await n19helper.showMvgApplet('Sales Rep', true);
+                  this.testShuttleOpened(obj);
+                  var mvg = obj.popupAppletN19;
+                } else {
+                  var mvg = n19helper.n19popupController.popupAppletN19;
+                }
+                var isRecord = mvg._firstRecord();
+                while (isRecord) {
+                  var controls = { 'SSA Primary Field': {} };
+                  mvg.getCurrentRecordModel(controls);
+                  var value = controls['SSA Primary Field'].value;
+                  if (value) {
+                    var isRecord = mvg.nextRecord();
+                  } else {
+                    mvg.deleteRecords();
+                    isRecord = mvg._firstRecord();
                   }
-                  if (Object.keys(obj).length !== 3) {
-                    alert('SiebelAppFacade length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
-                  }
-                  // list all MVG shuttle, add to MVG
-                  var arr = ['7SIA-5DZZ2', '1SIA-3D3R', '1SIA-50JE'];
+                }
+                alert('Finished');
+              },
+              async testButtonClickShuttle2() {
+                var controlName = this.getControlForOpenPopup();
+                if ('Sales Rep' !== controlName) {
+                  var obj = await n19helper.showMvgApplet('Sales Rep', true);
+                  this.testShuttleOpened(obj);
+                  var mvg = obj.popupAppletN19;
                   var assoc = obj.assocAppletN19;
-                  for (var i = 0; i < arr.length; i++) {
-                    var found = await assoc.queryById(arr[i]);
-                    console.log('found', found);
-                    if (found === 1) {
-
-                    } else {
-
-                    }
+                } else {
+                  var mvg = n19helper.n19popupController.popupAppletN19;
+                  var assoc = n19helper.n19popupController.assocAppletN19;
+                }
+                var arr = ['7SIA-5DZZ2', '1SIA-3D3R', '1SIA-50JE'];
+                for (var i = 0; i < arr.length; i++) {
+                  var found = await assoc.queryById(arr[i]);
+                  if (found === 1) {
+                    mvg.addRecords();
+                  } else {
+                    alert('The record is not found - ' + arr[i] + '. Are you on Sample DB?');
                   }
-                  setTimeout(function() {
+                }
+                alert('Finished');
+              },
+              async testButtonClickShuttle3() {
+                var controlName = this.getControlForOpenPopup();
+                if ('Sales Rep' !== controlName) {
+                  var obj = await n19helper.showMvgApplet('Sales Rep', true);
+                  this.testShuttleOpened(obj);
+                  var mvg = obj.popupAppletN19;
+                } else {
+                  var mvg = n19helper.n19popupController.popupAppletN19;
+                }
+                var isRecord = mvg._firstRecord();
+                var id;
+                while (isRecord) {
+                  var controls = { 'SSA Primary Field': {}, 'Active Login Name': {} };
+                  mvg.getCurrentRecordModel(controls);
+                  var value = controls['SSA Primary Field'].value;
+                  if (value) {
+                    alert('Found primary - ' + controls['Active Login Name'].value)
+                  } else {
+                    id = controls.id;
+                  }
+                  isRecord = mvg.nextRecord();
+                }
+                if (id) {
+                  var found = await mvg.queryById(id);
+                  if (found === 1) {
+                    mvg.setControlValue('SSA Primary Field', true);
+                    await mvg.writeRecord();
+                    await mvg.query({});
                     alert('Finished');
-                  });
-                });
+                  } else {
+                    alert('Query by Id did not work - ' + found + '/' + id);
+                  }
+                }
               },
               openPickApplet() {
                 if (!n19helper.showPickApplet('Audit Employee Last Name')) {
@@ -632,7 +645,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               updateSalesRep(val) {
                 console.log('<<< update sales rep', val);
                 if (val != this.caseSalesRep) {
-                  // todo : check if array already contains this Sales Rep
+                  // todo : check if an array already contains this Sales Rep
                   this.caseSalesRep = val;
                   this.getSalesRep(val);
                 }
@@ -718,9 +731,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               clickDeleteSalesRep(salesRep) {
                 console.log('>>> clickDeleteSalesRep input', salesRep, salesRep.login, this.caseSalesRepArr);
-                var ret = n19helper.n19popup.isPopupOpen();
-                var controlName = ret.controlName;
-                var appletName = ret.appletName;
+                if (n19helper.n19popupController.popupAppletN19) {
+                  var controlName = n19helper.n19popupController.popupAppletN19.applet.GetPopupControl();
+                }
                 if ('Sales Rep' !== controlName) {
                   var ret = n19helper.showMvgApplet('Sales Rep', true, function (obj) {
                     this.deleteSalesRep(obj.popupAppletN19, salesRep.id);
@@ -729,7 +742,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     alert('(clickDeleteSalesRep)retured value is false')
                   }
                 } else {
-                  this.deleteSalesRep(appletName, salesRep.id);
+                  this.deleteSalesRep(n19helper.n19popupController.popupAppletN19, salesRep.id);
                 }
               },
               afterSelection: function () {
@@ -761,7 +774,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           });
         }
-
         HLSCaseFormAppletPR.prototype.EndLife = function () {
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = SiebelAppFacade.N19notifyNewFieldData;
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary = SiebelAppFacade.N19notifyNewPrimary;
@@ -778,7 +790,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           }
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.EndLife.apply(this, arguments);
         }
-
         return HLSCaseFormAppletPR;
       }()
       );

@@ -7,6 +7,8 @@ See [Wiki](/../wikis/home) for more information.
 ### Prerequisites
 To compile the project you need to have installed `Node.js`. 
 
+You can also use the [compiled files](./dist)
+
 ### Build
 When a project is cloned, install the dependences.
 ```bash
@@ -36,7 +38,7 @@ The `dist` folder contains the following files:
   Note: please remember that to make the Siebel Tools business service available, you need to create a new application user property. E.g. if your application is Siebel Public Sector, in the Siebel Tools create a new user property for the `Siebel Public Sector` application with the following attibutes: the name is `ClientBusinessServiceX` where `X` is the next sequential number, and the value is the name of the Siebel Tools business service - `N19 BS`. 
   * `NexusDefaultFormAppletPR.js` and `NexusDefaultListAppletPR.js` - the examples of Nexus PRs. These PRs could be used if the implementation adopts the approach when 
   * `BeautifiedOracleJS` folder contains some automatically beautified Oracle classes.
-* `dist` - the compiled files:
+* `dist` - the Nexus19 compiled files:
   * `N19Helper.js` and `N19Helper.js.map` - created by `npm run dev`
   * `N19Helper.min.js` - created by `npm run build` 
 * `src` - N19Helper source files

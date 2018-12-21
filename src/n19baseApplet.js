@@ -2,17 +2,27 @@ export default class N19baseApplet {
   constructor(settings) {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.pm = settings.pm;
-    this.appletName = this.pm.Get('GetName');
-    this.applet = SiebelApp.S_App.GetActiveView().GetAppletMap()[this.appletName];
-    this.viewName = SiebelApp.S_App.GetActiveView().GetName();
+    this.applet = SiebelApp.S_App.GetActiveView().GetAppletMap()[this.pm.Get('GetName')];
     this.isListApplet = typeof this.applet.GetListOfColumns === 'function';
-    this.appletId = `s_${this.pm.Get('GetFullId')}_div`;
     this.required = []; // will be empty for the list applet
     this.lov = {};
 
+    this.token = 0;
+    this.subscribers = [];
+    const bcId = this.applet.GetBCId();
+    this.pm.AttachNotificationHandler(this.consts.get('SWE_PROP_BC_NOTI_END'), (propSet) => {
+      if (bcId === propSet.GetProperty('bc')) {
+        for (let i = 0; i < this.subscribers.length; i += 1) {
+          // we assume that the function does not throw an error
+          this.subscribers[i].func();
+        }
+      }
+    });
+
     // populate the required array for form applets
     if (!this.isListApplet) {
-      const appletInputs = document.getElementById(this.appletId).querySelectorAll('input');
+      const appletId = `s_${this.pm.Get('GetFullId')}_div`;
+      const appletInputs = document.getElementById(appletId).querySelectorAll('input');
       for (let i = 0; i < appletInputs.length; i += 1) {
         if (appletInputs[i].attributes['aria-required']) {
           this.required.push(appletInputs[i].attributes.name.nodeValue);
@@ -21,18 +31,35 @@ export default class N19baseApplet {
     }
 
     // listener to get dynamic LOVs
+    const appletName = this.pm.Get('GetName');
     this.pm.AttachNotificationHandler(this.consts.get('SWE_PROP_BC_NOTI_GENERIC'), (propSet) => {
+      const viewName = SiebelApp.S_App.GetActiveView().GetName();
       const type = propSet.GetProperty(this.consts.get('SWE_PROP_NOTI_TYPE'));
       if (type === 'GetQuickPickInfo') {
         const arr = [];
         CCFMiscUtil_StringToArray(propSet.GetProperty(this.consts.get('SWE_PROP_ARGS_ARRAY')), arr);
-        if (this.viewName === arr[1] && this.appletName === arr[2]) {
+        if (viewName === arr[1] && appletName === arr[2]) {
           this.lov[arr[3]] = arr.splice(5).filter(el => el !== '');
         }
       }
     });
 
     console.log(`${this.constructor.name} started...`);
+  }
+
+  subscribe(func) {
+    this.token += 1;
+    this.subscribers.push({ token: this.token, func });
+    return this.token;
+  }
+
+  unsubscribe(token) {
+    for (let i = 0; i < this.subscribers.length; i += 1) {
+      if (token === this.subscribers[i].token) {
+        return this.subscribers.splice(i, 1);
+      }
+    }
+    return false;
   }
 
   _getControl(name) {

@@ -224,18 +224,26 @@ function () {
 
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.pm = settings.pm;
-    this.appletName = this.pm.Get('GetName');
-    this.view = SiebelApp.S_App.GetActiveView();
-    this.viewName = this.view.GetName();
-    this.applet = SiebelApp.S_App.GetActiveView().GetAppletMap()[this.appletName];
+    this.applet = SiebelApp.S_App.GetActiveView().GetAppletMap()[this.pm.Get('GetName')];
     this.isListApplet = typeof this.applet.GetListOfColumns === 'function';
-    this.appletId = "s_".concat(this.pm.Get('GetFullId'), "_div");
-    this.required = []; // will be empty for list applet
+    this.required = []; // will be empty for the list applet
 
-    this.lov = {}; // populate the required array for form applets
+    this.lov = {};
+    this.token = 0;
+    this.subscribers = [];
+    var bcId = this.applet.GetBCId();
+    this.pm.AttachNotificationHandler(this.consts.get('SWE_PROP_BC_NOTI_END'), function (propSet) {
+      if (bcId === propSet.GetProperty('bc')) {
+        for (var i = 0; i < _this.subscribers.length; i += 1) {
+          // we assume that the function does not throw an error
+          _this.subscribers[i].func();
+        }
+      }
+    }); // populate the required array for form applets
 
     if (!this.isListApplet) {
-      var appletInputs = document.getElementById(this.appletId).querySelectorAll('input');
+      var appletId = "s_".concat(this.pm.Get('GetFullId'), "_div");
+      var appletInputs = document.getElementById(appletId).querySelectorAll('input');
 
       for (var i = 0; i < appletInputs.length; i += 1) {
         if (appletInputs[i].attributes['aria-required']) {
@@ -245,14 +253,16 @@ function () {
     } // listener to get dynamic LOVs
 
 
+    var appletName = this.pm.Get('GetName');
     this.pm.AttachNotificationHandler(this.consts.get('SWE_PROP_BC_NOTI_GENERIC'), function (propSet) {
+      var viewName = SiebelApp.S_App.GetActiveView().GetName();
       var type = propSet.GetProperty(_this.consts.get('SWE_PROP_NOTI_TYPE'));
 
       if (type === 'GetQuickPickInfo') {
         var arr = [];
         CCFMiscUtil_StringToArray(propSet.GetProperty(_this.consts.get('SWE_PROP_ARGS_ARRAY')), arr);
 
-        if (_this.viewName === arr[1] && _this.appletName === arr[2]) {
+        if (viewName === arr[1] && appletName === arr[2]) {
           _this.lov[arr[3]] = arr.splice(5).filter(function (el) {
             return el !== '';
           });
@@ -263,6 +273,27 @@ function () {
   }
 
   _createClass(N19baseApplet, [{
+    key: "subscribe",
+    value: function subscribe(func) {
+      this.token += 1;
+      this.subscribers.push({
+        token: this.token,
+        func: func
+      });
+      return this.token;
+    }
+  }, {
+    key: "unsubscribe",
+    value: function unsubscribe(token) {
+      for (var i = 0; i < this.subscribers.length; i += 1) {
+        if (token === this.subscribers[i].token) {
+          return this.subscribers.splice(i, 1);
+        }
+      }
+
+      return false;
+    }
+  }, {
     key: "_getControl",
     value: function _getControl(name) {
       return this.applet.GetControl(name);

@@ -49,6 +49,9 @@ export default class N19baseApplet {
   }
 
   subscribe(func) {
+    if (typeof func !== 'function') {
+      throw new Error('func is not a function');
+    }
     this.token += 1;
     this.subscribers.push({ token: this.token, func });
     return this.token;

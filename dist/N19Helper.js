@@ -276,6 +276,10 @@ function () {
   _createClass(N19baseApplet, [{
     key: "subscribe",
     value: function subscribe(func) {
+      if (typeof func !== 'function') {
+        throw new Error('func is not a function');
+      }
+
       this.token += 1;
       this.subscribers.push({
         token: this.token,

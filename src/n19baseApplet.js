@@ -2,7 +2,8 @@ export default class N19baseApplet {
   constructor(settings) {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.pm = settings.pm;
-    this.applet = SiebelApp.S_App.GetActiveView().GetAppletMap()[this.pm.Get('GetName')];
+    this.view = SiebelApp.S_App.GetActiveView();
+    this.applet = this.view.GetAppletMap()[this.pm.Get('GetName')];
     this.isListApplet = typeof this.applet.GetListOfColumns === 'function';
     this.required = []; // will be empty for the list applet
     this.lov = {};

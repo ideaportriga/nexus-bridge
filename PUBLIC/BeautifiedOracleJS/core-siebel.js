@@ -4087,7 +4087,7 @@ typeof SiebelApp.Service == "undefined" && (Namespace("SiebelApp.Service"), Sieb
               return t
           }, this.GetObjName = function() {
               return e.GetName()
-          }, u[t] = e, a[t] = {}, f[t] = {}, l[t] = {}, c[t] = {}, h[t] = {}, p[t] = {}, d[t] = {}, v[t] = [];
+          }, u[t] = e, a[t] = {}, f[t] = {}, __eventHandler[t] = {}, __notificationHandler[t] = {}, __psHandler[t] = {}, __preProxy[t] = {}, __postProxy[t] = {}, v[t] = [];
           var n;
           this.GetRenderer = function() {
               return n
@@ -4243,11 +4243,11 @@ typeof SiebelApp.Service == "undefined" && (Namespace("SiebelApp.Service"), Sieb
           u = {},
           a = {},
           f = {},
-          l = {},
-          c = {},
-          h = {},
-          p = {},
-          d = {},
+          __eventHandler = {},
+          __notificationHandler = {},
+          __psHandler = {},
+          __preProxy = {},
+          __postProxy = {},
           v = {};
       return m.prototype.Init = function() {
           var e = u[this.GetPMName()],
@@ -4341,20 +4341,20 @@ typeof SiebelApp.Service == "undefined" && (Namespace("SiebelApp.Service"), Sieb
               e.ShowUI(), e.BindEvents(), e.BindData()
           }
       }, m.prototype.HandlePreExecute = function(e, t, n) {
-          if (!p[this.GetPMName()]) return;
-          var r = p[this.GetPMName()].ALL || [];
-          S.call(this, r, e, t, n), r = p[this.GetPMName()].NOT || [], S.call(this, r, e, t, n), r = p[this.GetPMName()][e] || [], S.call(this, r, e, t, n)
+          if (!__preProxy[this.GetPMName()]) return;
+          var r = __preProxy[this.GetPMName()].ALL || [];
+          S.call(this, r, e, t, n), r = __preProxy[this.GetPMName()].NOT || [], S.call(this, r, e, t, n), r = __preProxy[this.GetPMName()][e] || [], S.call(this, r, e, t, n)
       }, m.prototype.HandlePostExecute = function(e, t, n) {
-          if (!d[this.GetPMName()]) return;
-          var r = d[this.GetPMName()].ALL || [];
-          S.call(this, r, e, t, n), r = d[this.GetPMName()].NOT || [], S.call(this, r, e, t, n), r = d[this.GetPMName()][e] || [], S.call(this, r, e, t, n)
+          if (!__postProxy[this.GetPMName()]) return;
+          var r = __postProxy[this.GetPMName()].ALL || [];
+          S.call(this, r, e, t, n), r = __postProxy[this.GetPMName()].NOT || [], S.call(this, r, e, t, n), r = __postProxy[this.GetPMName()][e] || [], S.call(this, r, e, t, n)
       }, m.prototype.HandleNotify = function(e) {
           var t = e.GetProperty(n),
-              r = c[this.GetPMName()][t] || [];
+              r = __notificationHandler[this.GetPMName()][t] || [];
           for (var i = 0, s = r.length; i < s; i++) r[i][0].call(r[i][1], e.Clone())
       }, m.prototype.HandleResponsePS = function(e) {
           var t = e.GetChildCount(),
-              n = h[this.GetPMName()] || {};
+              n = __psHandler[this.GetPMName()] || {};
           for (var r = 0; r < t; r++) {
               var i = e.GetChild(r),
                   s = i.GetType();
@@ -4370,7 +4370,7 @@ typeof SiebelApp.Service == "undefined" && (Namespace("SiebelApp.Service"), Sieb
               a = arguments.length,
               f = {},
               c = !1,
-              h = l[this.GetPMName()];
+              h = __eventHandler[this.GetPMName()];
           for (var p = 1; p < a; p++) !arguments[p] || arguments[p].async !== !0 && arguments[p].async !== !1 ? s.push(arguments[p]) : i = arguments[p];
           var d, v = u[this.GetPMName()],
               m = {},
@@ -4440,7 +4440,7 @@ typeof SiebelApp.Service == "undefined" && (Namespace("SiebelApp.Service"), Sieb
           var e = this.GetRenderer();
           e && e.EndLife && e.EndLife(), e = null, this.SetRenderer(e);
           var t = this.GetPMName();
-          delete a[t], delete f[t], delete l[t], delete c[t], delete h[t], delete p[t], delete d[t], delete u[t], delete v[t]
+          delete a[t], delete f[t], delete __eventHandler[t], delete __notificationHandler[t], delete __psHandler[t], delete __preProxy[t], delete __postProxy[t], delete u[t], delete v[t]
       }, m.prototype.AddProperty = function(t, n, r) {
           var i = a[this.GetPMName()];
           r = r || {};
@@ -4496,7 +4496,7 @@ typeof SiebelApp.Service == "undefined" && (Namespace("SiebelApp.Service"), Sieb
           }
           return SiebelJS.Log("Can't find method - [ " + e + " ]"), null
       }, m.prototype.AttachEventHandler = function(e, t, n) {
-          var r = l[this.GetPMName()],
+          var r = __eventHandler[this.GetPMName()],
               i = !1;
           return n = n || {}, r[e] = r[e] || [], typeof e == "string" && e !== "" && (typeof t == "function" || typeof t == "string") && (r[e].push({
               handler: t,
@@ -4507,7 +4507,7 @@ typeof SiebelApp.Service == "undefined" && (Namespace("SiebelApp.Service"), Sieb
               t.apply(this, arguments) || (arguments[arguments.length - 1][r] = !0, arguments[arguments.length - 1][o] = !0)
           })
       }, m.prototype.AttachNotificationHandler = function(t, n, r) {
-          var i = c[this.GetPMName()],
+          var i = __notificationHandler[this.GetPMName()],
               s = !1;
           if (typeof t == "string" && e.Trim(t) !== "" && typeof n == "function") {
               r = r || {};
@@ -4517,7 +4517,7 @@ typeof SiebelApp.Service == "undefined" && (Namespace("SiebelApp.Service"), Sieb
           }
           return s
       }, m.prototype.AttachPSHandler = function(t, n, r) {
-          var i = h[this.GetPMName()],
+          var i = __psHandler[this.GetPMName()],
               s = !1;
           if (typeof t == "string" && e.Trim(t) !== "" && typeof n == "function") {
               r = r || {};
@@ -4527,7 +4527,7 @@ typeof SiebelApp.Service == "undefined" && (Namespace("SiebelApp.Service"), Sieb
           }
           return s
       }, m.prototype.AttachPreProxyExecuteBinding = function(t, n, r) {
-          var i = p[this.GetPMName()],
+          var i = __preProxy[this.GetPMName()],
               s = !1;
           if (typeof t == "string" && e.Trim(t) !== "" && typeof n == "function") {
               r = r || {};
@@ -4537,7 +4537,7 @@ typeof SiebelApp.Service == "undefined" && (Namespace("SiebelApp.Service"), Sieb
           }
           return s
       }, m.prototype.AttachPostProxyExecuteBinding = function(t, n, r) {
-          var i = d[this.GetPMName()],
+          var i = __postProxy[this.GetPMName()],
               s = !1;
           if (typeof t == "string" && e.Trim(t) !== "" && typeof n == "function") {
               r = r || {};

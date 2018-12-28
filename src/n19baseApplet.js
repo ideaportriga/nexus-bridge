@@ -72,7 +72,7 @@ export default class N19baseApplet {
 
   _returnControls() {
     if (this.isListApplet) {
-      return this.applet.GetListOfColumns();
+      return this.applet.GetListOfColumns(); // pm.Get('GetListOfColumns')
     }
     return this.applet.GetControls(); // pm.Get('GetControls');
   }

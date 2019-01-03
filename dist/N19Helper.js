@@ -307,7 +307,7 @@ function () {
     key: "_returnControls",
     value: function _returnControls() {
       if (this.isListApplet) {
-        return this.applet.GetListOfColumns();
+        return this.applet.GetListOfColumns(); // pm.Get('GetListOfColumns')
       }
 
       return this.applet.GetControls(); // pm.Get('GetControls');
@@ -426,7 +426,7 @@ function () {
   }, {
     key: "getNumRows",
     value: function getNumRows() {
-      // currently visible in applet
+      // currently fetched from server?
       return this.pm.Get('GetNumRows');
     }
   }, {
@@ -466,9 +466,20 @@ function () {
           return false;
         }
 
+        if (index < 0) {
+          return false;
+        }
+
         if (this.getNumRows() < index + 1) {
           return false;
         }
+
+        if (this.getRowListRowCount() < index + 1) {
+          return false;
+        } // todo : if we got to this point
+        //  should we check applet.GetActiveControl (applet.prototype.InvokeMethod)
+        //  and nullify it if active?
+
 
         return this.pm.ExecuteMethod('HandleRowSelect', index, false, false);
       }

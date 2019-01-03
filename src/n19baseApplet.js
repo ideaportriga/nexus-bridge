@@ -178,7 +178,7 @@ export default class N19baseApplet {
   }
 
   getNumRows() {
-    // currently visible in applet
+    // currently fetched from server?
     return this.pm.Get('GetNumRows');
   }
 
@@ -210,9 +210,18 @@ export default class N19baseApplet {
       if (!this.pm.ExecuteMethod('CanInvokeMethod', 'PositionOnRow')) {
         return false;
       }
+      if (index < 0) {
+        return false;
+      }
       if (this.getNumRows() < index + 1) {
         return false;
       }
+      if (this.getRowListRowCount() < index + 1) {
+        return false;
+      }
+      // todo : if we got to this point
+      //  should we check applet.GetActiveControl (applet.prototype.InvokeMethod)
+      //  and nullify it if active?
       return this.pm.ExecuteMethod('HandleRowSelect', index, false, false);
     }
     return false;

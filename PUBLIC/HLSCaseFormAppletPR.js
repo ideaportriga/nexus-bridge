@@ -5,10 +5,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
     function () {
       SiebelAppFacade.HLSCaseFormAppletPR = (function () {
 
-        //todo: put in Init and remove in EndLife
-        $('head').append('<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" rel="stylesheet"></link>');
-        $('head').append('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>');
-        $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
 
         function HLSCaseFormAppletPR(pm) {
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.constructor.apply(this, arguments);
@@ -36,14 +32,25 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         HLSCaseFormAppletPR.prototype.Init = function () {
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
 
+          var pm = this.GetPM();
+
+          // initialize helper
+          appletName = pm.Get('GetName');
+          SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
+          SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
+          n19helper = SiebelAppFacade.N19[appletName];
+
           var viewName = SiebelApp.S_App.GetActiveView().GetName();
           skipVue = viewName.indexOf('List View') === -1;
-
           if (skipVue) {
             return;
           }
 
-          var pm = this.GetPM();
+          // todo: remove in EndLife
+        $('head').append('<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" rel="stylesheet"></link>');
+        $('head').append('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>');
+        $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
+
           pm.AddMethod('InvokeMethod', function (method) {
             console.log('>>> InvokeMethod sequence true', method, arguments);
           }, { sequence: true, scope: this });
@@ -63,12 +70,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           pm.AttachPostProxyExecuteBinding("ALL", function (method) {
             console.log('>>> AttachPostProxyExecuteBinding', method, arguments);
           });
-
-          // initialize helper
-          appletName = pm.Get('GetName');
-          SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
-          SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
-          n19helper = SiebelAppFacade.N19[appletName];
 
           //hide the server rendered html, better to remove, but not now
           divId = "s_" + pm.Get('GetFullId') + "_div";

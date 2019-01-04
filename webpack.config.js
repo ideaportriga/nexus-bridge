@@ -28,6 +28,7 @@ module.exports = (env, argv) => {
     });
     filename = 'N19Helper.min.js';
     main.unshift('core-js/fn/promise');
+    main.unshift('core-js/es7/object');
   } else { // this is a development mode
     devtool = 'source-map';
     filename = 'N19Helper.js';

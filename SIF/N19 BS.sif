@@ -1,0 +1,283 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<REPOSITORY
+   NAME="Siebel Repository"
+   UPDATED="04/05/2016 12:46:11"
+   UPDATED_BY="SIEBEL"
+   CREATED="04/05/2016 12:23:39"
+   CREATED_BY="SIEBEL"
+   FIO_PLACEHOLDER_FIO="TRUE">
+	<PROJECT
+	   ALLOW_OBJECT_LOCKING="Y"
+	   INACTIVE="N"
+	   LANGUAGE_LOCKED="ENU"
+	   LOCKED="Y"
+	   LOCKED_DATE="07/20/2017 09:18:02"
+	   NAME="COM Workflows"
+	   UI_FREEZE="N"
+	   LOCKED_BY_NAME="SADMIN"
+	   UPDATED="01/04/2019 14:51:25"
+	   UPDATED_BY="SADMIN"
+	   CREATED="12/21/2003 05:26:55"
+	   CREATED_BY="SADMIN"
+	   FIO_PLACEHOLDER_FIO="TRUE">
+		<BUSINESS_SERVICE
+		   CACHE="N"
+		   CLASS="CSSService"
+		   EXTERNAL_USE="N"
+		   HIDDEN="N"
+		   INACTIVE="N"
+		   NAME="N19 BS"
+		   SERVER_ENABLED="N"
+		   STATE_MANAGEMENT_TYPE="Stateful"
+		   WEB_SERVICE_ENABLED="N"
+		   UPDATED="01/04/2019 14:51:25"
+		   UPDATED_BY="SADMIN"
+		   CREATED="11/07/2018 11:02:21"
+		   CREATED_BY="SADMIN">
+			<BUSINESS_SERVICE_SERVER_SCRIPT
+			   INACTIVE="N"
+			   NAME="(declarations)"
+			   PROGRAM_LANGUAGE="JS"
+			   SCRIPT="//Your public declarations go here...  
+"
+			   SEQUENCE="1"
+			   UPDATED="01/03/2019 17:21:57"
+			   UPDATED_BY="SADMIN"
+			   CREATED="01/03/2019 17:21:57"
+			   CREATED_BY="SADMIN">
+			</BUSINESS_SERVICE_SERVER_SCRIPT>
+			<BUSINESS_SERVICE_SERVER_SCRIPT
+			   INACTIVE="N"
+			   NAME="Service_PreInvokeMethod"
+			   PROGRAM_LANGUAGE="JS"
+			   SCRIPT="function Service_PreInvokeMethod (MethodName, Inputs, Outputs)
+{
+	if (&quot;Refresh&quot; === MethodName) 
+	{
+		return refresh(Inputs, Outputs);
+	}
+	else if (&quot;Requery&quot; === MethodName) 
+	{
+		return requery(Inputs, Outputs);
+	}
+	else if (&quot;ReturnMVGFields&quot; === MethodName) 
+	{
+		return returnMvgFields(Inputs, Outputs);
+	}
+	return (ContinueOperation);
+}"
+			   SEQUENCE="5"
+			   UPDATED="01/04/2019 14:51:25"
+			   UPDATED_BY="SADMIN"
+			   CREATED="11/07/2018 11:02:35"
+			   CREATED_BY="SADMIN">
+			</BUSINESS_SERVICE_SERVER_SCRIPT>
+			<BUSINESS_SERVICE_SERVER_SCRIPT
+			   INACTIVE="N"
+			   NAME="refresh"
+			   PROGRAM_LANGUAGE="JS"
+			   SCRIPT="function refresh(Inputs, Outpus)
+{
+	var csName : chars = Inputs.GetProperty(&quot;name&quot;);
+
+	if (csName != &quot;&quot;)
+	{
+		var oBO : BusObject = TheApplication().ActiveBusObject();
+		try
+		{
+			if (oBO)
+			{
+				var oBC : BusComp = oBO.GetBusComp(csName);
+				oBC.InvokeMethod(&quot;RefreshBusComp&quot;);
+			}
+		}
+		finally
+		{
+			oBC = null;
+			oBO = null;
+		}
+	}
+
+	return(CancelOperation);
+
+}
+"
+			   SEQUENCE="2"
+			   UPDATED="01/03/2019 17:21:57"
+			   UPDATED_BY="SADMIN"
+			   CREATED="11/12/2018 18:46:41"
+			   CREATED_BY="SADMIN">
+			</BUSINESS_SERVICE_SERVER_SCRIPT>
+			<BUSINESS_SERVICE_SERVER_SCRIPT
+			   INACTIVE="N"
+			   NAME="requery"
+			   PROGRAM_LANGUAGE="JS"
+			   SCRIPT="function requery(Inputs, Outpus)
+{
+	var csName : chars = Inputs.GetProperty(&quot;name&quot;);
+
+	if (csName != &quot;&quot;)
+	{
+		var oBO : BusObject = TheApplication().ActiveBusObject();
+		try
+		{
+			if (oBO)
+			{
+				var oBC : BusComp = oBO.GetBusComp(csName);
+				oBC.ClearToQuery();
+				oBC.ExecuteQuery(ForwardBackward);
+			}
+		}
+		finally
+		{
+			oBC = null;
+			oBO = null;
+		}
+	}
+
+	return(CancelOperation);
+
+}
+"
+			   SEQUENCE="3"
+			   UPDATED="01/03/2019 17:21:57"
+			   UPDATED_BY="SADMIN"
+			   CREATED="11/12/2018 18:55:12"
+			   CREATED_BY="SADMIN">
+			</BUSINESS_SERVICE_SERVER_SCRIPT>
+			<BUSINESS_SERVICE_SERVER_SCRIPT
+			   INACTIVE="N"
+			   NAME="returnMvgFields"
+			   PROGRAM_LANGUAGE="JS"
+			   SCRIPT="function returnMvgFields(Inputs, Outputs)
+{
+	try
+	{
+		// check input parameters
+		var csBOName : chars = Inputs.GetProperty(&quot;BO&quot;);
+		if (&quot;&quot; === csBOName) 
+		{
+			TheApplication().RaiseErrorText(&quot;The BO input parameter is not populated!&quot;);		
+		} 
+		var csBCName : chars = Inputs.GetProperty(&quot;BC&quot;);
+		if (&quot;&quot; === csBCName) 
+		{
+			TheApplication().RaiseErrorText(&quot;The BC input parameter is not populated!&quot;);		
+		} 
+
+		// create search specification for main BC
+		var csID : chars = Inputs.GetProperty(&quot;ID&quot;);
+		if (&quot;&quot; === csID) 
+		{
+			TheApplication().RaiseErrorText(&quot;The ID input parameter is not populated!&quot;);
+		}
+		var arrID: Array = csID.split(&quot;,&quot;);
+		var csSearchExpr : chars = &quot;[Id]=&apos;&quot; + arrID[0] + &quot;&apos;&quot;;
+		for (var i = 1; i &lt; arrID.length; i++) 
+		{
+			csSearchExpr += &quot; OR [Id]=&apos;&quot; + arrID[i] +&quot;&apos;&quot;;
+		}
+
+		// create an array of ProprtySets for querying MVF BusComponents
+		var childCount : float = Inputs.GetChildCount();
+		if (0 === childCount) 
+		{
+			TheApplication().RaiseErrorText(&quot;CHILD PROPERTY SETS ARE NOT GIVEN&quot;);
+		}
+		var psTemp : PropertySet = TheApplication().NewPropertySet();
+		var arrMVL : Array = new Array();
+		for (i = 0; i &lt; childCount; i++)
+		{			
+			var csType : chars = Inputs.GetChild(i).GetType(); // field name
+			if (&quot;&quot; === csType) 
+			{
+				TheApplication().RaiseErrorText(&quot;Type of child property set is missing&quot;);
+			}
+			var arrFields : Array = Inputs.GetChild(i).GetProperty(&quot;Fields&quot;).split(&quot;,&quot;); 
+			psTemp.Reset();
+			psTemp.SetType(csType);
+			for (var j = 0; j &lt; arrFields.length; j++) 
+			{
+				if (arrFields[j] !== &quot;&quot;) 
+				{
+					psTemp.SetProperty(arrFields[j], &quot;&quot;);
+				}
+			}
+			psTemp.SetProperty(&quot;Id&quot;, &quot;&quot;);
+			psTemp.SetProperty(&quot;SSA Primary Field&quot;, &quot;&quot;);
+			arrMVL.push(psTemp.Copy());
+		}
+
+		// get BC data
+		var oBO : BusObject = TheApplication().GetBusObject(csBOName);
+		var oBC : BusComp = oBO.GetBusComp(csBCName);			
+		oBC.ClearToQuery();
+		oBC.SetViewMode(AllView);
+		oBC.SetSearchExpr(csSearchExpr);
+		oBC.ExecuteQuery(ForwardBackward);
+		var isRecord = oBC.FirstRecord();
+		var psIdOutput : PropertySet = TheApplication().NewPropertySet(); // it has just type - ID from input
+		var psMvlOutput : PropertySet = TheApplication().NewPropertySet(); // it has just type - field name on main BC 
+		var psOutFields : PropertySet = TheApplication().NewPropertySet(); // the fields and values
+		// structure of response Outputs &gt; psIdOutput(1+) &gt; psMvlOutput(1+) &gt; psOutFields(0+)
+		while (isRecord)
+		{
+			psIdOutput.Reset();
+			psIdOutput.SetType(oBC.GetFieldValue(&quot;Id&quot;));
+			
+			for (i = 0; i &lt; arrMVL.length; i++) // query the MVF BusComponents
+			{
+				psTemp = arrMVL[i];
+				psMvlOutput.Reset();
+				psMvlOutput.SetType(psTemp.GetType());
+				var oMvgBC : BusComp = oBC.GetMVGBusComp(psTemp.GetType());
+				try
+				{
+					oMvgBC.ActivateMultipleFields(psTemp);
+					oMvgBC.ExecuteQuery(ForwardBackward);
+					isRecord = oMvgBC.FirstRecord();
+					while (isRecord)
+					{
+						psOutFields.Reset();
+						oMvgBC.GetMultipleFieldValues(psTemp, psOutFields);
+						psMvlOutput.AddChild(psOutFields.Copy());
+						isRecord = oMvgBC.NextRecord();
+					}
+				}
+				finally
+				{
+					oMvgBC = null;
+				}
+				psIdOutput.AddChild(psMvlOutput.Copy());
+			}
+			Outputs.AddChild(psIdOutput.Copy());
+			isRecord = oBC.NextRecord();
+		}
+	}
+	finally
+	{
+		oBC = null;
+		oBO = null;
+
+		arrMVL = null;
+		arrID = null;
+
+		psOutFields = null;
+		psMvlOutput = null;
+		psIdOutput = null;
+		psTemp = null;
+	}
+	return(CancelOperation);
+}"
+			   SEQUENCE="4"
+			   UPDATED="01/04/2019 14:41:47"
+			   UPDATED_BY="SADMIN"
+			   CREATED="01/03/2019 09:35:15"
+			   CREATED_BY="SADMIN">
+			</BUSINESS_SERVICE_SERVER_SCRIPT>
+		</BUSINESS_SERVICE>
+	</PROJECT>
+</REPOSITORY>
+
+
+

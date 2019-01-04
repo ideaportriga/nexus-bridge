@@ -14,7 +14,8 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
   }
 
   _showPopupApplet(name, hide, cb) {
-    if (!this.n19popupController) { // it is a popup applet
+    if (!this.n19popupController) {
+      // it is a popup applet
       throw new Error('Openning popup on the popup is not supported now');
     }
     if (!this.n19popupController.canOpenPopup()) {
@@ -51,5 +52,11 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
     SWECmd += `&SWEBU=1&SWEKeepContext=FALSE&SWERowId0=${rowId}`;
     SWECmd = encodeURI(SWECmd);
     SiebelApp.S_App.GotoView(targetViewName, '', SWECmd, '');
+  }
+
+  static ReInitPopup() {
+    const popupPM = SiebelApp.S_App.GetPopupPM();
+    popupPM.Init();
+    popupPM.Setup();
   }
 };

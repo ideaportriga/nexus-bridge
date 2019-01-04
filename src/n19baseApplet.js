@@ -44,8 +44,6 @@ export default class N19baseApplet {
         }
       }
     });
-
-    console.log(`${this.constructor.name} started...`);
   }
 
   subscribe(func) {
@@ -335,7 +333,7 @@ export default class N19baseApplet {
     return ret;
   }
 
-  _getFieldToControlsMap(_controls) {
+  _getFieldToControlMap(_controls) {
     const ret = {};
     const appletControls = this._returnControls();
     const arr = Object.keys(_controls);
@@ -515,5 +513,58 @@ export default class N19baseApplet {
       inPropSet.SetProperty('name', name);
       service.InvokeMethod('Refresh', inPropSet, {});
     }
+  }
+
+  getMVF(ids, fields) {
+    return new Promise((resolve, reject) => this._getMVF(ids, fields, resolve, reject));
+  }
+
+  _getFieldNameForControl(controlName) {
+    const control = this._getControl(controlName);
+    // if not found, the input value is returned
+    if (control) {
+      return control.GetFieldName();
+    }
+    return controlName;
+  }
+
+  _getMVF(ids, fields, resolve, reject) {
+    const arr = Object.entries(fields);
+    const psInputs = SiebelApp.S_App.NewPropertySet();
+    psInputs.SetProperty('BO', SiebelApp.S_App.GetActiveBusObj().GetName());
+    psInputs.SetProperty('BC', this.pm.Get('GetBusComp').GetName());
+    psInputs.SetProperty('ID', ids.join(','));
+    for (let i = 0; i < arr.length; i += 1) {
+      const ps = SiebelApp.S_App.NewPropertySet();
+      ps.SetType(this._getFieldNameForControl(arr[i][0]));
+      ps.SetProperty('Fields', arr[i][1].join(','));
+      psInputs.AddChild(ps.Clone());
+    }
+    const bs = SiebelApp.S_App.GetService('N19 BS');
+    const ai = {
+      async: true,
+      selfbusy: true,
+      scope: this,
+      errcb: () => reject(),
+      cb: (methodName, Inputs, psOutputs) => {
+        const boolObject = new SiebelApp.S_App.DatumBoolObject();
+        const { childArray } = psOutputs.GetChildByType('ResultSet');
+        const ret = {};
+        for (let i = 0; i < childArray.length; i += 1) {
+          ret[childArray[i].GetType()] = {};
+          for (let j = 0; j < childArray[i].childArray.length; j += 1) {
+            const el = childArray[i].childArray[j];
+            ret[childArray[i].GetType()][el.GetType()] = el.childArray.map((rec) => {
+              const primary = rec.propArray['SSA Primary Field'];
+              boolObject.SetAsString(primary);
+              rec.propArray['SSA Primary Field'] = boolObject.GetValue(); // eslint-disable-line no-param-reassign
+              return Object.assign({}, rec.propArray);
+            });
+          }
+        }
+        resolve(ret);
+      },
+    };
+    return bs.InvokeMethod('ReturnMVGFields', psInputs, ai);
   }
 }

@@ -43,6 +43,7 @@ The `dist` folder contains the following files:
   * `N19Helper.min.js` - created by `npm run build` 
 * `src` - N19Helper source files
 * `react_example` and `vue_example` and `` - very simple examples of using the helper class implemented in React and Vue.js, just to demonstrate the basic capabilities, everything is inlined and compatible with IE11 without compilation.
+* `SIF` - the Nexus19 Siebel Tools Objects (sif-files) 
 
 ## Contributing
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.

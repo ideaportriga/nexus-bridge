@@ -338,7 +338,10 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 <v-flex md1 pa-2>                                                                                                                               \n\
                   <v-btn block v-on:click="testButtonClickShuttle3" color="primary"><v-icon>pan_tool</v-icon>Shuttle3!</v-btn>                                                    \n\
                 </v-flex>                                                                                                                                       \n\
-                <v-flex md3 pa-2>                                                                                                                               \n\
+                <v-flex md1 pa-2>                                                                                                                               \n\
+                  <v-btn block v-on:click="testBS" color="primary"><v-icon>pan_tool</v-icon>BS!</v-btn>                                                    \n\
+                </v-flex>                                                                                                                                       \n\
+                <v-flex md2 pa-2>                                                                                                                               \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
                   <v-btn block v-on:click="gotoButtonClick" color="primary"><v-icon>language</v-icon>Goto!</v-btn>                                                    \n\
@@ -363,7 +366,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           app = new Vue({
             el: '#app',
             mounted: function () {
-              this.fieldToControlsMap = n19helper._getFieldToControlsMap(this.controls);
+              this.fieldToControlsMap = n19helper._getFieldToControlMap(this.controls);
               this.afterSelection();
               $('.application--wrap').css({ 'min-height': 'auto' });
             },
@@ -509,12 +512,25 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   }
                 }
               },
+              async testBS() {
+                const ret = await n19helper.getMVF(
+                  //['9SIA-83L7P', '9SIA-83L7X', '9SIA-83L85'],
+                  n19helper.getRawRecordSet().map(el => el.Id),
+                  {
+                    Organization: ['Organization', 'Organization Id'],
+                    'Sales Rep': ['Active Login Name', 'First Name', 'Last Name'],
+                    'Benefit Plan': []
+                  });
+                console.log(ret);
+              },
               openPickApplet() {
+                SiebelAppFacade.N19Helper.ReInitPopup();
                 if (!n19helper.showPickApplet('Audit Employee Last Name')) {
                   alert('openPickApplet(returned value is false)')
                 }
               },
               showMvgApplet() {
+                SiebelAppFacade.N19Helper.ReInitPopup();
                 if (!n19helper.showMvgApplet('Sales Rep')) {
                   alert('showMvgApplet(returned value is false)')
                 }
@@ -651,9 +667,10 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   this.getSalesRep(val);
                 }
               },
-              getSalesRep: function (val) {
-                //todo: if we have several mvg links on the same business component, are we going to be confused?
-                //it effective aslo when we are insert pending
+              getSalesRep: async function (val) {
+                // todo: if we have several mvg links on the same business component, are we going to be confused?
+                // it effective aslo when we are insert pending
+                // todo: remove it what about insert pending?
                 if (SiebelApp.S_App.GetActiveBusObj().GetBusCompByName('Position')) {
                   setTimeout(function () {
                     var arr = SiebelApp.S_App.GetActiveBusObj().GetBusCompByName('Position').GetRecordSet();
@@ -679,41 +696,33 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   }.bind(this));
                   return;
                 }
-                //we don't have an object yet in memory, query the server
-                setTimeout(function () {
-                  var service = SiebelApp.S_App.GetService("N19 BS");
-                  if (service) {
-                    var ai = {
-                      async: true,
-                      selfbusy: true,
-                      scope: this,
-                      cb: function (method, psInput, psOutput) {
-                        console.log('BS output to get the sales reps...', psOutput.childArray);
-                        var resultSet = psOutput.GetChildByType("ResultSet");
-                        if (resultSet) {
-                          this.caseSalesRepArr = [];
-                          for (var i = 0; i < resultSet.GetChildCount(); i++) {
-                            var obj = {
-                              firstName: resultSet.GetChild(i).GetProperty('First'),
-                              lastName: resultSet.GetChild(i).GetProperty('Last'),
-                              login: resultSet.GetChild(i).GetProperty('Login'),
-                              id: resultSet.GetChild(i).GetProperty('Id')
-                            }
-                            this.caseSalesRepArr.push(obj);
-                            if (resultSet.GetChild(i).GetProperty('Primary') === 'Y') {
-                              this.caseSalesRepPrimary = resultSet.GetChild(i).GetProperty('Login');
-                            }
-                          }
-                          this.caseSalesRepArr.sort(function (a, b) {
-                            return (a.login > b.login) ? -1 : 1;
-                          });
-                        }
-                      }
-                    };
-                    service.InvokeMethod("GetSalesRep", null, ai);
-                  }
-                }.bind(this));
 
+                //we don't have an object yet in memory, query the server
+                // todo : check if this.controls.id?
+                let ret = await n19helper.getMVF(
+                  [this.controls.id],
+                  {
+                    'Sales Rep': ['Active Login Name', 'Active First Name', 'Active Last Name']
+                  }
+                );
+                ret = ret[this.controls.id]["Sales Rep"];
+                console.log('BS output to get the sales reps...', ret);
+                this.caseSalesRepArr = [];
+                for (var i = 0; i < ret.length; i++) {
+                  var obj = {
+                    firstName: ret[i]['Active First Name'],
+                    lastName: ret[i]['Active Last Name'],
+                    login: ret[i]['Active Login Name'],
+                    id: ret[i].Id
+                  }
+                  this.caseSalesRepArr.push(obj);
+                  if (ret[i]['SSA Primary Field']) {
+                    this.caseSalesRepPrimary = ret[i]['Active Login Name'];
+                  }
+                }
+                this.caseSalesRepArr.sort(function (a, b) {
+                  return (a.login > b.login) ? -1 : 1;
+                });
               },
               deleteSalesRep(helper, id) {
                 var isRecord = helper._firstRecord();

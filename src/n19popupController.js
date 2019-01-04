@@ -101,11 +101,11 @@ export default class N19popupController {
     return 'refreshpopup';
   }
 
-  static ReInitPopup() {
-    const popupPM = SiebelApp.S_App.GetPopupPM();
-    popupPM.Init();
-    popupPM.Setup();
-  }
+  // static ReInitPopup() {
+  //   const popupPM = SiebelApp.S_App.GetPopupPM();
+  //   popupPM.Init();
+  //   popupPM.Setup();
+  // }
 
   // todo: change the approach, use the class internal variables
   closePopupApplet(applet) {
@@ -124,9 +124,9 @@ export default class N19popupController {
     }
     // it could be better if we don't have a Siebel Applet on the view
     // in this case, we would not need to reInitPopup
-    if (this.isPopupHidden) {
-      N19popupController.ReInitPopup();
-    }
+    // if (this.isPopupHidden) {
+    //  N19popupController.ReInitPopup();
+    // }
     this.popupAppletN19 = null;
     this.assocAppletN19 = null;
     return ret;
@@ -175,7 +175,7 @@ export default class N19popupController {
     const { isOpen, appletName } = N19popupController.IsPopupOpen();
     if (isOpen) {
       // this code will close the applet even if this applet was originated by another applet
-      console.log(`closing ${appletName} in showPopupApplet...`);
+      console.log(`closing ${appletName} in showPopupApplet...`); // eslint-disable-line no-console
       // maybe do not close if the applet to be opened if the same as already opened?
       this.closePopupApplet(N19popupController.GetPopupApplet(appletName));
       // todo: check if got it successfully closed?

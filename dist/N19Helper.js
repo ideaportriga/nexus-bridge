@@ -191,6 +191,13 @@ function (_N19baseApplet) {
       SWECmd = encodeURI(SWECmd);
       SiebelApp.S_App.GotoView(targetViewName, '', SWECmd, '');
     }
+  }], [{
+    key: "ReInitPopup",
+    value: function ReInitPopup() {
+      var popupPM = SiebelApp.S_App.GetPopupPM();
+      popupPM.Init();
+      popupPM.Setup();
+    }
   }]);
 
   return _class;
@@ -270,7 +277,6 @@ function () {
         }
       }
     });
-    console.log("".concat(this.constructor.name, " started..."));
   }
 
   _createClass(N19baseApplet, [{
@@ -632,8 +638,8 @@ function () {
       return ret;
     }
   }, {
-    key: "_getFieldToControlsMap",
-    value: function _getFieldToControlsMap(_controls) {
+    key: "_getFieldToControlMap",
+    value: function _getFieldToControlMap(_controls) {
       var ret = {};
 
       var appletControls = this._returnControls();
@@ -838,6 +844,79 @@ function () {
     key: "_insertPending",
     value: function _insertPending() {
       return this.pm.Get('GetBusComp').insertPending;
+    }
+  }, {
+    key: "getMVF",
+    value: function getMVF(ids, fields) {
+      var _this6 = this;
+
+      return new Promise(function (resolve, reject) {
+        return _this6._getMVF(ids, fields, resolve, reject);
+      });
+    }
+  }, {
+    key: "_getFieldNameForControl",
+    value: function _getFieldNameForControl(controlName) {
+      var control = this._getControl(controlName); // if not found, the input value is returned
+
+
+      if (control) {
+        return control.GetFieldName();
+      }
+
+      return controlName;
+    }
+  }, {
+    key: "_getMVF",
+    value: function _getMVF(ids, fields, resolve, reject) {
+      var arr = Object.entries(fields);
+      var psInputs = SiebelApp.S_App.NewPropertySet();
+      psInputs.SetProperty('BO', SiebelApp.S_App.GetActiveBusObj().GetName());
+      psInputs.SetProperty('BC', this.pm.Get('GetBusComp').GetName());
+      psInputs.SetProperty('ID', ids.join(','));
+
+      for (var i = 0; i < arr.length; i += 1) {
+        var ps = SiebelApp.S_App.NewPropertySet();
+        ps.SetType(this._getFieldNameForControl(arr[i][0]));
+        ps.SetProperty('Fields', arr[i][1].join(','));
+        psInputs.AddChild(ps.Clone());
+      }
+
+      var bs = SiebelApp.S_App.GetService('N19 BS');
+      var ai = {
+        async: true,
+        selfbusy: true,
+        scope: this,
+        errcb: function errcb() {
+          return reject();
+        },
+        cb: function cb(methodName, Inputs, psOutputs) {
+          var boolObject = new SiebelApp.S_App.DatumBoolObject();
+
+          var _psOutputs$GetChildBy = psOutputs.GetChildByType('ResultSet'),
+              childArray = _psOutputs$GetChildBy.childArray;
+
+          var ret = {};
+
+          for (var _i = 0; _i < childArray.length; _i += 1) {
+            ret[childArray[_i].GetType()] = {};
+
+            for (var j = 0; j < childArray[_i].childArray.length; j += 1) {
+              var el = childArray[_i].childArray[j];
+              ret[childArray[_i].GetType()][el.GetType()] = el.childArray.map(function (rec) {
+                var primary = rec.propArray['SSA Primary Field'];
+                boolObject.SetAsString(primary);
+                rec.propArray['SSA Primary Field'] = boolObject.GetValue(); // eslint-disable-line no-param-reassign
+
+                return Object.assign({}, rec.propArray);
+              });
+            }
+          }
+
+          resolve(ret);
+        }
+      };
+      return bs.InvokeMethod('ReturnMVGFields', psInputs, ai);
     }
   }], [{
     key: "GetStaticLOV",
@@ -1149,10 +1228,15 @@ function () {
       url = SiebelApp.S_App.GetPageURL() + url.split('start.swe')[1];
       popupPM.SetProperty('url', url);
       return 'refreshpopup';
-    }
+    } // static ReInitPopup() {
+    //   const popupPM = SiebelApp.S_App.GetPopupPM();
+    //   popupPM.Init();
+    //   popupPM.Setup();
+    // }
+    // todo: change the approach, use the class internal variables
+
   }, {
     key: "closePopupApplet",
-    // todo: change the approach, use the class internal variables
     value: function closePopupApplet(applet) {
       // todo : check canInvokeMethod
       var ret;
@@ -1171,11 +1255,10 @@ function () {
         ret = this.popupAppletN19.applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
       } // it could be better if we don't have a Siebel Applet on the view
       // in this case, we would not need to reInitPopup
+      // if (this.isPopupHidden) {
+      //  N19popupController.ReInitPopup();
+      // }
 
-
-      if (this.isPopupHidden) {
-        N19popupController.ReInitPopup();
-      }
 
       this.popupAppletN19 = null;
       this.assocAppletN19 = null;
@@ -1193,7 +1276,8 @@ function () {
 
       if (isOpen) {
         // this code will close the applet even if this applet was originated by another applet
-        console.log("closing ".concat(appletName, " in showPopupApplet...")); // maybe do not close if the applet to be opened if the same as already opened?
+        console.log("closing ".concat(appletName, " in showPopupApplet...")); // eslint-disable-line no-console
+        // maybe do not close if the applet to be opened if the same as already opened?
 
         this.closePopupApplet(N19popupController.GetPopupApplet(appletName)); // todo: check if got it successfully closed?
       }
@@ -1214,13 +1298,6 @@ function () {
       return ret;
     }
   }], [{
-    key: "ReInitPopup",
-    value: function ReInitPopup() {
-      var popupPM = SiebelApp.S_App.GetPopupPM();
-      popupPM.Init();
-      popupPM.Setup();
-    }
-  }, {
     key: "IsPopupOpen",
     value: function IsPopupOpen() {
       // todo: when we set some properties on resolve, do we need this method now

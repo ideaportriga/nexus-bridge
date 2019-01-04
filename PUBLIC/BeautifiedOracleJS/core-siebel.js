@@ -14835,20 +14835,26 @@ typeof SiebelAppFacade.ErrorObjectRenderer == "undefined" && (SiebelJS.Namespace
   }, e.prototype.SetFormat = function(e) {
       this.m_sFormat = e
   }, e
-}()), typeof SiebelApp.S_App.DatumBoolObject == "undefined" && (SiebelJS.Namespace("SiebelApp.S_App.DatumBoolObject"), SiebelApp.S_App.DatumBoolObject = function() {
+}()),
+typeof SiebelApp.S_App.DatumBoolObject == "undefined" && (SiebelJS.Namespace("SiebelApp.S_App.DatumBoolObject"), SiebelApp.S_App.DatumBoolObject = function() {
   function e(e) {
       SiebelApp.S_App.DatumBoolObject.superclass.constructor.call(this), this.m_bValue = e
   }
-  return SiebelJS.Extend(e, SiebelApp.S_App.DatumObject), e.prototype.GetAsString = function() {
+  return SiebelJS.Extend(e, SiebelApp.S_App.DatumObject),
+  e.prototype.GetAsString = function() {
       var e;
       return this.m_bNull ? e = "" : e = this.m_bValue ? "Y" : "N", e
-  }, e.prototype.GetDataType = function() {
+  },
+  e.prototype.GetDataType = function() {
       return SiebelApp.Constants.get("DTYPE_BOOL")
-  }, e.prototype.SetAsString = function(e) {
+  },
+  e.prototype.SetAsString = function(e) {
       e && e.length !== 0 ? (this.m_bNull = !1, this.m_bValue = e === "Y" || e === "y" || e === "1") : (this.m_bNull = !0, this.m_bValue = !1)
-  }, e.prototype.GetValue = function() {
+  },
+  e.prototype.GetValue = function() {
       return this.m_bValue
-  }, e.prototype.SetValue = function(e) {
+  },
+  e.prototype.SetValue = function(e) {
       this.m_bNull = !1, this.m_bValue = e
   }, e
 }());

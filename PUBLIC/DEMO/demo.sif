@@ -14,7 +14,7 @@
 	   LOCKED="N"
 	   NAME="PUB Case"
 	   UI_FREEZE="N"
-	   UPDATED="11/21/2018 17:48:46"
+	   UPDATED="01/07/2019 18:09:56"
 	   UPDATED_BY="SADMIN"
 	   CREATED="06/03/2003 03:15:45"
 	   CREATED_BY="SADMIN"
@@ -35,13 +35,13 @@
 		   OBJECT_LOCKED="Y"
 		   OBJECT_LOCKED_DATE="04/13/2018 13:11:06"
 		   RESPONSIVE_FLAG="Y"
-		   SCRIPTED="Y"
+		   SCRIPTED="N"
 		   TITLE_-_STRING_REFERENCE="SBL_CASE-1004224857-02D"
 		   TYPE="Standard"
 		   UPGRADE_BEHAVIOR="Preserve"
 		   WIDTH="2"
 		   OBJECT_LOCKED_BY_NAME="SADMIN"
-		   UPDATED="11/21/2018 17:48:43"
+		   UPDATED="01/07/2019 18:07:09"
 		   UPDATED_BY="SADMIN"
 		   CREATED="06/04/2003 08:34:23"
 		   CREATED_BY="SADMIN"
@@ -143,40 +143,6 @@
 			   CREATED="08/27/2005 06:59:31"
 			   CREATED_BY="SADMIN">
 			</APPLET_METHOD_MENU_ITEM>
-			<APPLET_SERVER_SCRIPT
-			   INACTIVE="N"
-			   NAME="WebApplet_PreCanInvokeMethod"
-			   PROGRAM_LANGUAGE="JS"
-			   SCRIPT="function WebApplet_PreCanInvokeMethod (MethodName, &amp;CanInvoke)
-{
-
-//[Sub Status] = LookupValue(&quot;HLS_CASE_STATUS&quot;, &quot;Referral&quot;)
-
-	if (&quot;NuonMethod&quot; === MethodName) 
-	{
-		var csSubStatus = TheApplication().InvokeMethod(&quot;LookupValue&quot;, &quot;HLS_CASE_STATUS&quot;, &quot;Referral&quot;);
-		
-		if (this.BusComp().GetFieldValue(&quot;Sub Status&quot;) === csSubStatus)
-		{
-			CanInvoke = &quot;TRUE&quot;;	
-		}
-		else 
-		{
-			CanInvoke = &quot;FALSE&quot;;
-		}
-		
-		return (CancelOperation);
-
-	}
-
-	return (ContinueOperation);
-}"
-			   SEQUENCE="1"
-			   UPDATED="04/13/2018 13:46:57"
-			   UPDATED_BY="SADMIN"
-			   CREATED="04/13/2018 13:46:50"
-			   CREATED_BY="SADMIN">
-			</APPLET_SERVER_SCRIPT>
 			<APPLET_TOGGLE
 			   APPLET="PUB Benefit Case Form Applet"
 			   AUTO_TOGGLE_FIELD="Category Name"
@@ -296,7 +262,7 @@
 			   SEQUENCE="0"
 			   TYPE="Edit"
 			   WEB_TEMPLATE="Applet Form Grid Layout"
-			   UPDATED="11/21/2018 17:48:43"
+			   UPDATED="01/07/2019 18:06:44"
 			   UPDATED_BY="SADMIN"
 			   CREATED="06/05/2003 08:03:23"
 			   CREATED_BY="SADMIN"
@@ -433,6 +399,36 @@
 				   UPDATED="11/21/2018 17:48:43"
 				   UPDATED_BY="SADMIN"
 				   CREATED="11/21/2018 17:48:32"
+				   CREATED_BY="SADMIN">
+				</APPLET_WEB_TEMPLATE_ITEM>
+				<APPLET_WEB_TEMPLATE_ITEM
+				   COLUMN_SPAN="15"
+				   CONTROL="Audit Employee Full Name"
+				   GRID_PROPERTY="FormattedHtml"
+				   INACTIVE="N"
+				   ITEM_IDENTIFIER="17108"
+				   MARKUP_LANGUAGE="HTML"
+				   NAME="Audit Employee Full Name"
+				   ROW_SPAN="3"
+				   TYPE="Control"
+				   UPDATED="01/07/2019 16:26:50"
+				   UPDATED_BY="SADMIN"
+				   CREATED="01/07/2019 16:26:08"
+				   CREATED_BY="SADMIN">
+				</APPLET_WEB_TEMPLATE_ITEM>
+				<APPLET_WEB_TEMPLATE_ITEM
+				   COLUMN_SPAN="13"
+				   CONTROL="Audit Employee Full Name"
+				   GRID_PROPERTY="FormattedLabel"
+				   INACTIVE="N"
+				   ITEM_IDENTIFIER="17095"
+				   MARKUP_LANGUAGE="HTML"
+				   NAME="Audit Employee Full NameLabel"
+				   ROW_SPAN="3"
+				   TYPE="Control"
+				   UPDATED="01/07/2019 16:26:54"
+				   UPDATED_BY="SADMIN"
+				   CREATED="01/07/2019 16:26:18"
 				   CREATED_BY="SADMIN">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
@@ -1142,18 +1138,6 @@
 				   CREATED="06/05/2003 13:03:02"
 				   CREATED_BY="SADMIN"
 				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
-				</APPLET_WEB_TEMPLATE_ITEM>
-				<APPLET_WEB_TEMPLATE_ITEM
-				   CONTROL="NuonButton"
-				   INACTIVE="N"
-				   ITEM_IDENTIFIER="143"
-				   MARKUP_LANGUAGE="HTML"
-				   NAME="NuonButton"
-				   TYPE="Control"
-				   UPDATED="04/13/2018 13:19:55"
-				   UPDATED_BY="SADMIN"
-				   CREATED="04/13/2018 13:14:28"
-				   CREATED_BY="SADMIN">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="15"
@@ -1898,6 +1882,47 @@
 			   UPDATED="07/19/2008 02:23:41"
 			   UPDATED_BY="SADMIN"
 			   CREATED="06/18/2008 00:59:51"
+			   CREATED_BY="SADMIN">
+			</CONTROL>
+			<CONTROL
+			   AUTOMATIC_HORIZONTAL_SCROLL="Y"
+			   AUTOMATIC_VERTICAL_SCROLL="N"
+			   CAPTION_-_STRING_REFERENCE="SBL_FULL_NAME-1004231024-2VN"
+			   DEFAULT_BUTTON="N"
+			   FIELD="Audit Employee Full Name"
+			   FIELD_TYPE="BC Field"
+			   GROUP="N"
+			   HTML_DEFAULT_CONTROL="N"
+			   HTML_DISPLAY_MODE="EncodeData"
+			   HTML_HEIGHT="24"
+			   HTML_ONLY="N"
+			   HTML_ROW_SENSITIVE="Y"
+			   HTML_TYPE="Text"
+			   HTML_WIDTH="120"
+			   HEIGHT="24"
+			   INACTIVE="N"
+			   MULTI_LINE="N"
+			   NAME="Audit Employee Full Name"
+			   OWNER_DRAW="N"
+			   PICK_APPLET="Pharma Employee Pick Applet"
+			   POPUP_EDIT="N"
+			   PROMPT="N"
+			   READ_ONLY="N"
+			   RUNTIME="Y"
+			   SHOW_POPUP="N"
+			   SORT="Y"
+			   TAB_STOP="Y"
+			   TEXT_ALIGNMENT="Left"
+			   TEXT_ALIGNMENT-LABEL="Right"
+			   TOP="0"
+			   TYPE="TextBox"
+			   VERTICAL_SCROLL="N"
+			   VISIBLE="Y"
+			   WANT_RETURN="N"
+			   WIDTH="120"
+			   UPDATED="01/07/2019 16:23:26"
+			   UPDATED_BY="SADMIN"
+			   CREATED="01/07/2019 16:22:17"
 			   CREATED_BY="SADMIN">
 			</CONTROL>
 			<CONTROL
@@ -2971,55 +2996,6 @@
 			   UPDATED_BY="SADMIN"
 			   CREATED="06/06/2003 03:45:24"
 			   CREATED_BY="SADMIN">
-			</CONTROL>
-			<CONTROL
-			   AUTOMATIC_HORIZONTAL_SCROLL="Y"
-			   AUTOMATIC_VERTICAL_SCROLL="N"
-			   CAPTION_-_STRING_REFERENCE="SBL_PUB_SCAN_CHANGES"
-			   DEFAULT_BUTTON="N"
-			   GROUP="N"
-			   HTML_DEFAULT_CONTROL="N"
-			   HTML_DISPLAY_MODE="EncodeData"
-			   HTML_ONLY="Y"
-			   HTML_ROW_SENSITIVE="Y"
-			   HTML_TYPE="MiniButtonEdit"
-			   HEIGHT="24"
-			   INACTIVE="N"
-			   METHOD_INVOKED="NuonMethod"
-			   MULTI_LINE="N"
-			   NAME="NuonButton"
-			   OWNER_DRAW="N"
-			   POPUP_EDIT="N"
-			   PROMPT="N"
-			   READ_ONLY="N"
-			   RUNTIME="N"
-			   SHOW_POPUP="N"
-			   SORT="Y"
-			   TAB_STOP="Y"
-			   TEXT_ALIGNMENT="Left"
-			   TEXT_ALIGNMENT-LABEL="Right"
-			   TOP="0"
-			   TYPE="TextBox"
-			   VERTICAL_SCROLL="N"
-			   VISIBLE="Y"
-			   WANT_RETURN="N"
-			   WIDTH="120"
-			   UPDATED="04/13/2018 13:13:45"
-			   UPDATED_BY="SADMIN"
-			   CREATED="04/13/2018 13:11:12"
-			   CREATED_BY="SADMIN">
-				<CONTROL_LOCALE
-				   APPLICATION_CODE="STD"
-				   CAPTION="Nuon button"
-				   INACTIVE="N"
-				   LANGUAGE_CODE="ENU"
-				   NAME="ENU-STD"
-				   TRANSLATE="Y"
-				   UPDATED="04/13/2018 13:13:45"
-				   UPDATED_BY="SADMIN"
-				   CREATED="04/13/2018 13:11:33"
-				   CREATED_BY="SADMIN">
-				</CONTROL_LOCALE>
 			</CONTROL>
 			<CONTROL
 			   AUTOMATIC_HORIZONTAL_SCROLL="Y"
@@ -4131,53 +4107,15 @@
 		   OBJECT_LOCKED_DATE="04/13/2018 13:51:12"
 		   OWNER_DELETE="N"
 		   POPUP_VISIBILITY_AUTO_ALL="N"
-		   SCRIPTED="Y"
+		   SCRIPTED="N"
 		   STATUS_FIELD="Row Status"
 		   TABLE="S_CASE"
 		   TYPE="Non-Transient"
 		   OBJECT_LOCKED_BY_NAME="SADMIN"
-		   UPDATED="11/08/2018 15:51:04"
+		   UPDATED="01/07/2019 18:09:55"
 		   UPDATED_BY="SADMIN"
 		   CREATED="06/04/2003 02:14:24"
 		   CREATED_BY="SADMIN">
-			<BUSCOMP_SERVER_SCRIPT
-			   INACTIVE="N"
-			   NAME="BusComp_PreInvokeMethod"
-			   PROGRAM_LANGUAGE="JS"
-			   SCRIPT="function BusComp_PreInvokeMethod (MethodName)
-{
-	if (&quot;NuonMethod&quot; === MethodName)
-	{
-		TheApplication().TraceOn(&quot;&quot;, &quot;Allocation&quot;, &quot;All&quot;);
-		TheApplication().Trace(&quot;trace is on&quot;);
-		try
-		{
-			var oBS = TheApplication().GetService(&quot;NUON BS&quot;);
-			var psInput : PropertySet = TheApplication().NewPropertySet();
-			psInput.SetProperty(&quot;Description&quot;, &quot;This is my description&quot;);
-			var psOutput : PropertySet = TheApplication().NewPropertySet();
-			oBS.InvokeMethod(&quot;Nuon Business Service Method&quot;, psInput, psOutput);
-			
-			var csResult = psOutput.GetProperty(&quot;Result&quot;);
-			TheApplication().Trace(&quot;The result from business service - &quot; + csResult);
-		}
-		finally
-		{
-			psOutput = null;
-			psInput = null;
-			oBS = null;
-			TheApplication().TraceOff();
-		}
-		return (CancelOperation);
-	}
-
-	return (ContinueOperation);
-}"
-			   UPDATED="04/13/2018 14:53:12"
-			   UPDATED_BY="SADMIN"
-			   CREATED="04/13/2018 14:04:31"
-			   CREATED_BY="SADMIN">
-			</BUSCOMP_SERVER_SCRIPT>
 			<BUSCOMP_VIEW_MODE
 			   INACTIVE="N"
 			   NAME="Organization"
@@ -6337,6 +6275,79 @@ Web access flag for old  primary contact of the case is didabled if flag set to 
 			   CREATED_BY="SADMIN">
 			</FIELD>
 			<FIELD
+			   CALCULATED="Y"
+			   CALCULATED_VALUE="[Audit Employee First Name] + &apos; &apos; + [Audit Employee Last Name]"
+			   COMPOSITE="N"
+			   DISABLE_SEARCH="N"
+			   DISABLE_SORT="N"
+			   FORCE_ACTIVE="N"
+			   HIDDEN="N"
+			   IMMEDIATE_POST_CHANGES="N"
+			   INACTIVE="N"
+			   LINK_SPECIFICATION="N"
+			   MESSAGE_DISPLAY_MODE="User Msg with Error Code Only"
+			   MULTI_VALUED="N"
+			   NAME="Audit Employee Full Name"
+			   NO_COPY="N"
+			   PICKLIST="PickList Employee"
+			   READ_ONLY="N"
+			   REQUIRED="N"
+			   TYPE="DTYPE_TEXT"
+			   USE_DEFAULT_SENSITIVITY="Y"
+			   UPDATED="01/07/2019 16:20:07"
+			   UPDATED_BY="SADMIN"
+			   CREATED="01/07/2019 16:16:44"
+			   CREATED_BY="SADMIN">
+				<PICK_MAP
+				   FIELD="Audit Employee First Name"
+				   INACTIVE="N"
+				   NAME="Audit Employee First Name"
+				   NO_CLEAR="N"
+				   PICK_LIST_FIELD="First Name"
+				   SEQUENCE="3"
+				   UPDATED="01/07/2019 16:20:06"
+				   UPDATED_BY="SADMIN"
+				   CREATED="01/07/2019 16:19:34"
+				   CREATED_BY="SADMIN">
+				</PICK_MAP>
+				<PICK_MAP
+				   FIELD="Audit Employee Full Name"
+				   INACTIVE="N"
+				   NAME="Audit Employee Full Name"
+				   NO_CLEAR="N"
+				   PICK_LIST_FIELD="Full Name"
+				   SEQUENCE="4"
+				   UPDATED="01/07/2019 16:20:07"
+				   UPDATED_BY="SADMIN"
+				   CREATED="01/07/2019 16:19:17"
+				   CREATED_BY="SADMIN">
+				</PICK_MAP>
+				<PICK_MAP
+				   FIELD="Audit Employee Id"
+				   INACTIVE="N"
+				   NAME="Audit Employee Id"
+				   NO_CLEAR="N"
+				   PICK_LIST_FIELD="Id"
+				   SEQUENCE="1"
+				   UPDATED="01/07/2019 16:18:59"
+				   UPDATED_BY="SADMIN"
+				   CREATED="01/07/2019 16:18:42"
+				   CREATED_BY="SADMIN">
+				</PICK_MAP>
+				<PICK_MAP
+				   FIELD="Audit Employee Last Name"
+				   INACTIVE="N"
+				   NAME="Audit Employee Last Name"
+				   NO_CLEAR="N"
+				   PICK_LIST_FIELD="Last Name"
+				   SEQUENCE="2"
+				   UPDATED="01/07/2019 16:19:10"
+				   UPDATED_BY="SADMIN"
+				   CREATED="01/07/2019 16:19:05"
+				   CREATED_BY="SADMIN">
+				</PICK_MAP>
+			</FIELD>
+			<FIELD
 			   CALCULATED="N"
 			   COLUMN="AUDIT_EMP_ID"
 			   COMPOSITE="N"
@@ -6383,7 +6394,7 @@ Web access flag for old  primary contact of the case is didabled if flag set to 
 			   TEXT_LENGTH="50"
 			   TYPE="DTYPE_TEXT"
 			   USE_DEFAULT_SENSITIVITY="Y"
-			   UPDATED="06/18/2008 01:10:14"
+			   UPDATED="01/07/2019 16:18:55"
 			   UPDATED_BY="SADMIN"
 			   CREATED="06/18/2008 01:10:14"
 			   CREATED_BY="SADMIN">
@@ -6397,6 +6408,18 @@ Web access flag for old  primary contact of the case is didabled if flag set to 
 				   UPDATED="06/18/2008 01:10:14"
 				   UPDATED_BY="SADMIN"
 				   CREATED="06/18/2008 01:10:14"
+				   CREATED_BY="SADMIN">
+				</PICK_MAP>
+				<PICK_MAP
+				   FIELD="Audit Employee Full Name"
+				   INACTIVE="N"
+				   NAME="Audit Employee Full Name"
+				   NO_CLEAR="N"
+				   PICK_LIST_FIELD="Full Name"
+				   SEQUENCE="4"
+				   UPDATED="01/07/2019 16:18:55"
+				   UPDATED_BY="SADMIN"
+				   CREATED="01/07/2019 16:17:45"
 				   CREATED_BY="SADMIN">
 				</PICK_MAP>
 				<PICK_MAP

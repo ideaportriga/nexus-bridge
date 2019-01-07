@@ -315,7 +315,23 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-text-field append-icon="report" @click:append="openPickApplet" :rules="controls[\'Audit Employee Last Name\'].required ? [\'Required\'] : []" v-on:input="changeValue(\'Audit Employee Last Name\')" :disabled="controls[\'Audit Employee Last Name\'].readonly" :label="controls[\'Audit Employee Last Name\'].label" v-model="controls[\'Audit Employee Last Name\'].value" clearable v-on:keyup.esc="escapeOnName" v-on:click:clear="handleClear(\'Audit Employee Last Name\')" :counter="controls[\'Audit Employee Last Name\'].maxSize"></v-text-field> \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
-                  <v-text-field @focus="focusAuditEmployee" @input="inputAuditEmployee" @change="changeAuditEmployee" :disabled="controls[\'Audit Employee Last Name\'].readonly" :label="controls[\'Audit Employee Last Name\'].label" v-model="controls[\'Audit Employee Last Name\'].value" :counter="controls[\'Audit Employee Last Name\'].maxSize"></v-text-field> \n\
+                  <v-autocomplete                                                                           \n\
+                    placeholder="Start typing to Search"                                                   \n\
+                    @blur="blurAuditEmployee"                                                               \n\
+                    @focus="focusAuditEmployee"                                                             \n\
+                    @input="inputAuditEmployee"                                                             \n\
+                    @change="changeAuditEmployee"                                                           \n\
+                    :disabled="controls[\'Audit Employee Full Name\'].readonly"                             \n\
+                    :label="controls[\'Audit Employee Full Name\'].label"                                   \n\
+                    v-model="controls[\'Audit Employee Full Name\'].value"                                  \n\
+                    :counter="controls[\'Audit Employee Full Name\'].maxSize"                               \n\
+                    :items="items"                                                                          \n\
+                    hide-no-data \n\
+                    hide-selected \n\
+                    :loading="isLoading"                                                                    \n\
+                    :search-input.sync="search">                                                            \n\
+                    </v-autocomplete>                                                                       \n\
+                    <v-divider></v-divider> \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
                   <v-textarea v-on:change="changeValue(\'Description\')" rows="7" :disabled="controls.Description.readonly" :label="controls.Description.label" v-model="controls.Description.value" :counter="controls.Description.maxSize" box name="input-7-1"></v-textarea> \n\
@@ -383,7 +399,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 Category: {},
                 'Threat Level': {},
                 'Sales Rep': {},
-                'Audit Employee Last Name': {}
+                'Audit Employee Last Name': {},
+                'Audit Employee Full Name': {},
               },
               caseThreatLevelNum: 0,
               snackbar: false,
@@ -393,22 +410,78 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               caseThreatLevelArr: ['Low', 'Medium', 'High'],
               caseSalesRepArr: [],
               caseSalesRep: '',
-              caseSalesRepPrimary: ''
+              caseSalesRepPrimary: '',
+              isLoading: false,
+              entries: [],
+              search: null
             },
             computed: {
               ratingColor: function () {
                 return this.controls['Threat Level'].readonly ? 'grey' : 'red';
+              },
+              items: function() {
+                var arr = this.entries.map(el => el['First Name'] + ' ' + el['Last Name']);
+                arr.push(this.controls['Audit Employee Full Name'].value);
+                return arr;
+              }
+            },
+            watch: {
+              search (val) {
+                console.log('!!!SEARCH', val);
+
+                if ((this.isLoading) || (!this.pickApplet)) {
+                  return;
+                }
+
+                this.isLoading = true;
+
+                const query = `~LIKE *${val}* OR [First Name] ~LIKE *${val}*`;
+                this.pickApplet.query({ 'Last Name': query })
+                  .then(res => {
+                    console.log(res);
+                    this.entries = this.pickApplet.getRecordSet();
+                  })
+                  .catch(err => {
+                    console.log(err);
+                  })
+                  .finally(() => (this.isLoading = false));
               }
             },
             methods: {
-              focusAuditEmployee() {
+              async focusAuditEmployee() {
                 console.log('!!!FOCUS', arguments);
+                if (!this.pickApplet) {
+                  const ret = await n19helper.showPickApplet('Audit Employee Last Name', true, null);
+                  this.pickApplet = ret.popupAppletN19;
+                  console.log(this.pickApplet.getRecordSet());
+                  this.entries = this.pickApplet.getRecordSet();
+                }
+              },
+              blurAuditEmployee() {
+                console.log('!!!BLUR', arguments);
+                if (this.pickApplet) {
+                  this.pickApplet.closeApplet();
+                  this.pickApplet = null;
+                }
               },
               inputAuditEmployee(){
                 console.log('!!!INPUT', arguments);
               },
-              changeAuditEmployee() {
+              async changeAuditEmployee(val) {
                 console.log('!!!CHANGE', arguments);
+                if (!this.pickApplet) {
+
+                }
+                var arr = this.pickApplet.getRecordSet();
+                for (var i = 0; i < arr.length; i += 1) {
+                  var temp = arr[i]['First Name'] + ' ' + arr[i]['Last Name'];
+                  if (temp === val) {
+                    this.pickApplet.positionOnRow(i);
+                    this.pickApplet.pickRecord();
+                    this.pickApplet = null;
+                    return;
+                  }
+                }
               },
               async testButtonClick() {
                 var obj = await n19helper.showPickApplet('Audit Employee Last Name', true, null);

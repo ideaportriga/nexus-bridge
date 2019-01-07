@@ -575,7 +575,7 @@ function () {
       var ret = this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_BLUR'), control, value);
 
       if (!ret) {
-        console.log("Value ".concat(value, " was not set for ").concat(control.toString())); // eslint-disable-line no-console
+        console.log("Value ".concat(value, " was not set for ").concat(control.GetName())); // eslint-disable-line no-console
       }
 
       return ret;

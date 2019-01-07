@@ -284,7 +284,7 @@ export default class N19baseApplet {
     this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_FOCUS'), control);
     const ret = this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_BLUR'), control, value);
     if (!ret) {
-      console.log(`Value ${value} was not set for ${control.toString()}`); // eslint-disable-line no-console
+      console.log(`Value ${value} was not set for ${control.GetName()}`); // eslint-disable-line no-console
     }
     return ret;
   }

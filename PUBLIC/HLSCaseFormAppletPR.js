@@ -284,12 +284,16 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 <v-flex md12 pa-2>                                                                                                                              \n\
                   <v-alert :value="true" type="info">HLS Case Form Applet rendered by VUE.JS PR</v-alert>                                                       \n\
                 </v-flex>                                                                                                                                       \n\
-                <v-flex md6 pa-2>                                                                                                                               \n\
-                  <v-text-field prepend-icon="play_arrow" @click:prepend="doDrillDown" :rules="controls.Name.required ? [\'Required\'] : []" v-on:input="changeValue(\'Name\')" ref="caseName" :disabled="controls.Name.readonly" :label="controls.Name.label" v-model="controls.Name.value" clearable v-on:keyup.esc="escapeOnName" v-on:click:clear="handleClear(\'Audit Employee Last Name\')" :counter="controls.Name.maxSize"></v-text-field> \n\
+                <v-flex md4 pa-2>                                                                                                                               \n\
+                  <v-text-field prepend-icon="play_arrow" @click:prepend="doDrillDown" :rules="controls.Name.required ? [\'Required\'] : []" v-on:input="changeValue(\'Name\')" ref="caseName" :disabled="controls.Name.readonly" :label="controls.Name.label" v-model="controls.Name.value" clearable v-on:keyup.esc="escapeOnName" v-on:click:clear="handleClear(\'Name\')" :counter="controls.Name.maxSize"></v-text-field> \n\
                 </v-flex>                                                                                                                                       \n\
-                <v-flex md6 pa-2>                                                                                                                               \n\
+                <v-flex md4 pa-2>                                                                                                                               \n\
                   <v-switch v-on:change="changeValue(\'InfoChanged\')" :label="controls.InfoChanged.label" v-model="controls.InfoChanged.value" :disabled="controls.InfoChanged.readonly"></v-switch> \n\
                 </v-flex>                                                                                                                                       \n\
+                <v-flex md4 pa-2>                                                                                                                                                 \n\
+                <v-label>Threat Level: {{this.controls[\'Threat Level\'].value}}</v-label><span>                                                                                  \n\
+                  <v-rating :background-color="ratingColor" :color="ratingColor" :readonly="controls[\'Threat Level\'].readonly" v-on:input="changeThreatLevel" v-model="caseThreatLevelNum" clearable length="3" label="Threat Level"></v-rating>  \n\
+                </span></v-flex>                                                                                                                                \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
                   <v-select :rules="controls.Status.required ? [\'Required\'] : []" box :items="caseStatusArr" v-on:click.native="clickStatus" v-on:change="changeValue(\'Status\')" v-model="controls.Status.value" :label="controls.Status.label" :disbaled="controls.Status.readonly"></v-select> \n\
                 </v-flex>                                                                                                                                                         \n\
@@ -299,10 +303,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 <v-flex md4 pa-2>                                                                                                                                                 \n\
                   <v-autocomplete :rules="controls.Category.required ? [\'Required\'] : []" v-model="controls.Category.value" :disabled="controls.Category.readonly" :items="caseCategoryArr" v-on:change="changeValue(\'Category\')" :label="controls.Category.label"> \n\
                 </v-flex>                                                                                                                                                         \n\
-                <v-flex md4 pa-2>                                                                                                                                                 \n\
-                <v-label>Threat Level: {{this.controls[\'Threat Level\'].value}}</v-label><span>                                                                                  \n\
-                  <v-rating :background-color="ratingColor" :color="ratingColor" :readonly="controls[\'Threat Level\'].readonly" v-on:input="changeThreatLevel" v-model="caseThreatLevelNum" clearable length="3" label="Threat Level"></v-rating>  \n\
-                </span></v-flex>                                                                                                                                \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
                   <v-label>Sales Rep:</v-label>                                                                                                                 \n\
                   <v-tooltip top v-for="salesRep in caseSalesRepArr" >                                                                                          \n\
@@ -314,6 +314,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 <v-flex md4 pa-2>                                                                                                                               \n\
                   <v-text-field append-icon="report" @click:append="openPickApplet" :rules="controls[\'Audit Employee Last Name\'].required ? [\'Required\'] : []" v-on:input="changeValue(\'Audit Employee Last Name\')" :disabled="controls[\'Audit Employee Last Name\'].readonly" :label="controls[\'Audit Employee Last Name\'].label" v-model="controls[\'Audit Employee Last Name\'].value" clearable v-on:keyup.esc="escapeOnName" v-on:click:clear="handleClear(\'Audit Employee Last Name\')" :counter="controls[\'Audit Employee Last Name\'].maxSize"></v-text-field> \n\
                 </v-flex>                                                                                                                                       \n\
+                <v-flex md4 pa-2>                                                                                                                               \n\
+                  <v-text-field @focus="focusAuditEmployee" @input="inputAuditEmployee" @change="changeAuditEmployee" :disabled="controls[\'Audit Employee Last Name\'].readonly" :label="controls[\'Audit Employee Last Name\'].label" v-model="controls[\'Audit Employee Last Name\'].value" :counter="controls[\'Audit Employee Last Name\'].maxSize"></v-text-field> \n\
+                </v-flex>                                                                                                                                       \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
                   <v-textarea v-on:change="changeValue(\'Description\')" rows="7" :disabled="controls.Description.readonly" :label="controls.Description.label" v-model="controls.Description.value" :counter="controls.Description.maxSize" box name="input-7-1"></v-textarea> \n\
                 </v-flex>                                                                                                                                       \n\
@@ -321,30 +324,30 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-divider></v-divider>                                                                                                                       \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="saveButtonClick" color="primary"><v-icon>save</v-icon>Save!</v-btn>                                                        \n\
+                  <v-btn block v-on:click="saveButtonClick" color="primary"><v-icon>save</v-icon>Save!</v-btn>                                                  \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="deleteButtonClick" color="primary"><v-icon>delete</v-icon>Delete!</v-btn>                                                  \n\
+                  <v-btn block v-on:click="deleteButtonClick" color="primary"><v-icon>delete</v-icon>Delete!</v-btn>                                            \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="testButtonClick" color="primary"><v-icon>pan_tool</v-icon>Pick!</v-btn>                                                    \n\
+                  <v-btn block v-on:click="testButtonClick" color="primary"><v-icon>pan_tool</v-icon>Pick!</v-btn>                                              \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="testButtonClickShuttle" color="primary"><v-icon>pan_tool</v-icon>Shuttle!</v-btn>                                                    \n\
+                  <v-btn block v-on:click="testButtonClickShuttle" color="primary"><v-icon>pan_tool</v-icon>Shuttle!</v-btn>                                    \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="testButtonClickShuttle2" color="primary"><v-icon>pan_tool</v-icon>Shuttle2!</v-btn>                                                    \n\
+                  <v-btn block v-on:click="testButtonClickShuttle2" color="primary"><v-icon>pan_tool</v-icon>Shuttle2!</v-btn>                                  \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="testButtonClickShuttle3" color="primary"><v-icon>pan_tool</v-icon>Shuttle3!</v-btn>                                                    \n\
+                  <v-btn block v-on:click="testButtonClickShuttle3" color="primary"><v-icon>pan_tool</v-icon>Shuttle3!</v-btn>                                  \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="testBS" color="primary"><v-icon>pan_tool</v-icon>BS!</v-btn>                                                    \n\
+                  <v-btn block v-on:click="testBS" color="primary"><v-icon>pan_tool</v-icon>BS!</v-btn>                                                         \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md2 pa-2>                                                                                                                               \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="gotoButtonClick" color="primary"><v-icon>language</v-icon>Goto!</v-btn>                                                    \n\
+                  <v-btn block v-on:click="gotoButtonClick" color="primary"><v-icon>language</v-icon>Goto!</v-btn>                                              \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
                   <v-tooltip top><v-btn block slot="activator" v-on:click="prevButtonClick" color="primary"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>  \n\
@@ -398,6 +401,15 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               }
             },
             methods: {
+              focusAuditEmployee() {
+                console.log('!!!FOCUS', arguments);
+              },
+              inputAuditEmployee(){
+                console.log('!!!INPUT', arguments);
+              },
+              changeAuditEmployee() {
+                console.log('!!!CHANGE', arguments);
+              },
               async testButtonClick() {
                 var obj = await n19helper.showPickApplet('Audit Employee Last Name', true, null);
                 if (obj.appletName != 'Pharma Employee Pick Applet') {

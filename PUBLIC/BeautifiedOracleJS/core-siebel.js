@@ -4546,19 +4546,19 @@ typeof SiebelApp.Service == "undefined" && (Namespace("SiebelApp.Service"), Sieb
               o.splice(u, 0, [n, r.scope || this]), i[t] = o, s = !0
           }
           return s
-      }, m.prototype.AttachPMBinding = function(t, n, r) {
+      }, m.prototype.AttachPMBinding = function(method, func, r) {
           var i = f[this.GetPMName()],
               s = a[this.GetPMName()],
               o = !1;
           r = r || {
               scope: this
           };
-          if (typeof t == "string" && e.Trim(t) !== "" && typeof n == "function")
-              if (i[t]) typeof r.when == "function" ? L.call(this, t, n, r, !0) : T.call(this, t, n, r.scope || this, !0);
-              else if (s[t]) {
-              var u = s[t];
+          if (typeof method == "string" && e.Trim(method) !== "" && typeof func == "function")
+              if (i[method]) typeof r.when == "function" ? L.call(this, method, func, r, !0) : T.call(this, method, func, r.scope || this, !0);
+              else if (s[method]) {
+              var u = s[method];
               u.onChange = u.onChange || [], u.onChange.push({
-                  method: n,
+                  method: func,
                   scope: r.scope || this
               })
           } else o = !1;
@@ -13036,8 +13036,10 @@ typeof SiebelAppFacade.PhysicalRenderer == "undefined" && (SiebelJS.Namespace("S
           B = t.get("SWE_PST_APPLET_MODE_EDIT"),
           j = t.get("SWE_PST_APPLET_MODE_NEW");
       return SiebelJS.Extend(F, SiebelAppFacade.BasePR), F.prototype.Init = function() {
-          SiebelAppFacade.PhysicalRenderer.superclass.Init.call(this), this.AttachPMBinding("RemoveControls", q), this.AttachPMBinding("UpdateQuickPickInfo", this.UpdatePick), this.AttachPMBinding("UpdateAppletMessage", z), this.AttachPMBinding("UpdateCurrencyCalcInfo", R), this.AttachPMBinding("UpdateConditionals", mt), this.AttachPMBinding("ProcessCancelQueryPopup", W), this.AttachPMBinding("FocusOnApplet", dt), this.AttachPMBinding("HandleCtrlDefChange", this.RefreshControl), this.AttachPMBinding("SetCanInvokeState", X), this.AttachPMBinding("BeginQueryState", gt), this.AttachPMBinding("EndQueryState", yt), this.AttachPMBinding("UpdateRowCounter", bt), this.AttachPMBinding("ShowPopup", this.ShowPopup), this.AttachPMBinding("isControlPopupOpen", at), this.AttachPMBinding("MaskLeaveField", this.MaskLeaveField), this.AttachPMBinding("ShowSelection", this.ShowSelection), this.AttachPMBinding("ResetAppletState", this.ResetRendererState), this.AttachPMBinding("RefreshData", this.BindData), this.AttachPMBinding("FieldChange", this.SetControlValue), this.AttachPMBinding("UpdateStateChange", this.UpdateUIControls), this.AttachPMBinding("InvokeStateChange", this.UpdateUIButtons), this.AttachPMBinding("GetPhysicalControlValue", this.GetPhysicalControlValue), this.AttachPMBinding("SetFocusToCtrl", this.SetFocusToControl), this.AttachPMBinding("FocusFirstControl", this.FocusFirstControl), this.AttachPMBinding("SetHighlightState", pt), this.AttachPMBinding("UpdateUI", function() {
-              this.GetPM().Get("UpdateUI") && this.ShowSelection()
+          SiebelAppFacade.PhysicalRenderer.superclass.Init.call(this),
+            this.AttachPMBinding("RemoveControls", q),
+            this.AttachPMBinding("UpdateQuickPickInfo", this.UpdatePick), this.AttachPMBinding("UpdateAppletMessage", z), this.AttachPMBinding("UpdateCurrencyCalcInfo", R), this.AttachPMBinding("UpdateConditionals", mt), this.AttachPMBinding("ProcessCancelQueryPopup", W), this.AttachPMBinding("FocusOnApplet", dt), this.AttachPMBinding("HandleCtrlDefChange", this.RefreshControl), this.AttachPMBinding("SetCanInvokeState", X), this.AttachPMBinding("BeginQueryState", gt), this.AttachPMBinding("EndQueryState", yt), this.AttachPMBinding("UpdateRowCounter", bt), this.AttachPMBinding("ShowPopup", this.ShowPopup), this.AttachPMBinding("isControlPopupOpen", at), this.AttachPMBinding("MaskLeaveField", this.MaskLeaveField), this.AttachPMBinding("ShowSelection", this.ShowSelection), this.AttachPMBinding("ResetAppletState", this.ResetRendererState), this.AttachPMBinding("RefreshData", this.BindData), this.AttachPMBinding("FieldChange", this.SetControlValue), this.AttachPMBinding("UpdateStateChange", this.UpdateUIControls), this.AttachPMBinding("InvokeStateChange", this.UpdateUIButtons), this.AttachPMBinding("GetPhysicalControlValue", this.GetPhysicalControlValue), this.AttachPMBinding("SetFocusToCtrl", this.SetFocusToControl), this.AttachPMBinding("FocusFirstControl", this.FocusFirstControl), this.AttachPMBinding("SetHighlightState", pt), this.AttachPMBinding("UpdateUI", function() {
+            this.GetPM().Get("UpdateUI") && this.ShowSelection()
           }), this.AttachPMBinding("OnCommitStateChange", I);
           var e = SiebelApp.S_App.PluginBuilder.GetHoByName("ResponsiveFieldHO");
           e && e.SetUp(this, $("#s_" + this.GetPM().Get("GetFullId") + "_div"))
@@ -13058,12 +13060,14 @@ typeof SiebelAppFacade.PhysicalRenderer == "undefined" && (SiebelJS.Namespace("S
               }
           }
           $("#s_" + e.Get("GetFullId") + "_div").off("click click.drilldown"), this._EndLife(), SiebelAppFacade.PhysicalRenderer.superclass.EndLife.call(this)
-      }, F.prototype.ResetRendererState = function() {}, F.prototype.UpdatePick = function() {
+      }, F.prototype.ResetRendererState = function() {},
+      F.prototype.UpdatePick = function() {
           var e = arguments[arguments.length - 1],
               t = this.GetPM().Get("GetActiveControl");
           if (!t) return;
           this.GetUIWrapper(t).UpdatePickList(e), delete this.inProgress
-      }, F.prototype.onBlurCurrency = function(e, t) {
+      },
+      F.prototype.onBlurCurrency = function(e, t) {
           var n = this.GetPM().ExecuteMethod("GetCurrencyCalInfo"),
               r;
           t = t.toUpperCase();

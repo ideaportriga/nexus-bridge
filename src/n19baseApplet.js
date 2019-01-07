@@ -296,6 +296,7 @@ export default class N19baseApplet {
     const ps = SiebelApp.S_App.NewPropertySet();
     ps.SetProperty('SWEField', controlInputName);
     ps.SetProperty('SWEJI', false);
+    this.applet.SetActiveControl(null); // to preve UpdatePick
     this.applet.InvokeMethod('GetQuickPickInfo', ps);
     return this.lov[controlInputName];
   }

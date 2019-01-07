@@ -590,6 +590,8 @@ function () {
       var ps = SiebelApp.S_App.NewPropertySet();
       ps.SetProperty('SWEField', controlInputName);
       ps.SetProperty('SWEJI', false);
+      this.applet.SetActiveControl(null); // to preve UpdatePick
+
       this.applet.InvokeMethod('GetQuickPickInfo', ps);
       return this.lov[controlInputName];
     }
@@ -1285,14 +1287,19 @@ function () {
       this.isPopupHidden = !!hide; // todo: do we need to keep the show the applet
 
       pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // seems we can also to call EditField
-      // eslint-disable-next-line no-return-assign
 
-      var ret = new Promise(function (resolve) {
-        return _this2.resolvePromise = resolve;
-      }); // eslint-disable-line no-param-assign
+      var ret = true;
 
-      if (typeof cb === 'function') {
-        ret = ret.then(cb);
+      if (hide) {
+        // we will populate the instances only when applet should be hidden
+        // eslint-disable-next-line no-return-assign
+        ret = new Promise(function (resolve) {
+          return _this2.resolvePromise = resolve;
+        }); // eslint-disable-line no-param-assign
+
+        if (typeof cb === 'function') {
+          ret = ret.then(cb);
+        }
       }
 
       return ret;

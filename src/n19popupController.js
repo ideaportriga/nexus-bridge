@@ -184,11 +184,16 @@ export default class N19popupController {
 
     pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // seems we can also to call EditField
 
-    // eslint-disable-next-line no-return-assign
-    let ret = new Promise(resolve => this.resolvePromise = resolve); // eslint-disable-line no-param-assign
-    if (typeof cb === 'function') {
-      ret = ret.then(cb);
+    let ret = true;
+
+    if (hide) { // we will populate the instances only when applet should be hidden
+      // eslint-disable-next-line no-return-assign
+      ret = new Promise(resolve => this.resolvePromise = resolve); // eslint-disable-line no-param-assign
+      if (typeof cb === 'function') {
+        ret = ret.then(cb);
+      }
     }
+
     return ret;
   }
 }

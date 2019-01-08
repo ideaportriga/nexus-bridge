@@ -920,6 +920,20 @@ function () {
       };
       return bs.InvokeMethod('ReturnMVGFields', psInputs, ai);
     }
+  }, {
+    key: "savePref",
+    value: function savePref(name, value) {
+      var psInput = SiebelApp.S_App.NewPropertySet();
+      psInput.SetProperty('Key', name);
+      psInput.SetProperty(name, value);
+      this.pm.OnControlEvent(this.consts.get('PHYEVENT_INVOKE_CONTROL'), this.pm.Get(this.consts.get('SWE_MTHD_UPDATE_USER_PREF')), psInput);
+      return this.pm.SetProperty(name, value);
+    }
+  }, {
+    key: "readPref",
+    value: function readPref(name) {
+      return this.pm.Get(name);
+    }
   }], [{
     key: "GetStaticLOV",
     value: function GetStaticLOV(arr) {

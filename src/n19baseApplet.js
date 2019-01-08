@@ -568,4 +568,22 @@ export default class N19baseApplet {
     };
     return bs.InvokeMethod('ReturnMVGFields', psInputs, ai);
   }
+
+  savePref(name, value) {
+    // value is a string
+    // value is bound to applet and view
+    const psInput = SiebelApp.S_App.NewPropertySet();
+    psInput.SetProperty('Key', name);
+    psInput.SetProperty(name, value);
+    this.pm.OnControlEvent(
+      this.consts.get('PHYEVENT_INVOKE_CONTROL'),
+      this.pm.Get(this.consts.get('SWE_MTHD_UPDATE_USER_PREF')),
+      psInput,
+    );
+    return this.pm.SetProperty(name, value);
+  }
+
+  readPref(name) {
+    return this.pm.Get(name);
+  }
 }

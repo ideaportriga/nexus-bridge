@@ -516,8 +516,8 @@ export default class N19baseApplet {
     }
   }
 
-  getMVF(ids, fields) {
-    return new Promise((resolve, reject) => this._getMVF(ids, fields, resolve, reject));
+  getMVF(ids, fields, useActiveBO) {
+    return new Promise((resolve, reject) => this._getMVF(ids, fields, useActiveBO, resolve, reject));
   }
 
   _getFieldNameForControl(controlName) {
@@ -529,11 +529,12 @@ export default class N19baseApplet {
     return controlName;
   }
 
-  _getMVF(ids, fields, resolve, reject) {
+  _getMVF(ids, fields, useActiveBO, resolve, reject) {
     const arr = Object.entries(fields);
     const psInputs = SiebelApp.S_App.NewPropertySet();
     psInputs.SetProperty('BO', SiebelApp.S_App.GetActiveBusObj().GetName());
     psInputs.SetProperty('BC', this.pm.Get('GetBusComp').GetName());
+    psInputs.SetProperty('UseActiveBO', useActiveBO ? 'Y' : 'N');
     psInputs.SetProperty('ID', ids.join(','));
     for (let i = 0; i < arr.length; i += 1) {
       const ps = SiebelApp.S_App.NewPropertySet();

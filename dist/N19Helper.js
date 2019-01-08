@@ -849,11 +849,11 @@ function () {
     }
   }, {
     key: "getMVF",
-    value: function getMVF(ids, fields) {
+    value: function getMVF(ids, fields, useActiveBO) {
       var _this6 = this;
 
       return new Promise(function (resolve, reject) {
-        return _this6._getMVF(ids, fields, resolve, reject);
+        return _this6._getMVF(ids, fields, useActiveBO, resolve, reject);
       });
     }
   }, {
@@ -870,11 +870,12 @@ function () {
     }
   }, {
     key: "_getMVF",
-    value: function _getMVF(ids, fields, resolve, reject) {
+    value: function _getMVF(ids, fields, useActiveBO, resolve, reject) {
       var arr = Object.entries(fields);
       var psInputs = SiebelApp.S_App.NewPropertySet();
       psInputs.SetProperty('BO', SiebelApp.S_App.GetActiveBusObj().GetName());
       psInputs.SetProperty('BC', this.pm.Get('GetBusComp').GetName());
+      psInputs.SetProperty('UseActiveBO', useActiveBO ? 'Y' : 'N');
       psInputs.SetProperty('ID', ids.join(','));
 
       for (var i = 0; i < arr.length; i += 1) {
@@ -923,6 +924,8 @@ function () {
   }, {
     key: "savePref",
     value: function savePref(name, value) {
+      // value is a string
+      // value is bound to applet and view
       var psInput = SiebelApp.S_App.NewPropertySet();
       psInput.SetProperty('Key', name);
       psInput.SetProperty(name, value);

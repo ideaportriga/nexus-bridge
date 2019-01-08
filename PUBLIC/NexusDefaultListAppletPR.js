@@ -20,6 +20,14 @@ if (typeof (SiebelAppFacade.NexusDefaultListAppletPR) === "undefined") {
           var appletName = pm.Get("GetName");
           SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
           SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
+
+          pm.AttachPostProxyExecuteBinding("ALL", function(method) {
+            console.log('post proxy', appletName, arguments);
+            if (("AddRecords" === method) || ("AddAllRecords" === method) || ("DeleteRecords" === method)) {
+              var event = new Event("UpdateMVG");
+              document.dispatchEvent(event);
+            }
+          });
         }
 
         NexusDefaultListAppletPR.prototype.ShowUI = function () {

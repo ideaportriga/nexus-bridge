@@ -99,12 +99,12 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'), function (ps) {
             console.log('SWE_PROP_BC_NOTI_STATE_CHANGED', arguments, ps.GetProperty('state'));
             // do we need 'activeRow'?
-            if ('activeRow' === ps.GetProperty('state')) {
-              console.log('>>>SWE_PROP_BC_NOTI_STATE_CHANGED', arguments);
-              if (app) {
-                app.afterSelection();
-              }
-            }
+            // if ('activeRow' === ps.GetProperty('state')) {
+            //   console.log('>>>SWE_PROP_BC_NOTI_STATE_CHANGED', arguments);
+            //   if (app) {
+            //     app.afterSelection();
+            //   }
+            // }
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA_WS'), function (propSet) {
@@ -428,6 +428,10 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               async changeAuditEmployee(val) {
                 console.log('!!!CHANGE', arguments);
+                if (!this.pickApplet) {
+                  alert ('I should not get here');
+                  await this.focusAuditEmployee();
+                }
                 var arr = this.pickApplet.getRecordSet();
                 for (var i = 0; i < arr.length; i += 1) {
                   var temp = arr[i]['First Name'] + ' ' + arr[i]['Last Name'];
@@ -435,6 +439,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     this.pickApplet.positionOnRow(i);
                     this.pickApplet.pickRecord();
                     this.pickApplet = null;
+                    this.focusAuditEmployee(); // no need to await
                     return;
                   }
                 }

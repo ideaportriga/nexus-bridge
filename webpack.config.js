@@ -5,15 +5,12 @@ module.exports = (env, argv) => {
   const rules = [{
     test: /\.js$/,
     use: {
-      loader: 'babel-loader',
-      options: {
-        presets: ['@babel/preset-env']
-      }
+      loader: 'babel-loader'
     }
   }];
 
   let plugins = [];
-  const main = [__dirname + '/src/main.js']; // '@babel/polyfill',
+  const main = [__dirname + '/src/main.js']; // @babel/polyfill?
   let devtool = '';
   let filename;
   if ('production' === argv.mode) { // remove console.log, add polyfill, minify
@@ -27,10 +24,10 @@ module.exports = (env, argv) => {
       }
     });
     filename = 'N19Helper.min.js';
-    main.unshift('core-js/fn/promise');
-    main.unshift('core-js/es7/object');
+    // main.unshift('core-js/fn/promise');
+    // main.unshift('core-js/es7/object');
   } else { // this is a development mode
-    devtool = 'source-map';
+    devtool = 'inline-source-map';
     filename = 'N19Helper.js';
   }
 

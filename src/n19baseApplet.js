@@ -426,6 +426,13 @@ export default class N19baseApplet {
     return this.pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false);
   }
 
+  queryByIdSync(rowId) {
+    this.applet.InvokeMethod('NewQuery');
+    this.applet.GetBusComp().SetFieldValue('Id', rowId);
+    this.applet.InvokeMethod('ExecuteQuery');
+    return this.getRecordSet().length;
+  }
+
   queryById(rowId, cb) {
     const promise = new Promise(resolve => this._queryById(rowId, resolve));
     const ret = promise.then(() => this.getRecordSet().length);
@@ -586,5 +593,31 @@ export default class N19baseApplet {
 
   readPref(name) {
     return this.pm.Get(name);
+  }
+
+  _retrieveData(amount) {
+    const data = new Map();
+
+    while (data.size < amount) {
+      const temp = this.getRawRecordSet();
+
+      // avoid the duplicates
+      for (let i = 0; i < temp.length; i += 1) {
+        data.set(temp[i].Id, temp[i]);
+      }
+
+      if (!this.nextRecordSet()) {
+        break;
+      }
+    }
+    return {
+      data: [...data.values()],
+      hasNext: this.canInvokeMethod('GotoNextSet'),
+    };
+  }
+
+  _setFieldValue(name, value) {
+    this.applet.GetBusComp().SetFieldValue(name, value);
+    return this.applet.InvokeMethod('WriteRecord');
   }
 }

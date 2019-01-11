@@ -280,6 +280,7 @@ export default class N19baseApplet {
     const control = this._getControl(name);
     // TODO: Check if control is found
     value = this._getValueForControl(control.GetUIType(), value); // eslint-disable-line no-param-reassign
+    // maybe check if typeof applet.SetControlValueByName is function and use it when available? - not exists in 14.x
     // TODO: should we use SetCellValue for list applets?
     this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_FOCUS'), control);
     const ret = this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_BLUR'), control, value);

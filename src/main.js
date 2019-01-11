@@ -4,7 +4,7 @@ import N19popupController from './n19popupController';
 SiebelAppFacade.N19Helper = class extends N19baseApplet {
   constructor(settings) {
     super(settings);
-    console.log('Nexus main class started....', this.appletName); // eslint-disable-line no-console
+    console.log('Nexus main class started....', this.pm.Get('GetName')); // eslint-disable-line no-console
     // get the n19popupController singleton instance
     this.n19popupController = N19popupController.instance;
   }

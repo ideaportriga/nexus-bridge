@@ -593,7 +593,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   this.afterSelection();
                 };
                 if (!isChanged) {
-                  var currentValue = n19helper.getCurrentRecord()[name];
+                  var fieldName = n19helper._getFieldNameForControl(name);
+                  var currentValue = n19helper.getCurrentRecord()[fieldName];
                   this.controls[name].value = '';
                   setTimeout(function () { //todo: use next tick
                     this.controls[name].value = currentValue;
@@ -804,8 +805,14 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           });
         }
         HLSCaseFormAppletPR.prototype.EndLife = function () {
-          SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = SiebelAppFacade.N19notifyNewFieldData;
-          SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary = SiebelAppFacade.N19notifyNewPrimary;
+          if (SiebelAppFacade.N19notifyNewFieldData) {
+            SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = SiebelAppFacade.N19notifyNewFieldData;
+            SiebelAppFacade.N19notifyNewFieldData = null;
+          }
+          if (SiebelAppFacade.N19notifyNewPrimary) {
+            SiebelApp.S_App.NotifyObject.prototype.NotifyNewPrimary = SiebelAppFacade.N19notifyNewPrimary;
+            SiebelAppFacade.N19notifyNewPrimary = null;
+          }
 
           if (app) {
             app.$destroy(true);

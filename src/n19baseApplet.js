@@ -606,10 +606,14 @@ export default class N19baseApplet {
         data.set(temp[i].Id, temp[i]);
       }
 
-      if (!this.nextRecordSet()) {
+      // we are using canInvokeMethod, as in 16.00 nextRecordSet always returns undefined
+      if (!this.canInvokeMethod('GotoNextSet')) {
         break;
       }
+
+      this.nextRecordSet();
     }
+
     return {
       data: [...data.values()],
       hasNext: this.canInvokeMethod('GotoNextSet'),

@@ -117,6 +117,9 @@ export default class N19baseApplet {
   }
 
   invokeMethod(method) {
+    if (!this.canInvokeMethod(method)) {
+      return false;
+    }
     return this.pm.ExecuteMethod('InvokeMethod', method);
   }
 

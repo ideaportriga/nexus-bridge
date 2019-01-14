@@ -116,6 +116,10 @@ export default class N19baseApplet {
     return this.pm.ExecuteMethod('CanInvokeMethod', method);
   }
 
+  invokeMethod(method) {
+    return this.pm.ExecuteMethod('InvokeMethod', method);
+  }
+
   getControls() {
     const controls = {};
     const appletControls = this._returnControls();

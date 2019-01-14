@@ -23,6 +23,8 @@ if (typeof (SiebelAppFacade.NexusDefaultListAppletPR) === "undefined") {
 
           pm.AttachPostProxyExecuteBinding("ALL", function(method) {
             console.log('post proxy', appletName, arguments);
+
+            // it makes sense only for Mvg applet when it is displayed in shuttle
             if (("AddRecords" === method) || ("AddAllRecords" === method) || ("DeleteRecords" === method)) {
               var event = new Event("UpdateMVG");
               document.dispatchEvent(event);

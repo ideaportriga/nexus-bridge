@@ -339,6 +339,8 @@ export default class N19baseApplet {
     return ret;
   }
 
+  // this is a temp method to support the demo where
+  // Siebel and custom rendered applet coexist
   _getFieldToControlMap(_controls) {
     const ret = {};
     const appletControls = this._returnControls();
@@ -628,5 +630,36 @@ export default class N19baseApplet {
   _setFieldValue(name, value) {
     this.applet.GetBusComp().SetFieldValue(name, value);
     return this.applet.InvokeMethod('WriteRecord');
+  }
+
+  getFieldToControlMap() {
+    this.fieldToControlMap = { Id: 'Id' };
+    const appletControls = this._returnControls();
+    const arr = Object.keys(appletControls);
+    for (let i = 0; i < arr.length; i += 1) {
+      const control = appletControls[arr[i]];
+      const field = control.GetFieldName();
+      if (field) {
+        this.fieldToControlMap[field] = arr[i];
+      }
+    }
+    return this.fieldToControlMap;
+  }
+
+  getControlsRecordSet() {
+    if (!this.fieldToControlMap) {
+      this.getFieldToControlMap();
+    }
+    // used slice to avoid modification of the record set
+    const ret = this.getRecordSet().slice();
+
+    for (let i = 0; i < ret.length; i += 1) {
+      ret[i] = Object.keys(ret[i]).filter(el => this.fieldToControlMap[el]).reduce((acc, el) => ({
+        ...acc,
+        ...{ [this.fieldToControlMap[el]]: ret[i][el] },
+      }), {});
+    }
+
+    return ret;
   }
 }

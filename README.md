@@ -1,4 +1,4 @@
-# What is Nexus19
+# Nexus19
 Nexus19 is a JS library that wraps a Siebel Presentation Model and allows building sophisticated UI for Siebel using modern JS frameworks.
 
 ## Documentation

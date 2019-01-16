@@ -1,4 +1,4 @@
-# Vue.js example quick start guide
+# Quick Start Guide - Nexus19 + Vue.js example
 * Compile project to SRF, add 'N19 Account View' to your screen, add access to view to responsibility and clear cache in Responsibility view.
 * Copy content of 'n19_helper\vue_example\example' to 'siebel/custom/example/', references in files point to the example folder in the repository, so path is important
 * Add references to file in Siebel Manifest files:

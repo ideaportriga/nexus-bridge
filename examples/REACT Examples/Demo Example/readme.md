@@ -1,4 +1,4 @@
-# React example quick start guide
+# Quick Start Guide: Nexus19 + React example
 * Copy content of 'n19_helper\react_example\siebel_folder' to 'siebel/custom/example_react/', references in files point to the example_react folder in the repository
 * Add references to file in Siebel Manifest files:
 	* siebel/custom/example_react/n19_example_pr.js

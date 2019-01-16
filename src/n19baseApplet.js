@@ -142,11 +142,11 @@ export default class N19baseApplet {
         required: this._isRequired(controlInputName),
         boundedPick: control.IsBoundedPick() === '1',
         staticPick: control.IsStaticBounded() === '1',
-        pickApplet: control.GetPickApplet(),
+        // pickApplet: control.GetPickApplet(), // confusing and not consistent - see wiki
         inputName: controlInputName,
         isPostChanges: control.IsPostChanges(),
         maxSize: control.GetMaxSize(),
-        maxChars: control.GetMaxChars(),
+        // maxChars: control.GetMaxChars(), // it is always 0
         fieldName: control.GetFieldName(),
         isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
       };
@@ -511,9 +511,9 @@ export default class N19baseApplet {
     return this.applet.CallServerApplet(method, psInput, psOutput, ai);
   }
 
-  _insertPending() {
-    return this.pm.Get('GetBusComp').insertPending;
-  }
+  // _insertPending() {
+  //   return this.pm.Get('GetBusComp').insertPending;
+  // }
 
   static Requery(name) {
     const service = SiebelApp.S_App.GetService('N19 BS');

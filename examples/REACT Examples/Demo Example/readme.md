@@ -10,6 +10,5 @@
 About manifests: https://docs.oracle.com/cd/E14004_01/books/config_open_ui/customizing23.html
 	
 * Use custom .srf with changes applied to Form Applet
-* Copy example folder with files to siebel/custom/
 * Start dedicated
 * press f12 and on browser refresh button (Chrome) right click and press Empty Cache and Hard reload, so the cache is cleared

@@ -8,11 +8,11 @@ The demo example was tested with 16.19 ENU.
 1. Make the changes effective in your project way (Compile or Submit).
 1. Add the `N19 Account View` to the screen of your choce, register the view using Siebel Client, add access to the view to your responsibility, and click the `Clear Cache` button on the `Responsibility Administration View`.
 1. Make the changes effective in your project way (Compile or Submit).
-1. Copy below files to the to the `[Siebel Home]\Client\public\SCRIPTS\siebel\custom\` folder.:
+1. Copy below files to the to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom\` folder:
     * `n19helper\examples\VUE.JS Examples\*.js`
     * `n19helper\examples\VUE.JS Examples\Demo Example\N19_vuedemo_PR.js`
-    * `n19helper\examples\VUE.JS Examples\vuetify.min.css` to the `files/custom/` folder.
     * `n19helper\dist\N19Helper.js`
+1. Copy `n19helper\examples\VUE.JS Examples\vuetify.min.css` file to the `[Siebel Client or Server Home]\public\files\custom` folder:
 1. Add references to file in Siebel Manifest files:
 	* `siebel/custom/N19_vuedemo_PR.js`
 	* `siebel/custom/N19Helper.js`

@@ -8,8 +8,10 @@ The applet supports
 - field properties that are read from Siebel configuration (required, field length)
 
 This is not an example of implementation that can be used on production. It is intentionally kept straightforward and inlined to make sure that demo works almost everywhere and also with IE11 without bundling. 
-
 The demo example was tested with 16.19 ENU.
+
+ ![result](demo_vuejs.png)
+
 1. [Download](https://cbox.ideaportriga.lv/oleg.koleskin/n19helper/-/archive/master/n19helper-master.zip) the Nexus19 library project.
 1. Import the `n19helper/examples/VUE.JS Examples/Demo Example/SIF` sif-files into the Siebel Tools.
 1. Make the changes effective in your project way (Compile or Submit).

@@ -98,13 +98,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'), function (ps) {
             console.log('SWE_PROP_BC_NOTI_STATE_CHANGED', arguments, ps.GetProperty('state'));
-            // do we need 'activeRow'?
-            // if ('activeRow' === ps.GetProperty('state')) {
-            //   console.log('>>>SWE_PROP_BC_NOTI_STATE_CHANGED', arguments);
-            //   if (app) {
-            //     app.afterSelection();
-            //   }
-            // }
+            // works after query
+            if ('activeRow' === ps.GetProperty('state')) {
+              console.log('>>>SWE_PROP_BC_NOTI_STATE_CHANGED', arguments);
+              if (app) {
+                app.afterSelection();
+              }
+            }
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA_WS'), function (propSet) {
@@ -244,30 +244,30 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           var html = '\
           <div id="app">                                                                                                                                        \n\
             <v-app id="inspire">                                                                                                                                \n\
-            <v-snackbar v-model="snackbar" :timeout="3000" :top="true">Record saved<v-btn color="pink" flat @click="snackbar = false">Close</v-btn></v-snackbar>\n\
+            <v-snackbar v-model="snackBar" :timeout="3000" :top="true" :color="snackBarColor">{{snackBarText}}<v-btn :color="snackBarButtonColor" flat @click="snackBar = false">Close</v-btn></v-snackbar>\n\
             <v-container fluid>                                                                                                                                 \n\
                 <v-layout row wrap>                                                                                                                             \n\
                 <v-flex md12 pa-2>                                                                                                                              \n\
                   <v-alert :value="true" type="info">HLS Case Form Applet rendered by VUE.JS PR</v-alert>                                                       \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
-                  <v-text-field prepend-icon="play_arrow" @click:prepend="doDrillDown" :rules="controls.Name.required ? [\'Required\'] : []" v-on:input="changeValue(\'Name\')" ref="caseName" :disabled="controls.Name.readonly" :label="controls.Name.label" v-model="controls.Name.value" clearable v-on:keyup.esc="escapeOnName" v-on:click:clear="handleClear(\'Name\')" :counter="controls.Name.maxSize"></v-text-field> \n\
+                  <v-text-field prepend-icon="play_arrow" @click:prepend="doDrillDown" :rules="controls.Name.required ? [\'Required\'] : []" v-on:input="changeValue(\'Name\')" ref="caseName" :disabled="controls.Name.readonly" :label="controls.Name.label" v-model="controls.Name.value" clearable v-on:keyup.27="escapeOnControl(\'Name\')" v-on:click:clear="handleClear(\'Name\')" :counter="controls.Name.maxSize"></v-text-field> \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
                   <v-switch v-on:change="changeValue(\'InfoChanged\')" :label="controls.InfoChanged.label" v-model="controls.InfoChanged.value" :disabled="controls.InfoChanged.readonly"></v-switch> \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md4 pa-2>                                                                                                                                                 \n\
                 <v-label>Threat Level: {{this.controls[\'Threat Level\'].value}}</v-label><span>                                                                                  \n\
-                  <v-rating :background-color="ratingColor" :color="ratingColor" :readonly="controls[\'Threat Level\'].readonly" v-on:input="changeThreatLevel" v-model="caseThreatLevelNum" clearable length="3" label="Threat Level"></v-rating>  \n\
+                  <v-rating :background-color="ratingColor" :color="ratingColor" :readonly="controls[\'Threat Level\'].readonly" v-on:input="changeThreatLevel" v-model="caseThreatLevelNum" length="3" label="Threat Level" clearable></v-rating>  \n\
                 </span></v-flex>                                                                                                                                \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
                   <v-select :rules="controls.Status.required ? [\'Required\'] : []" box :items="caseStatusArr" v-on:click.native="clickStatus" v-on:change="changeValue(\'Status\')" v-model="controls.Status.value" :label="controls.Status.label" :disbaled="controls.Status.readonly"></v-select> \n\
                 </v-flex>                                                                                                                                                         \n\
                 <v-flex md4 pa-2>                                                                                                                                                 \n\
-                  <v-select :rules="controls[\'Sub Status\'].required ? [\'Required\'] : []" box :disabled="controls[\'Sub Status\'].readonly" :items="caseSubStatusArr" v-on:click.native="clickSubStatus" v-on:change="changeValue(\'Sub Status\')" v-model="controls[\'Sub Status\'].value" :label="controls[\'Sub Status\'].label"></v-select>  \n\
+                  <v-select :rules="controls[\'Sub Status\'].required ? [\'Required\'] : []" box :disabled="controls[\'Sub Status\'].readonly" :items="caseSubStatusArr" v-on:click.native="clickSubStatus" v-on:change="changeValue(\'Sub Status\')" v-model="controls[\'Sub Status\'].value" :label="controls[\'Sub Status\'].label" clearable v-on:keyup.27="escapeOnControl(\'Sub Status\')"></v-select>  \n\
                 </v-flex>                                                                                                                                                         \n\
                 <v-flex md4 pa-2>                                                                                                                                                 \n\
-                  <v-autocomplete :rules="controls.Category.required ? [\'Required\'] : []" v-model="controls.Category.value" :disabled="controls.Category.readonly" :items="caseCategoryArr" v-on:change="changeValue(\'Category\')" :label="controls.Category.label"> \n\
+                  <v-autocomplete :rules="controls.Category.required ? [\'Required\'] : []" v-model="controls.Category.value" :disabled="controls.Category.readonly" :items="caseCategoryArr" v-on:change="changeValue(\'Category\')" :label="controls.Category.label" clearable v-on:keyup.27="escapeOnControl(\'Category\')"> \n\
                 </v-flex>                                                                                                                                                         \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
                   <v-label>Sales Rep:</v-label>                                                                                                                 \n\
@@ -278,7 +278,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-btn flat icon v-on:click="showMvgApplet" color="indigo"><v-icon>edit</v-icon></v-btn>                                                      \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
-                  <v-text-field append-icon="report" @click:append="openPickApplet" :rules="controls[\'Audit Employee Last Name\'].required ? [\'Required\'] : []" v-on:input="changeValue(\'Audit Employee Last Name\')" :disabled="controls[\'Audit Employee Last Name\'].readonly" :label="controls[\'Audit Employee Last Name\'].label" v-model="controls[\'Audit Employee Last Name\'].value" clearable v-on:keyup.esc="escapeOnName" v-on:click:clear="handleClear(\'Audit Employee Last Name\')" :counter="controls[\'Audit Employee Last Name\'].maxSize"></v-text-field> \n\
+                  <v-text-field append-icon="report" @click:append="openPickApplet" :rules="controls[\'Audit Employee Last Name\'].required ? [\'Required\'] : []" v-on:input="changeValue(\'Audit Employee Last Name\')" :disabled="controls[\'Audit Employee Last Name\'].readonly" :label="controls[\'Audit Employee Last Name\'].label" v-model="controls[\'Audit Employee Last Name\'].value" clearable v-on:keyup.27="escapeOnControl(\'Audit Employee Last Name\')" v-on:click:clear="handleClear(\'Audit Employee Last Name\')" :counter="controls[\'Audit Employee Last Name\'].maxSize"></v-text-field> \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
                   <v-autocomplete                                                                           \n\
@@ -369,7 +369,10 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 'Audit Employee Full Name': {},
               },
               caseThreatLevelNum: 0,
-              snackbar: false,
+              snackBar: false,
+              snackBarColor: '',
+              snackBarText: '',
+              snackBarButtonColor: '',
               caseStatusArr: [],
               caseSubStatusArr: [],
               caseCategoryArr: [],
@@ -622,9 +625,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   }
                 }
               },
-              escapeOnName: function () {
-                this.controls.Name.value = n19helper.getCurrentRecord().Name;
-                this.changeValue('Name');
+              escapeOnControl: function (name) {
+                this.controls[name].value = n19helper.getCurrentRecord()[this.controls[name].fieldName];
+                this.changeValue(name);
               },
               handleClear: function (name) { // this is needed because clearing set the model value to null
                 this.controls[name].value = '';     // maybe it is not needed if we handle it inside N19
@@ -644,10 +647,17 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 n19helper.gotoView('PUB GOV Case Activity Plans View', 'HLS Case Form Applet');
               },
               saveButtonClick: function () {
-                n19helper.writeRecord(function () {
-                  this.snackbar = true;
+                n19helper.writeRecord().then(()=>{
+                  this.snackBarColor = 'success';
+                  this.snackBarText = 'Record Saved Successfully';
+                  this.snackBarButtonColor = 'pink';
+                  this.snackBar = true;
                   this.afterSelection();
-                }.bind(this));
+                }).catch(()=>{
+                  this.snackBarColor = 'error';
+                  this.snackBarText = 'FAILED TO SAVE';
+                  this.snackBarButtonColor = 'black';
+                  this.snackBar = true;            });
               },
               nextButtonClick: function () {
                 if (!n19helper.canInvokeMethod("GotoNextSet")) {
@@ -799,7 +809,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 this.caseThreatLevelNum = this.caseThreatLevelArr.indexOf(this.controls['Threat Level'].value) + 1;
                 this.caseStatusArr = [this.controls.Status.value];
                 this.caseSubStatusArr = [this.controls['Sub Status'].value];
-                this.getSalesRep();
+                if (this.controls.id) {
+                  this.getSalesRep();
+                }
               }
             }
           });

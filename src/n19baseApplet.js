@@ -247,6 +247,7 @@ export default class N19baseApplet {
   }
 
   newRecord(cb) {
+    // todo: should it be the same as WriteRecord?
     const promise = new Promise(resolve => this._newRecord(resolve));
     return typeof cb === 'function' ? promise.then(cb) : promise;
   }
@@ -262,9 +263,18 @@ export default class N19baseApplet {
     return this.pm.ExecuteMethod('InvokeMethod', 'NewRecord', null, false);
   }
 
-  writeRecord(cb) {
-    const promise = new Promise(resolve => this._writeRecord(resolve));
-    return typeof cb === 'function' ? promise.then(cb) : promise;
+  writeRecord(cb, cberr) {
+    let promise = new Promise((resolve, reject) => this._writeRecord((...args) => {
+      // do we always have three input arguments, and the third argument is property set?
+      if (args[2].GetProperty('Status') === 'Completed') {
+        resolve();
+      } else {
+        reject();
+      }
+    }));
+    promise = typeof cb === 'function' ? promise.then(cb) : promise;
+    promise = typeof cberr === 'function' ? promise.catch(cberr) : promise;
+    return promise;
   }
 
   _writeRecord(cb) {

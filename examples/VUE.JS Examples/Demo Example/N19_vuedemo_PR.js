@@ -76,7 +76,10 @@ function mountVueSample(elementId, pm) {
     el: '#' + elementId,
     template: compiledTemplate,
     data: {
-      snackbar: false,
+      snackBar: false,
+      snackBarColor: '',
+      snackBarText: '',
+      snackBarButtonColor: '',
       controls: {
         'Name': {},
         'AccountStatus': {},
@@ -96,7 +99,17 @@ function mountVueSample(elementId, pm) {
     },
     methods: {
       saveRecord: function () {
-        this.snackbar = n19.writeRecordSync()
+        n19.writeRecord(function() {
+          this.snackBarColor = 'success';
+          this.snackBarText = 'Record Saved Successfully';
+          this.snackBarButtonColor = 'pink';
+          this.snackBar = true;
+        }.bind(this), function() {
+          this.snackBarColor = 'error';
+          this.snackBarText = 'FAILED TO SAVE';
+          this.snackBarButtonColor = 'black';
+          this.snackBar = true;
+        }.bind(this));
       },
       changeValue: function (name) {
         if (n19.setControlValue(name, this.controls[name].value)) {
@@ -152,9 +165,9 @@ function mountVueSample(elementId, pm) {
 var compiledTemplate = '\
   <div id="vue_sample"> \
     <v-app id="inspire"> \
-      <v-snackbar v-model="snackbar" :timeout="3000" :top="true"> \
-        Record saved \
-        <v-btn color="pink" flat @click="snackbar = false">Close</v-btn> \
+      <v-snackbar v-model="snackBar" :timeout="3000" :top="true" :color="snackBarColor"> \
+        {{ snackBarText }} \
+        <v-btn :color="snackBarButtonColor" flat @click="snackBar = false">Close</v-btn> \
       </v-snackbar> \
       <v-container fluid> \
         <v-layout row wrap> \

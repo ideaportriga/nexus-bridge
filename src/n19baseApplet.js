@@ -397,6 +397,7 @@ export default class N19baseApplet {
             isPostChanges: control.IsPostChanges(),
             required: this._isRequired(controlInputName),
             maxSize: control.GetMaxSize(),
+            fieldName: control.GetFieldName(),
           };
         } else { // no record displayed
           _controls[arr[i]] = { // eslint-disable-line no-param-reassign
@@ -407,6 +408,7 @@ export default class N19baseApplet {
             isPostChanges: control.IsPostChanges(),
             required: this._isRequired(controlInputName),
             maxSize: control.GetMaxSize(),
+            fieldName: control.GetFieldName(),
           };
         }
       }

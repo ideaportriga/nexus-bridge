@@ -1,6 +1,13 @@
 # Quick Start Guide: Nexus19 + Vue.js example
 
-This is not an example of implementation, and it is intentionally kept straightforward and inlined to make sure it works almost everywhere and also with IE11 without bundling. 
+This guide will help setting up Nexus19 with the demo of Form Applet that is built using Nexus19 and Vue.js
+The applet supports 
+- navigation through records
+- displaying, editing and saving data
+- picklists that are read from Siebel configuration
+- field properties that are read from Siebel configuration (required, field length)
+
+This is not an example of implementation that can be used on production. It is intentionally kept straightforward and inlined to make sure that demo works almost everywhere and also with IE11 without bundling. 
 
 The demo example was tested with 16.19 ENU.
 1. [Download](https://cbox.ideaportriga.lv/oleg.koleskin/n19helper/-/archive/master/n19helper-master.zip) the Nexus19 library project.

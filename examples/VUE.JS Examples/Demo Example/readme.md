@@ -21,10 +21,10 @@ The demo example was tested with 16.19 ENU.
       * Under `Administration - Application > Views` add any Responsibility to this View
       * Under `Administration - User > Users` – add same Responsibility to your User
       * Click `Clear cache` button under `Administration – Application > Responsibilities` view
-      * Re-login to the Siebel Application and check that the view is available
 1. Compile(Siebel IP16 and earlier) or Submit(Siebel IP17+) following objects: 
     * `Nexus19 Demo Examples` project
     * Screen that you've updated above.
+1. Re-login to your Siebel Application and check that the view is available visible under the screen you've added it to.
 1. Copy below files to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom\` folder:
     * `n19helper-master\examples\VUE.JS Examples\*.js`
     * `n19helper-master\examples\VUE.JS Examples\Demo Example\N19_vuedemo_PR.js`
@@ -48,7 +48,7 @@ The demo example was tested with 16.19 ENU.
    >- add a new record under **Files** with:
    >    <br>**Name:** `siebel/custom/N19_vuedemo_PR.js`
 
-1. Open the Siebel Application.
+1. Re-login to your Siebel Application.
 1. Empty browser cache and hard reload
    <br>(e.g. using Chrome: press F12, then right-click a browser Refresh button and press ‘Empty Cache and Hard Reload’)
 1. Navigate to the `N19 Account View`.

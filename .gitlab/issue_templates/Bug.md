@@ -38,7 +38,7 @@ Siebel version:
 Happens in the dedicated client:
 Happens in the web client:   
 Browser version: 
-Nexus version: 
-
+Nexus version (could be found in Repository Tags): 
+Defect reproduced in Demo Example:
 
 /label ~bug

@@ -265,7 +265,7 @@ export default class N19baseApplet {
 
   writeRecord(cb, cberr) {
     let promise = new Promise((resolve, reject) => this._writeRecord((...args) => {
-      // do we always have three input arguments, and the third argument is property set?
+      // do we always have three input arguments, and the third argument is
       if (args[2].GetProperty('Status') === 'Completed') {
         resolve();
       } else {
@@ -290,6 +290,10 @@ export default class N19baseApplet {
 
   deleteRecordSync() {
     return this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecord', null, false);
+  }
+
+  undoRecordSync() {
+    return this.pm.ExecuteMethod('InvokeMethod', 'UndoRecord', null, false);
   }
 
   setControlValue(name, value) {

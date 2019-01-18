@@ -8,7 +8,7 @@ The [Wiki](/../wikis/home) provides a Nexus19 library documentation.
 Make a clean Nexus19 Setup by following [this guide](/../wikis/Setup Nexus19).
 
 ## Quick Start
-Try the below guides that will help you to setup Nexus19 library with a lightweight UI demo (built using a modern web framework):
+The below guides will help you to setup Nexus19 library with a lightweight UI demo (built using a modern web framework):
 - [Nexus19 Setup + Vue.js example quick start guide](/../blob/master/examples/VUE.JS%20Examples/Demo%20Example/readme.md)
 - [Nexus19 Setup + React example quick start guide](/../blob/master/examples/REACT%20Examples/Demo%20Example/readme.md)
 - Nexus19 Setup + Angular example quick start guide

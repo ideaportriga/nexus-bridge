@@ -1,6 +1,6 @@
 # Quick Start Guide: Nexus19 + Vue.js example
 
-This guide will help to setup Nexus19 with the demo of Form Applet that is built using Nexus19 and Vue.js
+This guide will help to setup Nexus19 with the demo of a Form Applet that is built using Nexus19 and Vue.js
 <br>The applet supports:
 - navigation through records
 - displaying, editing and saving data
@@ -12,7 +12,7 @@ The demo example was tested with 16.19 ENU.
 
  ![result](demo_vuejs.png)
 
-1. Make a clean [Nexus19 Setup](/../wikis/Setup Nexus19).
+1. Make a clean [Nexus19 Setup](/../wikis/Setup Nexus19) if you haven't done it before.
 1. Import the `n19helper/examples/VUE.JS Examples/Demo Example/SIF` sif-files into the Siebel Tools.
 1. Add the `N19 Account View` to the screen of your choce, register the view using Siebel Client, add access to the view to your responsibility, and click the `Clear Cache` button on the `Responsibility Administration View`.
 1. Make the changes effective in your project way (Compile or Submit).

@@ -42,11 +42,13 @@ class App extends Component {
   }
 
   componentDidMount = () => {
-    this.refreshRecord();
-    this.attachEventListeners();
+    this.selectInit();
+    this.props.n19Helper.subscribe(() => { // to get the update when PM is changed
+      this.selectInit();
+    });
   }
 
-  refreshRecord = () => {
+  selectInit = () => {
     const controls = { ...this.state.controls };
     this.props.n19Helper.getCurrentRecordModel(controls);
     const newState = { controls: controls };
@@ -54,7 +56,9 @@ class App extends Component {
   }
 
   handleCloseSnack = (event, reason) => {
-    if (reason === 'clickaway') return;
+    if (reason === 'clickaway') {
+      return;
+    }
     this.setState({ openSnackbar: false });
   };
 
@@ -74,12 +78,8 @@ class App extends Component {
     const ctr = this.state.controls[name];
     const ctrls = { ...this.state.controls };
 
-    if (this.props.n19Helper.setControlValue(name, val)) {
-      if (ctr.isPostChanges) {
-        this.refreshRecord();
-      }
-    } else {
-      val = this.props.n19Helper.getCurrentRecord()[name];
+    if (!this.props.n19Helper.setControlValue(name, val)) { // control is not set successfully
+      val = this.props.n19Helper.getCurrentRecord()[ctr.fieldName];
     }
 
     ctrls[name] = { ...ctr };
@@ -90,25 +90,10 @@ class App extends Component {
 
   saveRecord = () => {
     this.props.n19Helper.writeRecord(() => {
-      this.setState({ openSnackbar: true });
+      this.setState({ snackBarText: 'Record is saved!', openSnackbar: true });
+    }, () => {
+      this.setState({ snackBarText: 'Record IS NOT saved!', openSnackbar: true });
     });
-  }
-
-  attachEventListeners = () => {
-    this.props.pm.AttachNotificationHandler(
-      window.consts.get('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW'), () => {
-        this.refreshRecord();
-      });
-
-    this.props.pm.AttachNotificationHandler(
-      window.consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'), (propSet) => {
-        if (propSet.GetProperty('bSetup') === "false") this.refreshRecord();
-      });
-
-    this.props.pm.AttachNotificationHandler(
-      window.consts.get('SWE_PROP_BC_NOTI_NEW_RECORD'), () => {
-        this.refreshRecord();
-      });
   }
 
   render() {
@@ -125,7 +110,7 @@ class App extends Component {
           ContentProps={{
             'aria-describedby': 'message-id',
           }}
-          message={<span id="message-id">Record is saved</span>}
+          message={<span id="message-id">{this.state.snackBarText}</span>}
           action={[
             <IconButton
               key="close"
@@ -140,7 +125,7 @@ class App extends Component {
         />
 
         <Grid container spacing={8} style={{ padding: 15, background: '#3f51b5', color: '#fff' }}>
-          {this.props.n19Helper.appletName} {' created by React'}
+          {this.props.n19Helper.appletName} {' rendered by React'}
         </Grid>
 
         <Grid container spacing={8} style={{ padding: 15 }}>
@@ -214,28 +199,16 @@ class App extends Component {
               </Button>
           </Grid>
 
-          <Grid item xs={1} sm={1} lg={1} xl={1}>
-            <Button style={{ width: '100%' }} onClick={() => { this.props.n19Helper.deleteRecord() }} variant="contained" color="primary">
-              <Icon>delete</Icon> DELETE
-              </Button>
-          </Grid>
-
-          <Grid item xs={7} sm={7} lg={7} xl={7} />
+          <Grid item xs={9} sm={9} lg={9} xl={9} />
 
           <Grid item xs={1} sm={1} lg={1} xl={1}>
-            <Button style={{ width: '100%' }} onClick={() => { this.props.n19Helper.gotoView('Account Detail - Contacts View', this.props.n19Helper.appletName) }} variant="contained" color="primary">
-              <Icon>language</Icon> Goto!
-              </Button>
-          </Grid>
-
-          <Grid item xs={1} sm={1} lg={1} xl={1}>
-            <Button style={{ width: '100%' }} onClick={() => { this.props.n19Helper.prevRecord() }} variant="contained" color="primary">
+            <Button style={{ width: '100%' }} onClick={() => { this.props.n19Helper.prevRecord(); }} variant="contained" color="primary">
               <Icon>navigate_before</Icon>
             </Button>
           </Grid>
 
           <Grid item xs={1} sm={1} lg={1} xl={1}>
-            <Button style={{ width: '100%' }} onClick={() => { this.props.n19Helper.nextRecord() }} variant="contained" color="primary">
+            <Button style={{ width: '100%' }} onClick={() => { this.props.n19Helper.nextRecord(); }} variant="contained" color="primary">
               <Icon>navigate_next</Icon>
             </Button>
           </Grid>

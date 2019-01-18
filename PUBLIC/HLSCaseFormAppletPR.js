@@ -832,6 +832,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             app = null;
           }
           $("link[href*='vuetify.min.css']").remove();
+          $("link[href*='https://fonts.googleapis.com/css']").remove();
+
           n19helper = null;
           if (SiebelAppFacade.N19 && SiebelAppFacade.N19[appletName]) {
             delete SiebelAppFacade.N19[appletName];

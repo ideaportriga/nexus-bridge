@@ -45,6 +45,7 @@ if (typeof (SiebelAppFacade.N19_vuedemo_PR) === "undefined") {
             $('vue_sample').remove();
           }
           $("link[href*='vuetify.min.css']").remove();
+          $("link[href*='https://fonts.googleapis.com/css']").remove();
           SiebelAppFacade.N19_vuedemo_PR.superclass.EndLife.apply(this, arguments); //Siebel applet cleanup
         }
         return N19_vuedemo_PR;
@@ -56,7 +57,7 @@ if (typeof (SiebelAppFacade.N19_vuedemo_PR) === "undefined") {
 
 function importCss() {
   $('head').append('<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" rel="stylesheet"></link>');
-  $('head').append('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>');
+  $('head').append('<link type="text/css" rel="stylesheet" href="files/custom/vuetify.min.css"/>');
   $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
 }
 

@@ -24,7 +24,7 @@ The demo example was tested with 16.19 ENU.
 1. Compile(Siebel IP16 and earlier) or Submit(Siebel IP17+) following objects: 
     * `Nexus19 Demo Examples` project
     * Screen that you've updated above.
-1. Re-login to your Siebel Application and check that the view is available visible under the screen you've added it to.
+1. Re-login to your Siebel Application and check that the View is available under the screen you've added it to.
 1. Copy below files to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom\` folder:
     * `n19helper-master\examples\VUE.JS Examples\*.js`
     * `n19helper-master\examples\VUE.JS Examples\Demo Example\N19_vuedemo_PR.js`

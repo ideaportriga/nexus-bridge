@@ -25,7 +25,7 @@ The demo example was tested with 16.19 ENU.
     * Screen that you've updated above.
 1. Re-login to your Siebel Application and check that the View is available under the screen you've added it to.
 1. Copy below files and folders to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom\` folder:
-    * `/examples/REACT Examples/JS_DIST/*` including `react_dist` folder
+    * `n19helper-master/examples/REACT Examples/JS_DIST/*` including `react_dist` folder
 1. Use Siebel Client to reference js files in Siebel Open UI Manifest as follows:
 	- under `Administration - Application > Manifest Files` 
 	>- add a new record with: 

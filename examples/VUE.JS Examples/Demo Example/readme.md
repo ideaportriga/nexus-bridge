@@ -1,6 +1,6 @@
 # Quick Start Guide: Nexus19 + Vue.js example
 
-This guide will help to setup Nexus19 with the demo of a Form Applet that is built using Nexus19 and Vue.js
+This guide will help to setup Nexus19 with the demo of a Form Applet that is built using Nexus19 and Vue.js framework.
 <br>The applet supports:
 - navigation through records
 - displaying, editing and saving data

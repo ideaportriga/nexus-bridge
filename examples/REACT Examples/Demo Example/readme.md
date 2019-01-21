@@ -13,7 +13,17 @@ The demo example was tested with 16.19 ENU.
 1. Make a clean [Nexus19 Setup](/../wikis/Setup Nexus19) if you haven't done it before.
 1. Import the `n19helper-master/examples/REACT Examples/Demo Example/SIF` sif-files into the Siebel Tools.
 1. Add the `N19 React Account View` to the screen of your choce, register the view using Siebel Client, add access to the view to your responsibility, and click the `Clear Cache` button on the `Responsibility Administration View`.
-1. Make the changes effective in your project way (Compile or Submit).
+1. Add the `N19 React Account View` to your application: 
+      * Choose a Screen that you have available in your Siebel application e.g. `Accounts Screen`
+      * Add `N19 React Account View` to this screen using Siebel Tools(`Screen > Screen view`)
+      * Use Siebel Client to add a new record with Name `N19 React Account View` under `Administration - Application > Views`
+      * Under `Administration - Application > Views` add any Responsibility to this View
+      * Under `Administration - User > Users` – add same Responsibility to your User
+      * Click `Clear cache` button under `Administration – Application > Responsibilities` view
+1. Compile(Siebel IP16 and earlier) or Submit(Siebel IP17+) following objects: 
+    * `Nexus19 Demo Examples` project
+    * Screen that you've updated above.
+1. Re-login to your Siebel Application and check that the view is available visible under the screen you've added it to.
 1. Copy below files and folders to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom\` folder:
     * `/examples/REACT Examples/JS_DIST/*` including `react_dist` folder
 1. Use Siebel Client to reference js files in Siebel Open UI Manifest as follows:

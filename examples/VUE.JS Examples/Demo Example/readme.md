@@ -7,7 +7,7 @@ This guide will help to setup Nexus19 with the demo of a Form Applet that is bui
 - picklists that are read from Siebel configuration
 - field properties that are read from Siebel configuration (required, field length)
 
-This is not an example of implementation that can be used on production. It is intentionally kept straightforward and inlined to make sure that demo works almost everywhere and also with IE11 without bundling. 
+This is not an example of implementation that can be used on production. It is intentionally kept straightforward.
 The demo example was tested with 16.19 ENU.
 
  ![result](demo_vuejs.png)

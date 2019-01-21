@@ -1,6 +1,6 @@
 # Quick Start Guide: Nexus19 + React example
 
-This guide will help to setup Nexus19 with the demo of a Form Applet that is built using Nexus19 and React
+This guide will help to setup Nexus19 with the demo of a Form Applet that is built using Nexus19 and React framework
 <br>The applet supports:
 - navigation through records
 - displaying, editing and saving data

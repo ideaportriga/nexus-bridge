@@ -402,17 +402,17 @@ export default class N19baseApplet {
       if (typeof control !== 'undefined') {
         const controlName = control.GetName();
         const controlInputName = control.GetInputName();
-        const controlFieldName = control.GetFieldName();
+        const fieldName = control.GetFieldName();
         if (_controls.isRecord) {
           _controls[arr[i]] = { // eslint-disable-line no-param-reassign
-            value: this._getControlValue(control.GetUIType(), obj[controlFieldName]),
+            value: this._getControlValue(control.GetUIType(), obj[fieldName]),
             readonly: !this.pm.ExecuteMethod('CanUpdate', controlName),
             isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
             label: control.GetDisplayName(),
             isPostChanges: control.IsPostChanges(),
             required: this._isRequired(controlInputName),
             maxSize: control.GetMaxSize(),
-            fieldName: control.GetFieldName(),
+            fieldName,
           };
         } else { // no record displayed
           _controls[arr[i]] = { // eslint-disable-line no-param-reassign
@@ -423,7 +423,7 @@ export default class N19baseApplet {
             isPostChanges: control.IsPostChanges(),
             required: this._isRequired(controlInputName),
             maxSize: control.GetMaxSize(),
-            fieldName: control.GetFieldName(),
+            fieldName,
           };
         }
       }
@@ -622,7 +622,7 @@ export default class N19baseApplet {
     return this.pm.Get(name);
   }
 
-  _retrieveData(amount) {
+  _retrieveData(amount) { // temp method?
     const data = new Map();
 
     while (data.size < amount) {

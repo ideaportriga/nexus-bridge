@@ -94,6 +94,7 @@ function mountVueSample(elementId, pm) {
     },
     mounted: function () {
       this.selectionInit(); // resetting record based on siebel record, mapping control state to vue instance
+      this.subscribeId = n19.subscribe(this.selectionInit);
       this.accountStatusList = n19.getStaticLOV('AccountStatus');
       this.accountTypeCodeList = n19.getStaticLOV('AccountTypeCode');
       this.accountTypeList = n19.getStaticLOV('Type');
@@ -114,9 +115,7 @@ function mountVueSample(elementId, pm) {
       },
       changeValue: function (name) {
         if (n19.setControlValue(name, this.controls[name].value)) {
-          if (this.controls[name].isPostChanges) {
-            this.selectInit();
-          }
+          this.controls[name].isPostChanges;
         } else { // the value was not set successfully
           var currentValue = n19.getCurrentRecord()[name];
           setTimeout(function () {
@@ -127,7 +126,6 @@ function mountVueSample(elementId, pm) {
       nextRecord: function () {
         if (n19.canInvokeMethod("GotoNextSet")) {
           n19.nextRecord();
-          this.selectionInit();
         } else {
           alert('GotoNextSet record is not available');
         }
@@ -135,7 +133,6 @@ function mountVueSample(elementId, pm) {
       prevRecord: function () {
         if (n19.canInvokeMethod("GotoPreviousSet")) {
           n19.prevRecord();
-          this.selectionInit();
         } else {
           alert('GotoPreviousSet record is not available');
         }
@@ -152,6 +149,7 @@ function mountVueSample(elementId, pm) {
         n19.getCurrentRecordModel(this.controls);
       },
       beforeDestroy: function () {
+        this.unsubscribeId(this.subscribeId);
         n19 = null;
       }
     }

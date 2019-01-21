@@ -12,7 +12,7 @@ The demo example was tested with 16.19 ENU.
 
 1. Make a clean [Nexus19 Setup](/../wikis/Setup Nexus19) if you haven't done it before.
 1. Import the `n19helper-master/examples/REACT Examples/Demo Example/SIF/objects_withscreen.sif` into the Siebel Tools.
-1. Add the `N19 React Account Screen` to your application:
+1. Add the `N19 React Account Screen` and View to your application:
       * Findout your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` into Chrome Developer Tools console.
       * Use Siebel Tools and add `N19 React Account Screen` under `Application > Screen Menu Item` and under `Page Tab` for your Siebel Application Name
       * Use Siebel Client to add a new record with Name `N19 React Account View` under `Administration - Application > Views`

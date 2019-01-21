@@ -44,8 +44,9 @@ The demo example was tested with 16.19 ENU.
    >- add a new record under **Files** with:
    ><br>**Name:** `siebel/custom/N19_reactdemo_PR.js`
 
-   [Bookshelf > Manifests](https://docs.oracle.com/cd/E95904_01/books/ConfigOpenUI/customizing35.html)
-1. Open the Siebel Application.
-1. Clear the browser cache and navigate to the `N19 Account View`.
+1. Re-login to your Siebel Application.
+1. Empty browser cache and hard reload
+   <br>*(e.g. using Chrome: press F12, then right-click a browser Refresh button and press ‘Empty Cache and Hard Reload’)*
+1. Navigate to the `N19 React Account View`.
 
 

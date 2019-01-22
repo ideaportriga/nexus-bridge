@@ -383,34 +383,33 @@ export default class N19baseApplet {
     return this.pm.Get('GetRecordSet')[index];
   }
 
-  getCurrentRecordModel(_controls) {
+  getCurrentRecordModel(_controls, _methods) {
     if (!_controls) {
       return false;
     }
-    const arr = Object.keys(_controls);
     const index = this.getSelection();
-    const appletControls = this._returnControls();
-    _controls.isRecord = index > -1; // eslint-disable-line no-param-reassign
+    const isRecord = index > -1; // eslint-disable-line no-param-reassign
     let obj = {};
-    if (_controls.isRecord) {
+    if (isRecord) {
       obj = this.getRecordSet()[index];
       _controls.id = this.getRawRecordSet()[index].Id;// eslint-disable-line no-param-reassign
     }
-
+    let arr = Object.keys(_controls);
+    const appletControls = this._returnControls();
+    // populate controls
     for (let i = 0; i < arr.length; i += 1) {
       const control = appletControls[arr[i]];
       if (typeof control !== 'undefined') {
         const controlName = control.GetName();
-        const controlInputName = control.GetInputName();
         const fieldName = control.GetFieldName();
-        if (_controls.isRecord) {
+        if (isRecord) {
           _controls[arr[i]] = { // eslint-disable-line no-param-reassign
             value: this._getControlValue(control.GetUIType(), obj[fieldName]),
             readonly: !this.pm.ExecuteMethod('CanUpdate', controlName),
             isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
             label: control.GetDisplayName(),
             isPostChanges: control.IsPostChanges(),
-            required: this._isRequired(controlInputName),
+            required: this._isRequired(control.GetInputName()),
             maxSize: control.GetMaxSize(),
             fieldName,
           };
@@ -421,14 +420,20 @@ export default class N19baseApplet {
             isLink: false,
             label: control.GetDisplayName(),
             isPostChanges: control.IsPostChanges(),
-            required: this._isRequired(controlInputName),
+            required: this._isRequired(control.GetInputName()),
             maxSize: control.GetMaxSize(),
             fieldName,
           };
         }
       }
     }
-    // todo: do we need to return true or better to return also the object?
+    // populate methods
+    if (_methods) {
+      arr = Object.keys(_methods);
+      for (let i = 0; i < arr.length; i += 1) {
+        _methods[arr[i]] = this.canInvokeMethod(arr[i]); // eslint-disable-line no-param-reassign
+      }
+    }
     return true;
   }
 
@@ -527,10 +532,6 @@ export default class N19baseApplet {
 
     return this.applet.CallServerApplet(method, psInput, psOutput, ai);
   }
-
-  // _insertPending() {
-  //   return this.pm.Get('GetBusComp').insertPending;
-  // }
 
   static Requery(name) {
     const service = SiebelApp.S_App.GetService('N19 BS');

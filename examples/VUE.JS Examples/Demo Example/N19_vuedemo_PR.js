@@ -88,6 +88,11 @@ function mountVueSample(elementId, pm) {
         'Fund Eligible Flag': {},
         'Type': {}
       },
+      methods: {
+        GotoPreviousSet: false,
+        GotoNextSet: false,
+        WriteRecord: false
+      },
       'accountStatusList': [],
       'accountTypeCodeList': [],
       'accountTypeList': []
@@ -124,18 +129,10 @@ function mountVueSample(elementId, pm) {
         }
       },
       nextRecord: function () {
-        if (n19.canInvokeMethod("GotoNextSet")) {
-          n19.nextRecord();
-        } else {
-          alert('GotoNextSet record is not available');
-        }
+        n19.nextRecord();
       },
       prevRecord: function () {
-        if (n19.canInvokeMethod("GotoPreviousSet")) {
-          n19.prevRecord();
-        } else {
-          alert('GotoPreviousSet record is not available');
-        }
+        n19.prevRecord();
       },
       escapeOnControl: function (name) {
         this.controls[name].value = n19.getCurrentRecord()[this.controls[name].fieldName];
@@ -146,7 +143,7 @@ function mountVueSample(elementId, pm) {
         this.changeValue(name);
       },
       selectionInit: function () {
-        n19.getCurrentRecordModel(this.controls);
+        n19.getCurrentRecordModel(this.controls, this.methods);
       },
       beforeDestroy: function () {
         this.unsubscribeId(this.subscribeId);
@@ -204,17 +201,17 @@ var compiledTemplate = '\
             <v-divider></v-divider> \
           </v-flex> \
           <v-flex md1 pa-2>\
-            <v-btn block v-on:click="saveRecord" color="primary"><v-icon>save</v-icon>Save!</v-btn> \
+            <v-btn :disabled="!methods.WriteRecord" block v-on:click="saveRecord" color="primary"><v-icon>save</v-icon>Save!</v-btn> \
           </v-flex> \
           <v-flex md9 pa-2> \
           </v-flex> \
           <v-flex md1 pa-2> \
-            <v-tooltip top><v-btn block slot="activator" v-on:click="prevRecord" color="primary"> \
+            <v-tooltip top><v-btn :disabled="!methods.GotoPreviousSet" block slot="activator" v-on:click="prevRecord" color="primary"> \
             <v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip> \
           </v-flex> \
           <v-flex md1 pa-2> \
-            <v-tooltip top><v-btn block slot="activator" v-on:click="nextRecord" color="primary"> \
-            <v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip> \
+            <v-tooltip top><v-btn :disabled="!methods.GotoNextSet" block slot="activator" v-on:click="nextRecord" color="primary"> \
+            <v-icon>navigate_next</v-icon></v-btn><span>Go to the next record</span></v-tooltip> \
           </v-flex> \
         </v-layout> \
       </v-container> \

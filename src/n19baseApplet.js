@@ -393,18 +393,21 @@ export default class N19baseApplet {
     // 4 - Record is displayed,
     // 5 - Record is read-only
 
+    const bc = this.applet.GetBusComp();
+
+    if (bc.IsInQueryState()) {
+      // if no records and the entered the query mode,
+      // selection is -1, therefore we need to check query mode first
+      return 3;
+    }
     if (this.getSelection() < 0) {
       return 0;
     }
-    const bc = this.applet.GetBusComp();
     if (bc.IsInsertPending()) {
       return 1;
     }
     if (bc.IsCommitPending()) {
       return 2;
-    }
-    if (bc.IsInQueryState()) {
-      return 3;
     }
     if (!this.canInvokeMethod('WriteRecord')) {
       return 5;
@@ -419,8 +422,8 @@ export default class N19baseApplet {
     }
     _controls.state = this.calculateCurrentRecordState(); // eslint-disable-line no-param-reassign
     let obj = {};
-    if (_controls.state > 0) {
-      const index = this.getSelection();
+    const index = this.getSelection();
+    if (index > 0) {
       obj = this.getRecordSet()[index];
       _controls.id = this.getRawRecordSet()[index].Id; // eslint-disable-line no-param-reassign
     }

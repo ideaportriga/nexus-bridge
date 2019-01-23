@@ -383,16 +383,45 @@ export default class N19baseApplet {
     return this.pm.Get('GetRecordSet')[index];
   }
 
+  calculateCurrentRecordState() {
+    // todo: do we need to delete pending
+    // 0 - No records displayed
+    // 1 - Record is being created
+    // 2 - Record is being edited
+    // 3 - Is in query mode
+    // 4 - Record is displayed,
+    // 5 - Record is read-only
+
+    if (this.getSelection() < 0) {
+      return 0;
+    }
+    const bc = this.applet.GetBusComp();
+    if (bc.IsInsertPending()) {
+      return 1;
+    }
+    if (bc.IsCommitPending()) {
+      return 2;
+    }
+    if (bc.IsInQueryState()) {
+      return 3;
+    }
+    if (!this.canInvokeMethod('WriteRecord')) {
+      return 5;
+    }
+
+    return 4; // this is a default fallback;
+  }
+
   getCurrentRecordModel(_controls, _methods) {
     if (!_controls) {
       return false;
     }
-    const index = this.getSelection();
-    const isRecord = index > -1; // eslint-disable-line no-param-reassign
+    _controls.state = this.calculateCurrentRecordState(); // eslint-disable-line no-param-reassign
     let obj = {};
-    if (isRecord) {
+    if (_controls.state > 0) {
+      const index = this.getSelection();
       obj = this.getRecordSet()[index];
-      _controls.id = this.getRawRecordSet()[index].Id;// eslint-disable-line no-param-reassign
+      _controls.id = this.getRawRecordSet()[index].Id; // eslint-disable-line no-param-reassign
     }
     let arr = Object.keys(_controls);
     const appletControls = this._returnControls();
@@ -402,7 +431,7 @@ export default class N19baseApplet {
       if (typeof control !== 'undefined') {
         const controlName = control.GetName();
         const fieldName = control.GetFieldName();
-        if (isRecord) {
+        if (_controls.state > 0) {
           _controls[arr[i]] = { // eslint-disable-line no-param-reassign
             value: this._getControlValue(control.GetUIType(), obj[fieldName]),
             readonly: !this.pm.ExecuteMethod('CanUpdate', controlName),

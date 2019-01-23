@@ -423,7 +423,7 @@ export default class N19baseApplet {
     _controls.state = this.calculateCurrentRecordState(); // eslint-disable-line no-param-reassign
     let obj = {};
     const index = this.getSelection();
-    if (index > 0) {
+    if (index > -1) {
       obj = this.getRecordSet()[index];
       _controls.id = this.getRawRecordSet()[index].Id; // eslint-disable-line no-param-reassign
     }

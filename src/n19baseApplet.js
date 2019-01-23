@@ -219,11 +219,12 @@ export default class N19baseApplet {
       if (index < 0) {
         return false;
       }
-      if (this.getNumRows() < index + 1) {
-        return false;
-      }
+      // seems this check is redundant
+      // if (this.getNumRows() < index + 1) { //
+      //   return false;
+      // }
       if (this.getRowListRowCount() < index + 1) {
-        return false;
+        throw new Error(`${index} is equal/higher than amount of records in the applet ${this.getRowListRowCount()}`);
       }
       // todo : if we got to this point
       //  should we check applet.GetActiveControl (applet.prototype.InvokeMethod)
@@ -463,7 +464,11 @@ export default class N19baseApplet {
         _methods[arr[i]] = this.canInvokeMethod(arr[i]); // eslint-disable-line no-param-reassign
       }
     }
-    return true;
+    // return true;
+    return {
+      controls: _controls,
+      methods: _methods,
+    };
   }
 
   _getControlInputNameForIdQuery() {

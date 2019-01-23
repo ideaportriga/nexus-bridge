@@ -800,6 +800,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               afterSelection: function () {
                 console.log('>>>>>>>>>>>>>>>>>>> AFTER SELECTION STARTED....');
+                // this.controls = n19helper.getCurrentRecordModel(this.controls).controls;
                 n19helper.getCurrentRecordModel(this.controls);
 
                 if (0 === this.caseCategoryArr.length) {

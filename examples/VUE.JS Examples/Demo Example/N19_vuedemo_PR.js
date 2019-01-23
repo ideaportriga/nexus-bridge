@@ -22,6 +22,14 @@ if (typeof (SiebelAppFacade.N19_vuedemo_PR) === "undefined") {
         N19_vuedemo_PR.prototype.Init = function () {
           importCss();
           SiebelAppFacade.N19_vuedemo_PR.superclass.Init.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
+
+          // we will use simplified BC, therefore safer to disable the new record creation
+          this.GetPM().AddMethod("CanInvokeMethod", function(method, returnStructure) {
+            if ("NewRecord" === method) {
+              returnStructure[ "CancelOperation" ] = true;
+              returnStructure[ "ReturnValue" ] = "";
+            }
+          }, {sequence:true, scope:this});
         }
 
         N19_vuedemo_PR.prototype.ShowUI = function () {
@@ -77,6 +85,7 @@ function mountVueSample(elementId, pm) {
     el: '#' + elementId,
     template: compiledTemplate,
     data: {
+      n19: n19,
       snackBar: false,
       snackBarColor: '',
       snackBarText: '',
@@ -119,9 +128,8 @@ function mountVueSample(elementId, pm) {
         }.bind(this));
       },
       changeValue: function (name) {
-        if (n19.setControlValue(name, this.controls[name].value)) {
-          this.controls[name].isPostChanges;
-        } else { // the value was not set successfully
+        if (!n19.setControlValue(name, this.controls[name].value)) {
+          // the value was not set properly
           var currentValue = n19.getCurrentRecord()[name];
           setTimeout(function () {
             this.controls[name].value = currentValue;
@@ -168,7 +176,7 @@ var compiledTemplate = '\
       <v-container fluid> \
         <v-layout row wrap> \
           <v-flex md12 pa-2> \
-           <v-alert :value="true" type="info">N19 SIS Account Entry Applet rendered by VUE.JS PR</v-alert>\
+           <v-alert :value="true" type="info">{{ n19.appletName }} rendered by VUE.JS PR / {{controls.state}}</v-alert>\
           </v-flex>\
           <v-flex md9 pa-2>\
             <v-text-field :rules="controls.Name.required ? [\'Required\'] : []" \

@@ -421,6 +421,7 @@ export default class N19baseApplet {
       return false;
     }
     _controls.state = this.calculateCurrentRecordState(); // eslint-disable-line no-param-reassign
+    _controls.id = ''; // eslint-disable-line no-param-reassign
     let obj = {};
     const index = this.getSelection();
     if (index > -1) {
@@ -622,7 +623,7 @@ export default class N19baseApplet {
       errcb: () => reject(),
       cb: (methodName, Inputs, psOutputs) => {
         const boolObject = new SiebelApp.S_App.DatumBoolObject();
-        const { childArray } = psOutputs.GetChildByType('ResultSet');
+        const { childArray } = psOutputs.GetChildByType('ResultSet') || {}; // to be protectedd when no results?
         const ret = {};
         for (let i = 0; i < childArray.length; i += 1) {
           ret[childArray[i].GetType()] = {};

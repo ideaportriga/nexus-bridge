@@ -49,4 +49,4 @@ The demo example was tested with 16.19 ENU.
 1. Empty browser cache and hard reload
    <br>*(e.g. using Chrome: press F12, then right-click a browser Refresh button and press ‘Empty Cache and Hard Reload’)*
 1. Re-login to your Siebel Application.
-1. Navigate to the `N19 React Account Screen`.
+1. Navigate to the `N19 React` Screen.

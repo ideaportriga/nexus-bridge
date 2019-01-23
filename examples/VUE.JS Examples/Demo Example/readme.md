@@ -17,7 +17,7 @@ The demo example was tested with 16.19 ENU.
 1. Add the `N19 Vue Account Screen` to your application:
       * Findout your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` into Chrome Developer Tools console.
       * Use Siebel Tools and add `N19 Vue Account Screen` under `Application > Screen Menu Item` for your Siebel Application Name
-      * Also add `N19 Vue Account Screen` under `Application > Page Tab` (with `N19 Vue` value for `Text - String Override` property) for your Siebel Application Name
+      * Also add `N19 Vue Account Screen`(with `N19 Vue` value for `Text - String Override` property) under `Application > Page Tab` for your Siebel Application Name
 1. Add the `N19 Account View` to your application:
       * Use Siebel Client to add a new record with Name `N19 Account View` under `Administration - Application > Views`
       * Under `Administration - Application > Views` add any Responsibility to this View

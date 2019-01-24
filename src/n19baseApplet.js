@@ -160,9 +160,9 @@ export default class N19baseApplet {
       // add values to be displayed in the static pick list
       if (obj.staticPick) {
         obj.staticLOV = N19baseApplet.GetStaticLOV(control.GetRadioGroupPropSet().childArray);
-        obj.lovs = obj.staticLOV.reduce((accumulator, currentValue) => { // normalized
-          accumulator.push({ lic: currentValue.FieldValue, val: currentValue.DisplayName });
-          return accumulator;
+        obj.lovs = obj.staticLOV.reduce((acc, el) => { // normalized
+          acc.push({ lic: el.FieldValue, val: el.DisplayName });
+          return acc;
         }, []);
       }
       controls[controlName] = obj;
@@ -497,9 +497,22 @@ export default class N19baseApplet {
     return this.pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false);
   }
 
-  queryByIdSync(rowId) {
+  queryBySearchExprSync(expr) {
     this.applet.InvokeMethod('NewQuery');
-    this.applet.GetBusComp().SetFieldValue('Id', rowId);
+    this.applet.GetBusComp().SetFieldValue('Id', expr);
+    this.applet.InvokeMethod('ExecuteQuery');
+    return this.getRecordSet().length;
+  }
+
+  queryByIdSync(rowId) {
+    let expr = rowId;
+    if (Array === rowId.constructor) {
+      expr = rowId.map(el => `Id="${el}"`).join(' OR ');
+      console.log(expr);
+    }
+
+    this.applet.InvokeMethod('NewQuery');
+    this.applet.GetBusComp().SetFieldValue('Id', expr);
     this.applet.InvokeMethod('ExecuteQuery');
     return this.getRecordSet().length;
   }

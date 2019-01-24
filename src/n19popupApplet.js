@@ -36,6 +36,16 @@ export default class N19popupApplet extends N19baseApplet {
     return ret;
   }
 
+  // todo: do we need deleteAllRecords?
+  addAllRecords(cb) {
+    // todo: check canInvokeMethod and/or is it MVG. and if we have a record in assoc?
+    const ret = this.pm.ExecuteMethod('InvokeMethod', 'AddAllRecords');
+    if (typeof cb === 'function') {
+      cb();
+    }
+    return ret;
+  }
+
   _firstRecord() { // temp method, assumes that no scrolling happened
     if (this.isListApplet) {
       if (this.getSelection() !== 0) {

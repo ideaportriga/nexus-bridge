@@ -1,0 +1,147 @@
+<form [formGroup]="form" #formDirective="ngForm" class="mat-form" novalidate>
+  <mat-toolbar>
+    <div *ngIf="!isQueryMode">
+      <button mat-raised-button color="{{ form.pristine ? '': 'accent' }}" type="button" (click)="saveRecord()" [disabled]="!record.exists()">Save</button>
+      <button mat-raised-button color="primary" type="button" (click)="saveRecord(newRecord)">New</button>
+      <button mat-raised-button color="primary" type="button" (click)="unimlementedFeature()" [disabled]="!record.exists()">Escalate</button>
+      <button mat-raised-button color="primary" type="button" (click)="unimlementedFeature()" [disabled]="!record.exists()">Answer</button>
+    </div>
+    <div *ngIf="isQueryMode">
+      <button mat-raised-button color="primary" type="button" (click)="executeQuery()">Query</button>
+      <button mat-raised-button color="primary" type="button" (click)="toggleQueryMode()">{{ isAdvancedQuery ? 'Basic' : 'Advanced' }}</button>
+    </div>
+    <button mat-icon-button type="button" [matMenuTriggerFor]="formMenu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #formMenu="matMenu">
+      <button mat-menu-item type="button" *ngIf="!isQueryMode" (click)="unimlementedFeature()" [disabled]="!record.exists()"><mat-icon>help</mat-icon><span>About record</span></button>
+      <button mat-menu-item type="button" (click)="undoChanges()" [disabled]="!isQueryMode && (form.pristine || !record.exists())"><mat-icon>undo</mat-icon><span>{{ isQueryMode ? 'Cancel query' : 'Discard changes' }}</span></button>
+    </mat-menu>
+    <span class="mat-spacer"></span>
+    <button mat-icon-button type="button" (click)="saveRecord(newQuery)"><mat-icon aria-label="Search">search</mat-icon></button>
+    <button mat-icon-button type="button" (click)="saveRecord(prevRecord)"><mat-icon aria-label="Previous Record">keyboard_arrow_left</mat-icon></button>
+    <button mat-icon-button type="button" (click)="saveRecord(nextRecord)"><mat-icon aria-label="Next Record">keyboard_arrow_right</mat-icon></button>
+  </mat-toolbar>
+
+  <div class="mat-query-input" *ngIf="isQueryMode && isAdvancedQuery">
+    <mat-form-field>
+      <textarea matInput placeholder="Expression" [(ngModel)]="queryString" [ngModelOptions]="{standalone: true}" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="14"></textarea>
+    </mat-form-field>
+  </div>
+
+  <mat-grid-list cols="14" rowHeight="70px" *ngIf="!isQueryMode || (isQueryMode && !isAdvancedQuery)">
+    
+    <!-- First Row-->
+    <mat-grid-tile colspan="4" rowspan="1">
+      <mat-form-field>
+        <input matInput formControlName="srNumber" placeholder="SR Number" (blur)="dumpValue('srNumber')" [errorStateMatcher]="errorMatcher">
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="6" rowspan="3">
+      <mat-form-field>
+        <textarea matInput #summary formControlName="summary" placeholder="Summary" (blur)="dumpValue('summary')" [errorStateMatcher]="errorMatcher" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="14"></textarea>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="2" rowspan="1">
+      <mat-form-field>
+        <input matInput formControlName="type" placeholder="Type" (focus)="refreshLovs('type')" (blur)="dumpValue('type')" type="text" [matAutocomplete]="autoType" [errorStateMatcher]="errorMatcher">
+        <mat-error *ngIf="form.get('type').hasError('unlistedValue')">
+          Unknown type value
+        </mat-error>
+        <mat-autocomplete autoActiveFirstOption #autoType="matAutocomplete">
+          <mat-option *ngFor="let option of autocompletes['type'] | async" [value]="option">
+            {{ option }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="2" rowspan="1">
+      <mat-form-field>
+        <input matInput [required]="!isQueryMode" formControlName="status" placeholder="Status" (focus)="refreshLovs('status')" (blur)="dumpValue('status')" type="text" [matAutocomplete]="autoStatus" [errorStateMatcher]="errorMatcher">
+        <mat-error *ngIf="form.get('status').hasError('required')">
+          Status is <strong>required</strong>
+        </mat-error>
+        <mat-error *ngIf="form.get('status').hasError('unlistedValue') && !form.get('status').hasError('required')">
+          Unknown status value
+        </mat-error>
+        <mat-autocomplete autoActiveFirstOption #autoStatus="matAutocomplete">
+          <mat-option *ngFor="let option of autocompletes['status'] | async" [value]="option">
+            {{ option }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </mat-grid-tile>
+
+    <!-- Second Row-->
+    <mat-grid-tile colspan="2" rowspan="1">
+      <mat-form-field>
+        <input matInput formControlName="firstName" placeholder="First Name" (blur)="dumpValue('firstName')" [errorStateMatcher]="errorMatcher">
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="2" rowspan="1">
+      <mat-form-field>
+        <input matInput formControlName="lastName" placeholder="Last Name" (blur)="dumpValue('lastName')" [errorStateMatcher]="errorMatcher">
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="2" rowspan="1">
+      <mat-form-field>
+        <input matInput formControlName="area" placeholder="Area" (focus)="refreshLovs('area')" (blur)="dumpValue('area')" type="text" [matAutocomplete]="autoArea" [errorStateMatcher]="errorMatcher">
+        <mat-error *ngIf="form.get('area').hasError('unlistedValue')">
+          Unknown area value
+        </mat-error>
+        <mat-autocomplete autoActiveFirstOption #autoArea="matAutocomplete">
+          <mat-option *ngFor="let option of autocompletes['area'] | async" [value]="option">
+            {{ option }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="2" rowspan="1">
+      <mat-form-field>
+        <input matInput formControlName="priority" placeholder="Priority" (focus)="refreshLovs('priority')" (blur)="dumpValue('priority')" type="text" [matAutocomplete]="autoPriority" [errorStateMatcher]="errorMatcher">
+        <mat-error *ngIf="form.get('priority').hasError('unlistedValue')">
+          Unknown priority value
+        </mat-error>
+        <mat-autocomplete autoActiveFirstOption #autoPriority="matAutocomplete">
+          <mat-option *ngFor="let option of autocompletes['priority'] | async" [value]="option">
+            {{ option }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </mat-grid-tile>
+
+    <!-- Third Row-->
+    <mat-grid-tile colspan="4" rowspan="1">
+      <mat-form-field>
+        <input matInput formControlName="assignee" placeholder="Assignee" (blur)="dumpValue('assignee')" [errorStateMatcher]="errorMatcher">
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="2" rowspan="1">
+      <mat-form-field>
+        <input matInput formControlName="subarea" placeholder="Subarea" (focus)="refreshLovs('subarea')" (blur)="dumpValue('subarea')" type="text" [matAutocomplete]="autoSubarea" [errorStateMatcher]="errorMatcher">
+        <mat-error *ngIf="form.get('subarea').hasError('unlistedValue')">
+          Unknown subarea value
+        </mat-error>
+        <mat-autocomplete autoActiveFirstOption #autoSubarea="matAutocomplete">
+          <mat-option *ngFor="let option of autocompletes['subarea'] | async" [value]="option">
+            {{ option }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="2" rowspan="1">
+      <mat-form-field>
+        <input matInput formControlName="created" placeholder="Created" (blur)="dumpValue('created')" [matDatetimepicker]="pickerCreated" [errorStateMatcher]="errorMatcher">
+        <mat-datetimepicker-toggle [for]="pickerCreated" matSuffix></mat-datetimepicker-toggle>
+        <mat-datetimepicker #pickerCreated type="datetime" openOnFocus="true" timeInterval="5"></mat-datetimepicker>
+      </mat-form-field>
+    </mat-grid-tile>
+    
+  </mat-grid-list>
+
+  <div class="mat-bottom-toolbar" *ngIf="!isQueryMode">
+    <div class="mat-right-align">
+      <button mat-icon-button color="warn" type="button" (click)="deleteRecord()" [disabled]="!record.exists()"><mat-icon aria-label="Delete">delete</mat-icon></button>
+    </div>
+  </div>
+</form>

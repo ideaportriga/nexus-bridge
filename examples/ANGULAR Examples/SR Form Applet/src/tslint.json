@@ -1,0 +1,22 @@
+{
+    "extends": "../tslint.json",
+    "linterOptions": {
+        "exclude": [
+            "**/siebel/public-link/**"
+        ]
+    },
+    "rules": {
+        "directive-selector": [
+            true,
+            "attribute",
+            "app",
+            "camelCase"
+        ],
+        "component-selector": [
+            true,
+            "element",
+            "app",
+            "kebab-case"
+        ]
+    }
+}

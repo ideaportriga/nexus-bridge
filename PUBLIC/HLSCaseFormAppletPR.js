@@ -246,7 +246,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
         function putVue(divId) {
           var html = '\
-          <div id="app">                                                                                                                                        \n\
+          <div id="vue_sample">                                                                                                                                        \n\
             <v-app id="inspire">                                                                                                                                \n\
             <v-snackbar v-model="snackBar" :timeout="3000" :top="true" :color="snackBarColor">{{snackBarText}}<v-btn :color="snackBarButtonColor" flat @click="snackBar = false">Close</v-btn></v-snackbar>\n\
             <v-container fluid>                                                                                                                                 \n\
@@ -353,7 +353,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           $('#' + divId).append(html);
 
           app = new Vue({
-            el: '#app',
+            el: '#vue_sample',
             mounted: function () {
               this.fieldToControlsMap = n19helper._getFieldToControlMap(this.controls);
               this.afterSelection();
@@ -833,7 +833,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           if (app) {
             app.$destroy(true);
-            $('#app').remove();
+            $('#vue_sample').remove();
             app = null;
           }
           $("link[href*='vuetify.min.css']").remove();

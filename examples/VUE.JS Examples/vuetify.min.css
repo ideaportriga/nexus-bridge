@@ -2734,8 +2734,12 @@ html {
   -webkit-text-size-adjust: 100%
 }
 
-*, :after, :before {
+#vue_sample *, #vue_sample :after, #vue_sample :before {
   box-sizing: inherit
+}
+
+#vue_sample {
+  box-sizing: border-box
 }
 
 :after, :before {
@@ -3350,7 +3354,7 @@ html {
   display: none
 }
 
-ol, ul {
+#vue_sample ol, #vue_sample ul {
   padding-left: 24px
 }
 

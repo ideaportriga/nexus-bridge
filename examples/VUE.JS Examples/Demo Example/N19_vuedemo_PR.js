@@ -24,12 +24,13 @@ if (typeof (SiebelAppFacade.N19_vuedemo_PR) === "undefined") {
           SiebelAppFacade.N19_vuedemo_PR.superclass.Init.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
 
           // we will use simplified BC, therefore safer to disable the new record creation
-          this.GetPM().AddMethod("CanInvokeMethod", function(method, returnStructure) {
-            if ("NewRecord" === method) {
-              returnStructure[ "CancelOperation" ] = true;
-              returnStructure[ "ReturnValue" ] = "";
+          this.GetPM().AddMethod("CanInvokeMethod", function (method, returnStructure) {
+            if (("NewRecord" === method) || ("RefineQuery" === method)) {
+              returnStructure["CancelOperation"] = true;
+              returnStructure["ReturnValue"] = "";
             }
-          }, {sequence:true, scope:this});
+          }, { sequence: true, scope: this });
+
         }
 
         N19_vuedemo_PR.prototype.ShowUI = function () {
@@ -108,19 +109,19 @@ function mountVueSample(elementId, pm) {
     },
     mounted: function () {
       this.selectionInit(); // resetting record based on siebel record, mapping control state to vue instance
-      this.subscribeId = n19.subscribe(this.selectionInit);
+      this.selectionSubId = n19.subscribe(this.selectionInit);
       this.accountStatusList = n19.getStaticLOV('AccountStatus');
       this.accountTypeCodeList = n19.getStaticLOV('AccountTypeCode');
       this.accountTypeList = n19.getStaticLOV('Type');
     },
     methods: {
       saveRecord: function () {
-        n19.writeRecord(function() {
+        n19.writeRecord(function () {
           this.snackBarColor = 'success';
           this.snackBarText = 'Record Saved Successfully';
           this.snackBarButtonColor = 'pink';
           this.snackBar = true;
-        }.bind(this), function() {
+        }.bind(this), function () {
           this.snackBarColor = 'error';
           this.snackBarText = 'FAILED TO SAVE';
           this.snackBarButtonColor = 'black';
@@ -142,6 +143,9 @@ function mountVueSample(elementId, pm) {
       prevRecord: function () {
         n19.prevRecord();
       },
+      executeQuery: function () {
+        n19.invokeMethod('ExecuteQuery');
+      },
       escapeOnControl: function (name) {
         this.controls[name].value = n19.getCurrentRecord()[this.controls[name].fieldName];
         this.changeValue(name);
@@ -154,7 +158,7 @@ function mountVueSample(elementId, pm) {
         n19.getCurrentRecordModel(this.controls, this.methods);
       },
       beforeDestroy: function () {
-        this.unsubscribeId(this.subscribeId);
+        this.unsubscribeId(this.selectionSubId);
         n19 = null;
       }
     }
@@ -211,7 +215,10 @@ var compiledTemplate = '\
           <v-flex md1 pa-2>\
             <v-btn :disabled="!methods.WriteRecord" block v-on:click="saveRecord" color="primary"><v-icon>save</v-icon>Save!</v-btn> \
           </v-flex> \
-          <v-flex md9 pa-2> \
+          <v-flex md1 pa-2>\
+            <v-btn v-show="controls.state === 3" :disabled="controls.state !== 3" block v-on:click="executeQuery" color="primary"><v-icon>search</v-icon>Query!</v-btn> \
+          </v-flex> \
+          <v-flex md8 pa-2> \
           </v-flex> \
           <v-flex md1 pa-2> \
             <v-tooltip top><v-btn :disabled="!methods.GotoPreviousSet" block slot="activator" v-on:click="prevRecord" color="primary"> \

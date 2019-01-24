@@ -195,17 +195,17 @@ var compiledTemplate = '\
             </v-switch> \
           </v-flex> \
           <v-flex md4 pa-2> \
-            <v-autocomplete :rules="controls.AccountStatus.required ? [\'Required\'] : []" v-model="controls.AccountStatus.value" \
+            <v-autocomplete :attach=true :rules="controls.AccountStatus.required ? [\'Required\'] : []" v-model="controls.AccountStatus.value" \
             :disabled="controls.AccountStatus.readonly" :items="accountStatusList" v-on:change="changeValue(\'AccountStatus\')" :label="controls.AccountStatus.label" \
             clearable v-on:click:clear="handleClear(\'AccountStatus\')" v-on:keyup.27="escapeOnControl(\'AccountStatus\')" /> \
           </v-flex> \
           <v-flex md4 pa-2> \
-            <v-autocomplete :rules="controls.AccountTypeCode.required ? [\'Required\'] : []" v-model="controls.AccountTypeCode.value" \
+            <v-autocomplete :attach=true :rules="controls.AccountTypeCode.required ? [\'Required\'] : []" v-model="controls.AccountTypeCode.value" \
             :disabled="controls.AccountTypeCode.readonly" :items="accountTypeCodeList" v-on:change="changeValue(\'AccountTypeCode\')" \
             clearable v-on:click:clear="handleClear(\'AccountTypeCode\')" :label="controls.AccountTypeCode.label" v-on:keyup.27="escapeOnControl(\'AccountTypeCode\')"/> \
           </v-flex> \
           <v-flex md4 pa-2> \
-            <v-autocomplete :rules="controls.Type.required ? [\'Required\'] : []" v-model="controls.Type.value" \
+            <v-autocomplete :attach=true :rules="controls.Type.required ? [\'Required\'] : []" v-model="controls.Type.value" \
             :disabled="controls.Type.readonly" :items="accountTypeList" v-on:change="changeValue(\'Type\')" \
             clearable v-on:click:clear="handleClear(\'Type\')" :label=\"controls.Type.label\" v-on:keyup.27="escapeOnControl(\'Type\')" /> \
           </v-flex> \

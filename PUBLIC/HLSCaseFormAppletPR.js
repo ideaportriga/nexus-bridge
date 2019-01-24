@@ -172,6 +172,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_BEGIN_QUERY'), function () {
             console.log('SWE_PROP_BC_NOTI_BEGIN_QUERY', arguments);
+            if (app) {
+              app.afterSelection();
+            }
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_QUERYSPEC'), function () {
@@ -184,6 +187,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END_QUERY'), function () {
             console.log('SWE_PROP_BC_NOTI_END_QUERY', arguments);
+            // todo : after selection
           });
 
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD"), function () {

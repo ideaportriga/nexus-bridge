@@ -410,6 +410,7 @@ export default class N19baseApplet {
       return 2;
     }
     if (!this.canInvokeMethod('WriteRecord')) {
+      // or maybe better to use the canUpdate property of the bc
       return 5;
     }
 

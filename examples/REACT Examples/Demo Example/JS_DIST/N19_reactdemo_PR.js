@@ -36,7 +36,6 @@ if (typeof (SiebelAppFacade.N19_reactdemo_PR) === "undefined") {
           // leanup before destroying applet object
           if (reactComponent) {
             SiebReact.unmountComponent(containerId);
-            delete window.SiebReact;
             reactComponent = null;
           }
           $("link[href*='https://fonts.googleapis.com/icon']").remove();

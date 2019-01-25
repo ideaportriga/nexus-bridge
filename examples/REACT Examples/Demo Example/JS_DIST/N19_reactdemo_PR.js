@@ -16,6 +16,14 @@ if (typeof (SiebelAppFacade.N19_reactdemo_PR) === "undefined") {
           SiebelAppFacade.N19_reactdemo_PR.superclass.Init.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
           $('head').append('<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">');
           $('head').append('<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no"></meta>');
+
+          // we will use simplified BC, therefore safer to disable the new record creation
+          this.GetPM().AddMethod("CanInvokeMethod", function (method, returnStructure) {
+            if ("NewRecord" === method) {
+              returnStructure["CancelOperation"] = true;
+              returnStructure["ReturnValue"] = "";
+            }
+          }, { sequence: true, scope: this });
         }
 
         N19_reactdemo_PR.prototype.ShowUI = function () {
@@ -36,7 +44,6 @@ if (typeof (SiebelAppFacade.N19_reactdemo_PR) === "undefined") {
           // leanup before destroying applet object
           if (reactComponent) {
             SiebReact.unmountComponent(containerId);
-            delete window.SiebReact;
             reactComponent = null;
           }
           $("link[href*='https://fonts.googleapis.com/icon']").remove();

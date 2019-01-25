@@ -20,6 +20,12 @@ class App extends Component {
       'Fund Eligible Flag': {},
       Type: {}
     },
+    methods: {
+      GotoPreviousSet: false,
+      GotoNextSet: false,
+      WriteRecord: false,
+      NewQuery: false
+    },
     accountStatusList: this.props.n19Helper.getStaticLOV('AccountStatus').map(lov => {
       return {
         value: lov,
@@ -50,9 +56,11 @@ class App extends Component {
 
   selectInit = () => {
     const controls = { ...this.state.controls };
-    this.props.n19Helper.getCurrentRecordModel(controls);
-    const newState = { controls: controls };
+    const methods = { ...this.state.methods };
+    this.props.n19Helper.getCurrentRecordModel(controls, methods);
+    const newState = { controls, methods };
     this.setState(newState);
+    this.render();
   }
 
   handleCloseSnack = (event, reason) => {
@@ -94,6 +102,14 @@ class App extends Component {
     }, () => {
       this.setState({ snackBarText: 'Record IS NOT saved!', openSnackbar: true });
     });
+  }
+
+  newQuery = () => {
+    this.props.n19Helper.invokeMethod('NewQuery');
+  }
+
+  executeQuery = () => {
+    this.props.n19Helper.invokeMethod('ExecuteQuery');
   }
 
   render() {
@@ -194,21 +210,34 @@ class App extends Component {
 
         <Grid container spacing={8} style={{ padding: 15 }}>
           <Grid item xs={1} sm={1} lg={1} xl={1}>
-            <Button style={{ width: '100%' }} onClick={this.saveRecord} variant="contained" color="primary">
+            <Button disabled={!this.state.methods.WriteRecord} style={{ width: '100%' }} onClick={this.saveRecord} variant="contained" color="primary">
               <Icon>save</Icon>SAVE
               </Button>
           </Grid>
 
-          <Grid item xs={9} sm={9} lg={9} xl={9} />
+          { this.state.controls.state !== 3 ? <Grid item xs={1} sm={1} lg={1} xl={1}>
+            <Button disabled={!this.state.methods.NewQuery} style={{ width: '100%' }} onClick={this.newQuery} variant="contained" color="primary">
+              <Icon>search</Icon>Search
+              </Button>
+          </Grid> : null }
+
+          { this.state.controls.state === 3 ? <Grid item xs={1} sm={1} lg={1} xl={1}>
+            <Button disabled={this.state.controls.state !== 3} style={{ width: '100%' }} onClick={this.executeQuery} variant="contained" color="primary">
+              <Icon>search</Icon>Run
+              </Button>
+          </Grid> : null }
+
+
+          <Grid item xs={8} sm={8} lg={8} xl={8} />
 
           <Grid item xs={1} sm={1} lg={1} xl={1}>
-            <Button style={{ width: '100%' }} onClick={() => { this.props.n19Helper.prevRecord(); }} variant="contained" color="primary">
+            <Button disabled={!this.state.methods.GotoPreviousSet} style={{ width: '100%' }} onClick={() => { this.props.n19Helper.prevRecord(); }} variant="contained" color="primary">
               <Icon>navigate_before</Icon>
             </Button>
           </Grid>
 
           <Grid item xs={1} sm={1} lg={1} xl={1}>
-            <Button style={{ width: '100%' }} onClick={() => { this.props.n19Helper.nextRecord(); }} variant="contained" color="primary">
+            <Button disabled={!this.state.methods.GotoNextSet} style={{ width: '100%' }} onClick={() => { this.props.n19Helper.nextRecord(); }} variant="contained" color="primary">
               <Icon>navigate_next</Icon>
             </Button>
           </Grid>

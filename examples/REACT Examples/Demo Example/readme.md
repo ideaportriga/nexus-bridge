@@ -22,7 +22,7 @@ The demo example was tested with 16.19 ENU.
       * Under `Administration - Application > Views` add any Responsibility to this View
       * Under `Administration - User > Users` – add same Responsibility to your User
       * Click `Clear cache` button under `Administration – Application > Responsibilities` view
-1. Compile(Siebel IP16 and earlier) or Submit(Siebel IP17+) following objects: 
+1. Compile(Siebel IP16 and earlier) or Deliver(Siebel IP17+) following objects: 
     * `Nexus19 Demo Examples` project
     * Application object, that you've updated above.
 1. Re-login to your Siebel Application and check that the `N19 React Account Screen` Screen is available.

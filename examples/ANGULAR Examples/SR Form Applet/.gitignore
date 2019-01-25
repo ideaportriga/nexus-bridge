@@ -3,6 +3,7 @@
 # compiled output
 /tmp
 /out-tsc
+/dist/N19Helper.js
 
 # dependencies
 /node_modules

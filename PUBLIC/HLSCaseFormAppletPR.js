@@ -66,6 +66,10 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           document.getElementById(divId).classList.add('siebui-applet', 'siebui-active');
 
           //todo: maybe use applet.prototype.RepopulateField instead of it?
+          // good to know that...
+          //   when we modified immediate post change field, and made the undo record,
+          //   notify new field data is not invoked
+          //   when for the same field the immediate post change is unchecked, this procedure is started to call
           SiebelAppFacade.N19notifyNewFieldData = SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData;
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = function (name, value) {
             SiebelAppFacade.N19notifyNewFieldData.apply(this, arguments);

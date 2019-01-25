@@ -30,7 +30,6 @@ if (typeof (SiebelAppFacade.N19_vuedemo_PR) === "undefined") {
               returnStructure["ReturnValue"] = "";
             }
           }, { sequence: true, scope: this });
-
         }
 
         N19_vuedemo_PR.prototype.ShowUI = function () {
@@ -101,7 +100,8 @@ function mountVueSample(elementId, pm) {
       methods: {
         GotoPreviousSet: false,
         GotoNextSet: false,
-        WriteRecord: false
+        WriteRecord: false,
+        NewQuery: false
       },
       'accountStatusList': [],
       'accountTypeCodeList': [],
@@ -142,6 +142,9 @@ function mountVueSample(elementId, pm) {
       },
       prevRecord: function () {
         n19.prevRecord();
+      },
+      newQuery: function() {
+        n19.invokeMethod('NewQuery');
       },
       executeQuery: function () {
         n19.invokeMethod('ExecuteQuery');
@@ -216,7 +219,8 @@ var compiledTemplate = '\
             <v-btn :disabled="!methods.WriteRecord" block v-on:click="saveRecord" color="primary"><v-icon>save</v-icon>Save!</v-btn> \
           </v-flex> \
           <v-flex md1 pa-2>\
-            <v-btn v-show="controls.state === 3" :disabled="controls.state !== 3" block v-on:click="executeQuery" color="primary"><v-icon>search</v-icon>Query!</v-btn> \
+            <v-btn v-show="controls.state === 3" :disabled="controls.state !== 3" block v-on:click="executeQuery" color="primary"><v-icon>search</v-icon>Run!</v-btn> \
+            <v-btn v-show="controls.state !== 3" :disabled="!methods.NewQuery" block v-on:click="newQuery" color="primary"><v-icon>search</v-icon>Query!</v-btn> \
           </v-flex> \
           <v-flex md8 pa-2> \
           </v-flex> \

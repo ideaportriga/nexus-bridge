@@ -275,7 +275,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 </v-flex>                                                                                                                                                         \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
                   <v-label>Sales Rep:</v-label>                                                                                                                 \n\
-                  <v-tooltip top v-for="salesRep in caseSalesRepArr" >                                                                                          \n\
+                  <v-tooltip :attach=true top v-for="salesRep in caseSalesRepArr" >                                                                                          \n\
                   <v-chip slot="activator" :close="salesRep.id!=caseSalesRepPrimary" @input="clickDeleteSalesRep(salesRep)"><v-avatar :class="{teal : salesRep.id!=caseSalesRepPrimary}">   \n\
                   <v-icon v-if="salesRep.id==caseSalesRepPrimary">check_circle</v-icon>{{salesRep.id==caseSalesRepPrimary ? "" : salesRep.login[0]}}</v-avatar>{{salesRep.login}}</v-chip>  \n\
                   <span>{{salesRep.firstName + " " + salesRep.lastName}}</span></v-tooltip>                                                                     \n\
@@ -336,10 +336,10 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-btn block v-on:click="gotoButtonClick" color="primary"><v-icon>language</v-icon>Goto!</v-btn>                                              \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-tooltip top><v-btn block slot="activator" v-on:click="prevButtonClick" color="primary"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>  \n\
+                  <v-tooltip :attach=true top><v-btn block slot="activator" v-on:click="prevButtonClick" color="primary"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>  \n\
                 </v-flex>                                                                                                                                                                         \n\
                 <v-flex md1 pa-2>                                                                                                                                                                 \n\
-                  <v-tooltip top><v-btn block slot="activator" v-on:click="nextButtonClick" color="primary"><v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>    \n\
+                  <v-tooltip :attach=true top><v-btn block slot="activator" v-on:click="nextButtonClick" color="primary"><v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>    \n\
                 </v-flex>                                                                                     \n\
                 <v-fab-transition>                                                                            \n\
                   <v-btn v-on:click="newButtonClick" v-show="true" color="pink" dark fixed bottom right fab>  \n\

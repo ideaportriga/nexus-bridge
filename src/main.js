@@ -3,8 +3,18 @@ import N19popupController from './n19popupController';
 
 SiebelAppFacade.N19Helper = class extends N19baseApplet {
   constructor(settings) {
-    super(settings);
-    console.log('Nexus main class started....', this.pm.Get('GetName')); // eslint-disable-line no-console
+    const { appletName } = settings;
+    if (appletName) {
+      const applet = SiebelApp.S_App.GetActiveView().GetApplet(appletName);
+      if (!applet) {
+        throw new Error(`Failed to get the reference to the applet by the ${appletName} name`);
+      }
+      super(Object.assign({}, settings, { pm: applet.GetPModel() }));
+    } else { // the usual way assumed
+      super(settings);
+    }
+
+    console.log('Nexus main class started....', this.appletName); // eslint-disable-line no-console
     // get the n19popupController singleton instance
     this.n19popupController = N19popupController.instance;
   }

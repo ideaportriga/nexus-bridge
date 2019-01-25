@@ -25,7 +25,7 @@ The demo example was tested with 16.0 ENU.
       * Under `Administration - Application > Views` add any Responsibility to this View
       * Under `Administration - User > Users` – add same Responsibility to your User
       * Click `Clear cache` button under `Administration – Application > Responsibilities` view
-1. Compile (Siebel IP16 and earlier) or Deliver(Siebel IP17+) following objects: 
+1. Compile(Siebel IP16 and earlier) or Deliver(Siebel IP17+) following objects: 
     * `Nexus Angular Demo` project
     * Application object, that you've updated above.
 1. Re-login to your Siebel Application and check that the `Nexus Angular Demo` screen is available.

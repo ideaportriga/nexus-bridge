@@ -1,0 +1,53 @@
+.mat-toolbar button,
+.mat-toolbar a {
+    margin-right: 8px;
+}
+.mat-spacer {
+    flex: 1 1 auto;
+}
+
+:host ::ng-deep .mat-form .mat-grid-list {
+    margin: 12px 10px 0 10px;
+}
+
+:host ::ng-deep .mat-grid-tile .mat-figure {
+    align-items: normal;
+}
+
+:host ::ng-deep .mat-bottom-toolbar {
+    margin: 0 5px;
+    padding-right: 25px;
+}
+
+:host ::ng-deep .mat-form-field {
+    width: 100%;
+    margin: 0 10px;
+}
+
+:host ::ng-deep .mat-left-align {
+    float: left;
+}
+
+:host ::ng-deep .mat-right-align {
+    float: right;
+}
+
+.mat-right-align mat-icon {
+    font-size: 24px;
+}
+
+:host ::ng-deep .mat-form-field-infix {
+    width: auto;
+}
+
+:host ::ng-deep .mat-query-input {
+    width: 100%;
+    margin: 12px;
+    font-size: 16px;
+}
+
+:host ::ng-deep .mat-query-input textarea {
+    width: 100%;
+    min-height: auto;
+    height: auto;
+}

@@ -170,11 +170,25 @@ export default class N19baseApplet {
     return controls;
   }
 
-  getRecordSet() {
+  getRecordSet(addRecordIndex) {
+    if (addRecordIndex) {
+      return this.pm.Get('GetRecordSet').map((el, index) => {
+        const ret = Object.assign({}, el);
+        ret._indx = index;
+        return ret;
+      });
+    }
     return this.pm.Get('GetRecordSet');
   }
 
-  getRawRecordSet() {
+  getRawRecordSet(addRecordIndex) {
+    if (addRecordIndex) {
+      return this.pm.Get('GetRawRecordSet').map((el, index) => {
+        const ret = Object.assign({}, el);
+        ret._indx = index;
+        return ret;
+      });
+    }
     return this.pm.Get('GetRawRecordSet');
   }
 
@@ -377,7 +391,8 @@ export default class N19baseApplet {
 
   getCurrentRecord(raw) {
     const index = this.getSelection();
-    // todo: check if record exists
+    // todo: check if record
+    // todo: make a copy of returned object (to avoid the accidental modification of the recordset)
     if (raw) {
       return this.pm.Get('GetRawRecordSet')[index];
     }
@@ -556,7 +571,8 @@ export default class N19baseApplet {
   }
 
   _query(params, cb) {
-    // maybe check if it is already in query mode / cancel the query
+    // TODO: check if it is already in query mode to avoid calling the new query again
+    // or maybe better to cancel the existing query?
     this._newQuery();
 
     const method = 'ExecuteQuery';

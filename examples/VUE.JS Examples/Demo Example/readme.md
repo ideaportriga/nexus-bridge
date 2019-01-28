@@ -4,7 +4,7 @@ This guide will help to setup Nexus19 with the demo of a Form Applet that is bui
 <br>The applet supports:
 - navigation through records
 - displaying, editing or deleting records (supporting keyboard shortcuts)
-- query and refine query (supporting keyboard shortcuts)
+- query (supporting keyboard shortcut)
 - picklists that are read from Siebel configuration
 - field properties that are read from Siebel configuration (required, field length)
 

@@ -3,12 +3,15 @@
 This guide will help to setup Nexus19 with the demo of a Form Applet that is built using Nexus19 and React framework.
 <br>The applet supports:
 - navigation through records
-- displaying, editing and saving data
+- displaying, editing or deleting records (supporting keyboard shortcuts)
+- query and refine query (supporting keyboard shortcuts)
 - picklists that are read from Siebel configuration
 - field properties that are read from Siebel configuration (required, field length)
 
 This is not an example of implementation that can be used on production. It is intentionally kept straightforward.
-The demo example was tested with 16.19 ENU.
+The demo example was tested on Seibel 16.19 and 18.08 ENU.
+
+ ![result](demo_react.png)
 
 ![result](demo_react.png)
 

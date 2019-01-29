@@ -41,7 +41,11 @@ export default class N19baseApplet {
         const arr = [];
         CCFMiscUtil_StringToArray(propSet.GetProperty(this.consts.get('SWE_PROP_ARGS_ARRAY')), arr);
         if (viewName === arr[1] && appletName === arr[2]) {
+          if ('false' === arr[4]) {
+            console.warn(`Picklist is not associated with the control - ${JSON.stringify(arr)}`);
+          }
           this.lov[arr[3]] = arr.splice(5).filter(el => el !== '');
+          // todo: maybe we need to return some indication when empty value is allowed
         }
       }
     });
@@ -327,29 +331,62 @@ export default class N19baseApplet {
     return ret;
   }
 
+  _validatePickControl(control, isStatic) {
+    // Possible results:
+    // no pick
+    // static pick
+    // dynamic pick
+    // pick
+    // mvg
+    // ?
+
+    const isStaticPick = '1' === control.IsStaticBounded();
+    const uiType = control.GetUIType();
+
+    if (isStatic) { // called getStaticLOV
+      //
+      if (!isStaticPick) {
+        console.warn(`[N19]The getStaticLOV called for not static control - ${uiType}. Use getDynamicLOV or pick/mvg`);
+      }
+    } else { // called getDynamicLOV
+      if (isStaticPick) {
+        console.warn('[N19]The getDynamicLOV called for static control.');
+      }
+      if (this.consts.get('SWE_CTRL_COMBOBOX') !== uiType) { // the control is not "JComboBox"
+        switch (uiType) {
+          case this.consts.get('SWE_CTRL_PICK'): // Pick
+          case this.consts.get('SWE_CTRL_MVG'): // MVG
+            console.warn(`[N19]You need to use the popups instead of getDynamicLOV - ${uiType}.`);
+            break;
+          default:
+            console.warn(`[N19]Probably getDynamicLOV is not going to work for this control - ${uiType}.`);
+        }
+      }
+    }
+  }
+
   getDynamicLOV(controlName) {
     const control = this._getControl(controlName);
+    this._validatePickControl(control, false);
     const controlInputName = control.GetInputName();
     this.lov[controlInputName] = {};
     const ps = SiebelApp.S_App.NewPropertySet();
     ps.SetProperty('SWEField', controlInputName);
     ps.SetProperty('SWEJI', false);
-    this.applet.SetActiveControl(null); // to preve UpdatePick
+    this.applet.SetActiveControl(null); // to prevent UpdatePick
     this.applet.InvokeMethod('GetQuickPickInfo', ps);
     return this.lov[controlInputName];
   }
 
   getStaticLOV(controlName) {
     const control = this._getControl(controlName);
+    this._validatePickControl(control, true);
     const ret = [];
-    if ('1' === control.IsStaticBounded()) {
-      const arr = N19baseApplet.GetStaticLOV(control.GetRadioGroupPropSet().childArray);
-      for (let i = 0; i < arr.length; i += 1) {
-        ret.push(arr[i].DisplayName);
-      }
-      ret.sort();
+    const arr = N19baseApplet.GetStaticLOV(control.GetRadioGroupPropSet().childArray);
+    for (let i = 0; i < arr.length; i += 1) {
+      ret.push(arr[i].DisplayName);
     }
-    return ret;
+    return ret.sort();
   }
 
   _getControlValue(controlUiType, value) {

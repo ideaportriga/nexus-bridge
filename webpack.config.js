@@ -20,7 +20,7 @@ module.exports = (env, argv) => {
     rules.push({
       test: /\.js$/,
       use: {
-        loader: 'strip-loader?strip[]=console.log'
+        loader: 'strip-loader?strip[]=console.log,strip[]=console.warn'
       }
     });
     filename = 'N19Helper.min.js';

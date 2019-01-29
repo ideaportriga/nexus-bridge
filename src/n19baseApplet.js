@@ -455,7 +455,7 @@ export default class N19baseApplet {
     if (this.getSelection() < 0) {
       return 0;
     }
-    if (bc.IsInsertPending()) {
+    if (bc.IsInsertPending()) { // seems insertPending gives more correct value
       return 1;
     }
     if (bc.IsCommitPending()) {
@@ -690,9 +690,9 @@ export default class N19baseApplet {
       errcb: () => reject(),
       cb: (methodName, Inputs, psOutputs) => {
         const boolObject = new SiebelApp.S_App.DatumBoolObject();
-        const { childArray } = psOutputs.GetChildByType('ResultSet') || {}; // to be protectedd when no results?
+        const { childArray } = psOutputs.GetChildByType('ResultSet') || {}; // to be protectedd when no results
         const ret = {};
-        for (let i = 0; i < childArray.length; i += 1) {
+        for (let i = 0; i < (childArray || []).length; i += 1) {
           ret[childArray[i].GetType()] = {};
           for (let j = 0; j < childArray[i].childArray.length; j += 1) {
             const el = childArray[i].childArray[j];

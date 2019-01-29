@@ -20,14 +20,14 @@ The demo example was tested with 16.0 ENU.
       * Findout your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` in Chrome Developer Tools console.
       * Use Siebel Tools and add `Nexus Angular Demo Screen` under `Application > Screen Menu Item` for your Siebel Application Name
       * Also add `Nexus Angular Demo Screen`(with `Nexus Angular Demo` value for `Text - String Override` property) under `Application > Page Tab` for your Siebel Application Name
+1. Compile(Siebel IP16 and earlier) or Deliver(Siebel IP17+) following objects: 
+    * `Nexus Angular Demo` project
+    * Application object, that you've updated above.
 1. Add the `Nexus Angular Demo View` to your application:
       * Use Siebel Client to add a new record with Name `Nexus Angular Demo View` under `Administration - Application > Views`
       * Under `Administration - Application > Views` add any Responsibility to this View
       * Under `Administration - User > Users` – add same Responsibility to your User
       * Click `Clear cache` button under `Administration – Application > Responsibilities` view
-1. Compile(Siebel IP16 and earlier) or Deliver(Siebel IP17+) following objects: 
-    * `Nexus Angular Demo` project
-    * Application object, that you've updated above.
 1. Re-login to your Siebel Application and check that the `Nexus Angular Demo` screen is available.
 1. Copy below files to the `[CLIENT_HOME or SERVER_HOME]/public/SCRIPTS/siebel/custom/` folder:
     * `dist/*.*` excluding `font` folder.

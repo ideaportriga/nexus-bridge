@@ -11,8 +11,6 @@ This guide will help to setup Nexus19 with the demo of a Form Applet that is bui
 This is not an example of implementation that can be used on production. It is intentionally kept straightforward.
 The demo example was tested on Seibel 16.19 and 18.08 ENU.
 
- ![result](demo_react.png)
-
 ![result](demo_react.png)
 
 1. Make a clean [Nexus19 Setup](/../wikis/Setup Nexus19) if you haven't done it before.

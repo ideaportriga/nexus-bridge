@@ -46,11 +46,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
 
           pm.AddMethod('InvokeMethod', function (method) {
-            console.log('>>> InvokeMethod sequence true', method, arguments);
+            console.log('>>> InvokeMethod, sequence true', method, arguments);
           }, { sequence: true, scope: this });
 
           pm.AddMethod('InvokeMethod', function (method) {
-            console.log('>>> InvokeMethod sequence false', method, arguments);
+            console.log('>>> InvokeMethod, sequence false', method, arguments);
           }, { sequence: false, scope: this });
 
           pm.AttachPostProxyExecuteBinding("ALL", function (method) {
@@ -70,6 +70,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           //   when we modified immediate post change field, and made the undo record,
           //   notify new field data is not invoked
           //   when for the same field the immediate post change is unchecked, this procedure is started to call
+          // to have immediately update the new
           SiebelAppFacade.N19notifyNewFieldData = SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData;
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = function (name, value) {
             SiebelAppFacade.N19notifyNewFieldData.apply(this, arguments);
@@ -88,38 +89,28 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           }
 
-          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_GENERIC"), function (propSet) {
-            var type = propSet.GetProperty(consts.get("SWE_PROP_NOTI_TYPE"));
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_GENERIC'), function (propSet) {
+            var type = propSet.GetProperty(consts.get('SWE_PROP_NOTI_TYPE'));
             console.log('SWE_PROP_BC_NOTI_GENERIC ', type, propSet);
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW'), function () {
             console.log('>>>SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW', arguments);
-            if (app) {
-              app.afterSelection();
-            }
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'), function (ps) {
             console.log('SWE_PROP_BC_NOTI_STATE_CHANGED', arguments, ps.GetProperty('state'));
-            // works after query
-            if ('activeRow' === ps.GetProperty('state')) {
-              console.log('>>>SWE_PROP_BC_NOTI_STATE_CHANGED', arguments);
-              if (app) {
-                app.afterSelection();
-              }
-            }
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA_WS'), function (propSet) {
             console.log('SWE_PROP_BC_NOTI_NEW_DATA_WS', arguments);
           });
 
-          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_BEGIN"), function () {
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_BEGIN'), function () {
             console.log('SWE_PROP_BC_NOTI_BEGIN', arguments);
           });
 
-          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_LONG_OPERATION_PROCESS"), function () {
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_LONG_OPERATION_PROCESS'), function () {
             console.log('SWE_PROP_BC_NOTI_LONG_OPERATION_PROCESS', arguments);
           });
 
@@ -127,11 +118,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log('SWE_PROP_BC_NEW_ACTIVE_FIELD', arguments);
           });
 
-          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_END"), function () {
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END'), function () {
             console.log('SWE_PROP_BC_NOTI_END', arguments);
           });
 
-          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_SELECTION"), function () {
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_SELECTION'), function () {
             console.log('SWE_PROP_BC_NOTI_NEW_SELECTION', arguments);
           });
 
@@ -140,14 +131,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'), function (propSet) {
-            var bSetup = propSet.GetProperty('bSetup');
-            console.log('SWE_PROP_BC_NOTI_DELETE_RECORD', arguments, bSetup);
-            // in demo called twice, first time bSetup is "true", second time is "false"
-            if (bSetup === "false") {
-              if (app) {
-                app.afterSelection();
-              }
-            }
+            console.log('SWE_PROP_BC_NOTI_DELETE_RECORD', arguments);
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_PRIMARY'), function () {
@@ -176,9 +160,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_BEGIN_QUERY'), function () {
             console.log('SWE_PROP_BC_NOTI_BEGIN_QUERY', arguments);
-            if (app) {
-            //  app.afterSelection();
-            }
           });
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_QUERYSPEC'), function () {
@@ -194,11 +175,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             // todo : after selection
           });
 
-          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD"), function () {
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD'), function () {
             console.log('SWE_PROP_BC_NOTI_NEW_RECORD', arguments);
-            if (app) {
-              app.afterSelection();
-            }
           });
 
           pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD_DATA"), function () {
@@ -223,7 +201,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         }
 
         HLSCaseFormAppletPR.prototype.preInvokeMethod = function (methodName, args, lp, returnStructure) {
-          SiebelJS.Log(this.GetPM().Get("GetName") + ": HLSCaseFormAppletPR:      preInvokeMethod -  " + methodName);
+          SiebelJS.Log(this.GetPM().Get("GetName") + " preInvokeMethod -  " + methodName);
         }
 
         HLSCaseFormAppletPR.prototype.ShowUI = function () {
@@ -361,7 +339,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             mounted: function () {
               this.fieldToControlsMap = n19helper._getFieldToControlMap(this.controls);
               this.afterSelection();
+              this.subscribeId = n19helper.subscribe(this.afterSelection);
               $('.application--wrap').css({ 'min-height': 'auto' });
+            },
+            beforeDestroyed() {
+              n19helper.unsubscribe(this.subscribeId);
             },
             data: {
               controls: {
@@ -375,6 +357,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 'Sales Rep': {},
                 'Audit Employee Last Name': {},
                 'Audit Employee Full Name': {},
+              },
+              methods: {
+
               },
               caseThreatLevelNum: 0,
               snackBar: false,
@@ -600,14 +585,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               changeValue(name) {
                 var isChanged = n19helper.setControlValue(name, this.controls[name].value);
-                if (isChanged && this.controls[name].isPostChanges) {
-                  this.afterSelection();
-                };
-                if (!isChanged) {
+                if (!isChanged) { // the value is not set
                   var fieldName = n19helper._getFieldNameForControl(name);
                   var currentValue = n19helper.getCurrentRecord()[fieldName];
                   this.controls[name].value = '';
-                  setTimeout(function () { //todo: use next tick
+                  setTimeout(function () { //todo: use next tick?
                     this.controls[name].value = currentValue;
                   }.bind(this))
                 }
@@ -660,7 +642,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   this.snackBarText = 'Record Saved Successfully';
                   this.snackBarButtonColor = 'pink';
                   this.snackBar = true;
-                  this.afterSelection();
                 }).catch(()=>{
                   this.snackBarColor = 'error';
                   this.snackBarText = 'FAILED TO SAVE';
@@ -703,11 +684,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     this.caseStatusArr = [value];
                   } else if ('Sub Status' === name) {
                     this.caseSubStatusArr = [value];
-                  }
-                  if (control.isPostChanges) {
-                    Vue.nextTick(function () {
-                      this.afterSelection();
-                    }.bind(this));
                   }
                 }
               },

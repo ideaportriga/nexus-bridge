@@ -1,25 +1,18 @@
+import N19notifications from './n19notifications';
+
 export default class N19baseApplet {
   constructor(settings) {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.pm = settings.pm;
     this.view = SiebelApp.S_App.GetActiveView();
     this.appletName = this.pm.Get('GetName');
-    this.applet = this.view.GetAppletMap()[this.appletName];
+    this.applet = this.view.GetApplet(this.appletName);
     this.isListApplet = typeof this.applet.GetListOfColumns === 'function';
     this.required = []; // will be empty for the list applet
     this.lov = {};
-
-    this.token = 0;
-    this.subscribers = [];
     const bcId = this.applet.GetBCId();
-    this.pm.AttachNotificationHandler(this.consts.get('SWE_PROP_BC_NOTI_END'), (propSet) => {
-      if (bcId === propSet.GetProperty('bc')) {
-        for (let i = 0; i < this.subscribers.length; i += 1) {
-          // we assume that the function does not throw an error
-          this.subscribers[i].func();
-        }
-      }
-    });
+
+    this.notifications = new N19notifications(this.pm, this.consts, bcId);
 
     // populate the required array for form applets
     if (!this.isListApplet) {
@@ -51,22 +44,12 @@ export default class N19baseApplet {
     });
   }
 
-  subscribe(func) {
-    if (typeof func !== 'function') {
-      throw new Error('func is not a function');
-    }
-    this.token += 1;
-    this.subscribers.push({ token: this.token, func });
-    return this.token;
+  subscribe(func) { // eslint-disable-line class-methods-use-this
+    return this.notifications.subscribe(func);
   }
 
-  unsubscribe(token) {
-    for (let i = 0; i < this.subscribers.length; i += 1) {
-      if (token === this.subscribers[i].token) {
-        return this.subscribers.splice(i, 1);
-      }
-    }
-    return false;
+  unsubscribe(token) { // eslint-disable-line class-methods-use-this
+    return this.notifications.unsubscribe(token);
   }
 
   _getControl(name) {

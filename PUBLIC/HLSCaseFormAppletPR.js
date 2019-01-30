@@ -177,7 +177,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_BEGIN_QUERY'), function () {
             console.log('SWE_PROP_BC_NOTI_BEGIN_QUERY', arguments);
             if (app) {
-              app.afterSelection();
+            //  app.afterSelection();
             }
           });
 

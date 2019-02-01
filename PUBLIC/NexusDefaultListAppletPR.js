@@ -25,6 +25,7 @@ if (typeof (SiebelAppFacade.NexusDefaultListAppletPR) === "undefined") {
             console.log('post proxy', appletName, arguments);
 
             // it makes sense only for Mvg applet when it is displayed in shuttle
+	          // todo: run it conditionally
             if (("AddRecords" === method) || ("AddAllRecords" === method) || ("DeleteRecords" === method)) {
               var event = new Event("UpdateMVG");
               document.dispatchEvent(event);

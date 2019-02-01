@@ -452,9 +452,25 @@ export default class N19baseApplet {
     return 4; // this is a default fallback;
   }
 
+  _getMethods() {
+    const methods = {};
+    const appletControls = this.pm.Get('GetControls'); // even fo list applet
+    const arr = Object.keys(appletControls);
+    for (let i = 0; i < arr.length; i += 1) {
+      const controlMethod = appletControls[arr[i]].GetMethodName();
+      if (typeof controlMethod !== 'undefined' && controlMethod !== '') {
+        methods[controlMethod] = {};
+      }
+    }
+    return methods;
+  }
+
   getCurrentRecordModel(_controls, _methods) {
     if (!_controls) {
-      return false;
+      _controls = this.getControls(); // eslint-disable-line no-param-reassign
+    }
+    if (!_methods) {
+      _methods = this._getMethods(); // eslint-disable-line no-param-reassign
     }
     _controls.state = this.calculateCurrentRecordState(); // eslint-disable-line no-param-reassign
     _controls.id = ''; // eslint-disable-line no-param-reassign
@@ -469,7 +485,7 @@ export default class N19baseApplet {
     // populate controls
     for (let i = 0; i < arr.length; i += 1) {
       const control = appletControls[arr[i]];
-      if (typeof control !== 'undefined') {
+      if (typeof control !== 'undefined') { // just if somebody sends incorrect name of the control
         const controlName = control.GetName();
         const fieldName = control.GetFieldName();
         if (_controls.state > 0) {

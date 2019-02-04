@@ -425,7 +425,7 @@ export default class N19baseApplet {
 
     const bc = this.applet.GetBusComp();
 
-    if (this.pm.Get('IsInQueryState')) {
+    if (this.pm.Get('IsInQueryMode')) {
       // if no records and the entered the query mode,
       // selection is -1, therefore we need to check query mode first
       return 3;

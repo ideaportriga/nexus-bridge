@@ -68,10 +68,10 @@ export default class N19popupController {
   }
 
   processNewPopup(ps) {
-    SiebelApp.S_App.SetShowNewPage(!0);
+    SiebelApp.S_App.SetShowNewPage(true);
     const popupPM = SiebelApp.S_App.GetPopupPM();
 
-    popupPM.SetProperty('CanProcessLayout', !1);
+    popupPM.SetProperty('CanProcessLayout', false);
     popupPM.SetProperty('isPopupPick', false);
     popupPM.SetProperty('isPopupMVGAssoc', false);
     popupPM.SetProperty('isPopupMVGSelected', false);

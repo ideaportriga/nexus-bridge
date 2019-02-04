@@ -137,13 +137,8 @@ export default class N19baseApplet {
         // maxChars: control.GetMaxChars(), // it is always 0
         fieldName: control.GetFieldName(),
         isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
+        readonly: !this.pm.ExecuteMethod('CanUpdate', controlName), // was readOnly before
       };
-      if (this.isListApplet) {
-        obj.readOnly = !this.pm.ExecuteMethod('CanUpdate',
-          this.pm.GetRenderer().GetColumnHelper().GetActualControlName(controlName));
-      } else {
-        obj.readOnly = !this.pm.ExecuteMethod('CanUpdate', controlName);
-      }
       // add values to be displayed in the static pick list
       if (obj.staticPick) {
         obj.staticLOV = N19baseApplet.GetStaticLOV(control.GetRadioGroupPropSet().childArray);
@@ -430,7 +425,7 @@ export default class N19baseApplet {
 
     const bc = this.applet.GetBusComp();
 
-    if (bc.IsInQueryState()) {
+    if (this.pm.Get('IsInQueryState')) {
       // if no records and the entered the query mode,
       // selection is -1, therefore we need to check query mode first
       return 3;

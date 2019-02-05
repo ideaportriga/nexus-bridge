@@ -5,6 +5,14 @@ email, or any other method with the owners of this repository before making a ch
 
 Please note we have a code of conduct, please follow it in all your interactions with the project.
 
+## Coding Rules
+
+1. Try to use only the methods/properties documented in the Siebel Bookshelf.
+2. Use the PM methods and properties whenever possible (e.g., when a property/method is available at the PM and applet level, prefer use PM).
+3. Avoid calling the proxy objects (BO, BC) directly. 
+4. Always lint the code `npm run lint`.
+5. Comment the code.
+
 ## Merge Request Process
 
 Before submitting the Merge Request:

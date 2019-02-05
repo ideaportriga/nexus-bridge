@@ -182,7 +182,7 @@ export default class N19popupController {
     }
     this.isPopupHidden = !!hide; // todo: do we need to keep the show the applet
 
-    pm.ExecuteMethod('InvokeMethod', 'EditPopup', null, false); // seems we can also to call EditField
+    pm.ExecuteMethod('InvokeMethod', 'EditPopup'); // can call EditField?
 
     let ret = true;
 

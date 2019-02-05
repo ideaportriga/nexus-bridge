@@ -7,7 +7,7 @@ export default class N19baseApplet {
     this.view = SiebelApp.S_App.GetActiveView();
     this.appletName = this.pm.Get('GetName');
     this.applet = this.view.GetApplet(this.appletName);
-    this.isListApplet = typeof this.applet.GetListOfColumns === 'function';
+    this.isListApplet = typeof this.pm.Get('GetListOfColumns') !== 'undefined';
     this.required = []; // will be empty for the list applet
     this.lov = {};
     const bcId = this.applet.GetBCId();
@@ -53,14 +53,14 @@ export default class N19baseApplet {
   }
 
   _getControl(name) {
-    return this.applet.GetControl(name);
+    return this.pm.ExecuteMethod('GetControl', name);
   }
 
   _returnControls() {
     if (this.isListApplet) {
-      return this.applet.GetListOfColumns(); // pm.Get('GetListOfColumns')
+      return this.pm.Get('GetListOfColumns');
     }
-    return this.applet.GetControls(); // pm.Get('GetControls');
+    return this.pm.Get('GetControls');
   }
 
   // called into the getControls to reduce the amount of the returned controls
@@ -87,7 +87,10 @@ export default class N19baseApplet {
   }
 
   _setActiveControl(name) {
-    return this.applet.SetActiveControl(this._getControl(name));
+    if (name) {
+      return this.pm.ExecuteMethod('SetActiveControl', this._getControl(name));
+    }
+    return this.pm.ExecuteMethod('SetActiveControl', null);
   }
 
   _getValueForControl(controlUiType, value) {
@@ -223,7 +226,7 @@ export default class N19baseApplet {
         throw new Error(`${index} is equal/higher than amount of records in the applet ${this.getRowListRowCount()}`);
       }
       // todo : if we got to this point
-      //  should we check applet.GetActiveControl (applet.prototype.InvokeMethod)
+      //  should we check GetActiveControl (applet.prototype.InvokeMethod)
       //  and nullify it if active?
       return this.pm.ExecuteMethod('HandleRowSelect', index, false, false);
     }
@@ -351,8 +354,8 @@ export default class N19baseApplet {
     const ps = SiebelApp.S_App.NewPropertySet();
     ps.SetProperty('SWEField', controlInputName);
     ps.SetProperty('SWEJI', false);
-    this.applet.SetActiveControl(null); // to prevent UpdatePick
-    this.applet.InvokeMethod('GetQuickPickInfo', ps);
+    this._setActiveControl(null); // to prevent UpdatePick
+    this.pm.ExecuteMethod('InvokeMethod', 'GetQuickPickInfo', ps);
     return this.lov[controlInputName];
   }
 
@@ -423,7 +426,7 @@ export default class N19baseApplet {
     // 4 - Record is displayed,
     // 5 - Record is read-only
 
-    const bc = this.applet.GetBusComp();
+    const bc = this.pm.Get('GetBusComp');
 
     if (this.pm.Get('IsInQueryMode')) {
       // if no records and the entered the query mode,
@@ -544,9 +547,9 @@ export default class N19baseApplet {
   }
 
   queryBySearchExprSync(expr) {
-    this.applet.InvokeMethod('NewQuery');
+    this.pm.ExecuteMethod('InvokeMethod', 'NewQuery');
     this.applet.GetBusComp().SetFieldValue('Id', expr);
-    this.applet.InvokeMethod('ExecuteQuery');
+    this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery');
     return this.getRecordSet().length;
   }
 
@@ -557,9 +560,9 @@ export default class N19baseApplet {
       console.log(expr);
     }
 
-    this.applet.InvokeMethod('NewQuery');
+    this.pm.ExecuteQuery('InvokeMethod', 'NewQuery');
     this.applet.GetBusComp().SetFieldValue('Id', expr);
-    this.applet.InvokeMethod('ExecuteQuery');
+    this.pm.ExecuteQuery('InvokeMethod', 'ExecuteQuery');
     return this.getRecordSet().length;
   }
 
@@ -748,6 +751,7 @@ export default class N19baseApplet {
   }
 
   _setFieldValue(name, value) {
+    // TODO: IT WILL BE REFACTORED #10
     this.applet.GetBusComp().SetFieldValue(name, value);
     return this.applet.InvokeMethod('WriteRecord');
   }

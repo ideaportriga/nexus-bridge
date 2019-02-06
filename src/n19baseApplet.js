@@ -142,7 +142,8 @@ export default class N19baseApplet {
         // maxChars: control.GetMaxChars(), // it is always 0
         fieldName: control.GetFieldName(),
         isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
-        readonly: !this.pm.ExecuteMethod('CanUpdate', controlName), // was readOnly before
+        readOnly: !this.pm.ExecuteMethod('CanUpdate', controlName), // it will be removed
+        readonly: !this.pm.ExecuteMethod('CanUpdate', controlName),
       };
       // add values to be displayed in the static pick list
       if (obj.staticPick) {
@@ -552,9 +553,9 @@ export default class N19baseApplet {
       console.log(expr);
     }
 
-    this.pm.ExecuteQuery('InvokeMethod', 'NewQuery');
+    this.pm.ExecuteMethod('InvokeMethod', 'NewQuery');
     this.applet.GetBusComp().SetFieldValue('Id', expr);
-    this.pm.ExecuteQuery('InvokeMethod', 'ExecuteQuery');
+    this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery');
     return this.getRecordSet().length;
   }
 
@@ -742,9 +743,11 @@ export default class N19baseApplet {
   }
 
   _setFieldValue(name, value) {
-    // TODO: IT WILL BE REFACTORED #10
-    this.applet.GetBusComp().SetFieldValue(name, value);
-    return this.applet.InvokeMethod('WriteRecord');
+    console.warn('_setFieldValue is temporary method, and it will be removed in the future');
+    this.applet.SetControlValueByName(name, value);
+    return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord');
+    // this.applet.GetBusComp().SetFieldValue(name, value);
+    // return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord');
   }
 
   getFieldToControlMap() {

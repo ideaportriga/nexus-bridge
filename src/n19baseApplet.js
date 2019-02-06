@@ -27,22 +27,16 @@ export default class N19baseApplet {
     }
 
     // listener to get dynamic LOVs
-    const appletName = this.pm.Get('GetName');
-    this.pm.AttachNotificationHandler(this.consts.get('SWE_PROP_BC_NOTI_GENERIC'), (propSet) => {
-      const viewName = SiebelApp.S_App.GetActiveView().GetName();
-      const type = propSet.GetProperty(this.consts.get('SWE_PROP_NOTI_TYPE'));
-      if (type === 'GetQuickPickInfo') {
-        const arr = [];
-        CCFMiscUtil_StringToArray(propSet.GetProperty(this.consts.get('SWE_PROP_ARGS_ARRAY')), arr);
-        if (viewName === arr[1] && appletName === arr[2]) {
-          if ('false' === arr[4]) {
-            console.warn(`Picklist is not associated with the control - ${JSON.stringify(arr)}`);
-          }
-          this.lov[arr[3]] = arr.splice(5).filter(el => el !== '');
-          // todo: maybe we need to return some indication when empty value is allowed
+    this.pm.AttachPMBinding('UpdateQuickPickInfo', (inputName, arg, arr) => {
+      const viewName = this.view.GetName();
+      if (viewName === arr[1] && this.appletName === arr[2]) {
+        if ('false' === arr[4]) {
+          console.warn(`[N19]Picklist is not associated with the control - ${JSON.stringify(arr)}`);
         }
+        this.lov[arr[3]] = arr.splice(5).filter(el => el !== '');
+        // todo: do we need to indicate when an empty value is allowed?
       }
-    });
+    }, { scope: this });
   }
 
   subscribe(func) { // eslint-disable-line class-methods-use-this
@@ -743,11 +737,9 @@ export default class N19baseApplet {
   }
 
   _setFieldValue(name, value) {
-    console.warn('_setFieldValue is temporary method, and it will be removed in the future');
+    console.warn('[N19]_setFieldValue will be removed in the future!');
     this.applet.SetControlValueByName(name, value);
     return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord');
-    // this.applet.GetBusComp().SetFieldValue(name, value);
-    // return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord');
   }
 
   getFieldToControlMap() {

@@ -10,8 +10,9 @@ export default class N19baseApplet {
     this.isListApplet = typeof this.pm.Get('GetListOfColumns') !== 'undefined';
     this.required = []; // will be empty for the list applet
     this.lov = {};
-    const bcId = this.applet.GetBCId();
+    this.boolObject = new SiebelApp.S_App.DatumBoolObject();
 
+    const bcId = this.applet.GetBCId();
     this.notifications = new N19notifications(this.pm, this.consts, bcId);
 
     // populate the required array for form applets
@@ -96,9 +97,10 @@ export default class N19baseApplet {
   _getValueForControl(controlUiType, value) {
     // TODO: DateTime, numbers, and phones?
     if (this.consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
-      // convert true/false => Y/N
-      // do we want to support setting to null
-      value = value ? 'Y' : 'N'; // eslint-disable-line no-param-reassign
+      // convert true/false => Y/N // what with null
+      this.boolObject.SetValue(value);
+      return this.boolObject.GetAsString();
+      // value = value ? 'Y' : 'N'; // eslint-disable-line no-param-reassign
     }
     return value;
   }
@@ -372,22 +374,12 @@ export default class N19baseApplet {
 
   _getControlValue(controlUiType, value) {
     // todo: what about datetime?
-    let ret = value;
     if (this.consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
-      // convert Y/N/null -> true/false/null
-      // do we need to send null?
-      switch (value) {
-        case 'Y':
-          ret = true;
-          break;
-        case 'N':
-          ret = false;
-          break;
-        default:
-          ret = null;
-      }
+      // convert Y/N/null -> true/false // what about null
+      this.boolObject.SetAsString(value);
+      return this.boolObject.GetValue();
     }
-    return ret;
+    return value;
   }
 
   // this is a temp method to support the demo where
@@ -686,7 +678,6 @@ export default class N19baseApplet {
       scope: this,
       errcb: () => reject(),
       cb: (methodName, Inputs, psOutputs) => {
-        const boolObject = new SiebelApp.S_App.DatumBoolObject();
         const { childArray } = psOutputs.GetChildByType('ResultSet') || {}; // to be protectedd when no results
         const ret = {};
         for (let i = 0; i < (childArray || []).length; i += 1) {
@@ -695,8 +686,8 @@ export default class N19baseApplet {
             const el = childArray[i].childArray[j];
             ret[childArray[i].GetType()][el.GetType()] = el.childArray.map((rec) => {
               const primary = rec.propArray['SSA Primary Field'];
-              boolObject.SetAsString(primary);
-              rec.propArray['SSA Primary Field'] = boolObject.GetValue(); // eslint-disable-line no-param-reassign
+              this.boolObject.SetAsString(primary);
+              rec.propArray['SSA Primary Field'] = this.boolObject.GetValue(); // eslint-disable-line no-param-reassign
               return Object.assign({}, rec.propArray);
             });
           }

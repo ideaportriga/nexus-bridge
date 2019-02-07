@@ -31,6 +31,7 @@ export default class N19baseApplet {
       const viewName = this.view.GetName();
       if (viewName === arr[1] && this.appletName === arr[2]) {
         if ('false' === arr[4]) {
+          // eslint-disable-next-line no-console
           console.warn(`[N19]Picklist is not associated with the control - ${JSON.stringify(arr)}`);
         }
         this.lov[arr[3]] = arr.splice(5).filter(el => el !== '');
@@ -40,6 +41,7 @@ export default class N19baseApplet {
   }
 
   subscribe(func) { // eslint-disable-line class-methods-use-this
+    // TODO : accept also context for function, or the called bound context to the function?
     return this.notifications.subscribe(func);
   }
 
@@ -136,9 +138,15 @@ export default class N19baseApplet {
         // maxChars: control.GetMaxChars(), // it is always 0
         fieldName: control.GetFieldName(),
         isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
-        readOnly: !this.pm.ExecuteMethod('CanUpdate', controlName), // it will be removed
         readonly: !this.pm.ExecuteMethod('CanUpdate', controlName),
       };
+      Object.defineProperty(obj, 'readOnly', {
+        get: () => {
+          // eslint-disable-next-line no-console
+          console.warn('[N19]The readOnly property will be removed soon; use readonly instead of it.');
+          return obj.readonly;
+        },
+      });
       // add values to be displayed in the static pick list
       if (obj.staticPick) {
         obj.staticLOV = N19baseApplet.GetStaticLOV(control.GetRadioGroupPropSet().childArray);
@@ -192,7 +200,7 @@ export default class N19baseApplet {
     if (!this.canInvokeMethod(method)) {
       return false;
     }
-    const ret = this.pm.ExecuteMethod('InvokeMethod', method, null, false);
+    const ret = this.pm.ExecuteMethod('InvokeMethod', method);
     return ret;
   }
 
@@ -225,7 +233,7 @@ export default class N19baseApplet {
       // todo : if we got to this point
       //  should we check GetActiveControl (applet.prototype.InvokeMethod)
       //  and nullify it if active?
-      return this.pm.ExecuteMethod('HandleRowSelect', index, false, false);
+      return this.pm.ExecuteMethod('HandleRowSelect', index);
     }
     return false;
   }
@@ -258,7 +266,7 @@ export default class N19baseApplet {
   }
 
   newRecordSync() {
-    return this.pm.ExecuteMethod('InvokeMethod', 'NewRecord', null, false);
+    return this.pm.ExecuteMethod('InvokeMethod', 'NewRecord');
   }
 
   writeRecord(cb, cberr) {
@@ -283,15 +291,15 @@ export default class N19baseApplet {
   }
 
   writeRecordSync() {
-    return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord', null, false);
+    return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord');
   }
 
   deleteRecordSync() {
-    return this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecord', null, false);
+    return this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecord');
   }
 
   undoRecordSync() {
-    return this.pm.ExecuteMethod('InvokeMethod', 'UndoRecord', null, false);
+    return this.pm.ExecuteMethod('InvokeMethod', 'UndoRecord');
   }
 
   setControlValue(name, value) {
@@ -299,14 +307,17 @@ export default class N19baseApplet {
     const control = this._getControl(name);
     // TODO: Check if control is found
     value = this._getValueForControl(control.GetUIType(), value); // eslint-disable-line no-param-reassign
-    // maybe check if typeof applet.SetControlValueByName is function and use it when available? - not exists in 14.x
     // TODO: should we use SetCellValue for list applets?
-    this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_FOCUS'), control);
-    const ret = this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_BLUR'), control, value);
+    const ret = this._setControlValueInternal(control, value);
     if (!ret) {
       console.log(`Value ${value} was not set for ${control.GetName()}`); // eslint-disable-line no-console
     }
     return ret;
+  }
+
+  _setControlValueInternal(control, value) {
+    this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_FOCUS'), control);
+    return this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_BLUR'), control, value);
   }
 
   _validatePickControl(control, isStatic) {
@@ -322,21 +333,23 @@ export default class N19baseApplet {
     const uiType = control.GetUIType();
 
     if (isStatic) { // called getStaticLOV
-      //
       if (!isStaticPick) {
+        // eslint-disable-next-line no-console
         console.warn(`[N19]The getStaticLOV called for not static control - ${uiType}. Use getDynamicLOV or pick/mvg`);
       }
     } else { // called getDynamicLOV
       if (isStaticPick) {
-        console.warn('[N19]The getDynamicLOV called for static control.');
+        console.warn('[N19]The getDynamicLOV called for static control.'); // eslint-disable-line no-console
       }
       if (this.consts.get('SWE_CTRL_COMBOBOX') !== uiType) { // the control is not "JComboBox"
         switch (uiType) {
           case this.consts.get('SWE_CTRL_PICK'): // Pick
           case this.consts.get('SWE_CTRL_MVG'): // MVG
+            // eslint-disable-next-line no-console
             console.warn(`[N19]You need to use the popups instead of getDynamicLOV - ${uiType}.`);
             break;
           default:
+            // eslint-disable-next-line no-console
             console.warn(`[N19]Probably getDynamicLOV is not going to work for this control - ${uiType}.`);
         }
       }
@@ -461,7 +474,7 @@ export default class N19baseApplet {
     _controls.id = ''; // eslint-disable-line no-param-reassign
     let obj = {};
     const index = this.getSelection();
-    if (index > -1) {
+    if (index > -1 && _controls.state !== 3) { // added _controls.state !== 3; we don't need id in query mode
       obj = this.getRecordSet()[index];
       _controls.id = this.getRawRecordSet()[index].Id; // eslint-disable-line no-param-reassign
     }
@@ -512,7 +525,7 @@ export default class N19baseApplet {
     };
   }
 
-  _getControlInputNameForIdQuery() {
+  _findControlToEnterSearchExpr() {
     const appletControls = this._returnControls();
     const arr = Object.keys(appletControls);
     for (let i = 0; i < arr.length; i += 1) {
@@ -522,7 +535,7 @@ export default class N19baseApplet {
         // skipping also JCheckbox
         // todo: check do we need to skip also date?
         if (controlUiType !== this.consts.get('SWE_CTRL_CHECKBOX')) {
-          return control.GetInputName();
+          return control;
         }
       }
     }
@@ -530,27 +543,25 @@ export default class N19baseApplet {
   }
 
   _newQuery() {
-    return this.pm.ExecuteMethod('InvokeMethod', 'NewQuery', null, false);
+    return this.pm.ExecuteMethod('InvokeMethod', 'NewQuery');
   }
 
   queryBySearchExprSync(expr) {
-    this.pm.ExecuteMethod('InvokeMethod', 'NewQuery');
-    this.applet.GetBusComp().SetFieldValue('Id', expr);
+    this._newQuery();
+    const control = this._findControlToEnterSearchExpr();
+    this._setControlValueInternal(control, expr);
     this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery');
     return this.getRecordSet().length;
   }
 
   queryByIdSync(rowId) {
-    let expr = rowId;
+    let expr;
     if (Array === rowId.constructor) {
       expr = rowId.map(el => `Id="${el}"`).join(' OR ');
-      console.log(expr);
+    } else {
+      expr = `Id="${rowId}"`;
     }
-
-    this.pm.ExecuteMethod('InvokeMethod', 'NewQuery');
-    this.applet.GetBusComp().SetFieldValue('Id', expr);
-    this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery');
-    return this.getRecordSet().length;
+    return this.queryBySearchExprSync(expr);
   }
 
   queryById(rowId, cb) {
@@ -577,7 +588,8 @@ export default class N19baseApplet {
 
     const psOutput = SiebelApp.S_App.NewPropertySet();
     const psInput = SiebelApp.S_App.NewPropertySet();
-    psInput.SetProperty(this._getControlInputNameForIdQuery(), `Id="${rowId}"`);
+    const control = this._findControlToEnterSearchExpr();
+    psInput.SetProperty(control.GetInputName(), `Id="${rowId}"`);
 
     ai.args.push(method);
     ai.args.push(psInput.Clone());
@@ -593,6 +605,7 @@ export default class N19baseApplet {
 
   _query(params, cb) {
     // TODO: check if it is already in query mode to avoid calling the new query again
+    // or accept the input parameter to skip calling the new query?
     // or maybe better to cancel the existing query?
     this._newQuery();
 
@@ -737,7 +750,7 @@ export default class N19baseApplet {
   }
 
   _setFieldValue(name, value) {
-    console.warn('[N19]_setFieldValue will be removed in the future!');
+    console.warn('[N19]_setFieldValue will be removed in the future!'); // eslint-disable-line no-console
     this.applet.SetControlValueByName(name, value);
     return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord');
   }

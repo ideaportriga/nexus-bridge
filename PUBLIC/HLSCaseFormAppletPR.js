@@ -20,7 +20,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         HLSCaseFormAppletPR.prototype.Init = function () {
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
 
-          document.addEventListener('UpdateMVG', function(event) {
+          document.addEventListener('UpdateMVG', function (event) {
             if (app) {
               app.getSalesRep();
             }
@@ -89,115 +89,115 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           }
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_GENERIC'), function (propSet) {
-            var type = propSet.GetProperty(consts.get('SWE_PROP_NOTI_TYPE'));
-            console.log('SWE_PROP_BC_NOTI_GENERIC ', type, propSet);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_GENERIC'), function (propSet) {
+          //   var type = propSet.GetProperty(consts.get('SWE_PROP_NOTI_TYPE'));
+          //   console.log('SWE_PROP_BC_NOTI_GENERIC ', type, propSet);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW'), function () {
-            console.log('>>>SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW'), function () {
+          //   console.log('>>>SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'), function (ps) {
-            console.log('SWE_PROP_BC_NOTI_STATE_CHANGED', arguments, ps.GetProperty('state'));
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'), function (ps) {
+          //   console.log('SWE_PROP_BC_NOTI_STATE_CHANGED', arguments, ps.GetProperty('state'));
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA_WS'), function (propSet) {
-            console.log('SWE_PROP_BC_NOTI_NEW_DATA_WS', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA_WS'), function (propSet) {
+          //   console.log('SWE_PROP_BC_NOTI_NEW_DATA_WS', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_BEGIN'), function () {
-            console.log('SWE_PROP_BC_NOTI_BEGIN', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_BEGIN'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_BEGIN', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_LONG_OPERATION_PROCESS'), function () {
-            console.log('SWE_PROP_BC_NOTI_LONG_OPERATION_PROCESS', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_LONG_OPERATION_PROCESS'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_LONG_OPERATION_PROCESS', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NEW_ACTIVE_FIELD'), function () {
-            console.log('SWE_PROP_BC_NEW_ACTIVE_FIELD', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NEW_ACTIVE_FIELD'), function () {
+          //   console.log('SWE_PROP_BC_NEW_ACTIVE_FIELD', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END'), function () {
-            console.log('SWE_PROP_BC_NOTI_END', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_END', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_SELECTION'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_SELECTION', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_SELECTION'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_NEW_SELECTION', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_DATA', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_NEW_DATA', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'), function (propSet) {
-            console.log('SWE_PROP_BC_NOTI_DELETE_RECORD', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'), function (propSet) {
+          //   console.log('SWE_PROP_BC_NOTI_DELETE_RECORD', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_PRIMARY'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_PRIMARY', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_PRIMARY'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_NEW_PRIMARY', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET'), function () {
-            console.log('SWE_PROP_BC_NOTI_INSERT_WORKSET', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_INSERT_WORKSET', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET_FIELD_VALUES'), function () {
-            console.log('SWE_PROP_BC_NOTI_INSERT_WORKSET_FIELD_VALUES', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET_FIELD_VALUES'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_INSERT_WORKSET_FIELD_VALUES', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_EXECUTE'), function () {
-            console.log('SWE_PROP_BC_NOTI_EXECUTE', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_EXECUTE'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_EXECUTE', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_CHANGE_SELECTION'), function () {
-            console.log('SWE_PROP_BC_NOTI_CHANGE_SELECTION', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_CHANGE_SELECTION'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_CHANGE_SELECTION', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_SELECTION_MODE_CHANGE'), function () {
-            console.log('SWE_PROP_BC_NOTI_SELECTION_MODE_CHANGE', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_SELECTION_MODE_CHANGE'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_SELECTION_MODE_CHANGE', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_BEGIN_QUERY'), function () {
-            console.log('SWE_PROP_BC_NOTI_BEGIN_QUERY', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_BEGIN_QUERY'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_BEGIN_QUERY', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_QUERYSPEC'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_QUERYSPEC', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_QUERYSPEC'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_NEW_QUERYSPEC', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_QUERYSPEC'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_FIELD_QUERYSPEC', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_QUERYSPEC'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_NEW_FIELD_QUERYSPEC', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END_QUERY'), function () {
-            console.log('SWE_PROP_BC_NOTI_END_QUERY', arguments);
-            // todo : after selection
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END_QUERY'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_END_QUERY', arguments);
+          //   // todo : after selection
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_RECORD', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_NEW_RECORD', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD_DATA"), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD_DATA"), function () {
+          //   console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD_SCROLL_DATA'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_RECORD_SCROLL_DATA', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD_SCROLL_DATA'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_NEW_RECORD_SCROLL_DATA', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_PAGE_REFRESH'), function () {
-            console.log('SWE_PROP_BC_NOTI_PAGE_REFRESH', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_PAGE_REFRESH'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_PAGE_REFRESH', arguments);
+          // });
 
-          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_DATA'), function () {
-            console.log('SWE_PROP_BC_NOTI_NEW_FIELD_DATA', arguments);
-          });
+          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_DATA'), function () {
+          //   console.log('SWE_PROP_BC_NOTI_NEW_FIELD_DATA', arguments);
+          // });
         }
 
         HLSCaseFormAppletPR.prototype.preInvokeMethod = function (methodName, args, lp, returnStructure) {
@@ -425,7 +425,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               async changeAuditEmployee(val) {
                 console.log('!!!CHANGE', arguments);
                 if (!this.pickApplet) {
-                  alert ('I should not get here');
+                  alert('I should not get here');
                   await this.focusAuditEmployee();
                 }
                 var arr = this.pickApplet.getRecordSet();
@@ -637,16 +637,17 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 n19helper.gotoView('PUB GOV Case Activity Plans View', 'HLS Case Form Applet');
               },
               saveButtonClick: function () {
-                n19helper.writeRecord().then(()=>{
+                n19helper.writeRecord().then(() => {
                   this.snackBarColor = 'success';
                   this.snackBarText = 'Record Saved Successfully';
                   this.snackBarButtonColor = 'pink';
                   this.snackBar = true;
-                }).catch(()=>{
+                }).catch(() => {
                   this.snackBarColor = 'error';
                   this.snackBarText = 'FAILED TO SAVE';
                   this.snackBarButtonColor = 'black';
-                  this.snackBar = true;            });
+                  this.snackBar = true;
+                });
               },
               nextButtonClick: function () {
                 if (!n19helper.canInvokeMethod("GotoNextSet")) {
@@ -664,26 +665,27 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               updateFieldData(name, value) {
                 // When Primary is updated it sends SSA Primary Field?
-                console.log('updateFieldData', arguments);
-                if (typeof value === 'undefined') {
-                  // do we need to do something when it is undefined?
-                  value = n19helper.getCurrentRecord()[name];
-                }
+                // console.log('updateFieldData', arguments);
                 var control = this.fieldToControlsMap[name];
-
-                if (control && value) {
-                  value = n19helper._getControlValue(control.uiType, value);
-                  if ('Threat Level' === name) {
-                    this.caseThreatLevelNum = this.caseThreatLevelArr.indexOf(value) + 1;
+                if (control) {
+                  if (typeof value === 'undefined') {
+                    // do we need to do something when it is undefined?
+                    value = (n19helper.getCurrentRecord() || {})[name];
                   }
-                  if (value == this.controls[control.name].value) {
-                    return;
-                  }
-                  this.controls[control.name].value = value;
-                  if ('Status' === name) {
-                    this.caseStatusArr = [value];
-                  } else if ('Sub Status' === name) {
-                    this.caseSubStatusArr = [value];
+                  if (value) {
+                    value = n19helper._getControlValue(control.uiType, value);
+                    if ('Threat Level' === name) {
+                      this.caseThreatLevelNum = this.caseThreatLevelArr.indexOf(value) + 1;
+                    }
+                    if (value == this.controls[control.name].value) {
+                      return;
+                    }
+                    this.controls[control.name].value = value;
+                    if ('Status' === name) {
+                      this.caseStatusArr = [value];
+                    } else if ('Sub Status' === name) {
+                      this.caseSubStatusArr = [value];
+                    }
                   }
                 }
               },
@@ -796,6 +798,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 this.caseSubStatusArr = [this.controls['Sub Status'].value];
                 if (this.controls.id) {
                   this.getSalesRep();
+                } else {
+                  this.caseSalesRepArr = [];
+                  this.caseSalesRepPrimary = '';
                 }
               }
             }

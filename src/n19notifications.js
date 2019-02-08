@@ -17,7 +17,9 @@ export default class N19notifications {
 
     pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'), (propSet) => {
       if (bcId === propSet.GetProperty('bc')) {
-        receivedNotifications.push('SWE_PROP_BC_NOTI_STATE_CHANGED');
+        if ('cp' !== propSet.GetProperty('state')) {
+          receivedNotifications.push('SWE_PROP_BC_NOTI_STATE_CHANGED');
+        }
       }
     });
 

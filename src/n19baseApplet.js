@@ -286,6 +286,7 @@ export default class N19baseApplet {
   _writeRecord(cb) {
     return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord', null, {
       async: true,
+      selfbusy: true,
       cb,
     });
   }
@@ -547,7 +548,7 @@ export default class N19baseApplet {
   }
 
   queryBySearchExprSync(expr) {
-    this._newQuery();
+    this._newQuery(); // ?
     const control = this._findControlToEnterSearchExpr();
     this._setControlValueInternal(control, expr);
     this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery');
@@ -571,30 +572,20 @@ export default class N19baseApplet {
   }
 
   _queryById(rowId, cb) {
-    // maybe check if it is already in query mode / cancel the query
-    this._newQuery();
+    this._newQuery(); // ?
 
-    const method = 'ExecuteQuery';
     const ai = {
       scope: this,
       async: true,
-      mask: false,
-      selfbusy: false,
-      args: [],
+      selfbusy: true,
     };
     if (typeof cb === 'function') {
       ai.cb = cb;
     }
 
-    const psOutput = SiebelApp.S_App.NewPropertySet();
-    const psInput = SiebelApp.S_App.NewPropertySet();
     const control = this._findControlToEnterSearchExpr();
-    psInput.SetProperty(control.GetInputName(), `Id="${rowId}"`);
-
-    ai.args.push(method);
-    ai.args.push(psInput.Clone());
-
-    return this.applet.CallServerApplet(method, psInput, psOutput, ai);
+    this._setControlValueInternal(control, `Id="${rowId}"`);
+    return this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, ai);
   }
 
   query(params, cb) {
@@ -609,30 +600,27 @@ export default class N19baseApplet {
     // or maybe better to cancel the existing query?
     this._newQuery();
 
-    const method = 'ExecuteQuery';
     const ai = {
       scope: this,
       async: true,
-      mask: false,
-      selfbusy: false,
-      args: [],
+      selfbusy: true,
     };
     if (typeof cb === 'function') {
       ai.cb = cb;
     }
 
-    const psOutput = SiebelApp.S_App.NewPropertySet();
-    const psInput = SiebelApp.S_App.NewPropertySet();
     const arr = Object.keys(params);
     const _controls = this._returnControls();
     for (let i = 0; i < arr.length; i += 1) {
       const control = _controls[arr[i]];
-      psInput.SetProperty(control.GetInputName(), this._getValueForControl(control.GetUIType(), params[arr[i]]));
+      if (control) {
+        this._setControlValueInternal(control, this._getValueForControl(control.GetUIType(), params[arr[i]]));
+      } else {
+        console.error(`The control "${arr[i]}" is not found!`); // eslint-disable-line no-console
+      }
     }
-    ai.args.push(method);
-    ai.args.push(psInput.Clone());
 
-    return this.applet.CallServerApplet(method, psInput, psOutput, ai);
+    return this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, ai);
   }
 
   static Requery(name) {

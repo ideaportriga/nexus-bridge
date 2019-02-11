@@ -53,8 +53,18 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log('>>> InvokeMethod, sequence false', method, arguments);
           }, { sequence: false, scope: this });
 
-          pm.AttachPostProxyExecuteBinding("ALL", function (method) {
-            console.log('>>> AttachPostProxyExecuteBinding', method, arguments);
+          pm.AttachPostProxyExecuteBinding("ALL", function (method, psInput) {
+            console.log('>>>>>> AttachPostProxyExecuteBinding', method, arguments);
+            if (app && 'EditField' === method) { // this was a show popup
+              if (psInput.GetProperty('SWEField') === n19helper.getControls()['Sales Rep'].inputName) { // this is sales rep
+                let applet = SiebelApp.S_App.GetActiveView().GetApplet('Contact Team Mvg Applet');
+                if (applet) {
+                  app.addPmHandlerForPopup(applet.GetPModel());
+                } else {
+                  alert('Contact Team Mvg Applet IS NOT FOUND');
+                }
+              }
+            }
           });
 
           //hide the server rendered html, better to remove, but not now
@@ -359,7 +369,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 'Audit Employee Full Name': {},
               },
               methods: {
-
               },
               caseThreatLevelNum: 0,
               snackBar: false,
@@ -476,12 +485,22 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
                 return controlName;
               },
+              addPmHandlerForPopup(pm) {
+                pm.AttachPostProxyExecuteBinding("ALL", function (method) {
+                  // console.log('post  >>> ', appletName, arguments);
+                  if (("AddRecords" === method) || ("AddAllRecords" === method) || ("DeleteRecords" === method)) {
+                    var event = new Event("UpdateMVG");
+                    document.dispatchEvent(event);
+                  }
+                });
+              },
               async testButtonClickShuttle() {
                 var controlName = this.getControlForOpenPopup();
                 if ('Sales Rep' !== controlName) {
                   var obj = await n19helper.showMvgApplet('Sales Rep', true);
                   this.testShuttleOpened(obj);
                   var mvg = obj.popupAppletN19;
+                  this.addPmHandlerForPopup(mvg.pm);
                 } else {
                   var mvg = n19helper.n19popupController.popupAppletN19;
                 }
@@ -505,6 +524,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   var obj = await n19helper.showMvgApplet('Sales Rep', true);
                   this.testShuttleOpened(obj);
                   var mvg = obj.popupAppletN19;
+                  this.addPmHandlerForPopup(mvg.pm);
                   var assoc = obj.assocAppletN19;
                 } else {
                   var mvg = n19helper.n19popupController.popupAppletN19;
@@ -574,7 +594,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               showMvgApplet() {
                 SiebelAppFacade.N19Helper.ReInitPopup();
-                if (!n19helper.showMvgApplet('Sales Rep')) {
+                var obj = n19helper.showMvgApplet('Sales Rep');
+                if (!obj) {
                   alert('showMvgApplet(returned value is false)')
                 }
               },

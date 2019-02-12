@@ -1,42 +1,50 @@
-## Available Scripts
+# Quick Start Guide: Nexus19 + React example
 
-In the project directory, you can run:
+This guide will help to setup Nexus19 with the demo of a Form Applet that is built using Nexus19 and React framework.
+<br>The applet supports:
 
-### `npm start`
+- navigation through records
+- displaying, editing or deleting records (supporting keyboard shortcuts)
+- query and refine query (supporting keyboard shortcuts)
+- picklists that are read from Siebel configuration
+- field properties that are read from Siebel configuration (required, field length)
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+This is not an example of implementation that can be used on production. It is intentionally kept straightforward.
+The demo example was tested on Seibel 16.19.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+![result](demo_react.gif)
 
-### `npm test`
+1.  Make a clean [Nexus19 Setup](/../wikis/Setup Nexus19) if you haven't done it before.
+2.  Import the `n19helper-master/examples/REACT Examples/Demo Example/SIF/*` into the Siebel Tools.
+3.  Add the `N19 React Account Screen` to your application:
+    - Findout your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` into Chrome Developer Tools console.
+    - Use Siebel Tools and add `N19 React Account Screen` under `Application > Screen Menu Item` for your Siebel Application Name
+    - Also add `N19 React Account Screen`(with `N19 React` value for `Text - String Override` property) under `Application > Page Tab` for your Siebel Application Name
+4.  Compile(Siebel IP16 and earlier) or Deliver(Siebel IP17+) following objects:
+    - `Nexus 19 React Demo Examples` project
+    - Application object, that you've updated above.
+5.  Add the `N19 React Account View` to your application:
+    - Use Siebel Client to add a new record with Name `N19 React Account View` under `Administration - Application > Views`
+    - Under `Administration - Application > Views` add any Responsibility to this View
+    - Under `Administration - User > Users` – add same Responsibility to your User
+    - Click `Clear cache` button under `Administration – Application > Responsibilities` view
+6.  Re-login to your Siebel Application and check that the `N19 React Account Screen` Screen is available.
+7.  Copy below files and folders to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom\` folder:
+    - `n19helper-master/examples/REACT Examples/Demo Example/JS_DIST/*` including `react_dist` folder.
+8.  Use Siebel Client to reference js files in Siebel Open UI Manifest as follows: - under `Administration - Application > Manifest Files` >- add a new record with: ><br>**Name:** `siebel/custom/N19_reactdemo_PR.js`
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+        	- under `Administration - Application > Manifest Administration`
 
-### `npm run build`
+    > - add a new record under **UI Objects** with:
+    >   <br>**Name:** `N19 React SIS Account Entry Applet` > <br>**Usage Type:** `Physical Renderer` > <br>**Type:** `Applet`
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    > - add a new record under **Object Expression** with:
+    >   <br>**Level:** `1`
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+    > - add a new record under **Files** with:
+    >   <br>**Name:** `siebel/custom/N19_reactdemo_PR.js`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+9.  Empty browser cache and hard reload
+    <br>_(e.g. using Chrome: press F12, then right-click a browser Refresh button and press ‘Empty Cache and Hard Reload’)_
+10. Re-login to your Siebel Application.
+11. Navigate to the `N19 React` Screen.

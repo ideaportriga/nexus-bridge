@@ -41,9 +41,9 @@ if (typeof (SiebelAppFacade.N19_reactdemo_PR) === "undefined") {
         }
 
         N19_reactdemo_PR.prototype.EndLife = function () {
-          // leanup before destroying applet object
+          // cleanup before destroying applet object
           if (reactComponent) {
-            SiebReact.unmountComponent(containerId);
+            // SiebReact.unmountComponent(containerId);
             reactComponent = null;
           }
           $("link[href*='https://fonts.googleapis.com/icon']").remove();

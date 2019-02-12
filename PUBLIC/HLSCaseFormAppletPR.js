@@ -53,9 +53,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log('>>> InvokeMethod, sequence false', method, arguments);
           }, { sequence: false, scope: this });
 
-          pm.AttachPostProxyExecuteBinding("ALL", function (method, psInput) {
-            console.log('>>>>>> AttachPostProxyExecuteBinding', method, arguments);
-            if (app && 'EditField' === method) { // this was a show popup
+          pm.AttachPostProxyExecuteBinding('EditField', function(method, psInput) {
+            if (app) { // this was a show popup
               if (psInput.GetProperty('SWEField') === n19helper.getControls()['Sales Rep'].inputName) { // this is sales rep
                 let applet = SiebelApp.S_App.GetActiveView().GetApplet('Contact Team Mvg Applet');
                 if (applet) {
@@ -65,6 +64,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
               }
             }
+          });
+
+          pm.AttachPostProxyExecuteBinding("ALL", function (method) {
+            console.log('>>>>>> AttachPostProxyExecuteBinding', method, arguments);
+            // AttachPostProxyExecuteBinding is not called for EditPopup
           });
 
           //hide the server rendered html, better to remove, but not now
@@ -347,6 +351,27 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           app = new Vue({
             el: '#vue_sample',
             mounted: function () {
+              // handle when shuttle is openned on the list applet
+              var pmListApplet = SiebelApp.S_App.GetActiveView().GetApplet('HLS Case List Applet').GetPModel();
+              pmListApplet.AttachPostProxyExecuteBinding("EditField", function (method) {
+                let applet = SiebelApp.S_App.GetActiveView().GetApplet('Contact Team Mvg Applet');
+                if (applet) {
+                  applet.GetPModel().AttachPostProxyExecuteBinding("ALL", function (method) {
+                    if (("AddRecords" === method) || ("AddAllRecords" === method) || ("DeleteRecords" === method)) {
+                      var event = new Event("UpdateMVG");
+                      document.dispatchEvent(event);
+                    }
+                  });
+                }
+              });
+              pmListApplet.AddMethod('InvokeMethod', function (method) {
+                if ('EditPopup' === method) {
+                  // to make it visible, if popup was opened thru invisible flow
+                  n19helper.n19popupController.isPopupHidden = false;
+                  SiebelAppFacade.N19Helper.ReInitPopup();
+                }
+              }, { sequence: true, scope: this });
+
               this.fieldToControlsMap = n19helper._getFieldToControlMap(this.controls);
               this.afterSelection();
               this.subscribeId = n19helper.subscribe(this.afterSelection);
@@ -481,7 +506,12 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               getControlForOpenPopup() {
                 var controlName = '';
                 if (n19helper.n19popupController.popupAppletN19) {
-                  var controlName = n19helper.n19popupController.popupAppletN19.applet.GetPopupControl();
+                  // check if it was not closed accidentally
+                  const appletName = n19helper.n19popupController.popupAppletN19.appletName;
+                  const applet = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName];
+                  if (applet) {
+                    controlName = n19helper.n19popupController.popupAppletN19.applet.GetPopupControl();
+                  }
                 }
                 return controlName;
               },

@@ -35,6 +35,9 @@ export default class N19popupController {
       return ret;
     };
 
+    // we could use pm.AttachPostProxyExecuteBinding for 'EditField', but at this point GetRenderer returns null
+    // but pm exists
+    // open until we get rid of GetRenderer (Oracle review)
     this.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded;
     SiebelApp.contentUpdater.viewLoaded = (...args) => {
       const ret = this.N19viewLoaded.call(SiebelApp.contentUpdater, ...args);
@@ -119,7 +122,7 @@ export default class N19popupController {
       }
       ret = applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
     } else {
-      // todo: !!! >> change this approach
+      // todo: could we use the Close method of the applet? (NZ used)
       ret = this.popupAppletN19.applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
     }
     // it could be better if we don't have a Siebel Applet on the view
@@ -163,9 +166,9 @@ export default class N19popupController {
   // }
 
   static GetPopupApplet(appletName) {
-    const applet = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName];
+    const applet = SiebelApp.S_App.GetActiveView().GetApplet(appletName);
     if (!applet) {
-      throw new Error(`The ${appletName} is not found in applet map`);
+      throw new Error(`The reference to ${appletName} is not instantiated.`);
     }
     return applet;
   }

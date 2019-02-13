@@ -764,6 +764,7 @@ export default class N19baseApplet {
     // used slice to avoid modification of the record set
     const ret = this.getRecordSet().slice();
 
+    // todo : convert boolean values (e.g. Y/N <-> true/falss)
     for (let i = 0; i < ret.length; i += 1) {
       ret[i] = Object.keys(ret[i]).filter(el => this.fieldToControlMap[el]).reduce((acc, el) => ({
         ...acc,

@@ -45,22 +45,24 @@ export default class N19popupController {
         // todo: use here the properties set on promiseResolving?
         const { appletName } = N19popupController.IsPopupOpen();
         if (!appletName) {
-          throw new Error('Open Applet Name is not found in resolvePromise');
+          // console.warn('Open Applet Name is not found in viewLoaded resolving Promise');
+          throw new Error('Open Applet Name is not found in viewLoaded resolving Promise');
+        } else {
+          const applet = N19popupController.GetPopupApplet(appletName);
+          const pm = applet.GetPModel();
+          // todo: avoid this circularity
+          this.popupAppletN19 = new N19popupApplet({ pm }); // todo : split N19Helper into 2 classes
+          const obj = { appletName, popupAppletN19: this.popupAppletN19 };
+          // check if we have assoc
+          // we assume it is always assoc applet, but what about opening popup on the top of another - not tested it
+          const assocApplet = applet.GetPopupApplet();
+          if (assocApplet) {
+            this.assocAppletN19 = new N19popupApplet({ pm: assocApplet.GetPModel() });
+            obj.assocAppletN19 = this.assocAppletN19;
+          }
+          this.resolvePromise(obj);
+          this.resolvePromise = null;
         }
-        const applet = N19popupController.GetPopupApplet(appletName);
-        const pm = applet.GetPModel();
-        // todo: avoid this circularity
-        this.popupAppletN19 = new N19popupApplet({ pm }); // todo : split N19Helper into 2 classes
-        const obj = { appletName, popupAppletN19: this.popupAppletN19 };
-        // check if we have assoc
-        // we assume it is always assoc applet, but what about opening popup on the top of another - not tested it
-        const assocApplet = applet.GetPopupApplet();
-        if (assocApplet) {
-          this.assocAppletN19 = new N19popupApplet({ pm: assocApplet.GetPModel() });
-          obj.assocAppletN19 = this.assocAppletN19;
-        }
-        this.resolvePromise(obj);
-        this.resolvePromise = null;
       }
       return ret;
     };

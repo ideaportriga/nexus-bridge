@@ -29,7 +29,7 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
       throw new Error('Openning popup on the popup is not supported now');
     }
     if (!this.n19popupController.canOpenPopup()) {
-      throw new Error('Cannot open popup!');
+      throw new Error('Cannot open popup (currently exists resolve function)!');
       // return false;
     }
     this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet

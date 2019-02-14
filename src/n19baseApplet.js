@@ -11,6 +11,8 @@ export default class N19baseApplet {
     this.required = []; // will be empty for the list applet
     this.lov = {};
     this.boolObject = new SiebelApp.S_App.DatumBoolObject();
+    this.dateFormat = SiebelApp.S_App.LocaleObject.m_spProfilePS.GetProperty(3);
+    this.dateTimeFormat = SiebelApp.S_App.LocaleObject.m_spProfilePS.GetProperty(2);
 
     const bcId = this.applet.GetBCId();
     this.notifications = new N19notifications(this.pm, this.consts, bcId);
@@ -118,27 +120,29 @@ export default class N19baseApplet {
     const arr = Object.keys(appletControls);
     for (let i = 0; i < arr.length; i += 1) {
       const control = appletControls[arr[i]];
-      const controlUiType = control.GetUIType();
-      if (this._isSkipControl(controlUiType)) {
+      const uiType = control.GetUIType();
+      const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
+      if (this._isSkipControl(uiType)) {
         continue; // eslint-disable-line no-continue
       }
-      const controlName = control.GetName();
-      const controlInputName = control.GetInputName();
+      const name = control.GetName();
+      const inputName = control.GetInputName();
       const obj = {
-        name: controlName,
+        name,
         label: control.GetDisplayName(),
-        uiType: controlUiType,
-        required: this._isRequired(controlInputName),
+        uiType,
+        required: this._isRequired(inputName),
         boundedPick: control.IsBoundedPick() === '1',
         staticPick: control.IsStaticBounded() === '1',
         // pickApplet: control.GetPickApplet(), // confusing and not consistent - see wiki
-        inputName: controlInputName,
+        inputName,
         isPostChanges: control.IsPostChanges(),
         maxSize: control.GetMaxSize(),
         // maxChars: control.GetMaxChars(), // it is always 0
         fieldName: control.GetFieldName(),
-        isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
-        readonly: !this.pm.ExecuteMethod('CanUpdate', controlName),
+        isLink: this.pm.ExecuteMethod('CanNavigate', name),
+        readonly: !this.pm.ExecuteMethod('CanUpdate', name),
+        displayFormat,
       };
       Object.defineProperty(obj, 'readOnly', {
         get: () => {
@@ -155,7 +159,7 @@ export default class N19baseApplet {
           return acc;
         }, []);
       }
-      controls[controlName] = obj;
+      controls[name] = obj;
     }
     return controls;
   }
@@ -450,6 +454,18 @@ export default class N19baseApplet {
     return methods;
   }
 
+  getControlDisplayFormat(uiType) {
+    switch (uiType) {
+      case this.consts.get('SWE_CTRL_DATE_TZ_PICK'):
+      case this.consts.get('SWE_CTRL_DATE_TIME_PICK'):
+        return this.dateTimeFormat;
+      case this.consts.get('SWE_CTRL_DATE_PICK'):
+        return this.dateFormat;
+      default:
+        return '';
+    }
+  }
+
   getCurrentRecordModel(_controls, _methods) {
     if (!_controls) {
       _controls = this.getControls(); // eslint-disable-line no-param-reassign
@@ -473,9 +489,12 @@ export default class N19baseApplet {
       if (typeof control !== 'undefined') { // just if somebody sends incorrect name of the control
         const controlName = control.GetName();
         const fieldName = control.GetFieldName();
+        const uiType = control.GetUIType();
+        const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
         if (_controls.state > 0) {
           _controls[arr[i]] = { // eslint-disable-line no-param-reassign
             value: this._getControlValue(control.GetUIType(), obj[fieldName]),
+            uiType,
             readonly: !this.pm.ExecuteMethod('CanUpdate', controlName),
             isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
             label: control.GetDisplayName(),
@@ -483,10 +502,12 @@ export default class N19baseApplet {
             required: this._isRequired(control.GetInputName()),
             maxSize: control.GetMaxSize(),
             fieldName,
+            displayFormat,
           };
         } else { // no record displayed
           _controls[arr[i]] = { // eslint-disable-line no-param-reassign
             value: '',
+            uiType,
             readonly: true,
             isLink: false,
             label: control.GetDisplayName(),
@@ -494,6 +515,7 @@ export default class N19baseApplet {
             required: this._isRequired(control.GetInputName()),
             maxSize: control.GetMaxSize(),
             fieldName,
+            displayFormat,
           };
         }
       }

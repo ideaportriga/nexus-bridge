@@ -161,6 +161,7 @@ export default class N19baseApplet {
   }
 
   getRecordSet(addRecordIndex) {
+    // TODO: DO WE NEED TO DO CONVERSION?
     if (addRecordIndex) {
       return this.pm.Get('GetRecordSet').map((el, index) => {
         const ret = Object.assign({}, el);
@@ -172,6 +173,7 @@ export default class N19baseApplet {
   }
 
   getRawRecordSet(addRecordIndex) {
+    // TODO: DO WE NEED TO DO CONVERSION?
     if (addRecordIndex) {
       return this.pm.Get('GetRawRecordSet').map((el, index) => {
         const ret = Object.assign({}, el);
@@ -391,26 +393,10 @@ export default class N19baseApplet {
     return value;
   }
 
-  // this is a temp method to support the demo where
-  // Siebel and custom rendered applet coexist
-  _getFieldToControlMap(_controls) {
-    const ret = {};
-    const appletControls = this._returnControls();
-    const arr = Object.keys(_controls);
-    for (let i = 0; i < arr.length; i += 1) {
-      const control = appletControls[arr[i]];
-      ret[control.GetFieldName()] = {
-        name: control.GetName(),
-        isPostChanges: control.IsPostChanges(),
-        uiType: control.GetUIType(),
-      };
-    }
-    return ret;
-  }
-
   getCurrentRecord(raw) {
+    // todo: do we need to do the conversion
     const index = this.getSelection();
-    // todo: check if record
+    // todo: check if there is a record
     // todo: make a copy of returned object (to avoid the accidental modification of the recordset)
     if (raw) {
       return this.pm.Get('GetRawRecordSet')[index];
@@ -651,7 +637,7 @@ export default class N19baseApplet {
     if (control) {
       return control.GetFieldName();
     }
-    return controlName;
+    return controlName; // fallback - just in case we got the field name
   }
 
   _getMVF(ids, fields, useActiveBO, resolve, reject) {
@@ -712,7 +698,7 @@ export default class N19baseApplet {
     return this.pm.Get(name);
   }
 
-  _retrieveData(amount) { // temp method?
+  _retrieveData(amount) { // temp method!
     const data = new Map();
 
     while (data.size < amount) {
@@ -743,33 +729,42 @@ export default class N19baseApplet {
     return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord');
   }
 
-  getFieldToControlMap() {
-    this.fieldToControlMap = { Id: 'Id' };
+  // this is also called from the the demo where Siebel and custom rendered applet coexist
+  _getFieldToControlMap(_controls) {
+    const ret = {};
     const appletControls = this._returnControls();
-    const arr = Object.keys(appletControls);
+    const arr = Object.keys(_controls);
     for (let i = 0; i < arr.length; i += 1) {
       const control = appletControls[arr[i]];
       const field = control.GetFieldName();
       if (field) {
-        this.fieldToControlMap[field] = arr[i];
+        ret[field] = {
+          name: control.GetName(),
+          isPostChanges: control.IsPostChanges(),
+          uiType: control.GetUIType(),
+        };
       }
     }
-    return this.fieldToControlMap;
+    return ret;
   }
 
   getControlsRecordSet() {
     if (!this.fieldToControlMap) {
-      this.getFieldToControlMap();
+      this.fieldToControlMap = this._getFieldToControlMap(this._returnControls());
     }
     // used slice to avoid modification of the record set
     const ret = this.getRecordSet().slice();
 
     // todo : convert boolean values (e.g. Y/N <-> true/falss)
     for (let i = 0; i < ret.length; i += 1) {
+      const id = ret[i].Id;
       ret[i] = Object.keys(ret[i]).filter(el => this.fieldToControlMap[el]).reduce((acc, el) => ({
         ...acc,
-        ...{ [this.fieldToControlMap[el]]: ret[i][el] },
+        ...{ [this.fieldToControlMap[el].name]: this._getControlValue(this.fieldToControlMap[el].uiType, ret[i][el]) },
       }), {});
+      if (id) {
+        ret[i].Id = id;
+      }
     }
 
     return ret;

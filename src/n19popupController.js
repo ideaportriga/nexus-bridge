@@ -31,6 +31,7 @@ export default class N19popupController {
         ret = this.processNewPopup(ps);
       } else {
         ret = this.N19processNewPopup.call(SiebelApp.S_App, ps);
+        // todo: set here isPopupHidden to false?
       }
       return ret;
     };

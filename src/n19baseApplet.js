@@ -3,7 +3,9 @@ import N19notifications from './n19notifications';
 export default class N19baseApplet {
   constructor(settings) {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
+    this.utils = SiebelJS.Dependency('SiebelApp.Utils');
     this.pm = settings.pm;
+    this.convertDates = settings.convertDates;
     this.view = SiebelApp.S_App.GetActiveView();
     this.appletName = this.pm.Get('GetName');
     this.applet = this.view.GetApplet(this.appletName);
@@ -92,13 +94,24 @@ export default class N19baseApplet {
     return this.pm.ExecuteMethod('SetActiveControl', null);
   }
 
-  _getValueForControl(controlUiType, value) {
-    // TODO: DateTime, numbers, and phones?
-    if (this.consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
-      // convert true/false => Y/N // what with null
+  _isDateTimeControl(uiType) {
+    return this.consts.get('SWE_CTRL_DATE_TZ_PICK') === uiType
+      || this.consts.get('SWE_CTRL_DATE_TIME_PICK') === uiType
+      || this.consts.get('SWE_CTRL_DATE_PICK') === uiType;
+  }
+
+  _getSiebelValue(value, uiType, displayFormat) {
+    // todo: numbers, and phones?
+    if (this.consts.get('SWE_CTRL_CHECKBOX') === uiType) {
+      // convert true/false => Y/N // null is not handled (the same as in standard Open UI)
       this.boolObject.SetValue(value);
       return this.boolObject.GetAsString();
       // value = value ? 'Y' : 'N'; // eslint-disable-line no-param-reassign
+    }
+    if (this.convertDates && displayFormat && this._isDateTimeControl(uiType)) {
+      // TODO: check if a valid date is inputted
+      const date = value.toLocaleString('en-US', { hour12: false }).split(',').join('');
+      return SiebelApp.S_App.LocaleObject.GetStringFromDateTime(date, 'M/D/YYYY HH:mm:ss', displayFormat, false);
     }
     return value;
   }
@@ -312,8 +325,13 @@ export default class N19baseApplet {
   setControlValue(name, value) {
     // TODO: If value is null, nothing happens, should we convert null to ''?
     const control = this._getControl(name);
-    // TODO: Check if control is found
-    value = this._getValueForControl(control.GetUIType(), value); // eslint-disable-line no-param-reassign
+    if (!control) {
+      throw new Error(`Cannot find a control by name ${name} to set ${value}.`);
+    }
+    const uiType = control.GetUIType();
+    const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
+    // eslint-disable-next-line no-param-reassign
+    value = this._getSiebelValue(value, uiType, displayFormat);
     // TODO: should we use SetCellValue for list applets?
     const ret = this._setControlValueInternal(control, value);
     if (!ret) {
@@ -387,12 +405,27 @@ export default class N19baseApplet {
     return ret.sort();
   }
 
-  _getControlValue(controlUiType, value) {
+  _getJSValue(value, uiType, displayFormat) {
     // todo: what about datetime?
-    if (this.consts.get('SWE_CTRL_CHECKBOX') === controlUiType) {
+    if (this.consts.get('SWE_CTRL_CHECKBOX') === uiType) {
       // convert Y/N/null -> true/false // what about null
       this.boolObject.SetAsString(value);
       return this.boolObject.GetValue();
+    }
+    if (this.convertDates && displayFormat && this._isDateTimeControl(uiType)) {
+      if (value === '') {
+        return null;
+      }
+      let ISO = '';
+      if (this.isListApplet) {
+        ISO = this.utils.ToISOFormat(value, this.consts.get('SWE_CTRL_DATE_PICK') !== uiType, displayFormat);
+      } else {
+        ISO = this.utils.GetISODateTime(value, true);
+      }
+      if (ISO === '') {
+        throw new Error(`ISO value is empty after converting ${value}`);
+      }
+      return new Date(ISO);
     }
     return value;
   }
@@ -493,7 +526,7 @@ export default class N19baseApplet {
         const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
         if (_controls.state > 0) {
           _controls[arr[i]] = { // eslint-disable-line no-param-reassign
-            value: this._getControlValue(control.GetUIType(), obj[fieldName]),
+            value: this._getJSValue(obj[fieldName], control.GetUIType(), displayFormat),
             uiType,
             readonly: !this.pm.ExecuteMethod('CanUpdate', controlName),
             isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
@@ -622,7 +655,7 @@ export default class N19baseApplet {
     for (let i = 0; i < arr.length; i += 1) {
       const control = _controls[arr[i]];
       if (control) {
-        this._setControlValueInternal(control, this._getValueForControl(control.GetUIType(), params[arr[i]]));
+        this._setControlValueInternal(control, this._getSiebelValue(params[arr[i]], control.GetUIType()));
       } else {
         console.error(`The control "${arr[i]}" is not found!`); // eslint-disable-line no-console
       }
@@ -760,10 +793,12 @@ export default class N19baseApplet {
       const control = appletControls[arr[i]];
       const field = control.GetFieldName();
       if (field) {
+        const uiType = control.GetUIType();
         ret[field] = {
           name: control.GetName(),
           isPostChanges: control.IsPostChanges(),
-          uiType: control.GetUIType(),
+          uiType,
+          displayFormat: control.GetDisplayFormat() || this.getControlDisplayFormat(uiType),
         };
       }
     }
@@ -782,7 +817,11 @@ export default class N19baseApplet {
       const id = ret[i].Id;
       ret[i] = Object.keys(ret[i]).filter(el => this.fieldToControlMap[el]).reduce((acc, el) => ({
         ...acc,
-        ...{ [this.fieldToControlMap[el].name]: this._getControlValue(this.fieldToControlMap[el].uiType, ret[i][el]) },
+        ...{
+          [this.fieldToControlMap[el].name]: this._getJSValue(ret[i][el],
+            this.fieldToControlMap[el].uiType,
+            this.fieldToControlMap[el].displayFormat),
+        },
       }), {});
       if (id) {
         ret[i].Id = id;

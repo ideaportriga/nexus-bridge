@@ -724,7 +724,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     value = (n19helper.getCurrentRecord() || {})[name];
                   }
                   if (value) {
-                    value = n19helper._getControlValue(control.uiType, value);
+                    value = n19helper._getJSValue(value, control.uiType); // TODO : SUPPORT DATE/DATETIME
                     if ('Threat Level' === name) {
                       this.caseThreatLevelNum = this.caseThreatLevelArr.indexOf(value) + 1;
                     }

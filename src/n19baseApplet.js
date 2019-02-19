@@ -13,8 +13,8 @@ export default class N19baseApplet {
     this.required = []; // will be empty for the list applet
     this.lov = {};
     this.boolObject = new SiebelApp.S_App.DatumBoolObject();
-    this.dateFormat = SiebelApp.S_App.LocaleObject.m_spProfilePS.GetProperty(3);
-    this.dateTimeFormat = SiebelApp.S_App.LocaleObject.m_spProfilePS.GetProperty(2);
+
+    this.loadLocaleData();
 
     const bcId = this.applet.GetBCId();
     this.notifications = new N19notifications(this.pm, this.consts, bcId);
@@ -42,6 +42,23 @@ export default class N19baseApplet {
         // todo: do we need to indicate when an empty value is allowed?
       }
     }, { scope: this });
+  }
+
+  loadLocaleData() {
+    const localeObject = SiebelApp.S_App.LocaleObject;
+    this.localeData = {
+      dateFormat: localeObject.GetProfile(this.consts.get('LOCAL_DATE_FORMAT')),
+      dateTimeFormat: localeObject.GetProfile(this.consts.get('LOCAL_DATETIME_FORMAT')),
+      firstDayOfWeek: localeObject.GetWeekStartDay(),
+    };
+    this.localeData.months = [];
+    this.localeData.shortMonths = [];
+    const months = localeObject.GetData('Month', localeObject.m_spMonthPS);
+    for (let i = 1; i <= 12; i += 1) {
+      this.localeData.months.push(months.GetProperty(`${i}:0`));
+      this.localeData.shortMonths.push(months.GetProperty(`${i}:1`));
+    }
+    // const weekDays = localeObject.GetData('DayOfWeek', localeObject.m_spDayOfWeekPS);
   }
 
   subscribe(func) { // eslint-disable-line class-methods-use-this
@@ -491,9 +508,9 @@ export default class N19baseApplet {
     switch (uiType) {
       case this.consts.get('SWE_CTRL_DATE_TZ_PICK'):
       case this.consts.get('SWE_CTRL_DATE_TIME_PICK'):
-        return this.dateTimeFormat;
+        return this.localeData.dateTimeFormat;
       case this.consts.get('SWE_CTRL_DATE_PICK'):
-        return this.dateFormat;
+        return this.localeData.dateFormat;
       default:
         return '';
     }
@@ -524,7 +541,7 @@ export default class N19baseApplet {
         const fieldName = control.GetFieldName();
         const uiType = control.GetUIType();
         const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
-        if (_controls.state > 0) {
+        if (_controls.id) {
           _controls[arr[i]] = { // eslint-disable-line no-param-reassign
             value: this._getJSValue(obj[fieldName], control.GetUIType(), displayFormat),
             uiType,

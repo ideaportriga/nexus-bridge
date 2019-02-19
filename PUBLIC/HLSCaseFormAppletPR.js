@@ -31,7 +31,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           // initialize helper
           appletName = pm.Get('GetName');
           SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
-          SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
+          SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm, convertDates: true });
           n19helper = SiebelAppFacade.N19[appletName];
 
           var viewName = SiebelApp.S_App.GetActiveView().GetName();
@@ -298,44 +298,54 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     :search-input.sync="search">                                                            \n\
                     </v-autocomplete>                                                                       \n\
                     <v-divider></v-divider>                                                                 \n\
-                </v-flex>                                                                                                                                       \n\
-                <v-flex md12 pa-2>                                                                                                                              \n\
-                  <v-textarea v-on:change="changeValue(\'Description\')" rows="7" :disabled="controls.Description.readonly" :label="controls.Description.label" v-model="controls.Description.value" :counter="controls.Description.maxSize" box name="input-7-1"></v-textarea> \n\
-                </v-flex>                                                                                                                                       \n\
-                <v-flex md12 pa-2>                                                                                                                              \n\
-                  <v-divider></v-divider>                                                                                                                       \n\
-                </v-flex>                                                                                                                                       \n\
-                <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="saveButtonClick" color="primary"><v-icon>save</v-icon>Save!</v-btn>                                                  \n\
-                </v-flex>                                                                                                                                       \n\
-                <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="deleteButtonClick" color="primary"><v-icon>delete</v-icon>Delete!</v-btn>                                            \n\
-                </v-flex>                                                                                                                                       \n\
-                <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="testButtonClick" color="primary"><v-icon>pan_tool</v-icon>Pick!</v-btn>                                              \n\
-                </v-flex>                                                                                                                                       \n\
-                <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="testButtonClickShuttle" color="primary"><v-icon>pan_tool</v-icon>Shuttle!</v-btn>                                    \n\
-                </v-flex>                                                                                                                                       \n\
-                <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="testButtonClickShuttle2" color="primary"><v-icon>pan_tool</v-icon>Shuttle2!</v-btn>                                  \n\
-                </v-flex>                                                                                                                                       \n\
-                <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="testButtonClickShuttle3" color="primary"><v-icon>pan_tool</v-icon>Shuttle3!</v-btn>                                  \n\
-                </v-flex>                                                                                                                                       \n\
-                <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="testBS" color="primary"><v-icon>pan_tool</v-icon>BS!</v-btn>                                                         \n\
-                </v-flex>                                                                                                                                       \n\
-                <v-flex md2 pa-2>                                                                                                                               \n\
-                </v-flex>                                                                                                                                       \n\
-                <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-btn block v-on:click="gotoButtonClick" color="primary"><v-icon>language</v-icon>Goto!</v-btn>                                              \n\
-                </v-flex>                                                                                                                                       \n\
-                <v-flex md1 pa-2>                                                                                                                               \n\
-                  <v-tooltip :attach=true top><v-btn block slot="activator" v-on:click="prevButtonClick" color="primary"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>  \n\
+                </v-flex>                                                                                                                                      \n\
+                <v-flex md4 pa-2>                                                                                                                              \n\
+                  <v-textarea v-on:change="changeValue(\'Description\')" rows="12" :disabled="controls.Description.readonly" :label="controls.Description.label" v-model="controls.Description.value" :counter="controls.Description.maxSize" box name="input-7-1"></v-textarea> \n\
+                </v-flex>                                                                                                                                      \n\
+                <v-flex md4 pa-2>                                                                                                                              \n\
+                  <div class="text-xs-center">                                                                                                                 \n\
+                    <v-date-picker :first-day-of-week="firstDayOfWeek" v-on:input="changeCreatedDate" v-model="date" landscape :disabled="controls[\'Created Date\'].readonly"></v-date-picker>                                                                           \n\
+                  </div>                                                                                                                                       \n\
+                </v-flex>                                                                                                                                      \n\
+                <v-flex md4 pa-2>                                                                                                                              \n\
+                  <div class="text-xs-center">                                                                                                                 \n\
+                    <v-time-picker v-on:input="changeCreatedDate" v-model="time" landscape format="24hr" :disabled="controls[\'Created Date\'].readonly"></v-time-picker>                                                             \n\
+                  </div>                                                                                                                                       \n\
+                </v-flex>                                                                                                                                      \n\
+                <v-flex md12 pa-2>                                                                                                                             \n\
+                  <v-divider></v-divider>                                                                                                                      \n\
+                </v-flex>                                                                                                                                      \n\
+                <v-flex md1 pa-2>                                                                                                                              \n\
+                  <v-btn :disabled="!methods.WriteRecord" block v-on:click="saveButtonClick" color="primary"><v-icon>save</v-icon>Save!</v-btn>                \n\
+                </v-flex>                                                                                                                                      \n\
+                <v-flex md1 pa-2>                                                                                                                              \n\
+                  <v-btn :disabled="!methods.DeleteRecord" block v-on:click="deleteButtonClick" color="primary"><v-icon>delete</v-icon>Delete!</v-btn>         \n\
+                </v-flex>                                                                                                                                      \n\
+                <v-flex md1 pa-2>                                                                                                                              \n\
+                  <v-btn block v-on:click="testButtonClick" color="primary"><v-icon>pan_tool</v-icon>Pick!</v-btn>                                             \n\
+                </v-flex>                                                                                                                                      \n\
+                <v-flex md1 pa-2>                                                                                                                              \n\
+                  <v-btn block v-on:click="testButtonClickShuttle" color="primary"><v-icon>pan_tool</v-icon>Shuttle!</v-btn>                                   \n\
+                </v-flex>                                                                                                                                      \n\
+                <v-flex md1 pa-2>                                                                                                                              \n\
+                  <v-btn block v-on:click="testButtonClickShuttle2" color="primary"><v-icon>pan_tool</v-icon>Shuttle2!</v-btn>                                 \n\
+                </v-flex>                                                                                                                                      \n\
+                <v-flex md1 pa-2>                                                                                                                              \n\
+                  <v-btn block v-on:click="testButtonClickShuttle3" color="primary"><v-icon>pan_tool</v-icon>Shuttle3!</v-btn>                                 \n\
+                </v-flex>                                                                                                                                      \n\
+                <v-flex md1 pa-2>                                                                                                                              \n\
+                  <v-btn block v-on:click="testBS" color="primary"><v-icon>pan_tool</v-icon>BS!</v-btn>                                                        \n\
+                </v-flex>                                                                                                                                      \n\
+                <v-flex md2 pa-2>                                                                                                                              \n\
+                </v-flex>                                                                                                                                      \n\
+                <v-flex md1 pa-2>                                                                                                                              \n\
+                  <v-btn block v-on:click="gotoButtonClick" color="primary"><v-icon>language</v-icon>Goto!</v-btn>                                             \n\
+                </v-flex>                                                                                                                                      \n\
+                <v-flex md1 pa-2>                                                                                                                              \n\
+                  <v-tooltip :attach=true top><v-btn :disabled="!methods.GotoPreviousSet" block slot="activator" v-on:click="prevButtonClick" color="primary"><v-icon>navigate_before</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>  \n\
                 </v-flex>                                                                                                                                                                         \n\
                 <v-flex md1 pa-2>                                                                                                                                                                 \n\
-                  <v-tooltip :attach=true top><v-btn block slot="activator" v-on:click="nextButtonClick" color="primary"><v-icon>navigate_next</v-icon></v-btn><span>Go to the previous record</span></v-tooltip>    \n\
+                  <v-tooltip :attach=true top><v-btn :disabled="!methods.GotoNextSet" block slot="activator" v-on:click="nextButtonClick" color="primary"><v-icon>navigate_next</v-icon></v-btn><span>Go to the next record</span></v-tooltip>    \n\
                 </v-flex>                                                                                     \n\
                 <v-fab-transition>                                                                            \n\
                   <v-btn v-on:click="newButtonClick" v-show="true" color="pink" dark fixed bottom right fab>  \n\
@@ -373,6 +383,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               }, { sequence: true, scope: this });
 
               this.fieldToControlsMap = n19helper._getFieldToControlMap(this.controls);
+              this.caseCategoryArr = n19helper.getStaticLOV('Category');
+              this.firstDayOfWeek = n19helper.localeData.firstDayOfWeek;
               this.afterSelection();
               this.subscribeId = n19helper.subscribe(this.afterSelection);
               $('.application--wrap').css({ 'min-height': 'auto' });
@@ -381,6 +393,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               n19helper.unsubscribe(this.subscribeId);
             },
             data: {
+              firstDayOfWeek: 0,
               controls: {
                 Name: {},
                 Status: {},
@@ -392,9 +405,16 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 'Sales Rep': {},
                 'Audit Employee Last Name': {},
                 'Audit Employee Full Name': {},
+                'Created Date': {},
               },
               methods: {
+                GotoPreviousSet: false,
+                GotoNextSet: false,
+                WriteRecord: false,
+                DeleteRecord: false
               },
+              date: null,
+              time: null,
               caseThreatLevelNum: 0,
               snackBar: false,
               snackBarColor: '',
@@ -645,8 +665,16 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   }.bind(this))
                 }
               },
+              changeCreatedDate() {
+                 const date = new Date(this.date + ' ' + this.time);
+                 this.controls['Created Date'].value = date;
+                 this.changeValue('Created Date');
+
+              },
               changeThreatLevel(val) {
-                n19helper.setControlValue('Threat Level', val > 0 ? this.caseThreatLevelArr[val - 1] : '');
+                // n19helper.setControlValue('Threat Level', val > 0 ? this.caseThreatLevelArr[val - 1] : '');
+                this.controls['Threat Level'].value = val > 0 ? this.caseThreatLevelArr[val - 1] : '';
+                this.changeValue('Threat Level');
               },
               clickSubStatus: function () {
                 var arr = n19helper.getDynamicLOV('Sub Status');
@@ -838,10 +866,19 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               afterSelection: function () {
                 console.log('>>>>>>>>>>>>>>>>>>> AFTER SELECTION STARTED....');
                 // this.controls = n19helper.getCurrentRecordModel(this.controls).controls;
-                n19helper.getCurrentRecordModel(this.controls);
+                n19helper.getCurrentRecordModel(this.controls, this.methods);
 
-                if (0 === this.caseCategoryArr.length) {
-                  this.caseCategoryArr = n19helper.getStaticLOV('Category');
+                // if (0 === this.caseCategoryArr.length) {
+                //   this.caseCategoryArr = n19helper.getStaticLOV('Category');
+                // }
+
+                if (this.controls['Created Date'].value) {
+                  var arr = this.controls['Created Date'].value.toLocaleString('sv-SV').split(' ');
+                  this.date = arr[0];
+                  this.time = arr[1].substr(0,8);
+                } else {
+                  this.date = null;
+                  this.time = null;
                 }
 
                 this.caseThreatLevelNum = this.caseThreatLevelArr.indexOf(this.controls['Threat Level'].value) + 1;

@@ -304,12 +304,14 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 </v-flex>                                                                                                                                      \n\
                 <v-flex md4 pa-2>                                                                                                                              \n\
                   <div class="text-xs-center">                                                                                                                 \n\
-                    <v-date-picker :first-day-of-week="firstDayOfWeek" v-on:input="changeCreatedDate" v-model="date" landscape :disabled="controls[\'Created Date\'].readonly"></v-date-picker>                                                                           \n\
+                    <v-date-picker :title-date-format="titleDateFormat" :weekday-format="weekdayFormat"                                                        \n\
+                    :header-date-format="headerDateFormat" :first-day-of-week="firstDayOfWeek" v-on:input="changeCreatedDate"                                  \n\
+                    v-model="date" landscape :disabled="controls[\'Created Date\'].readonly"></v-date-picker>                                                  \n\
                   </div>                                                                                                                                       \n\
                 </v-flex>                                                                                                                                      \n\
                 <v-flex md4 pa-2>                                                                                                                              \n\
                   <div class="text-xs-center">                                                                                                                 \n\
-                    <v-time-picker v-on:input="changeCreatedDate" v-model="time" landscape format="24hr" :disabled="controls[\'Created Date\'].readonly"></v-time-picker>                                                             \n\
+                    <v-time-picker v-on:input="changeCreatedDate" v-model="time" landscape :format="timeFormat" :disabled="controls[\'Created Date\'].readonly"></v-time-picker>                                                             \n\
                   </div>                                                                                                                                       \n\
                 </v-flex>                                                                                                                                      \n\
                 <v-flex md12 pa-2>                                                                                                                             \n\
@@ -385,6 +387,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               this.fieldToControlsMap = n19helper._getFieldToControlMap(this.controls);
               this.caseCategoryArr = n19helper.getStaticLOV('Category');
               this.firstDayOfWeek = n19helper.localeData.firstDayOfWeek;
+              this.timeFormat = n19helper.localeData.is24hoursFormat ? '24hr' : 'ampm';
               this.afterSelection();
               this.subscribeId = n19helper.subscribe(this.afterSelection);
               $('.application--wrap').css({ 'min-height': 'auto' });
@@ -415,6 +418,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               date: null,
               time: null,
+              timeFormat: 'ampm',
               caseThreatLevelNum: 0,
               snackBar: false,
               snackBarColor: '',
@@ -461,6 +465,21 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               }
             },
             methods: {
+              titleDateFormat(date)  {
+                const value = new Date(date);
+                const day = value.getDate();
+                const month = n19helper.localeData.shortMonths[value.getMonth()];
+                const weekDay = n19helper.localeData.weekDays3[value.getDay()];
+                return `${weekDay}, ${month} ${day}`;
+              },
+              headerDateFormat(date) {
+                const arr = date.split('-');
+                return `${n19helper.localeData.months[Number(arr[1]) - 1]}, ${arr[0]}`;
+              },
+              weekdayFormat(date) {
+                const weekDay = new Date(date).getDay();
+                return n19helper.localeData.weekDays3[weekDay];
+              },
               async focusAuditEmployee() {
                 console.log('!!!FOCUS', arguments);
                 if (!this.pickApplet) {

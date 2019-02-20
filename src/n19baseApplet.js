@@ -46,10 +46,12 @@ export default class N19baseApplet {
 
   loadLocaleData() {
     const localeObject = SiebelApp.S_App.LocaleObject;
+    const dateTimeFormat = localeObject.GetProfile(this.consts.get('LOCAL_DATETIME_FORMAT'));
     this.localeData = {
       dateFormat: localeObject.GetProfile(this.consts.get('LOCAL_DATE_FORMAT')),
-      dateTimeFormat: localeObject.GetProfile(this.consts.get('LOCAL_DATETIME_FORMAT')),
+      dateTimeFormat,
       firstDayOfWeek: localeObject.GetWeekStartDay(),
+      is24hoursFormat: !/p$/.test(dateTimeFormat),
     };
     this.localeData.months = [];
     this.localeData.shortMonths = [];
@@ -58,7 +60,16 @@ export default class N19baseApplet {
       this.localeData.months.push(months.GetProperty(`${i}:0`));
       this.localeData.shortMonths.push(months.GetProperty(`${i}:1`));
     }
-    // const weekDays = localeObject.GetData('DayOfWeek', localeObject.m_spDayOfWeekPS);
+
+    const weekDays = localeObject.GetData('DayOfWeek', localeObject.m_spDayOfWeekPS);
+    this.localeData.weekDays = [];
+    this.localeData.weekDays3 = [];
+    this.localeData.weekDays1 = [];
+    for (let i = 0; i < 7; i += 1) {
+      this.localeData.weekDays.push(weekDays.GetProperty(`${i}:0`));
+      this.localeData.weekDays3.push(weekDays.GetProperty(`${i}:1`));
+      this.localeData.weekDays1.push(weekDays.GetProperty(`${i}:2`));
+    }
   }
 
   subscribe(func) { // eslint-disable-line class-methods-use-this

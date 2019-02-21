@@ -46,7 +46,7 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
   }
 
   drilldown(controlName) {
-    // todo: check isLink of control?
+    // TODO: check isLink of control?
     // index is not effective, and drilldown anyway happens on last selected record
     if (!this.isListApplet) {
       return false;
@@ -56,7 +56,7 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
   }
 
   gotoView(targetViewName, targetAppletName, id) {
-    // todo: get the applet name from the view definition?
+    // TODO: get the applet name from the view definition?
     const rowId = typeof id === 'undefined' ? this.getCurrentRecord(true).Id : id;
     let SWECmd = `GotoView&SWEView=${targetViewName}&SWEApplet0=${targetAppletName}`;
     SWECmd += `&SWEBU=1&SWEKeepContext=FALSE&SWERowId0=${rowId}`;
@@ -64,7 +64,15 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
     SiebelApp.S_App.GotoView(targetViewName, '', SWECmd, '');
   }
 
-  static ReInitPopup() {
+  reInitPopup() { // do we need to keep also static ReInitPopup
+    this.n19popupController.isPopupHidden = false;
+
+    const popupPM = SiebelApp.S_App.GetPopupPM();
+    popupPM.Init();
+    popupPM.Setup();
+  }
+
+  static ReInitPopup() { // could be removed in the next version
     const popupPM = SiebelApp.S_App.GetPopupPM();
     popupPM.Init();
     popupPM.Setup();

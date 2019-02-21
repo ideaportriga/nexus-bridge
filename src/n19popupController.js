@@ -29,9 +29,9 @@ export default class N19popupController {
       let ret;
       if (this.isPopupHidden) {
         ret = this.processNewPopup(ps);
+        this.isPopupHidden = false; // in order to do not affect the next call
       } else {
         ret = this.N19processNewPopup.call(SiebelApp.S_App, ps);
-        // todo: set here isPopupHidden to false?
       }
       return ret;
     };
@@ -39,11 +39,12 @@ export default class N19popupController {
     // we could use pm.AttachPostProxyExecuteBinding for 'EditField', but at this point GetRenderer returns null
     // but pm exists
     // open until we get rid of GetRenderer (Oracle review)
+    // other option - OnLoadPopupContent?
     this.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded;
     SiebelApp.contentUpdater.viewLoaded = (...args) => {
       const ret = this.N19viewLoaded.call(SiebelApp.contentUpdater, ...args);
       if (typeof this.resolvePromise === 'function') {
-        // todo: use here the properties set on promiseResolving?
+        // TODO: maybe use here the properties set on resolivng
         const { appletName } = N19popupController.IsPopupOpen();
         if (!appletName) {
           // console.warn('Open Applet Name is not found in viewLoaded resolving Promise');
@@ -51,8 +52,7 @@ export default class N19popupController {
         } else {
           const applet = N19popupController.GetPopupApplet(appletName);
           const pm = applet.GetPModel();
-          // todo: avoid this circularity
-          this.popupAppletN19 = new N19popupApplet({ pm }); // todo : split N19Helper into 2 classes
+          this.popupAppletN19 = new N19popupApplet({ pm });
           const obj = { appletName, popupAppletN19: this.popupAppletN19 };
           // check if we have assoc
           // we assume it is always assoc applet, but what about opening popup on the top of another - not tested it
@@ -74,7 +74,7 @@ export default class N19popupController {
   }
 
   processNewPopup(ps) {
-    SiebelApp.S_App.SetShowNewPage(true);
+    // SiebelApp.S_App.SetShowNewPage(true);
     const popupPM = SiebelApp.S_App.GetPopupPM();
 
     popupPM.SetProperty('CanProcessLayout', false);
@@ -98,7 +98,9 @@ export default class N19popupController {
       }
     }
 
-    popupPM.AddProperty('state', 'visible'); // todo: we need also to restore the PM
+    // this property is added using AttachPMBinding into the Init PR (called by PM Setup)
+    // it is the reason why we have reinit procedure where Setup PM is called
+    popupPM.AddProperty('state', this.consts.get('POPUP_STATE_VISIBLE'));
 
     let url = ps.GetProperty('URL');
     url = SiebelApp.S_App.GetPageURL() + url.split('start.swe')[1];
@@ -107,15 +109,8 @@ export default class N19popupController {
     return 'refreshpopup';
   }
 
-  // static ReInitPopup() {
-  //   const popupPM = SiebelApp.S_App.GetPopupPM();
-  //   popupPM.Init();
-  //   popupPM.Setup();
-  // }
-
-  // todo: change the approach, use the class internal variables
   closePopupApplet(applet) {
-    // todo : check canInvokeMethod
+    // TODO: check canInvokeMethod?
     let ret;
     if (applet) {
       const isPopupApplet = typeof applet.GetPopupAppletName === 'function';
@@ -125,7 +120,7 @@ export default class N19popupController {
       }
       ret = applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
     } else {
-      // todo: could we use the Close method of the applet? (NZ used)
+      // TODO: maybe better use the Close method of the applet? (NZ used)
       ret = this.popupAppletN19.applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
     }
     // it could be better if we don't have a Siebel Applet on the view
@@ -138,8 +133,7 @@ export default class N19popupController {
     return ret;
   }
 
-  static IsPopupOpen() { // todo: when we set some properties on resolve, do we need this method now
-    // todo: here reuse the properties that set when the Promise resolved
+  static IsPopupOpen() { // safer to keep this methods, even when we set some properties on resolve?
     const currPopups = SiebelApp.S_App.GetPopupPM().Get('currPopups');
     if (0 === currPopups.length) {
       return { isOpen: false };
@@ -149,7 +143,7 @@ export default class N19popupController {
     }
     if (2 === currPopups.length) {
       // this is a shuttle or
-      // maybe we opened a popup applet on the top of pick applet - TODO: // test it
+      // maybe we opened a popup applet on the top of pick applet?
       //      test it  - maybe we need to close the several applets
       for (let i = 0; i < currPopups.length; i += 1) {
         if (typeof currPopups[1].GetPopupAppletName === 'function') {
@@ -158,15 +152,10 @@ export default class N19popupController {
       }
       throw new Error('Mvg applet is not found...');
     }
-    // todo: test if we can get to here
+    // if we can get to here
     //    maybe when we open a new applet on top of the shuttle applet
     throw new Error('should not be here...');
   }
-
-  // static getPopupAppletPM(appletName) {
-  //   const applet = N19popupController.GetPopupApplet(appletName);
-  //   return applet.GetPModel();
-  // }
 
   static GetPopupApplet(appletName) {
     const applet = SiebelApp.S_App.GetActiveView().GetApplet(appletName);
@@ -177,16 +166,15 @@ export default class N19popupController {
   }
 
   showPopupApplet(hide, cb, pm) {
-    // todo: use the properties set on promise resolving?
+    // TODO: maybe use the properties set on promise resolving?
     const { isOpen, appletName } = N19popupController.IsPopupOpen();
     if (isOpen) {
       // this code will close the applet even if this applet was originated by another applet
       console.log(`closing ${appletName} in showPopupApplet...`); // eslint-disable-line no-console
       // maybe do not close if the applet to be opened if the same as already opened?
       this.closePopupApplet(N19popupController.GetPopupApplet(appletName));
-      // todo: check if got it successfully closed?
     }
-    this.isPopupHidden = !!hide; // todo: do we need to keep the show the applet
+    this.isPopupHidden = !!hide;
 
     pm.ExecuteMethod('InvokeMethod', 'EditPopup'); // can call EditField?
 

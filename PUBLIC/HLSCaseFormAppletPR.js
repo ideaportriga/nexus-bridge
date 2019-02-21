@@ -379,8 +379,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               pmListApplet.AddMethod('InvokeMethod', function (method) {
                 if ('EditPopup' === method) {
                   // to make it visible, if popup was opened thru invisible flow
-                  n19helper.n19popupController.isPopupHidden = false;
-                  SiebelAppFacade.N19Helper.ReInitPopup();
+                  n19helper.reInitPopup();
                 }
               }, { sequence: true, scope: this });
 
@@ -655,14 +654,14 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 console.log(ret);
               },
               openPickApplet() {
-                SiebelAppFacade.N19Helper.ReInitPopup();
+                n19helper.reInitPopup();
                 this.pickApplet = null;
                 if (!n19helper.showPickApplet('Audit Employee Last Name')) {
                   alert('openPickApplet(returned value is false)')
                 }
               },
               showMvgApplet() {
-                SiebelAppFacade.N19Helper.ReInitPopup();
+                n19helper.reInitPopup();
                 var obj = n19helper.showMvgApplet('Sales Rep');
                 if (!obj) {
                   alert('showMvgApplet(returned value is false)')
@@ -930,6 +929,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           }
           $("link[href*='vuetify.min.css']").remove();
           $("link[href*='https://fonts.googleapis.com/css']").remove();
+
+          SiebelAppFacade.N19Helper.ReInitPopup();
 
           n19helper = null;
           if (SiebelAppFacade.N19 && SiebelAppFacade.N19[appletName]) {

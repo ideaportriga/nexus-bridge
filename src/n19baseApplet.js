@@ -39,7 +39,7 @@ export default class N19baseApplet {
           console.warn(`[N19]Picklist is not associated with the control - ${JSON.stringify(arr)}`);
         }
         this.lov[arr[3]] = arr.splice(5).filter(el => el !== '');
-        // todo: do we need to indicate when an empty value is allowed?
+        // TODO: do we need to indicate when an empty value is allowed?
       }
     }, { scope: this });
   }
@@ -129,7 +129,7 @@ export default class N19baseApplet {
   }
 
   _getSiebelValue(value, uiType, displayFormat) {
-    // todo: numbers, and phones?
+    // TODO: numbers, and phones?
     if (this.consts.get('SWE_CTRL_CHECKBOX') === uiType) {
       // convert true/false => Y/N // null is not handled (the same as in standard Open UI)
       this.boolObject.SetValue(value);
@@ -277,7 +277,7 @@ export default class N19baseApplet {
       if (this.getRowListRowCount() < index + 1) {
         throw new Error(`${index} is equal/higher than amount of records in the applet ${this.getRowListRowCount()}`);
       }
-      // todo : if we got to this point
+      // TODO: if we got to this point
       //  should we check GetActiveControl (applet.prototype.InvokeMethod)
       //  and nullify it if active?
       return this.pm.ExecuteMethod('HandleRowSelect', index);
@@ -300,7 +300,6 @@ export default class N19baseApplet {
   }
 
   newRecord(cb) {
-    // todo: should it be the same as WriteRecord?
     const promise = new Promise(resolve => this._newRecord(resolve));
     return typeof cb === 'function' ? promise.then(cb) : promise;
   }
@@ -434,7 +433,6 @@ export default class N19baseApplet {
   }
 
   _getJSValue(value, uiType, displayFormat) {
-    // todo: what about datetime?
     if (this.consts.get('SWE_CTRL_CHECKBOX') === uiType) {
       // convert Y/N/null -> true/false // what about null
       this.boolObject.SetAsString(value);
@@ -459,10 +457,10 @@ export default class N19baseApplet {
   }
 
   getCurrentRecord(raw) {
-    // todo: do we need to do the conversion
+    // TODO: do we need to do the conversion
     const index = this.getSelection();
-    // todo: check if there is a record
-    // todo: make a copy of returned object (to avoid the accidental modification of the recordset)
+    // TODO: check if there is a record
+    // TODO: make a copy of returned object (to avoid the accidental modification of the recordset)?
     if (raw) {
       return this.pm.Get('GetRawRecordSet')[index];
     }
@@ -470,7 +468,7 @@ export default class N19baseApplet {
   }
 
   calculateCurrentRecordState() {
-    // todo: do we need to delete pending
+    // TODO: do we need to delete pending
     // 0 - No records displayed
     // 1 - Record is being created
     // 2 - Record is being edited
@@ -603,7 +601,6 @@ export default class N19baseApplet {
       const controlUiType = control.GetUIType();
       if (!this._isSkipControl(controlUiType)) {
         // skipping also JCheckbox
-        // todo: check do we need to skip also date?
         if (controlUiType !== this.consts.get('SWE_CTRL_CHECKBOX')) {
           return control;
         }
@@ -840,7 +837,6 @@ export default class N19baseApplet {
     // used slice to avoid modification of the record set
     const ret = this.getRecordSet().slice();
 
-    // todo : convert boolean values (e.g. Y/N <-> true/falss)
     for (let i = 0; i < ret.length; i += 1) {
       const id = ret[i].Id;
       ret[i] = Object.keys(ret[i]).filter(el => this.fieldToControlMap[el]).reduce((acc, el) => ({

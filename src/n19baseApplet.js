@@ -854,4 +854,13 @@ export default class N19baseApplet {
 
     return ret;
   }
+
+  sort(controlName, isAscending) {
+    if (this.isListApplet) {
+      const sortOrder = isAscending ? this.consts.get('SORT_ASCENDING') : this.consts.get('SORT_DESCENDING');
+      this.applet.OnClickSort(controlName, sortOrder);
+      return true;
+    }
+    return false;
+  }
 }

@@ -856,6 +856,8 @@ export default class N19baseApplet {
   }
 
   sort(controlName, isAscending) {
+    // TODO: check if sortable? e.g. not in query mode
+    // TODO: check if we can sort by this control? control has IsSortable func, but we don't return the output of it
     if (this.isListApplet) {
       const sortOrder = isAscending ? this.consts.get('SORT_ASCENDING') : this.consts.get('SORT_DESCENDING');
       this.applet.OnClickSort(controlName, sortOrder);

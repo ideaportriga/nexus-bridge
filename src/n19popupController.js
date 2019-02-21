@@ -74,28 +74,16 @@ export default class N19popupController {
   }
 
   processNewPopup(ps) {
-    // SiebelApp.S_App.SetShowNewPage(true);
     const popupPM = SiebelApp.S_App.GetPopupPM();
 
-    popupPM.SetProperty('CanProcessLayout', false);
-    popupPM.SetProperty('isPopupPick', false);
-    popupPM.SetProperty('isPopupMVGAssoc', false);
-    popupPM.SetProperty('isPopupMVGSelected', false);
-    popupPM.SetProperty('isPopupAssoc', false);
-    popupPM.SetProperty('currPopups', []);
-    popupPM.SetProperty('isSIPopup', ps.GetProperty(this.consts.get('SWE_IS_SI_POPUP')));
-    popupPM.SetProperty('isPrevPopupVisible', !1);
-
     if (!popupPM.GetRenderer()) {
-      popupPM.Setup();
+      popupPM.Setup(); // to create PR
     }
 
     const activeView = SiebelApp.S_App.GetActiveView();
-    if (activeView) {
-      const activeApplet = activeView.GetActiveApplet();
-      if (activeApplet) {
-        activeView.SetActiveAppletBeforePopup(activeApplet);
-      }
+    const activeApplet = activeView.GetActiveApplet();
+    if (activeApplet) {
+      activeView.SetActiveAppletBeforePopup(activeApplet);
     }
 
     // this property is added using AttachPMBinding into the Init PR (called by PM Setup)
@@ -124,10 +112,7 @@ export default class N19popupController {
       ret = this.popupAppletN19.applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
     }
     // it could be better if we don't have a Siebel Applet on the view
-    // in this case, we would not need to reInitPopup
-    // if (this.isPopupHidden) {
-    //  N19popupController.ReInitPopup();
-    // }
+    // do reinit here on closing?
     this.popupAppletN19 = null;
     this.assocAppletN19 = null;
     return ret;
@@ -178,16 +163,15 @@ export default class N19popupController {
 
     pm.ExecuteMethod('InvokeMethod', 'EditPopup'); // can call EditField?
 
-    let ret = true;
-
     if (hide) { // we will populate the instances only when applet should be hidden
       // eslint-disable-next-line no-return-assign
-      ret = new Promise(resolve => this.resolvePromise = resolve); // eslint-disable-line no-param-assign
+      let ret = new Promise(resolve => this.resolvePromise = resolve); // eslint-disable-line no-param-assign
       if (typeof cb === 'function') {
         ret = ret.then(cb);
       }
+      return ret;
     }
 
-    return ret;
+    return true;
   }
 }

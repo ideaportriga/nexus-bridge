@@ -73,7 +73,7 @@ export default class N19baseApplet {
   }
 
   subscribe(func) { // eslint-disable-line class-methods-use-this
-    // TODO : accept also context for function, or the called bound context to the function?
+    // TODO : accept also context for function, or the caller binds the context to the function?
     return this.notifications.subscribe(func);
   }
 
@@ -129,12 +129,12 @@ export default class N19baseApplet {
   }
 
   _getSiebelValue(value, uiType, displayFormat) {
-    // TODO: numbers, and phones?
+    // TODO: numbers, currencies, and phones?
     if (this.consts.get('SWE_CTRL_CHECKBOX') === uiType) {
       // convert true/false => Y/N // null is not handled (the same as in standard Open UI)
+      // value = value ? 'Y' : 'N';
       this.boolObject.SetValue(value);
       return this.boolObject.GetAsString();
-      // value = value ? 'Y' : 'N'; // eslint-disable-line no-param-reassign
     }
     if (this.convertDates && displayFormat && this._isDateTimeControl(uiType)) {
       // TODO: check if a valid date is inputted
@@ -206,7 +206,7 @@ export default class N19baseApplet {
   }
 
   getRecordSet(addRecordIndex) {
-    // TODO: DO WE NEED TO DO CONVERSION?
+    // TODO: convert the values?
     if (addRecordIndex) {
       return this.pm.Get('GetRecordSet').map((el, index) => {
         const ret = Object.assign({}, el);
@@ -218,7 +218,7 @@ export default class N19baseApplet {
   }
 
   getRawRecordSet(addRecordIndex) {
-    // TODO: DO WE NEED TO DO CONVERSION?
+    // TODO: convert the values?
     if (addRecordIndex) {
       return this.pm.Get('GetRawRecordSet').map((el, index) => {
         const ret = Object.assign({}, el);
@@ -271,7 +271,7 @@ export default class N19baseApplet {
         return false;
       }
       // seems this check is redundant
-      // if (this.getNumRows() < index + 1) { //
+      // if (this.getNumRows() < index + 1) {
       //   return false;
       // }
       if (this.getRowListRowCount() < index + 1) {
@@ -317,7 +317,6 @@ export default class N19baseApplet {
 
   writeRecord(cb, cberr) {
     let promise = new Promise((resolve, reject) => this._writeRecord((...args) => {
-      // do we always have three input arguments, and the third argument is
       if (args[2].GetProperty('Status') === 'Completed') {
         resolve();
       } else {
@@ -332,7 +331,7 @@ export default class N19baseApplet {
   _writeRecord(cb) {
     return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord', null, {
       async: true,
-      selfbusy: true,
+      // TODO: selfbusy: true,
       cb,
     });
   }
@@ -434,7 +433,7 @@ export default class N19baseApplet {
 
   _getJSValue(value, uiType, displayFormat) {
     if (this.consts.get('SWE_CTRL_CHECKBOX') === uiType) {
-      // convert Y/N/null -> true/false // what about null
+      // convert Y/N/null -> true/false // null comes as false?
       this.boolObject.SetAsString(value);
       return this.boolObject.GetValue();
     }
@@ -457,14 +456,14 @@ export default class N19baseApplet {
   }
 
   getCurrentRecord(raw) {
-    // TODO: do we need to do the conversion
+    // TODO: need conversion
     const index = this.getSelection();
     // TODO: check if there is a record
     // TODO: make a copy of returned object (to avoid the accidental modification of the recordset)?
     if (raw) {
-      return this.pm.Get('GetRawRecordSet')[index];
+      return this.getRawRecordSet()[index];
     }
-    return this.pm.Get('GetRecordSet')[index];
+    return this.getRecordSet()[index];
   }
 
   calculateCurrentRecordState() {
@@ -486,14 +485,14 @@ export default class N19baseApplet {
     if (this.getSelection() < 0) {
       return 0;
     }
-    if (bc.IsInsertPending()) { // seems insertPending gives more correct value
+    if (bc.IsInsertPending()) { // seems the insertPending property gives more correct value
       return 1;
     }
     if (bc.IsCommitPending()) {
       return 2;
     }
     if (!this.canInvokeMethod('WriteRecord')) {
-      // or maybe better to use the canUpdate property of the bc
+      // or use the canUpdate property of the BC?
       return 5;
     }
 
@@ -502,7 +501,7 @@ export default class N19baseApplet {
 
   _getMethods() {
     const methods = {};
-    const appletControls = this.pm.Get('GetControls'); // even fo list applet
+    const appletControls = this.pm.Get('GetControls'); // even for list applet
     const arr = Object.keys(appletControls);
     for (let i = 0; i < arr.length; i += 1) {
       const controlMethod = appletControls[arr[i]].GetMethodName();
@@ -586,7 +585,6 @@ export default class N19baseApplet {
         _methods[arr[i]] = this.canInvokeMethod(arr[i]); // eslint-disable-line no-param-reassign
       }
     }
-    // return true;
     return {
       controls: _controls,
       methods: _methods,
@@ -614,7 +612,7 @@ export default class N19baseApplet {
   }
 
   queryBySearchExprSync(expr) {
-    this._newQuery(); // ?
+    this._newQuery(); // ? check or optionally skip
     const control = this._findControlToEnterSearchExpr();
     this._setControlValueInternal(control, expr);
     this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery');
@@ -638,7 +636,7 @@ export default class N19baseApplet {
   }
 
   _queryById(rowId, cb) {
-    this._newQuery(); // ?
+    this._newQuery(); // ? check or optionally skip
 
     const ai = {
       scope: this,
@@ -740,7 +738,7 @@ export default class N19baseApplet {
       scope: this,
       errcb: () => reject(),
       cb: (methodName, Inputs, psOutputs) => {
-        const { childArray } = psOutputs.GetChildByType('ResultSet') || {}; // to be protectedd when no results
+        const { childArray } = psOutputs.GetChildByType('ResultSet') || {}; // to be safe when no results
         const ret = {};
         for (let i = 0; i < (childArray || []).length; i += 1) {
           ret[childArray[i].GetType()] = {};
@@ -778,7 +776,7 @@ export default class N19baseApplet {
     return this.pm.Get(name);
   }
 
-  _retrieveData(amount) { // temp method!
+  _retrieveData(amount) { // temp method?
     const data = new Map();
 
     while (data.size < amount) {
@@ -789,7 +787,7 @@ export default class N19baseApplet {
         data.set(temp[i].Id, temp[i]);
       }
 
-      // we are using canInvokeMethod, as in 16.00 nextRecordSet always returns undefined
+      // we are using canInvokeMethod, as in 16.0 nextRecordSet always returns undefined
       if (!this.canInvokeMethod('GotoNextSet')) {
         break;
       }

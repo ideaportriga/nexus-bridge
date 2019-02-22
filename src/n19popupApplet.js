@@ -12,14 +12,14 @@ export default class N19popupApplet extends N19baseApplet {
   }
 
   pickRecord() {
-    // todo : check CanInokeMethod and/or is it pick
+    // TODO: check CanInokeMethod and/or is it pick?
     return this.pm.ExecuteMethod('InvokeMethod', 'PickRecord');
   }
 
   deleteRecords(cb) {
     // method is not allowed to delete the primary
     //  in this case it returns "Method DeleteRecords is not allowed here" SBL-UIF-00348
-    // todo: check canInvokeMethod and/or is it MVG
+    // TODO: check canInvokeMethod and/or is it MVG?
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecords');
     if (typeof cb === 'function') {
       cb();
@@ -28,7 +28,7 @@ export default class N19popupApplet extends N19baseApplet {
   }
 
   addRecords(cb) {
-    // todo: check canInvokeMethod and/or is it MVG. and if we have a record in assoc?
+    // TODO: check canInvokeMethod and/or is it MVG. and if we have a record in assoc?
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'AddRecords');
     if (typeof cb === 'function') {
       cb();
@@ -36,9 +36,9 @@ export default class N19popupApplet extends N19baseApplet {
     return ret;
   }
 
-  // todo: do we need deleteAllRecords?
+  // TODO: do we need deleteAllRecords?
   addAllRecords(cb) {
-    // todo: check canInvokeMethod and/or is it MVG. and if we have a record in assoc?
+    // TODO: check canInvokeMethod and/or is it MVG. and if we have a record in assoc?
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'AddAllRecords');
     if (typeof cb === 'function') {
       cb();

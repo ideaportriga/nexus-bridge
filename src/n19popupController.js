@@ -54,8 +54,7 @@ export default class N19popupController {
           const pm = applet.GetPModel();
           this.popupAppletN19 = new N19popupApplet({ pm });
           const obj = { appletName, popupAppletN19: this.popupAppletN19 };
-          // check if we have assoc
-          // we assume it is always assoc applet, but what about opening popup on the top of another - not tested it
+          // check if we have assoc - we assume it is always assoc applet?
           const assocApplet = applet.GetPopupApplet();
           if (assocApplet) {
             this.assocAppletN19 = new N19popupApplet({ pm: assocApplet.GetPModel() });
@@ -118,7 +117,7 @@ export default class N19popupController {
     return ret;
   }
 
-  static IsPopupOpen() { // safer to keep this methods, even when we set some properties on resolve?
+  static IsPopupOpen() { // safer to keep this method, even when we set some properties on resolve?
     const currPopups = SiebelApp.S_App.GetPopupPM().Get('currPopups');
     if (0 === currPopups.length) {
       return { isOpen: false };
@@ -127,9 +126,7 @@ export default class N19popupController {
       return { isOpen: true, appletName: currPopups[0].GetName(), controlName: currPopups[0].GetPopupControl() };
     }
     if (2 === currPopups.length) {
-      // this is a shuttle or
-      // maybe we opened a popup applet on the top of pick applet?
-      //      test it  - maybe we need to close the several applets
+      // is this always a shuttle when we have a sedond applet
       for (let i = 0; i < currPopups.length; i += 1) {
         if (typeof currPopups[1].GetPopupAppletName === 'function') {
           return { isOpen: true, appletName: currPopups[i].GetName(), controlName: currPopups[i].GetPopupControl() };
@@ -137,8 +134,6 @@ export default class N19popupController {
       }
       throw new Error('Mvg applet is not found...');
     }
-    // if we can get to here
-    //    maybe when we open a new applet on top of the shuttle applet
     throw new Error('should not be here...');
   }
 

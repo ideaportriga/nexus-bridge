@@ -10,7 +10,7 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
         throw new Error(`Failed to get the reference to the applet by the ${appletName} name`);
       }
       super(Object.assign({}, settings, { pm: applet.GetPModel() }));
-    } else { // the usual way assumed
+    } else {
       super(settings);
     }
 
@@ -47,7 +47,7 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
 
   drilldown(controlName) {
     // TODO: check isLink of control?
-    // index is not effective, and drilldown anyway happens on last selected record
+    // index is not effective, and drilldown anyway happens on the selected record
     if (!this.isListApplet) {
       return false;
     }

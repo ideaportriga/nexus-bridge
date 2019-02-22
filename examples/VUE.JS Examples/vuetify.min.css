@@ -2875,17 +2875,17 @@ button {
   -webkit-appearance: button
 }
 
-button, select {
+button, #vue_sample select {
   text-transform: none
 }
 
-button, input, select, textarea {
+button, input, #vue_sample select, textarea {
   background-color: transparent;
   border-style: none;
   color: inherit
 }
 
-select {
+#vue_sample select {
   -moz-appearance: none;
   -webkit-appearance: none
 }

@@ -15,6 +15,7 @@ export default class N19popupController {
     if (enforcer !== singletonEnforcer) {
       throw new Error('Instantiation failed: use Singleton.getInstance() instead of new.');
     }
+
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.isPopupHidden = false;
     this.resolvePromise = null;
@@ -22,6 +23,15 @@ export default class N19popupController {
     this.assocAppletN19 = null;
 
     console.log(`${this.constructor.name} started...`); // eslint-disable-line no-console
+
+    this.N19resizeAvailable = SiebelApp.MvgBeautifier.resizeAvailable;
+    SiebelApp.MvgBeautifier.resizeAvailable = () => {
+      try {
+        this.N19resizeAvailable.call(SiebelApp.MvgBeautifier);
+      } catch (e) {
+        console.log(`resizeAvailable Error: ${e.name} ${e.message}`);
+      }
+    };
 
     // it will be a singleton, so there is no cleanup
     this.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
@@ -107,7 +117,6 @@ export default class N19popupController {
       }
       ret = applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
     } else {
-      // TODO: maybe better use the Close method of the applet? (NZ used)
       ret = this.popupAppletN19.applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
     }
     // it could be better if we don't have a Siebel Applet on the view

@@ -38,10 +38,12 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
   }
 
   showMvgApplet(name, hide, cb) {
+    // TODO: check if name is correct?
     return this._showPopupApplet(name, hide, cb);
   }
 
   showPickApplet(name, hide, cb) {
+    // TODO: check if name is correct?
     return this._showPopupApplet(name, hide, cb);
   }
 

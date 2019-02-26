@@ -834,6 +834,7 @@ export default class N19baseApplet {
     }
     // used slice to avoid modification of the record set
     const ret = this.getRecordSet().slice();
+    const rawRecordSet = this.getRawRecordSet(); // just fallback if record set does not have Id
 
     for (let i = 0; i < ret.length; i += 1) {
       const id = ret[i].Id;
@@ -847,6 +848,8 @@ export default class N19baseApplet {
       }), {});
       if (id) {
         ret[i].Id = id;
+      } else {
+        ret[i].Id = rawRecordSet[i].Id;
       }
     }
 

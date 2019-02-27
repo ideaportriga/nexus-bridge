@@ -29,7 +29,7 @@ export default class N19popupController {
       try {
         this.N19resizeAvailable.call(SiebelApp.MvgBeautifier);
       } catch (e) {
-        console.log(`resizeAvailable Error: ${e.name} ${e.message}`);
+        console.log(`resizeAvailable Error: ${e.name} ${e.message}`); // eslint-disable-line no-console
       }
     };
 
@@ -154,22 +154,45 @@ export default class N19popupController {
     return applet;
   }
 
-  showPopupApplet(hide, cb, pm) {
-    // TODO: maybe use the properties set on promise resolving?
+  checkOpenedPopup(closeIfOpen) {
     const { isOpen, appletName } = N19popupController.IsPopupOpen();
-    if (isOpen) {
+    if (isOpen && closeIfOpen) {
       // this code will close the applet even if this applet was originated by another applet
       console.log(`closing ${appletName} in showPopupApplet...`); // eslint-disable-line no-console
       // maybe do not close if the applet to be opened if the same as already opened?
-      this.closePopupApplet(N19popupController.GetPopupApplet(appletName));
+      return this.closePopupApplet(N19popupController.GetPopupApplet(appletName));
     }
+    return {
+      isOpen,
+      appletName,
+    };
+  }
+
+  _openAssocApplet(newRecordFunc, cb) {
+    this.checkOpenedPopup(true);
+    this.isPopupHidden = true;
+
+    newRecordFunc(); // make async of invokeMethod?
+
+    // eslint-disable-next-line no-return-assign
+    let ret = new Promise(resolve => this.resolvePromise = resolve);
+    if (typeof cb === 'function') {
+      ret = ret.then(cb);
+    }
+    return ret;
+  }
+
+  showPopupApplet(hide, cb, pm) {
+    // TODO: maybe use the properties set on promise resolving?
+    this.checkOpenedPopup(true);
+
     this.isPopupHidden = !!hide;
 
     pm.ExecuteMethod('InvokeMethod', 'EditPopup'); // can call EditField?
 
     if (hide) { // we will populate the instances only when applet should be hidden
       // eslint-disable-next-line no-return-assign
-      let ret = new Promise(resolve => this.resolvePromise = resolve); // eslint-disable-line no-param-assign
+      let ret = new Promise(resolve => this.resolvePromise = resolve);
       if (typeof cb === 'function') {
         ret = ret.then(cb);
       }

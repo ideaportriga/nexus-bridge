@@ -25,7 +25,7 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
 
   _showPopupApplet(name, hide, cb) {
     if (!this.n19popupController) {
-      // it is a popup applet
+      // it is a popup - probably should never happen?
       throw new Error('Openning popup on the popup is not supported now');
     }
     if (!this.n19popupController.canOpenPopup()) {
@@ -45,6 +45,14 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
   showPickApplet(name, hide, cb) {
     // TODO: check if name is correct?
     return this._showPopupApplet(name, hide, cb);
+  }
+
+  openAssocApplet(cb) { // this method should be available for child business component in M:M relationship
+    // TODO: check if applet provides such capabilities?
+    if (!this.n19popupController.canOpenPopup()) {
+      throw new Error('Cannot open popup (currently exists resolve function)!');
+    }
+    return this.n19popupController._openAssocApplet(this.newRecord.bind(this), cb);
   }
 
   drilldown(controlName) {

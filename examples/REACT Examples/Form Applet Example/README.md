@@ -15,7 +15,7 @@ The demo example was tested on Seibel 16.19.
 ![result](demo_react.gif)
 
 1.  Make a clean [Nexus19 Setup](/../wikis/Setup Nexus19) if you haven't done it before.
-2.  Import the `n19helper-master/examples/REACT Examples/Demo Example/SIF/*` into the Siebel Tools.
+2.  Import the `n19helper-master/examples/REACT Examples/Form Applet Example/SIF/*` into the Siebel Tools.
 3.  Add the `N19 React Account Screen` to your application:
     - Findout your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` into Chrome Developer Tools console.
     - Use Siebel Tools and add `N19 React Account Screen` under `Application > Screen Menu Item` for your Siebel Application Name
@@ -30,7 +30,7 @@ The demo example was tested on Seibel 16.19.
     - Click `Clear cache` button under `Administration – Application > Responsibilities` view
 6.  Re-login to your Siebel Application and check that the `N19 React Account Screen` Screen is available.
 7.  Copy below files and folders to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom\` folder:
-    - `n19helper-master/examples/REACT Examples/Demo Example/JS_DIST/*` including `react_dist` folder.
+    - `n19helper-master/examples/REACT Examples/Form Applet Example/JS_DIST/*` including `react_dist` folder.
 8.  Use Siebel Client to reference js files in Siebel Open UI Manifest as follows: - under `Administration - Application > Manifest Files` >- add a new record with: ><br>**Name:** `siebel/custom/N19_reactdemo_PR.js`
 
         	- under `Administration - Application > Manifest Administration`

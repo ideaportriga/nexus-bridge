@@ -488,7 +488,7 @@ export default class N19baseApplet {
     if (bc.IsInsertPending()) { // seems the insertPending property gives more correct value
       return 1;
     }
-    if (bc.IsCommitPending()) {
+    if (bc.IsCommitPending()) { // bc.commitPending
       return 2;
     }
     if (!this.canInvokeMethod('WriteRecord')) {

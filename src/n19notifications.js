@@ -3,6 +3,8 @@ export default class N19notifications {
     let receivedNotifications = [];
     this.token = 0;
     this.subscribers = [];
+    this.skipNewFieldDataNotifications = false;
+
     pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_BEGIN'), (propSet) => {
       if (bcId === propSet.GetProperty('bc')) {
         receivedNotifications = [];
@@ -16,10 +18,40 @@ export default class N19notifications {
     });
 
     pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'), (propSet) => {
+      const states = ['cp']; // 'n'
       if (bcId === propSet.GetProperty('bc')) {
-        if ('cp' !== propSet.GetProperty('state')) {
+        if (!states.includes(propSet.GetProperty('state'))) {
           receivedNotifications.push('SWE_PROP_BC_NOTI_STATE_CHANGED');
         }
+      }
+    });
+
+    pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA_WS'), (propSet) => {
+      if (bcId === propSet.GetProperty('bc')) {
+        if (!this.skipNewFieldDataNotifications) {
+          receivedNotifications.push('SWE_PROP_BC_NOTI_NEW_DATA_WS');
+        }
+      }
+    });
+
+    // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_DATA'), (propSet) => {
+    //   if (bcId === propSet.GetProperty('bc')) {
+    //     if (!this.skipNewFieldDataNotifications) {
+    //       receivedNotifications.push('SWE_PROP_BC_NOTI_NEW_FIELD_DATA');
+    //     }
+    //   }
+    // });
+
+    pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_GENERIC'), (propSet) => {
+      const type = propSet.GetProperty(consts.get('SWE_PROP_NOTI_TYPE'));
+      if ('ClosePopup' === type) {
+        this.skipNewFieldDataNotifications = false;
+      }
+    });
+
+    pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), (propSet) => {
+      if (bcId === propSet.GetProperty('bc')) { // when does it called
+        receivedNotifications.push('SWE_PROP_BC_NOTI_NEW_DATA');
       }
     });
 

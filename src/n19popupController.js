@@ -182,17 +182,21 @@ export default class N19popupController {
     return ret;
   }
 
-  showPopupApplet(hide, cb, pm) {
+  showPopupApplet(hide, cb, n19) {
     // TODO: maybe use the properties set on promise resolving?
     this.checkOpenedPopup(true);
 
     this.isPopupHidden = !!hide;
 
-    pm.ExecuteMethod('InvokeMethod', 'EditPopup'); // can call EditField?
+    n19.pm.ExecuteMethod('InvokeMethod', 'EditPopup'); // can call EditField?
 
     if (hide) { // we will populate the instances only when applet should be hidden
       // eslint-disable-next-line no-return-assign
       let ret = new Promise(resolve => this.resolvePromise = resolve);
+      ret = ret.then((result) => {
+        n19.notifications.skipNewFieldDataNotifications = false; // eslint-disable-line no-param-reassign
+        return result;
+      });
       if (typeof cb === 'function') {
         ret = ret.then(cb);
       }

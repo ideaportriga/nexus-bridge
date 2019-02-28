@@ -485,10 +485,10 @@ export default class N19baseApplet {
     if (this.getSelection() < 0) {
       return 0;
     }
-    if (bc.IsInsertPending()) { // seems the insertPending property gives more correct value
+    if (bc.IsInsertPending()) { // seems the insertPending property gives more accurate value
       return 1;
     }
-    if (bc.IsCommitPending()) { // bc.commitPending
+    if (bc.IsCommitPending()) { // bc.commitPending or this.pm.GetStateUIMap().CommitPending
       return 2;
     }
     if (!this.canInvokeMethod('WriteRecord')) {
@@ -736,8 +736,12 @@ export default class N19baseApplet {
       async: true,
       selfbusy: true,
       scope: this,
-      errcb: () => reject(),
+      errcb: () => {
+        this.notifications.skipNewFieldDataNotifications = false;
+        reject();
+      },
       cb: (methodName, Inputs, psOutputs) => {
+        this.notifications.skipNewFieldDataNotifications = false;
         const { childArray } = psOutputs.GetChildByType('ResultSet') || {}; // to be safe when no results
         const ret = {};
         for (let i = 0; i < (childArray || []).length; i += 1) {
@@ -755,6 +759,9 @@ export default class N19baseApplet {
         resolve(ret);
       },
     };
+    if (useActiveBO) {
+      this.notifications.skipNewFieldDataNotifications = true;
+    }
     return bs.InvokeMethod('ReturnMVGFields', psInputs, ai);
   }
 

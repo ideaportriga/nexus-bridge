@@ -34,7 +34,8 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
     }
     this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
     this._setActiveControl(name);
-    return this.n19popupController.showPopupApplet(hide, cb, this.pm);
+    this.notifications.skipNewFieldDataNotifications = true; // to skip while the popup is openning
+    return this.n19popupController.showPopupApplet(hide, cb, this);
   }
 
   showMvgApplet(name, hide, cb) {

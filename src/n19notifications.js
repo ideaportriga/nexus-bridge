@@ -49,11 +49,11 @@ export default class N19notifications {
       }
     });
 
-    pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), (propSet) => {
-      if (bcId === propSet.GetProperty('bc')) { // when does it called
-        receivedNotifications.push('SWE_PROP_BC_NOTI_NEW_DATA');
-      }
-    });
+    // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), (propSet) => {
+    //   if (bcId === propSet.GetProperty('bc')) { // when does it happen
+    //     receivedNotifications.push('SWE_PROP_BC_NOTI_NEW_DATA');
+    //   }
+    // });
 
     pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'), (propSet) => {
       if (bcId === propSet.GetProperty('bc')) {

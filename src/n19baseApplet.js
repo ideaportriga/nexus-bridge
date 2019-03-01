@@ -42,6 +42,11 @@ export default class N19baseApplet {
         // TODO: do we need to indicate when an empty value is allowed?
       }
     }, { scope: this });
+
+    this.isTreeApplet = SiebelAppFacade.ExplorerPresentationModel === this.pm.constructor;
+    if (this.isTreeApplet) {
+      console.warn('This is a tree applet... it is easier and safer to use list or form applets');
+    }
   }
 
   loadLocaleData() {

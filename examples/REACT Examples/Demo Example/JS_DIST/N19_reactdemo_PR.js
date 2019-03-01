@@ -3,7 +3,6 @@ if (typeof (SiebelAppFacade.N19_reactdemo_PR) === "undefined") {
   define("siebel/custom/N19_reactdemo_PR", ["siebel/phyrenderer", "siebel/custom/react_dist/main"],
     function () {
       SiebelAppFacade.N19_reactdemo_PR = (function () {
-        let reactComponent;
         let containerId = 'react_sample';
 
         function N19_reactdemo_PR(pm) {
@@ -28,7 +27,9 @@ if (typeof (SiebelAppFacade.N19_reactdemo_PR) === "undefined") {
 
         N19_reactdemo_PR.prototype.ShowUI = function () {
           addContainer(this.GetPM(), containerId);
-          reactComponent = SiebReact.createExample(containerId, this.GetPM());
+          if (window.SiebReact) {
+            SiebReact.createExample(containerId, this.GetPM());
+          }
           // SiebelAppFacade.N19_reactdemo_PR.superclass.ShowUI.apply(this, arguments); // Draws UI, drawing our custom applet only if on List view
         }
 
@@ -42,10 +43,10 @@ if (typeof (SiebelAppFacade.N19_reactdemo_PR) === "undefined") {
 
         N19_reactdemo_PR.prototype.EndLife = function () {
           // cleanup before destroying applet object
-          if (reactComponent) {
-            // SiebReact.unmountComponent(containerId);
-            reactComponent = null;
+          if (window.SiebReact) {
+            SiebReact.unmountComponent(containerId);
           }
+          removeContainer(this.GetPM(), containerId);
           $("link[href*='https://fonts.googleapis.com/icon']").remove();
 
           SiebelAppFacade.N19_reactdemo_PR.superclass.EndLife.apply(this, arguments); //Siebel applet cleanup
@@ -58,10 +59,17 @@ if (typeof (SiebelAppFacade.N19_reactdemo_PR) === "undefined") {
     })
 }
 
-function addContainer(pm, vueId) {
+function addContainer(pm, appId) {
   const siebeAppletId = pm.Get('GetFullId');
   const $applet = $("#" + siebeAppletId);
   const $header = $("#s_" + siebeAppletId + "_div");
   $header.hide();
-  $applet.prepend("<div id='" + vueId + "'></div>");
+  $applet.prepend("<div id='" + appId + "'></div>");
+}
+
+function removeContainer(pm, appId) {
+  const siebeAppletId = pm.Get('GetFullId');
+  const $header = $("#s_" + siebeAppletId + "_div");
+  $header.show();
+  $('#' + appId).remove();
 }

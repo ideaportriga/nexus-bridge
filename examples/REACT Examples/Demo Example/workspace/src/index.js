@@ -6,7 +6,7 @@ let n19Helper;
 
 const createExample = (id, pm) => {
   n19Helper = new window.SiebelAppFacade.N19Helper({ pm: pm });
-  return ReactDOM.render(<App n19Helper={n19Helper} />, document.getElementById(id));
+  ReactDOM.render(<App n19Helper={n19Helper} />, document.getElementById(id));
 }
 
 const unmountComponent = (id) => {

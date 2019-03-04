@@ -2,9 +2,9 @@
 
 ## Configuration
 
-Webpack config (`webpack.config.js`) ejected from [CRA][1] and modified for using watch mode of Webpack.
+Webpack config (`webpack.config.js`) ejected from [CRA][1] and modified for using the watch mode during development.
 
-To symlink the dev build with Siebel client:
+To symlink the development build with the local Siebel client:
 
 ```bash
 cd C:\Projects\n19helper\examples\REACT Examples\Demo Example\workspace\build\static

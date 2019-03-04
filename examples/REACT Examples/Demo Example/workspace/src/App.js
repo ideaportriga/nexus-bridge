@@ -149,11 +149,18 @@ class App extends Component {
           <Grid item xs={6} sm={6} lg={6} xl={6}>
             <TextField
               id="account-name"
-              error={!!this.state.controls.Name['required']}
-              label={this.state.controls.Name['label'] || ''}
-              value={this.state.controls.Name['value'] || ''}
+              error={
+                !!this.state.controls['Name']["required"] &&
+                !this.state.controls['Name']["value"]
+              }
+              label={this.state.controls['Name']['label'] || ''}
+              value={this.state.controls['Name']['value'] || ''}
               className=''
-              helperText={this.state.controls.Name['required'] ? 'Required' : ''}
+              helperText={this.state.controls['Name']['required'] ? 'Required' : ''}
+              inputProps={{
+                readOnly: this.state.controls['Name']["readonly"],
+                disabled: this.state.controls['Name']["readonly"]
+              }}
               margin="normal"
               style={{ width: '100%' }}
               onChange={this.handleChangeInput('Name')}

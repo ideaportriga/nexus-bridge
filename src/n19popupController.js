@@ -136,7 +136,7 @@ export default class N19popupController {
     }
     if (2 === currPopups.length) {
       // is this always a shuttle when we have a sedond applet
-      for (let i = 0; i < currPopups.length; i += 1) {
+      for (let i = 0, len = currPopups.length; i < len; i += 1) {
         if (typeof currPopups[1].GetPopupAppletName === 'function') {
           return { isOpen: true, appletName: currPopups[i].GetName(), controlName: currPopups[i].GetPopupControl() };
         }
@@ -174,8 +174,7 @@ export default class N19popupController {
 
     newRecordFunc(); // make async of invokeMethod?
 
-    // eslint-disable-next-line no-return-assign
-    let ret = new Promise(resolve => this.resolvePromise = resolve);
+    let ret = new Promise((resolve) => { this.resolvePromise = resolve; });
     if (typeof cb === 'function') {
       ret = ret.then(cb);
     }
@@ -191,8 +190,7 @@ export default class N19popupController {
     n19.pm.ExecuteMethod('InvokeMethod', 'EditPopup'); // can call EditField?
 
     if (hide) { // we will populate the instances only when applet should be hidden
-      // eslint-disable-next-line no-return-assign
-      let ret = new Promise(resolve => this.resolvePromise = resolve);
+      let ret = new Promise((resolve) => { this.resolvePromise = resolve; });
       ret = ret.then((result) => {
         n19.notifications.skipNewFieldDataNotifications = false; // eslint-disable-line no-param-reassign
         return result;

@@ -23,11 +23,11 @@ export default class N19baseApplet {
     if (!this.isListApplet) {
       const appletId = `s_${this.pm.Get('GetFullId')}_div`;
       const appletInputs = document.getElementById(appletId).querySelectorAll('input');
-      for (let i = 0; i < appletInputs.length; i += 1) {
-        if (appletInputs[i].attributes['aria-required']) {
-          this.required.push(appletInputs[i].attributes.name.nodeValue);
+      appletInputs.forEach((el) => {
+        if (el.attributes['aria-required']) {
+          this.required.push(el.attributes.name.nodeValue);
         }
-      }
+      });
     }
 
     // listener to get dynamic LOVs
@@ -45,6 +45,7 @@ export default class N19baseApplet {
 
     this.isTreeApplet = SiebelAppFacade.ExplorerPresentationModel === this.pm.constructor;
     if (this.isTreeApplet) {
+      // eslint-disable-next-line no-console
       console.warn('This is a tree applet... it is easier and safer to use list or form applets');
     }
   }
@@ -113,11 +114,7 @@ export default class N19baseApplet {
   }
 
   static GetStaticLOV(arr) {
-    const ret = [];
-    for (let i = 0; i < arr.length; i += 1) {
-      ret.push(arr[i].propArray);
-    }
-    return ret;
+    return arr.map(el => el.propArray);
   }
 
   _setActiveControl(name) {
@@ -163,50 +160,47 @@ export default class N19baseApplet {
   getControls() {
     const controls = {};
     const appletControls = this._returnControls();
-    const arr = Object.keys(appletControls);
-    for (let i = 0; i < arr.length; i += 1) {
-      const control = appletControls[arr[i]];
+    const arr = Object.entries(appletControls);
+    arr.forEach((controlEntry) => {
+      const control = controlEntry[1];
       const uiType = control.GetUIType();
       const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
-      if (this._isSkipControl(uiType)) {
-        continue; // eslint-disable-line no-continue
+      if (!this._isSkipControl(uiType)) {
+        const name = controlEntry[0];
+        const inputName = control.GetInputName();
+        const obj = {
+          name,
+          label: control.GetDisplayName(),
+          uiType,
+          required: this._isRequired(inputName),
+          boundedPick: control.IsBoundedPick() === '1',
+          staticPick: control.IsStaticBounded() === '1',
+          inputName,
+          isPostChanges: control.IsPostChanges(),
+          maxSize: control.GetMaxSize(),
+          fieldName: control.GetFieldName(),
+          isLink: this.pm.ExecuteMethod('CanNavigate', name),
+          readonly: !this.pm.ExecuteMethod('CanUpdate', name),
+          displayFormat,
+        };
+        Object.defineProperty(obj, 'readOnly', {
+          get: () => {
+            // eslint-disable-next-line no-console
+            console.warn('[N19]The readOnly property will be removed soon; use readonly instead of it.');
+            return obj.readonly;
+          },
+        });
+        // add values to be displayed in the static pick list - 2 different formats for now
+        if (obj.staticPick) {
+          obj.staticLOV = N19baseApplet.GetStaticLOV(control.GetRadioGroupPropSet().childArray);
+          obj.lovs = obj.staticLOV.reduce((acc, el) => { // normalized
+            acc.push({ lic: el.FieldValue, val: el.DisplayName });
+            return acc;
+          }, []);
+        }
+        controls[name] = obj;
       }
-      const name = control.GetName();
-      const inputName = control.GetInputName();
-      const obj = {
-        name,
-        label: control.GetDisplayName(),
-        uiType,
-        required: this._isRequired(inputName),
-        boundedPick: control.IsBoundedPick() === '1',
-        staticPick: control.IsStaticBounded() === '1',
-        // pickApplet: control.GetPickApplet(), // confusing and not consistent - see wiki
-        inputName,
-        isPostChanges: control.IsPostChanges(),
-        maxSize: control.GetMaxSize(),
-        // maxChars: control.GetMaxChars(), // it is always 0
-        fieldName: control.GetFieldName(),
-        isLink: this.pm.ExecuteMethod('CanNavigate', name),
-        readonly: !this.pm.ExecuteMethod('CanUpdate', name),
-        displayFormat,
-      };
-      Object.defineProperty(obj, 'readOnly', {
-        get: () => {
-          // eslint-disable-next-line no-console
-          console.warn('[N19]The readOnly property will be removed soon; use readonly instead of it.');
-          return obj.readonly;
-        },
-      });
-      // add values to be displayed in the static pick list
-      if (obj.staticPick) {
-        obj.staticLOV = N19baseApplet.GetStaticLOV(control.GetRadioGroupPropSet().childArray);
-        obj.lovs = obj.staticLOV.reduce((acc, el) => { // normalized
-          acc.push({ lic: el.FieldValue, val: el.DisplayName });
-          return acc;
-        }, []);
-      }
-      controls[name] = obj;
-    }
+    });
     return controls;
   }
 
@@ -428,11 +422,8 @@ export default class N19baseApplet {
   getStaticLOV(controlName) {
     const control = this._getControl(controlName);
     this._validatePickControl(control, true);
-    const ret = [];
     const arr = N19baseApplet.GetStaticLOV(control.GetRadioGroupPropSet().childArray);
-    for (let i = 0; i < arr.length; i += 1) {
-      ret.push(arr[i].DisplayName);
-    }
+    const ret = arr.map(el => el.DisplayName);
     return ret.sort();
   }
 
@@ -507,13 +498,13 @@ export default class N19baseApplet {
   _getMethods() {
     const methods = {};
     const appletControls = this.pm.Get('GetControls'); // even for list applet
-    const arr = Object.keys(appletControls);
-    for (let i = 0; i < arr.length; i += 1) {
-      const controlMethod = appletControls[arr[i]].GetMethodName();
+    const arr = Object.entries(appletControls);
+    arr.forEach((controlEntry) => {
+      const controlMethod = controlEntry[1].GetMethodName();
       if (typeof controlMethod !== 'undefined' && controlMethod !== '') {
         methods[controlMethod] = {};
       }
-    }
+    });
     return methods;
   }
 
@@ -544,51 +535,51 @@ export default class N19baseApplet {
       obj = this.getRecordSet()[index];
       _controls.id = this.getRawRecordSet()[index].Id; // eslint-disable-line no-param-reassign
     }
-    let arr = Object.keys(_controls);
     const appletControls = this._returnControls();
     // populate controls
-    for (let i = 0; i < arr.length; i += 1) {
-      const control = appletControls[arr[i]];
-      if (typeof control !== 'undefined') { // just if somebody sends incorrect name of the control
-        const controlName = control.GetName();
-        const fieldName = control.GetFieldName();
-        const uiType = control.GetUIType();
-        const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
-        if (_controls.id) {
-          _controls[arr[i]] = { // eslint-disable-line no-param-reassign
-            value: this._getJSValue(obj[fieldName], control.GetUIType(), displayFormat),
-            uiType,
-            readonly: !this.pm.ExecuteMethod('CanUpdate', controlName),
-            isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
-            label: control.GetDisplayName(),
-            isPostChanges: control.IsPostChanges(),
-            required: this._isRequired(control.GetInputName()),
-            maxSize: control.GetMaxSize(),
-            fieldName,
-            displayFormat,
-          };
-        } else { // no record displayed
-          _controls[arr[i]] = { // eslint-disable-line no-param-reassign
-            value: '',
-            uiType,
-            readonly: true,
-            isLink: false,
-            label: control.GetDisplayName(),
-            isPostChanges: control.IsPostChanges(),
-            required: this._isRequired(control.GetInputName()),
-            maxSize: control.GetMaxSize(),
-            fieldName,
-            displayFormat,
-          };
-        }
+    let arr = Object.keys(_controls);
+    arr.forEach((controlName) => {
+      const control = appletControls[controlName];
+      if (typeof control === 'undefined') { // just if somebody sends incorrect name of the control
+        return;
       }
-    }
+      const fieldName = control.GetFieldName();
+      const uiType = control.GetUIType();
+      const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
+      if (_controls.id) {
+        _controls[controlName] = { // eslint-disable-line no-param-reassign
+          value: this._getJSValue(obj[fieldName], control.GetUIType(), displayFormat),
+          uiType,
+          readonly: !this.pm.ExecuteMethod('CanUpdate', controlName),
+          isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
+          label: control.GetDisplayName(),
+          isPostChanges: control.IsPostChanges(),
+          required: this._isRequired(control.GetInputName()),
+          maxSize: control.GetMaxSize(),
+          fieldName,
+          displayFormat,
+        };
+      } else { // no record displayed
+        _controls[controlName] = { // eslint-disable-line no-param-reassign
+          value: '',
+          uiType,
+          readonly: true,
+          isLink: false,
+          label: control.GetDisplayName(),
+          isPostChanges: control.IsPostChanges(),
+          required: this._isRequired(control.GetInputName()),
+          maxSize: control.GetMaxSize(),
+          fieldName,
+          displayFormat,
+        };
+      }
+    });
     // populate methods
     if (_methods) {
       arr = Object.keys(_methods);
-      for (let i = 0; i < arr.length; i += 1) {
-        _methods[arr[i]] = this.canInvokeMethod(arr[i]); // eslint-disable-line no-param-reassign
-      }
+      // TODO: could be an exception if method name is incorrect
+      // eslint-disable-next-line no-param-reassign
+      arr.forEach((methodName) => { _methods[methodName] = this.canInvokeMethod(methodName); });
     }
     return {
       controls: _controls,
@@ -598,18 +589,16 @@ export default class N19baseApplet {
 
   _findControlToEnterSearchExpr() {
     const appletControls = this._returnControls();
-    const arr = Object.keys(appletControls);
-    for (let i = 0; i < arr.length; i += 1) {
-      const control = appletControls[arr[i]];
+    const arr = Object.values(appletControls);
+    const found = arr.find((control) => {
       const controlUiType = control.GetUIType();
       if (!this._isSkipControl(controlUiType)) {
         // skipping also JCheckbox
-        if (controlUiType !== this.consts.get('SWE_CTRL_CHECKBOX')) {
-          return control;
-        }
+        return controlUiType !== this.consts.get('SWE_CTRL_CHECKBOX');
       }
-    }
-    throw new Error('cannot find a control for query');
+      return false;
+    });
+    return found;
   }
 
   _newQuery() {
@@ -678,16 +667,16 @@ export default class N19baseApplet {
       ai.cb = cb;
     }
 
-    const arr = Object.keys(params);
     const _controls = this._returnControls();
-    for (let i = 0; i < arr.length; i += 1) {
-      const control = _controls[arr[i]];
+    const arr = Object.keys(params);
+    arr.forEach((controlName) => {
+      const control = _controls[controlName];
       if (control) {
-        this._setControlValueInternal(control, this._getSiebelValue(params[arr[i]], control.GetUIType()));
+        this._setControlValueInternal(control, this._getSiebelValue(params[controlName], control.GetUIType()));
       } else {
-        console.error(`The control "${arr[i]}" is not found!`); // eslint-disable-line no-console
+        console.error(`The control "${controlName}" is not found!`); // eslint-disable-line no-console
       }
-    }
+    });
 
     return this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, ai);
   }
@@ -730,12 +719,12 @@ export default class N19baseApplet {
     psInputs.SetProperty('BC', this.pm.Get('GetBusComp').GetName());
     psInputs.SetProperty('UseActiveBO', useActiveBO ? 'Y' : 'N');
     psInputs.SetProperty('ID', ids.join(','));
-    for (let i = 0; i < arr.length; i += 1) {
+    arr.forEach((el) => {
       const ps = SiebelApp.S_App.NewPropertySet();
-      ps.SetType(this._getFieldNameForControl(arr[i][0]));
-      ps.SetProperty('Fields', arr[i][1].join(','));
+      ps.SetType(this._getFieldNameForControl(el[0]));
+      ps.SetProperty('Fields', el[1].join(','));
       psInputs.AddChild(ps.Clone());
-    }
+    });
     const bs = SiebelApp.S_App.GetService('N19 BS');
     const ai = {
       async: true,
@@ -747,20 +736,19 @@ export default class N19baseApplet {
       },
       cb: (methodName, Inputs, psOutputs) => {
         this.notifications.skipNewFieldDataNotifications = false;
-        const { childArray } = psOutputs.GetChildByType('ResultSet') || {}; // to be safe when no results
         const ret = {};
-        for (let i = 0; i < (childArray || []).length; i += 1) {
-          ret[childArray[i].GetType()] = {};
-          for (let j = 0; j < childArray[i].childArray.length; j += 1) {
-            const el = childArray[i].childArray[j];
-            ret[childArray[i].GetType()][el.GetType()] = el.childArray.map((rec) => {
+        const { childArray } = psOutputs.GetChildByType('ResultSet') || {}; // to be safe when no results
+        (childArray || []).forEach((child) => {
+          ret[child.GetType()] = {};
+          child.childArray.forEach((grandChild) => {
+            ret[child.GetType()][grandChild.GetType()] = grandChild.childArray.map((rec) => {
               const primary = rec.propArray['SSA Primary Field'];
               this.boolObject.SetAsString(primary);
               rec.propArray['SSA Primary Field'] = this.boolObject.GetValue(); // eslint-disable-line no-param-reassign
               return Object.assign({}, rec.propArray);
             });
-          }
-        }
+          });
+        });
         resolve(ret);
       },
     };
@@ -788,16 +776,14 @@ export default class N19baseApplet {
     return this.pm.Get(name);
   }
 
-  _retrieveData(amount) { // temp method?
+  _retrieveData(amount) { // temp method - will be removed
     const data = new Map();
 
     while (data.size < amount) {
-      const temp = this.getRawRecordSet();
+      const arr = this.getRawRecordSet();
 
       // avoid the duplicates
-      for (let i = 0; i < temp.length; i += 1) {
-        data.set(temp[i].Id, temp[i]);
-      }
+      arr.forEach(el => data.set(el.Id, el));
 
       // we are using canInvokeMethod, as in 16.0 nextRecordSet always returns undefined
       if (!this.canInvokeMethod('GotoNextSet')) {
@@ -824,19 +810,19 @@ export default class N19baseApplet {
     const ret = {};
     const appletControls = this._returnControls();
     const arr = Object.keys(_controls);
-    for (let i = 0; i < arr.length; i += 1) {
-      const control = appletControls[arr[i]];
-      const field = control.GetFieldName();
-      if (field) {
+    arr.forEach((controlName) => {
+      const control = appletControls[controlName];
+      const fieldName = control.GetFieldName();
+      if (fieldName) {
         const uiType = control.GetUIType();
-        ret[field] = {
-          name: control.GetName(),
+        ret[fieldName] = {
+          name: controlName,
           isPostChanges: control.IsPostChanges(),
           uiType,
           displayFormat: control.GetDisplayFormat() || this.getControlDisplayFormat(uiType),
         };
       }
-    }
+    });
     return ret;
   }
 
@@ -848,7 +834,7 @@ export default class N19baseApplet {
     const ret = this.getRecordSet().slice();
     const rawRecordSet = this.getRawRecordSet(); // just fallback if record set does not have Id
 
-    for (let i = 0; i < ret.length; i += 1) {
+    for (let i = 0, len = ret.length; i < len; i += 1) {
       const id = ret[i].Id;
       ret[i] = Object.keys(ret[i]).filter(el => this.fieldToControlMap[el]).reduce((acc, el) => ({
         ...acc,

@@ -70,10 +70,8 @@ export default class N19notifications {
     pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END'), (propSet) => {
       if (bcId === propSet.GetProperty('bc')) {
         if (receivedNotifications.length > 0) {
-          for (let i = 0; i < this.subscribers.length; i += 1) {
-            // we assume that the function does not throw an error
-            this.subscribers[i].func();
-          }
+          // we assume that the function does not throw an error, so no error handling here
+          this.subscribers.forEach(el => el.func());
         }
       }
     });
@@ -89,7 +87,7 @@ export default class N19notifications {
   }
 
   unsubscribe(subToken) {
-    for (let i = 0; i < this.subscribers.length; i += 1) {
+    for (let i = 0, len = this.subscribers.length; i < len; i += 1) {
       if (subToken === this.subscribers[i].token) {
         return this.subscribers.splice(i, 1);
       }

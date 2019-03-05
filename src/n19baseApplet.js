@@ -563,7 +563,7 @@ export default class N19baseApplet {
         _controls[controlName] = { // eslint-disable-line no-param-reassign
           value: '',
           uiType,
-          readonly: true,
+          readonly: _controls.state !== 3, // should be edittable in query mode
           isLink: false,
           label: control.GetDisplayName(),
           isPostChanges: control.IsPostChanges(),

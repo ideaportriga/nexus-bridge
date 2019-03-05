@@ -1,6 +1,6 @@
 if (typeof (SiebelAppFacade.N19_reactdemo_PR) === "undefined") {
   SiebelJS.Namespace("SiebelAppFacade.N19_reactdemo_PR");
-  define("siebel/custom/N19_reactdemo_PR", ["siebel/phyrenderer", "siebel/custom/react_dist/main"],
+  define("siebel/custom/N19_reactdemo_PR", ["siebel/phyrenderer", "siebel/custom/N19_reactdemo_PR/build/static/js/main"],
     function () {
       SiebelAppFacade.N19_reactdemo_PR = (function () {
         let containerId = 'react_sample';

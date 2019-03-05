@@ -29,7 +29,7 @@ The demo example was tested on Seibel 16.19 and 18.08 ENU.
       * Click `Clear cache` button under `Administration – Application > Responsibilities` view
 1. Re-login to your Siebel Application and check that the `N19 React Account Screen` Screen is available.
 1. Copy below files and folders to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom\` folder:
-    * `n19helper-master/examples/REACT Examples/Demo Example/JS_DIST/*` including `react_dist` folder.
+    * `n19helper-master/examples/REACT Examples/Demo Example/JS_DIST/*`.
 1. Use Siebel Client to reference js files in Siebel Open UI Manifest as follows:
 	- under `Administration - Application > Manifest Files` 
 	>- add a new record with: 

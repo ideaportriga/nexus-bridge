@@ -16,8 +16,9 @@ export default class N19baseApplet {
 
     this.loadLocaleData();
 
+    this.fieldToControlMap = this._getFieldToControlMap();
     const bcId = this.applet.GetBCId();
-    this.notifications = new N19notifications(this.pm, this.consts, bcId);
+    this.notifications = new N19notifications(this.pm, this.consts, bcId, this.fieldToControlMap);
 
     // populate the required array for form applets
     if (!this.isListApplet) {
@@ -734,11 +735,9 @@ export default class N19baseApplet {
       selfbusy: true,
       scope: this,
       errcb: () => {
-        this.notifications.skipNewFieldDataNotifications = false;
         reject();
       },
       cb: (methodName, Inputs, psOutputs) => {
-        this.notifications.skipNewFieldDataNotifications = false;
         const ret = {};
         const { childArray } = psOutputs.GetChildByType('ResultSet') || {}; // to be safe when no results
         (childArray || []).forEach((child) => {
@@ -755,9 +754,6 @@ export default class N19baseApplet {
         resolve(ret);
       },
     };
-    if (useActiveBO) {
-      this.notifications.skipNewFieldDataNotifications = true;
-    }
     return bs.InvokeMethod('ReturnMVGFields', psInputs, ai);
   }
 
@@ -812,7 +808,7 @@ export default class N19baseApplet {
   _getFieldToControlMap(_controls) {
     const ret = {};
     const appletControls = this._returnControls();
-    const arr = Object.keys(_controls);
+    const arr = Object.keys(_controls || appletControls);
     arr.forEach((controlName) => {
       const control = appletControls[controlName];
       const fieldName = control.GetFieldName();
@@ -830,9 +826,6 @@ export default class N19baseApplet {
   }
 
   getControlsRecordSet() {
-    if (!this.fieldToControlMap) {
-      this.fieldToControlMap = this._getFieldToControlMap(this._returnControls());
-    }
     // used slice to avoid modification of the record set
     const ret = this.getRecordSet().slice();
     const rawRecordSet = this.getRawRecordSet(); // just fallback if record set does not have Id

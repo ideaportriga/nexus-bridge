@@ -191,10 +191,6 @@ export default class N19popupController {
 
     if (hide) { // we will populate the instances only when applet should be hidden
       let ret = new Promise((resolve) => { this.resolvePromise = resolve; });
-      ret = ret.then((result) => {
-        n19.notifications.skipNewFieldDataNotifications = false; // eslint-disable-line no-param-reassign
-        return result;
-      });
       if (typeof cb === 'function') {
         ret = ret.then(cb);
       }

@@ -1,9 +1,8 @@
 export default class N19notifications {
-  constructor(pm, consts, bcId) {
+  constructor(pm, consts, bcId, fieldToControlMap) {
     let receivedNotifications = [];
     this.token = 0;
     this.subscribers = [];
-    this.skipNewFieldDataNotifications = false;
 
     pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_BEGIN'), (propSet) => {
       if (bcId === propSet.GetProperty('bc')) {
@@ -18,7 +17,7 @@ export default class N19notifications {
     });
 
     pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'), (propSet) => {
-      const states = ['cp']; // 'n'
+      const states = ['cp', 'n'];
       if (bcId === propSet.GetProperty('bc')) {
         if (!states.includes(propSet.GetProperty('state'))) {
           receivedNotifications.push('SWE_PROP_BC_NOTI_STATE_CHANGED');
@@ -26,34 +25,16 @@ export default class N19notifications {
       }
     });
 
+    // or SWE_PROP_BC_NOTI_NEW_FIELD_DATA?
     pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA_WS'), (propSet) => {
       if (bcId === propSet.GetProperty('bc')) {
-        if (!this.skipNewFieldDataNotifications) {
+        const fieldName = propSet.GetProperty(consts.get('SWE_PROP_NOTI_FIELD'));
+        const control = fieldToControlMap[fieldName];
+        if (control && control.uiType !== consts.get('SWE_CTRL_MVG')) {
           receivedNotifications.push('SWE_PROP_BC_NOTI_NEW_DATA_WS');
         }
       }
     });
-
-    // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_DATA'), (propSet) => {
-    //   if (bcId === propSet.GetProperty('bc')) {
-    //     if (!this.skipNewFieldDataNotifications) {
-    //       receivedNotifications.push('SWE_PROP_BC_NOTI_NEW_FIELD_DATA');
-    //     }
-    //   }
-    // });
-
-    pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_GENERIC'), (propSet) => {
-      const type = propSet.GetProperty(consts.get('SWE_PROP_NOTI_TYPE'));
-      if ('ClosePopup' === type) {
-        this.skipNewFieldDataNotifications = false;
-      }
-    });
-
-    // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), (propSet) => {
-    //   if (bcId === propSet.GetProperty('bc')) { // when does it happen
-    //     receivedNotifications.push('SWE_PROP_BC_NOTI_NEW_DATA');
-    //   }
-    // });
 
     pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'), (propSet) => {
       if (bcId === propSet.GetProperty('bc')) {

@@ -324,6 +324,15 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     <v-divider></v-divider>                                                                 \n\
                 </v-flex>                                                                                                                                      \n\
                 <v-flex md4 pa-2>                                                                                                                              \n\
+                  <v-text-field :rules="controls.SubjectPhone.required ? [\'Required\'] : []" v-on:input="changeValue(\'SubjectPhone\')" :disabled="controls.SubjectPhone.readonly" :label="controls.SubjectPhone.label" v-model="controls.SubjectPhone.value" clearable v-on:keyup.27="escapeOnControl(\'SubjectPhone\')" v-on:click:clear="handleClear(\'SubjectPhone\')" :counter="controls.SubjectPhone.maxSize"></v-text-field> \n\
+                </v-flex> \n\
+                <v-flex md4 pa-2>                                                                                                                              \n\
+                   \n\
+                </v-flex> \n\
+                <v-flex md4 pa-2>                                                                                                                              \n\
+                   \n\
+                </v-flex> \n\
+                <v-flex md4 pa-2>                                                                                                                              \n\
                   <v-textarea v-on:change="changeValue(\'Description\')" rows="12" :disabled="controls.Description.readonly" :label="controls.Description.label" v-model="controls.Description.value" :counter="controls.Description.maxSize" box name="input-7-1"></v-textarea> \n\
                 </v-flex>                                                                                                                                      \n\
                 <v-flex md4 pa-2>                                                                                                                              \n\
@@ -432,6 +441,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 'Audit Employee Last Name': {},
                 'Audit Employee Full Name': {},
                 'Created Date': {},
+                SubjectPhone: {},
               },
               methods: {
                 GotoPreviousSet: false,

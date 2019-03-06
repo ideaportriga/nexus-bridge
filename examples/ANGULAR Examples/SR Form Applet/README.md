@@ -8,6 +8,8 @@ This guide will help to setup Nexus19 with the demo of a Form Applet that is bui
 - field properties that are read from Siebel configuration (required, readonly)
 - query operations
 
+Requirements: this example requires access to icons and fonts stored on https://fonts.googleapis.com/
+
 This is not an example of implementation that can be used on production. It is intentionally kept straightforward.
 The demo example was tested with 16.0 ENU.
 

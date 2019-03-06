@@ -54,10 +54,11 @@ export default class N19baseApplet {
     const localeObject = SiebelApp.S_App.LocaleObject;
     const dateTimeFormat = localeObject.GetProfile(this.consts.get('LOCAL_DATETIME_FORMAT'));
     this.localeData = {
+      firstDayOfWeek: localeObject.GetWeekStartDay(),
       dateFormat: localeObject.GetProfile(this.consts.get('LOCAL_DATE_FORMAT')),
       dateTimeFormat,
-      firstDayOfWeek: localeObject.GetWeekStartDay(),
       is24hoursFormat: !/p$/.test(dateTimeFormat),
+      localCountryPhoneCode: localeObject.GetProfile(this.consts.get('LOCAL_PHONE_COUNTRY')),
     };
     this.localeData.months = [];
     this.localeData.shortMonths = [];
@@ -168,6 +169,7 @@ export default class N19baseApplet {
       if (!this._isSkipControl(uiType)) {
         const name = controlEntry[0];
         const inputName = control.GetInputName();
+        const fieldName = control.GetFieldName();
         const obj = {
           name,
           label: control.GetDisplayName(),
@@ -178,10 +180,11 @@ export default class N19baseApplet {
           inputName,
           isPostChanges: control.IsPostChanges(),
           maxSize: control.GetMaxSize(),
-          fieldName: control.GetFieldName(),
+          fieldName,
           isLink: this.pm.ExecuteMethod('CanNavigate', name),
           readonly: !this.pm.ExecuteMethod('CanUpdate', name),
           displayFormat,
+          dataType: this.pm.ExecuteMethod('GetFieldDataType', fieldName),
         };
         Object.defineProperty(obj, 'readOnly', {
           get: () => {

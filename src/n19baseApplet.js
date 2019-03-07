@@ -39,7 +39,7 @@ export default class N19baseApplet {
           // eslint-disable-next-line no-console
           console.warn(`[N19]Picklist is not associated with the control - ${JSON.stringify(arr)}`);
         }
-        this.lov[arr[3]] = arr.splice(5).filter(el => el !== '');
+        this.lov[arr[3]] = arr.slice().splice(5).filter(el => el !== '');
         // TODO: do we need to indicate when an empty value is allowed?
       }
     }, { scope: this });
@@ -383,7 +383,7 @@ export default class N19baseApplet {
     // mvg
     // ?
 
-    const isStaticPick = '1' === control.IsStaticBounded();
+    const isStaticPick = this.isStatic(control);
     const uiType = control.GetUIType();
 
     if (isStatic) { // called getStaticLOV
@@ -410,8 +410,16 @@ export default class N19baseApplet {
     }
   }
 
-  getDynamicLOV(controlName) {
-    const control = this._getControl(controlName);
+  isStatic(control) { // eslint-disable-line class-methods-use-this
+    return '1' === control.IsStaticBounded();
+  }
+
+  isDynamic(control) {
+    return !this.isStatic(control)
+      && this.consts.get('SWE_CTRL_COMBOBOX') === control.GetUIType();
+  }
+
+  _getControlDynamicLOV(control) {
     this._validatePickControl(control, false);
     const controlInputName = control.GetInputName();
     this.lov[controlInputName] = {};
@@ -423,12 +431,32 @@ export default class N19baseApplet {
     return this.lov[controlInputName];
   }
 
-  getStaticLOV(controlName) {
-    const control = this._getControl(controlName);
+  _getControlStaticLOV(control) {
     this._validatePickControl(control, true);
     const arr = N19baseApplet.GetStaticLOV(control.GetRadioGroupPropSet().childArray);
     const ret = arr.map(el => el.DisplayName);
     return ret.sort();
+  }
+
+  getLOV(controlName) {
+    const control = this._getControl(controlName);
+    if (this.isStatic(control)) {
+      return this._getControlStaticLOV(control);
+    }
+    if (this.isDynamic(control)) {
+      return this._getControlDynamicLOV(control);
+    }
+    throw new Error(`${controlName} is not a static or a dynamic`);
+  }
+
+  getDynamicLOV(controlName) {
+    const control = this._getControl(controlName);
+    return this._getControlDynamicLOV(control);
+  }
+
+  getStaticLOV(controlName) {
+    const control = this._getControl(controlName);
+    return this._getControlStaticLOV(control);
   }
 
   _getJSValue(value, uiType, displayFormat) {

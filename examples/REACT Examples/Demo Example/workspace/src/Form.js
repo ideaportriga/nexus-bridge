@@ -37,12 +37,12 @@ const Form = props => {
   };
 
   const [fromState, dispatch] = useReducer(formReducer, initialState);
-  console.log(fromState);
+
   const selectInit = () => {
     let newControls = { ...fromState };
 
     n19Helper.getCurrentRecordModel(newControls);
-    console.log(newControls);
+
     Object.keys(newControls).map(id =>
       dispatch({
         type: "setField",
@@ -69,15 +69,27 @@ const Form = props => {
 
   const accountStatusList = n19Helper
     .getStaticLOV("AccountStatus")
-    .map(lov => <MenuItem value={lov}>{lov}</MenuItem>);
+    .map((lov, id) => (
+      <MenuItem key={`AccountStatus_${id}`} value={lov}>
+        {lov}
+      </MenuItem>
+    ));
 
   const accountTypeCodeList = n19Helper
     .getStaticLOV("AccountTypeCode")
-    .map(lov => <MenuItem value={lov}>{lov}</MenuItem>);
+    .map((lov, id) => (
+      <MenuItem key={`AccountTypeCode_${id}`} value={lov}>
+        {lov}
+      </MenuItem>
+    ));
 
   const accountTypeList = n19Helper
     .getStaticLOV("Type")
-    .map(lov => <MenuItem value={lov}>{lov}</MenuItem>);
+    .map((lov, id) => (
+      <MenuItem key={`Type_${id}`} value={lov}>
+        {lov}
+      </MenuItem>
+    ));
 
   const handleChangeInput = name => event => {
     setControlValue(name, event.target.value);

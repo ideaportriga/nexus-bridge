@@ -4,6 +4,13 @@ import n19Factory from "./n19Factory";
 import App from "./App";
 
 const mountComponent = (id, name) => {
+  // Use this boilerplate for multiple applets
+  // const appletMap = window.SiebelApp.S_App.GetActiveView().GetAppletMap();
+  // for (const applet in appletMap) {
+  //   const appletName = appletMap[applet].GetName();
+  //   window.SiebelAppFacade.N19[appletName] = n19Factory(appletName, name);
+  // }
+
   const n19Helper = n19Factory("default", name);
   console.log(`N19Helper instance created...`, n19Helper.appletName);
 

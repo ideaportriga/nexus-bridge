@@ -25,7 +25,7 @@ const SelectField = ({
       input={
         <Input
           name={"Type"}
-          id="type-placeholder"
+          id={`${controlName}_placeholder`}
           readOnly={controlState.readonly ? true : false}
         />
       }

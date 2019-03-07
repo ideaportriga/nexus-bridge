@@ -17,10 +17,7 @@ if (typeof SiebelAppFacade.N19_reactdemo_PR === "undefined") {
       SiebelJS.Extend(N19_reactdemo_PR, SiebelAppFacade.PhysicalRenderer);
 
       N19_reactdemo_PR.prototype.Init = function() {
-        SiebelAppFacade.N19_reactdemo_PR.superclass.Init.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
-        $("head").append(
-          '<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">'
-        );
+        SiebelAppFacade.N19_reactdemo_PR.superclass.Init.apply(this, arguments); // Executing vanilla bindings, required to use SiebelApp/pm methods
         $("head").append(
           '<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no"></meta>'
         );
@@ -65,7 +62,7 @@ if (typeof SiebelAppFacade.N19_reactdemo_PR === "undefined") {
         SiebelAppFacade.N19_reactdemo_PR.superclass.EndLife.apply(
           this,
           arguments
-        ); //Siebel applet cleanup
+        ); // Siebel applet cleanup
       };
 
       return N19_reactdemo_PR;

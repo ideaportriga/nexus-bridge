@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
-import Icon from "@material-ui/core/Icon";
+import NavigateBefore from "@material-ui/icons/NavigateBefore";
+import NavigateNext from "@material-ui/icons/NavigateNext";
+import Save from "@material-ui/icons/Save";
+import Search from "@material-ui/icons/Search";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -107,7 +110,8 @@ const App = () => {
             variant="contained"
             color="primary"
           >
-            <Icon>save</Icon>&nbsp;SAVE
+            <Save />
+            &nbsp;SAVE
           </Button>
         </Grid>
 
@@ -120,7 +124,8 @@ const App = () => {
               variant="contained"
               color="primary"
             >
-              <Icon>search</Icon>&nbsp;Search
+              <Search />
+              &nbsp;Search
             </Button>
           </Grid>
         ) : null}
@@ -134,7 +139,8 @@ const App = () => {
               variant="contained"
               color="primary"
             >
-              <Icon>search</Icon>Run
+              <Search />
+              &nbsp;Run
             </Button>
           </Grid>
         ) : null}
@@ -149,7 +155,7 @@ const App = () => {
             variant="contained"
             color="primary"
           >
-            <Icon>navigate_before</Icon>
+            <NavigateBefore />
           </Button>
         </Grid>
 
@@ -161,7 +167,7 @@ const App = () => {
             variant="contained"
             color="primary"
           >
-            <Icon>navigate_next</Icon>
+            <NavigateNext />
           </Button>
         </Grid>
       </Grid>

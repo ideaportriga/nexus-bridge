@@ -87,4 +87,17 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
     popupPM.Init();
     popupPM.Setup();
   }
+
+  pickRecordById(controlName, rowId) {
+    // TODO: check if the control allows picking?
+    this.showPickApplet(controlName, true, null)
+      .then(obj => new Promise(resolve => setTimeout(() => resolve(obj), 0)))
+      .then((obj) => {
+        const found = obj.popupAppletN19.queryByIdSync(rowId);
+        if (found !== 1) {
+          throw new Error(`The record ${rowId} is not found (${found})`);
+        }
+        return obj.popupAppletN19.pickRecord();
+      });
+  }
 };

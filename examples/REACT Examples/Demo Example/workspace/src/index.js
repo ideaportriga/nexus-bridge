@@ -1,17 +1,26 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
+import React from "react";
+import ReactDOM from "react-dom";
+import n19Factory from "./n19Factory";
+import App from "./App";
 
-let n19Helper;
+const mountComponent = (id, name) => {
+  // Use this boilerplate for multiple applets
+  // const appletMap = window.SiebelApp.S_App.GetActiveView().GetAppletMap();
+  // for (const applet in appletMap) {
+  //   const appletName = appletMap[applet].GetName();
+  //   window.SiebelAppFacade.N19[appletName] = n19Factory(appletName, name);
+  // }
 
-const createExample = (id, pm) => {
-  n19Helper = new window.SiebelAppFacade.N19Helper({ pm: pm });
-  ReactDOM.render(<App n19Helper={n19Helper} />, document.getElementById(id));
-}
+  const n19Helper = n19Factory("default", name);
+  console.log(`N19Helper instance created...`, n19Helper.appletName);
 
-const unmountComponent = (id) => {
-  ReactDOM.unmountComponentAtNode(document.getElementById(id));
-  n19Helper = null;
-}
+  ReactDOM.render(<App />, document.getElementById(id));
+};
 
-window.SiebReact = { createExample, unmountComponent }
+const unmountComponent = id => {
+  if (document.getElementById(id) !== null) {
+    ReactDOM.unmountComponentAtNode(document.getElementById(id));
+  }
+};
+
+window.SiebReact = { mountComponent, unmountComponent };

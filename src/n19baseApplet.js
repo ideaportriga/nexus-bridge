@@ -308,14 +308,16 @@ export default class N19baseApplet {
   }
 
   _newRecord(cb) {
-    return this.pm.ExecuteMethod('InvokeMethod', 'NewRecord', null, {
+    // 20190312 - changed from NewRecord to CreateRecord, #31
+    return this.pm.ExecuteMethod('InvokeMethod', 'CreateRecord', null, {
       async: true,
       cb,
     });
   }
 
   newRecordSync() {
-    return this.pm.ExecuteMethod('InvokeMethod', 'NewRecord');
+    // 20190312 - changed from NewRecord to CreateRecord, #31
+    return this.pm.ExecuteMethod('InvokeMethod', 'CreateRecord');
   }
 
   writeRecord(cb, cberr) {

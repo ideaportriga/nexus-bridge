@@ -345,8 +345,17 @@ export default class N19baseApplet {
     return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord');
   }
 
-  deleteRecordSync() {
-    return this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecord');
+  deleteRecordSync(skipConfirmDialog) {
+    if (skipConfirmDialog) {
+      this.N19Confirm = SiebelApp.Utils.Confirm;
+      SiebelApp.Utils.Confirm = () => {};
+    }
+    // do we need to try..catch and restore the function in catch ?
+    const ret = this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecord');
+    if (skipConfirmDialog) {
+      SiebelApp.Utils.Confirm = this.N19Confirm;
+    }
+    return ret;
   }
 
   undoRecordSync() {

@@ -90,7 +90,7 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
 
   pickRecordById(controlName, rowId) {
     // TODO: check if the control allows picking?
-    this.showPickApplet(controlName, true, null)
+    return this.showPickApplet(controlName, true)
       .then(obj => new Promise(resolve => setTimeout(() => resolve(obj), 0)))
       .then((obj) => {
         const found = obj.popupAppletN19.queryByIdSync(rowId);
@@ -99,5 +99,29 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
         }
         return obj.popupAppletN19.pickRecord();
       });
+  }
+
+  assocRecordsById(controlName, arr, closeApplet) {
+    // TODO: check if the control allows mvg?
+    return this.showMvgApplet(controlName, true)
+      .then(obj => new Promise(resolve => setTimeout(() => resolve(obj), 0)))
+      .then(obj => new Promise((resolve) => {
+        const found = obj.assocAppletN19.queryByIdSync(arr);
+        if (found !== arr.length) {
+          // should we throw an error?
+          // eslint-disable-next-line no-console
+          console.warn(`The amount of found records(${found}) does not match to input array length(${arr.length})`);
+        }
+        if (found > 0) { // we have something to add
+          obj.popupAppletN19.addAllRecords();
+        }
+        if (closeApplet) {
+          this.closePopupApplet();
+          resolve(found);
+        } else {
+          obj.found = found; // eslint-disable-line no-param-reassign
+          resolve(obj);
+        }
+      }));
   }
 };

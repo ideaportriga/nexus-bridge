@@ -633,15 +633,12 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   var assoc = n19helper.n19popupController.assocAppletN19;
                 }
                 var arr = ['7SIA-5DZZ2', '1SIA-3D3R', '1SIA-50JE'];
-                for (var i = 0; i < arr.length; i++) {
-                  var found = await assoc.queryById(arr[i]);
-                  if (found === 1) {
-                    mvg.addRecords();
-                  } else {
-                    alert('The record is not found - ' + arr[i] + '. Are you on Sample DB?');
-                  }
+                var found = assoc.queryByIdSync(arr);
+                if (found !== arr.length) {
+                  alert(`The amount of found records(${found}) does not match to input array length(${arr.length})`);
+                } else {
+                  mvg.addAllRecords();
                 }
-                alert('Finished');
               },
               async testButtonClickShuttle3() {
                 var controlName = this.getControlForOpenPopup();

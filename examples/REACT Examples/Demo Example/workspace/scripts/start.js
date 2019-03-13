@@ -21,7 +21,7 @@ const config = require("../config/webpack.config");
 const paths = require("../config/paths");
 
 // Warn and crash if required files are missing
-if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
+if (!checkRequiredFiles([paths.appIndexJs])) {
   process.exit(1);
 }
 
@@ -61,7 +61,6 @@ checkBrowsers(paths.appPath)
 
 function copyPublicFolder() {
   fs.copySync(paths.appPublic, paths.appBuild, {
-    dereference: true,
-    filter: file => file !== paths.appHtml
+    dereference: true
   });
 }

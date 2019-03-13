@@ -1,7 +1,7 @@
 import N19baseApplet from './n19baseApplet';
 import N19popupController from './n19popupController';
 
-SiebelAppFacade.N19Helper = class extends N19baseApplet {
+export default class nexus19 extends N19baseApplet {
   constructor(settings) {
     const { appletName } = settings;
     if (appletName) {
@@ -131,4 +131,4 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
         }
       }));
   }
-};
+}

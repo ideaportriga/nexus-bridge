@@ -5,7 +5,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
     function () {
       SiebelAppFacade.HLSCaseFormAppletPR = (function () {
 
-
         function HLSCaseFormAppletPR(pm) {
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.constructor.apply(this, arguments);
         }
@@ -552,7 +551,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 if (obj.appletName != 'Pharma Employee Pick Applet') {
                   alert('Pharma Employee Pick Applet is not created');
                 }
-                if (Object.keys(obj).length !== 2) {
+                if (Object.keys(obj).length !== 3) {
                   alert('obj length has not expected value - ' + Object.keys(obj).length);
                 }
                 var length = obj.popupAppletN19.getRecordSet().length;
@@ -571,7 +570,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 if (obj.appletName != 'Contact Team Mvg Applet') {
                   alert('Contact Team Mvg Applet is not created');
                 }
-                if (Object.keys(obj).length !== 3) {
+                if (Object.keys(obj).length !== 5) {
                   alert('Returned object length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
                 }
               },

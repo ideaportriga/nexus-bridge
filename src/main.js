@@ -47,12 +47,19 @@ SiebelAppFacade.N19Helper = class extends N19baseApplet {
     return this._showPopupApplet(name, hide, cb);
   }
 
+  _newAssocRecord() {
+    return new Promise(resolve => this.pm.ExecuteMethod('InvokeMethod', 'NewRecord', null, {
+      async: true,
+      cb: resolve,
+    }));
+  }
+
   openAssocApplet(cb) { // this method should be available for child business component in M:M relationship
     // TODO: check if applet provides such capabilities?
     if (!this.n19popupController.canOpenPopup()) {
       throw new Error('Cannot open popup (currently exists resolve function)!');
     }
-    return this.n19popupController._openAssocApplet(this.newRecord.bind(this), cb);
+    return this.n19popupController._openAssocApplet(this._newAssocRecord.bind(this), cb);
   }
 
   drilldown(controlName) {

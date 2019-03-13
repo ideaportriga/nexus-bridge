@@ -46,31 +46,31 @@ export default class N19popupController {
       return ret;
     };
 
-    // we could use pm.AttachPostProxyExecuteBinding for 'EditField', but at this point GetRenderer returns null
-    // but pm exists
+    // we could use pm.AttachPostProxyExecuteBinding for 'EditField', pm exists, but GetRenderer returns null
     // open until we get rid of GetRenderer (Oracle review)
-    // other option - SiebelApp.contentUpdater.viewLoaded
+    // other option - resolve it in SiebelApp.contentUpdater.viewLoaded
     SiebelApp.S_App.GetPopupPM().AttachPMBinding('OnLoadPopupContent', () => {
       if (typeof this.resolvePromise === 'function') {
-        // TODO: maybe use here the properties set on resolivng
         const { appletName } = N19popupController.IsPopupOpen();
         if (!appletName) {
-          // console.warn('Open Applet Name is not found in OnLoadPopupContent resolving Promise');
           throw new Error('Open Applet Name is not found in OnLoadPopupContent resolving Promise');
-        } else {
-          const applet = N19popupController.GetPopupApplet(appletName);
-          const pm = applet.GetPModel();
-          this.popupAppletN19 = new N19popupApplet({ pm });
-          const obj = { appletName, popupAppletN19: this.popupAppletN19 };
-          // check if we have assoc - we assume it is always assoc applet?
-          const assocApplet = applet.GetPopupApplet();
-          if (assocApplet) {
-            this.assocAppletN19 = new N19popupApplet({ pm: assocApplet.GetPModel() });
-            obj.assocAppletN19 = this.assocAppletN19;
-          }
-          this.resolvePromise(obj);
-          this.resolvePromise = null;
         }
+        const applet = N19popupController.GetPopupApplet(appletName);
+        this.popupAppletN19 = new N19popupApplet({ pm: applet.GetPModel() });
+        const obj = { appletName, popupAppletN19: this.popupAppletN19 };
+
+        const assocApplet = applet.GetPopupApplet(); // is it always assoc?
+        if (assocApplet) { // we got a shuttle
+          this.assocAppletN19 = new N19popupApplet({ pm: assocApplet.GetPModel() });
+          obj.assocAppletN19 = this.assocAppletN19;
+          obj.availableRecordSet = this.assocAppletN19.getControlsRecordSet();
+          obj.selectedRecordSet = this.popupAppletN19.getControlsRecordSet();
+        } else { // assoc only OR pick
+          obj.availableRecordSet = this.popupAppletN19.getControlsRecordSet();
+        }
+
+        this.resolvePromise(obj);
+        this.resolvePromise = null;
       }
     });
   }

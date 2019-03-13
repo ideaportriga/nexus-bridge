@@ -32,13 +32,13 @@ const App = () => {
 
   // subscribe to methods only
   useEffect(() => {
-    n19Helper.subscribe(() => {
+    const token = n19Helper.subscribe(() => {
       const { methods } = n19Helper.getCurrentRecordModel(_controls, _methods);
       setState({ ...state, methods });
     });
 
     return () => {
-      n19Helper.unsubscribe();
+      n19Helper.unsubscribe(token);
     };
   }, [state.methods]);
 

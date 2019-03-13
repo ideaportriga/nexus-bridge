@@ -20,7 +20,6 @@ const SelectField = ({
       id={controlName}
       error={!!controlState.required && !controlState.value}
       value={controlState.value || ""}
-      helperText={controlState.required ? "Required" : ""}
       displayEmpty={controlState.value === "" ? true : false}
       input={
         <Input

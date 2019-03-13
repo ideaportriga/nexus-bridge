@@ -11,6 +11,7 @@ const mountComponent = (id, name) => {
   //   window.SiebelAppFacade.N19[appletName] = n19Factory(appletName, name);
   // }
 
+  // N19 must be re-initialized on every mount
   const n19Helper = n19Factory("default", name);
   console.log(`N19Helper instance created...`, n19Helper.appletName);
 

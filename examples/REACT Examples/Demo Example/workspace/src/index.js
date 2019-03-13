@@ -4,19 +4,21 @@ import { config } from "./config";
 import n19Factory from "./n19Factory";
 import App from "./App";
 
-const mountComponent = (id, name) => {
-  // Use this boilerplate for multiple applets
-  // const appletMap = window.SiebelApp.S_App.GetActiveView().GetAppletMap();
-  // for (const applet in appletMap) {
-  //   const appletName = appletMap[applet].GetName();
-  //   n19Factory(appletName, appletName);
+const mountComponent = (id, appletName) => {
+  // N19 instance initialization from PR 
+  const n19Helper = n19Factory("default", appletName);
+  console.log(`N19Helper instance created...`, n19Helper.appletName);
+
+  // Or use the custom config with mappings
+  // for (const appletName in config) {
+  //   n19Factory(appletName, config[appletName]);
   // }
 
-  // N19 must be re-initialized on every mount
-  for (const name in config) {
-    const n19Helper = n19Factory(name, config[name]);
-    console.log(`N19Helper instance created...`, n19Helper.appletName);
-  }
+  // Or use this boilerplate to map multiple applets automatically
+  // const appletMap = window.SiebelApp.S_App.GetActiveView().GetAppletMap();
+  // for (const appletName in appletMap) {
+  //   n19Factory(appletName, appletName);
+  // }
 
   ReactDOM.render(<App />, document.getElementById(id));
 };

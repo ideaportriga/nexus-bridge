@@ -55,12 +55,12 @@ const Form = props => {
   useEffect(() => {
     selectInit();
 
-    n19Helper.subscribe(() => {
+    const token = n19Helper.subscribe(() => {
       selectInit();
     });
 
     return () => {
-      n19Helper.unsubscribe();
+      n19Helper.unsubscribe(token);
     };
   }, [props.accountName]);
 
@@ -80,13 +80,11 @@ const Form = props => {
       </MenuItem>
     ));
 
-  const accountTypeList = n19Helper
-    .getStaticLOV("Type")
-    .map((lov, id) => (
-      <MenuItem key={`Type_${id}`} value={lov}>
-        {lov}
-      </MenuItem>
-    ));
+  const accountTypeList = n19Helper.getStaticLOV("Type").map((lov, id) => (
+    <MenuItem key={`Type_${id}`} value={lov}>
+      {lov}
+    </MenuItem>
+  ));
 
   const handleChangeInput = name => event => {
     setControlValue(name, event.target.value);

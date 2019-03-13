@@ -1,7 +1,9 @@
 const memo = {}
 
 const n19Factory = (key = "default", appletName) => {
-  memo[key] = memo[key] || new window.SiebelAppFacade.N19Helper({ appletName, convertDates: true })
+  memo[key] = !appletName
+    ? memo[key]
+    : new window.SiebelAppFacade.N19Helper({ appletName, convertDates: true })
 
   return memo[key]
 }

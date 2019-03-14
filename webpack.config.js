@@ -1,6 +1,8 @@
-module.exports = (env, argv) => {
+module.exports = () => {
 
   const webpack = require('webpack');
+  const PACKAGE = require('./package.json');
+  const banner = `${PACKAGE.name} - ${PACKAGE.version} - Released under the MIT License`;
 
   const rules = [{
     test: /\.js$/,
@@ -9,45 +11,20 @@ module.exports = (env, argv) => {
     }
   }];
 
-  let plugins = [];
-  const main = [__dirname + '/src/main.js']; // @babel/polyfill?
-  let devtool = '';
-  let filename;
-  if ('production' === argv.mode) { // remove console.log, add polyfill, minify
-    const PACKAGE = require('./package.json');
-    const banner = `${PACKAGE.name} - ${PACKAGE.version} - Released under the MIT License`;
-    plugins = [new webpack.BannerPlugin(banner)];
-    rules.push({
-      test: /\.js$/,
-      use: {
-        loader: 'strip-loader?strip[]=console.log,strip[]=console.warn'
-      }
-    });
-    filename = 'N19Helper.min.js';
-    // main.unshift('core-js/fn/promise');
-    // main.unshift('core-js/es7/object');
-  } else { // this is a development mode
-    devtool = 'inline-source-map';
-    filename = 'N19Helper.js';
-  }
-
-  const config = {
+  return config = {
     entry: {
-      main
+      main: [`${__dirname}/src/main.js`]
     },
-    devtool,
+    devtool: 'source-map',
     output: {
       path: __dirname  + '/dist',
-      filename
+      filename: 'N19Helper.js'
     },
     module: {
       rules
     },
     resolve: {
     },
-    plugins
+    plugins: [new webpack.BannerPlugin(banner)]
   };
-
-  return config;
-
 };

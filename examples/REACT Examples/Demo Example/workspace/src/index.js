@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { config } from "./config";
 import n19Factory from "./n19Factory";
 import App from "./App";
 
@@ -8,12 +9,14 @@ const mountComponent = (id, name) => {
   // const appletMap = window.SiebelApp.S_App.GetActiveView().GetAppletMap();
   // for (const applet in appletMap) {
   //   const appletName = appletMap[applet].GetName();
-  //   window.SiebelAppFacade.N19[appletName] = n19Factory(appletName, name);
+  //   n19Factory(appletName, appletName);
   // }
 
   // N19 must be re-initialized on every mount
-  const n19Helper = n19Factory("default", name);
-  console.log(`N19Helper instance created...`, n19Helper.appletName);
+  for (const name in config) {
+    const n19Helper = n19Factory(name, config[name]);
+    console.log(`N19Helper instance created...`, n19Helper.appletName);
+  }
 
   ReactDOM.render(<App />, document.getElementById(id));
 };

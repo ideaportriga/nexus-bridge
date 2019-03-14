@@ -82,7 +82,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           // good to know that...
           //   when we modified immediate post change field, and made the undo record,
           //   notify new field data is not invoked
-          //   when for the same field the immediate post change is unchecked, this procedure is started to call
+          //   when for the same field the immediate post change is unchecked, this procedure will be invoked
           // to have immediately update the new
           SiebelAppFacade.N19notifyNewFieldData = SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData;
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = function (name, value) {
@@ -751,11 +751,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 this.changeValue(name);
               },
               newButtonClick: function () {
-                n19helper.newRecord(function () {
-                  setTimeout(function () {
-                    this.$refs.caseName.focus();
-                  }.bind(this));
-                }.bind(this));
+                n19helper.newRecord(() => setTimeout(() => this.$refs.caseName.focus()));
               },
               deleteButtonClick: function () {
                 n19helper.deleteRecordSync();
@@ -777,22 +773,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 });
               },
               nextButtonClick: function () {
-                if (!n19helper.canInvokeMethod("GotoNextSet")) {
-                  alert('GotoNextSet is not allowed to invoke');
-                } else {
-                  n19helper.nextRecord();
-                }
+                n19helper.nextRecord();
               },
               prevButtonClick: function () {
-                if (!n19helper.canInvokeMethod("GotoPreviousSet")) {
-                  alert('GotoPreviousSet is not allowed to invoke');
-                } else {
-                  n19helper.prevRecord();
-                }
+                n19helper.prevRecord();
               },
               updateFieldData(name, value) {
                 // When Primary is updated it sends SSA Primary Field?
-                // console.log('updateFieldData', arguments);
                 var control = this.fieldToControlsMap[name];
                 if (control) {
                   if (typeof value === 'undefined') {
@@ -807,13 +794,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     this.controls[control.name].value = value;
                     if ('Threat Level' === name) {
                       this.caseThreatLevelNum = this.caseThreatLevelArr.indexOf(value) + 1;
-                    }
-                    if ('Created Date' === name) {
+                    } else if ('Created Date' === name) {
                       var arr = this.controls[control.name].value.toLocaleString('sv-SV').split(' ');
                       this.date = arr[0];
                       this.time = arr[1].substr(0,8);
-                    }
-                    if ('Status' === name) {
+                    } else if ('Status' === name) {
                       this.caseStatusArr = [value];
                     } else if ('Sub Status' === name) {
                       this.caseSubStatusArr = [value];
@@ -835,10 +820,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
               },
               getSalesRep: async function () {
+                // TODO: - refactore this function
                 console.log('<<<<<<<<< get sales rep primary <<<', this.caseSalesRepArr, this.caseSalesRepPrimary);
 
                 // MVG applet exists
                 if (SiebelApp.S_App.GetActiveView().GetAppletMap()['Contact Team Mvg Applet']) {
+                  // alert('mvg applet exists'); // TODO: test when it runs
+                  // todo : get arr as formatted values???
                   var arr = SiebelApp.S_App.GetActiveView().GetAppletMap()['Contact Team Mvg Applet'].GetPModel().Get('GetRawRecordSet');
                   this.caseSalesRepArr = [];
                   for (var i = 0; i < arr.length; i++) {
@@ -867,19 +855,17 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   true
                 );
                 if (ret[this.controls.id]) { // something returned
-                  ret = ret[this.controls.id]["Sales Rep"];
-                  console.log('BS output to get the sales reps...', ret);
+                  var arr = ret[this.controls.id]["Sales Rep"];
                   this.caseSalesRepArr = [];
-                  for (var i = 0; i < ret.length; i++) {
-                    var obj = {
-                      firstName: ret[i]['Active First Name'],
-                      lastName: ret[i]['Active Last Name'],
-                      login: ret[i]['Active Login Name'],
-                      id: ret[i].Id
-                    }
-                    this.caseSalesRepArr.push(obj);
-                    if (ret[i]['SSA Primary Field']) {
-                      this.caseSalesRepPrimary = ret[i].Id;
+                  for (var i = 0; i < arr.length; i++) {
+                    this.caseSalesRepArr.push({
+                      firstName: arr[i]['Active First Name'],
+                      lastName: arr[i]['Active Last Name'],
+                      login: arr[i]['Active Login Name'],
+                      id: arr[i].Id
+                    });
+                    if (arr[i]['SSA Primary Field']) {
+                      this.caseSalesRepPrimary = arr[i].Id;
                     }
                   }
                   this.caseSalesRepArr.sort(function (a, b) {

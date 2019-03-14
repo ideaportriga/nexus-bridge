@@ -959,6 +959,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           }
           $("link[href*='vuetify.min.css']").remove();
           $("link[href*='https://fonts.googleapis.com/css']").remove();
+          $('#vuetify-theme-stylesheet').remove();
 
           SiebelAppFacade.N19Helper.ReInitPopup();
 

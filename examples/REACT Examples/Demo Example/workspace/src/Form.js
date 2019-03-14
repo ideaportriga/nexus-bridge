@@ -6,9 +6,6 @@ import SelectField from "./components/SelectField";
 import SwitchField from "./components/SwitchField";
 
 const Form = ({ n19Helper, accountName }) => {
-  // the canonical way to use the applet
-  // do not pass as prop or thru context
-
   const initialState = {
     Name: {},
     AccountStatus: {},

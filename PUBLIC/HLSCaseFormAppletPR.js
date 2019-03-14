@@ -800,14 +800,19 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     value = (n19helper.getCurrentRecord() || {})[name];
                   }
                   if (value) {
-                    value = n19helper._getJSValue(value, control.uiType); // TODO : SUPPORT DATE/DATETIME
-                    if ('Threat Level' === name) {
-                      this.caseThreatLevelNum = this.caseThreatLevelArr.indexOf(value) + 1;
-                    }
+                    value = n19helper._getJSValue(value, control.uiType, control.displayFormat);
                     if (value == this.controls[control.name].value) {
                       return;
                     }
                     this.controls[control.name].value = value;
+                    if ('Threat Level' === name) {
+                      this.caseThreatLevelNum = this.caseThreatLevelArr.indexOf(value) + 1;
+                    }
+                    if ('Created Date' === name) {
+                      var arr = this.controls[control.name].value.toLocaleString('sv-SV').split(' ');
+                      this.date = arr[0];
+                      this.time = arr[1].substr(0,8);
+                    }
                     if ('Status' === name) {
                       this.caseStatusArr = [value];
                     } else if ('Sub Status' === name) {

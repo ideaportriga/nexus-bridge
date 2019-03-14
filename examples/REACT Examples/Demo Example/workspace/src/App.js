@@ -15,7 +15,7 @@ import Form from "./Form";
 const App = () => {
   // the canonical way to use the applet
   // do not pass as prop or thru context
-  const n19Helper = n19Factory();
+  const n19Helper = n19Factory("default");
 
   // init the applet state
   const _controls = {
@@ -97,7 +97,7 @@ const App = () => {
         </Grid>
       </Grid>
 
-      <Form accountName={state.controls.Name.value} />
+      <Form n19Helper={n19Helper} accountName={state.controls.Name.value} />
 
       <Divider variant="middle" />
 

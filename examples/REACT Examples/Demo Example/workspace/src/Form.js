@@ -4,12 +4,10 @@ import MenuItem from "@material-ui/core/MenuItem";
 import InputField from "./components/InputField";
 import SelectField from "./components/SelectField";
 import SwitchField from "./components/SwitchField";
-import n19Factory from "./n19Factory";
 
-const Form = props => {
+const Form = ({ n19Helper, accountName }) => {
   // the canonical way to use the applet
   // do not pass as prop or thru context
-  const n19Helper = n19Factory();
 
   const initialState = {
     Name: {},
@@ -62,7 +60,7 @@ const Form = props => {
     return () => {
       n19Helper.unsubscribe(token);
     };
-  }, [props.accountName]);
+  }, [accountName]);
 
   const accountStatusList = n19Helper
     .getStaticLOV("AccountStatus")

@@ -62,6 +62,8 @@ if (typeof SiebelAppFacade.N19_reactdemo_PR === "undefined") {
         if (window.SiebReact) {
           SiebReact.unmountComponent(containerId);
           document.getElementById(containerId).remove();
+          var rootContainer = document.getElementById("_sweview");
+          rootContainer.firstElementChild.style.display = "";
         }
 
         SiebelAppFacade.N19_reactdemo_PR.superclass.EndLife.apply(

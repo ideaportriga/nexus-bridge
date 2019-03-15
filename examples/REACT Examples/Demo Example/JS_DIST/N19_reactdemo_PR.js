@@ -36,11 +36,17 @@ if (typeof SiebelAppFacade.N19_reactdemo_PR === "undefined") {
       };
 
       N19_reactdemo_PR.prototype.ShowUI = function() {
-        addContainer(this.GetPM(), containerId);
+        var rootContainer = document.getElementById("_sweview");
+        rootContainer.firstElementChild.style.display = "none";
+        rootContainer.title = "";
+
         if (window.SiebReact) {
-          SiebReact.mountComponent(containerId, this.GetPM().Get("GetName"));
+          var rootElement = document.createElement("div");
+          rootElement.id = containerId;
+          rootContainer.appendChild(rootElement);
+          SiebReact.mountComponent(containerId);
         }
-        // SiebelAppFacade.N19_reactdemo_PR.superclass.ShowUI.apply(this, arguments); // Draws UI, drawing our custom applet only if on List view
+        // SiebelAppFacade.N19_reactdemo_PR.superclass.ShowUI.apply(this, arguments);
       };
 
       N19_reactdemo_PR.prototype.BindData = function(bRefresh) {
@@ -55,33 +61,19 @@ if (typeof SiebelAppFacade.N19_reactdemo_PR === "undefined") {
         // cleanup before destroying applet object
         if (window.SiebReact) {
           SiebReact.unmountComponent(containerId);
+          document.getElementById(containerId).remove();
+          var rootContainer = document.getElementById("_sweview");
+          rootContainer.firstElementChild.style.display = "";
         }
-        removeContainer(this.GetPM(), containerId);
-        $("link[href*='https://fonts.googleapis.com/icon']").remove();
 
         SiebelAppFacade.N19_reactdemo_PR.superclass.EndLife.apply(
           this,
           arguments
-        ); // Siebel applet cleanup
+        );
       };
 
       return N19_reactdemo_PR;
     })();
     return "SiebelAppFacade.N19_reactdemo_PR";
   });
-}
-
-function addContainer(pm, appId) {
-  const siebeAppletId = pm.Get("GetFullId");
-  const $applet = $("#" + siebeAppletId);
-  const $header = $("#s_" + siebeAppletId + "_div");
-  $header.hide();
-  $applet.prepend("<div id='" + appId + "'></div>");
-}
-
-function removeContainer(pm, appId) {
-  const siebeAppletId = pm.Get("GetFullId");
-  const $header = $("#s_" + siebeAppletId + "_div");
-  $header.show();
-  $("#" + appId).remove();
 }

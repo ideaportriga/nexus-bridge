@@ -11,6 +11,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Snackbar from "@material-ui/core/Snackbar";
 import n19Factory from "./n19Factory";
 import Form from "./Form";
+import List from "./List";
 
 const App = () => {
   // the canonical way to use the applet
@@ -169,6 +170,12 @@ const App = () => {
           >
             <NavigateNext />
           </Button>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={8} style={{ marginTop: 15, padding: 15 }}>
+        <Grid item xs={12} sm={12} lg={12} xl={12}>
+          <List accountName={state.controls.Name.value} />
         </Grid>
       </Grid>
     </div>

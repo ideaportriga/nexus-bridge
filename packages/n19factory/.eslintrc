@@ -1,0 +1,24 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "ecmaFeatures": {
+      "classes": true,
+      "impliedStrict": true,
+      "modules": true
+    },
+    "project": "./tsconfig.json",
+    "sourceType": "module"
+  },
+  "extends": ["standard"],
+  "plugins": ["@typescript-eslint", "standard"],
+  "rules": {
+    "comma-dangle": ["error", "always"]
+  },
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true,
+    "jest": true
+  }
+}

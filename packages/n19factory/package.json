@@ -1,7 +1,7 @@
 {
   "name": "@ipr/n19factory",
   "description": "Factory of n19helper singletons",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Idea Port Riga",
   "license": "MIT",
   "main": "dist/index.js",
@@ -15,10 +15,11 @@
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
+    "parcel-bundler": "^1.12.3",
     "typescript": "^3.3.4000"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "parcel build src/index.ts",
     "lint": "eslint src/** --fix"
   }
 }

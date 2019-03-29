@@ -1,3 +1,4 @@
+import n19Factory from "@ipr/n19factory";
 import React, { useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
@@ -9,7 +10,6 @@ import Search from "@material-ui/icons/Search";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Snackbar from "@material-ui/core/Snackbar";
-import n19Factory from "./n19Factory";
 import Form from "./Form";
 import List from "./List";
 

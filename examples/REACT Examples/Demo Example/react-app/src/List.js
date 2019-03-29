@@ -1,3 +1,4 @@
+import n19Factory from "@ipr/n19factory";
 import React, { useEffect, useState } from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -5,7 +6,6 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
-import n19Factory from "./n19Factory";
 
 const ContactsList = ({ accountName }) => {
   const n19Helper = n19Factory("contacts");

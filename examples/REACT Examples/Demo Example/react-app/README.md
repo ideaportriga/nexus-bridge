@@ -8,7 +8,7 @@ To symlink the development build with the local Siebel client:
 
 ```bash
 cd C:\Projects\n19helper\examples\REACT Examples\Demo Example\workspace\build\static
-mklink /J C:\Oracle\Siebel\16.0.0.0.0\Client\public\SCRIPTS\siebel\custom\N19_reactdemo_PR\build\static\js .\js
+mklink /J C:\Oracle\Siebel\16.0.0.0.0\Client\public\SCRIPTS\siebel\custom\react-app\build\static\js .\js
 ```
 
 ## Development

@@ -1,3 +1,5 @@
+import Nexus19 from '../../nexus19/src/main'
+
 interface N19Config {
   [propName: string]: any
 }
@@ -17,7 +19,7 @@ const n19Factory = (config: string | N19Config): null | N19Helper => {
 
     for (let key in config) {
       const appletName = config[key]
-      memo[key] = new (window as any).SiebelAppFacade.N19Helper({
+      memo[key] = new Nexus19({
         appletName,
         convertDates: true,
       })

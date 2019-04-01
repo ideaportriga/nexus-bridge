@@ -35,10 +35,15 @@
 
 **Other relevant information:**
 Siebel version:
+
 Happens in the dedicated client:
+
 Happens in the web client:   
-Browser version: 
+
+Browser version: *(IE11/Edge/latest Chome and Firefox)*
+
 Nexus version (could be found in Repository Tags): 
+
 Defect reproduced in Demo Example:
 
 /label ~bug

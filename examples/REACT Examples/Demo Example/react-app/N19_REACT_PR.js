@@ -1,6 +1,6 @@
 if (typeof SiebelAppFacade.N19_REACT_PR === "undefined") {
   SiebelJS.Namespace("SiebelAppFacade.N19_REACT_PR")
-  define("siebel/custom/react-app", [
+  define("siebel/custom/react-app/N19_REACT_PR", [
     "siebel/custom/react-app/build/static/js/main"
   ], function() {
     SiebelAppFacade.N19_REACT_PR = (function() {
@@ -42,8 +42,8 @@ if (typeof SiebelAppFacade.N19_REACT_PR === "undefined") {
           SiebReact.unmountComponent(containerId)
           document.getElementById(containerId).remove()
         }
-          var rootContainer = document.getElementById("_sweview")
-          rootContainer.firstElementChild.style.display = ""
+        var rootContainer = document.getElementById("_sweview")
+        rootContainer.firstElementChild.style.display = ""
 
         SiebelAppFacade.N19_REACT_PR.superclass.EndLife.apply(this, arguments)
       }

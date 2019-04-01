@@ -1,7 +1,7 @@
+import n19Factory from "@ipr/n19Factory";
 import React from "react";
 import ReactDOM from "react-dom";
 import { appletMap } from "./config";
-import n19Factory from "./n19Factory";
 import App from "./App";
 
 const mountComponent = (id, appletName) => {

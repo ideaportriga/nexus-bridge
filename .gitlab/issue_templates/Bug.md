@@ -9,7 +9,7 @@
 **What is the current behavior?**
 
 
-**If the current behavior is a bug, please provide the the configuration and the steps to reproduce.**
+**If the current behavior is a bug, please provide the configuration and the steps to reproduce.**
 
 
 <!-- The most helpful is a minimal reproduction with instructions on how to reproduce -->

@@ -34,7 +34,7 @@
 
 
 **Other relevant information:**
-Siebel version:
+Siebel version: *(16+)*
 
 Happens in the dedicated client:
 

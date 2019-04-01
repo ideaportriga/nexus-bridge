@@ -1,6 +1,6 @@
 # Nexus19
 
-> Factory of `Nexus19` singletons
+> `Nexus19`
 
 ## Development
 

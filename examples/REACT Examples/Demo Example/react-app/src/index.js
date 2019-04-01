@@ -1,4 +1,4 @@
-import n19Factory from "@ipr/n19Factory";
+import n19Factory from "@ipr/n19factory";
 import React from "react";
 import ReactDOM from "react-dom";
 import { appletMap } from "./config";

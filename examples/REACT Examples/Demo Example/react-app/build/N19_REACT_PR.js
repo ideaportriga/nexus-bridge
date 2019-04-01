@@ -1,16 +1,16 @@
 if (typeof SiebelAppFacade.N19_REACT_PR === "undefined") {
   SiebelJS.Namespace("SiebelAppFacade.N19_REACT_PR")
   define("siebel/custom/react-app/N19_REACT_PR", [
-    "siebel/custom/react-app/build/static/js/main"
+    "siebel/custom/react-app/static/js/main"
   ], function() {
     SiebelAppFacade.N19_REACT_PR = (function() {
       let containerId = "react-root"
 
       function N19_REACT_PR() {
-        SiebelAppFacade.N19_REACT_PR.superclass.Init.apply(this, arguments)
+        SiebelAppFacade.N19_REACT_PR.superclass.constructor.apply(this, arguments)
       }
 
-      SiebelJS.Extend(N19_REACT_PR, SiebelAppFacade.ViewPR)
+      SiebelJS.Extend(N19_REACT_PR, SiebelAppFacade.PhysicalRenderer)
 
       N19_REACT_PR.prototype.Init = function() {
         SiebelAppFacade.N19_REACT_PR.superclass.Init.apply(this, arguments)

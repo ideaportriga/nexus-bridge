@@ -183,15 +183,6 @@
 			   CREATED_BY="SADMIN">
 			</APPLET_USER_PROP>
 			<APPLET_USER_PROP
-			   INACTIVE="Y"
-			   NAME="CanInvokeMethod: NuonMethod"
-			   VALUE="[Sub Status] = LookupValue(&quot;HLS_CASE_STATUS&quot;, &quot;Referral&quot;)"
-			   UPDATED="04/13/2018 13:39:34"
-			   UPDATED_BY="SADMIN"
-			   CREATED="04/13/2018 13:14:59"
-			   CREATED_BY="SADMIN">
-			</APPLET_USER_PROP>
-			<APPLET_USER_PROP
 			   INACTIVE="N"
 			   NAME="CanInvokeMethod: Screening"
 			   VALUE="[CanInvokeEligibility] = &quot;Y&quot;"
@@ -4269,15 +4260,6 @@
 			</APPLET_USER_PROP>
 			<APPLET_USER_PROP
 			   INACTIVE="N"
-			   NAME="ClientPMUserProp"
-			   VALUE="NuonFieldName, NuonFieldValue, NuonFieldClass"
-			   UPDATED="04/13/2018 11:27:17"
-			   UPDATED_BY="SADMIN"
-			   CREATED="04/13/2018 11:24:58"
-			   CREATED_BY="SADMIN">
-			</APPLET_USER_PROP>
-			<APPLET_USER_PROP
-			   INACTIVE="N"
 			   NAME="CollaborationApplet"
 			   VALUE="HLS Case Teamspace Applet"
 			   UPDATED="08/27/2005 05:52:12"
@@ -4301,33 +4283,6 @@
 			   UPDATED="06/19/2003 21:21:26"
 			   UPDATED_BY="SADMIN"
 			   CREATED="06/19/2003 21:21:26"
-			   CREATED_BY="SADMIN">
-			</APPLET_USER_PROP>
-			<APPLET_USER_PROP
-			   INACTIVE="N"
-			   NAME="NuonFieldClass"
-			   VALUE="nuonRedLine"
-			   UPDATED="04/13/2018 11:26:35"
-			   UPDATED_BY="SADMIN"
-			   CREATED="04/13/2018 11:26:08"
-			   CREATED_BY="SADMIN">
-			</APPLET_USER_PROP>
-			<APPLET_USER_PROP
-			   INACTIVE="N"
-			   NAME="NuonFieldName"
-			   VALUE="Sub Status"
-			   UPDATED="04/13/2018 11:26:05"
-			   UPDATED_BY="SADMIN"
-			   CREATED="04/13/2018 11:25:55"
-			   CREATED_BY="SADMIN">
-			</APPLET_USER_PROP>
-			<APPLET_USER_PROP
-			   INACTIVE="N"
-			   NAME="NuonFieldValue"
-			   VALUE="Referral"
-			   UPDATED="04/13/2018 11:25:55"
-			   UPDATED_BY="SADMIN"
-			   CREATED="04/13/2018 11:25:34"
 			   CREATED_BY="SADMIN">
 			</APPLET_USER_PROP>
 			<APPLET_WEB_TEMPLATE

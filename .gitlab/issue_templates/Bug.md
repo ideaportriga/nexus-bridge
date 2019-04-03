@@ -42,7 +42,7 @@ Happens in the web client:
 
 Browser version: *(IE11/Edge/latest Chome and Firefox)*
 
-Nexus version (could be found in Repository Tags): 
+Nexus version (could be found inside compiled file): 
 
 Defect reproduced in Demo Example:
 

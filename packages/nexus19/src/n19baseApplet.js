@@ -166,18 +166,19 @@ export default class N19baseApplet {
     arr.forEach((controlEntry) => {
       const control = controlEntry[1];
       const uiType = control.GetUIType();
-      const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
       if (!this._isSkipControl(uiType)) {
         const name = controlEntry[0];
         const inputName = control.GetInputName();
         const fieldName = control.GetFieldName();
+        const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
+        const staticPick = control.IsStaticBounded() === '1';
         const obj = {
           name,
           label: control.GetDisplayName(),
           uiType,
           required: this._isRequired(inputName),
           boundedPick: control.IsBoundedPick() === '1',
-          staticPick: control.IsStaticBounded() === '1',
+          staticPick,
           inputName,
           isPostChanges: control.IsPostChanges(),
           maxSize: control.GetMaxSize(),
@@ -186,6 +187,7 @@ export default class N19baseApplet {
           readonly: !this.pm.ExecuteMethod('CanUpdate', name),
           displayFormat,
           dataType: this.pm.ExecuteMethod('GetFieldDataType', fieldName),
+          isLOV: staticPick || this.consts.get('SWE_CTRL_COMBOBOX') === uiType,
         };
         Object.defineProperty(obj, 'readOnly', {
           get: () => {
@@ -589,6 +591,7 @@ export default class N19baseApplet {
       const fieldName = control.GetFieldName();
       const uiType = control.GetUIType();
       const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
+      const staticPick = control.IsStaticBounded() === '1';
       if (_controls.id) {
         _controls[controlName] = { // eslint-disable-line no-param-reassign
           value: this._getJSValue(obj[fieldName], control.GetUIType(), displayFormat),
@@ -601,6 +604,7 @@ export default class N19baseApplet {
           maxSize: control.GetMaxSize(),
           fieldName,
           displayFormat,
+          isLOV: staticPick || this.consts.get('SWE_CTRL_COMBOBOX') === uiType,
         };
       } else { // no record displayed
         _controls[controlName] = { // eslint-disable-line no-param-reassign
@@ -614,6 +618,7 @@ export default class N19baseApplet {
           maxSize: control.GetMaxSize(),
           fieldName,
           displayFormat,
+          isLOV: staticPick || this.consts.get('SWE_CTRL_COMBOBOX') === uiType,
         };
       }
     });

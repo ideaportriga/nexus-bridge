@@ -60,6 +60,10 @@ export default class N19baseApplet {
       dateTimeFormat,
       is24hoursFormat: !/p$/.test(dateTimeFormat),
       localCountryPhoneCode: localeObject.GetProfile(this.consts.get('LOCAL_PHONE_COUNTRY')),
+      currencyDecimal: localeObject.GetDispCurrencyDecimal(),
+      currencySeparator: localeObject.GetDispCurrencySeparator(),
+      numberDecimal: localeObject.GetDispNumberDecimal(),
+      numberSeparator: localeObject.GetDispNumberSeparator(),
     };
     this.localeData.months = [];
     this.localeData.shortMonths = [];
@@ -570,6 +574,7 @@ export default class N19baseApplet {
       _controls = this.getControls(); // eslint-disable-line no-param-reassign
     }
     if (!_methods) {
+      // Is it better to use applet.GetCanInvokeArray?
       _methods = this._getMethods(); // eslint-disable-line no-param-reassign
     }
     _controls.state = this.calculateCurrentRecordState(); // eslint-disable-line no-param-reassign
@@ -850,6 +855,7 @@ export default class N19baseApplet {
 
   // this is also called from the the demo where Siebel and custom rendered applet coexist
   _getFieldToControlMap(_controls) {
+    // list applet has the GetColumnsByFieldName that could be used for that purpose
     const ret = {};
     const appletControls = this._returnControls();
     const arr = Object.keys(_controls || appletControls);

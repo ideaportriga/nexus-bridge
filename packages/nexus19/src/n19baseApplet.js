@@ -6,6 +6,9 @@ export default class N19baseApplet {
     this.utils = SiebelJS.Dependency('SiebelApp.Utils');
     this.pm = settings.pm;
     this.convertDates = settings.convertDates;
+    this.returnRawNumbers = settings.returnRawNumbers;
+    this.returnRawCurrencies = settings.returnRawCurrencies;
+
     this.view = SiebelApp.S_App.GetActiveView();
     this.appletName = this.pm.Get('GetName');
     this.applet = this.view.GetApplet(this.appletName);
@@ -149,7 +152,7 @@ export default class N19baseApplet {
       const date = value.toLocaleString('en-US', { hour12: false }).split(',').join('');
       return SiebelApp.S_App.LocaleObject.GetStringFromDateTime(date, 'M/D/YYYY HH:mm:ss', displayFormat, false);
     }
-    return value;
+    return `${value}`; // to implicitly convert to string? Number for currencies/numbers
   }
 
   canInvokeMethod(method) {
@@ -161,6 +164,15 @@ export default class N19baseApplet {
       return false;
     }
     return this.pm.ExecuteMethod('InvokeMethod', method);
+  }
+
+  _getCurrencyCodeField(control) { // eslint-disable-line class-methods-use-this
+    const fieldNumber = control.GetCurrField();
+    if (!fieldNumber) {
+      throw new Error(`Not found currency field for ${control.GetFieldName()}`);
+    }
+    // check if 0 exists?
+    return SiebelApp.S_App.LookupStringCache(fieldNumber).split('|')[0];
   }
 
   getControls() {
@@ -176,6 +188,7 @@ export default class N19baseApplet {
         const fieldName = control.GetFieldName();
         const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
         const staticPick = control.IsStaticBounded() === '1';
+        const dataType = this.pm.ExecuteMethod('GetFieldDataType', fieldName);
         const obj = {
           name,
           label: control.GetDisplayName(),
@@ -190,8 +203,9 @@ export default class N19baseApplet {
           isLink: this.pm.ExecuteMethod('CanNavigate', name),
           readonly: !this.pm.ExecuteMethod('CanUpdate', name),
           displayFormat,
-          dataType: this.pm.ExecuteMethod('GetFieldDataType', fieldName),
+          dataType,
           isLOV: staticPick || this.consts.get('SWE_CTRL_COMBOBOX') === uiType,
+          currencyCodeField: 'currency' === dataType ? this._getCurrencyCodeField(control) : '',
         };
         Object.defineProperty(obj, 'readOnly', {
           get: () => {
@@ -354,7 +368,7 @@ export default class N19baseApplet {
   deleteRecordSync(skipConfirmDialog) {
     if (skipConfirmDialog) {
       this.N19Confirm = SiebelApp.Utils.Confirm;
-      SiebelApp.Utils.Confirm = () => {};
+      SiebelApp.Utils.Confirm = () => { };
     }
     // do we need to try..catch and restore the function in catch ?
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecord');
@@ -476,7 +490,10 @@ export default class N19baseApplet {
     return this._getControlStaticLOV(control);
   }
 
-  _getJSValue(value, uiType, displayFormat) {
+  _getJSValue(value, attr) {
+    const {
+      uiType, dataType, displayFormat, currencyCode,
+    } = attr;
     if (this.consts.get('SWE_CTRL_CHECKBOX') === uiType) {
       // convert Y/N/null -> true/false // null comes as false?
       this.boolObject.SetAsString(value);
@@ -496,6 +513,15 @@ export default class N19baseApplet {
         throw new Error(`ISO value is empty after converting ${value}`);
       }
       return new Date(ISO);
+    }
+    if (this.returnRawNumbers && this.isListApplet && 'number' === dataType) {
+      // it is already not formatted on form applet, so only for list applet
+      return SiebelApp.S_App.LocaleObject.FormattedToString(dataType, value, displayFormat);
+    }
+    if (this.returnRawCurrencies && this.isListApplet && 'currency' === dataType && currencyCode) {
+      // it is already not formatted on form applet, so only for list applet
+      SiebelApp.S_App.LocaleObject.m_sCurrencyCode = currencyCode; // TODO: do we need to restore the m_sCurrencyCode?
+      return SiebelApp.S_App.LocaleObject.FormattedToString(dataType, value, displayFormat);
     }
     return value;
   }
@@ -597,9 +623,18 @@ export default class N19baseApplet {
       const uiType = control.GetUIType();
       const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
       const staticPick = control.IsStaticBounded() === '1';
+      const dataType = this.pm.ExecuteMethod('GetFieldDataType', fieldName);
+      let currencyCodeField = '';
+      let currencyCode = '';
+      if ('currency' === dataType) {
+        currencyCodeField = this._getCurrencyCodeField(control);
+        currencyCode = this.getRawRecordSet()[index][currencyCodeField];
+      }
       if (_controls.id) {
         _controls[controlName] = { // eslint-disable-line no-param-reassign
-          value: this._getJSValue(obj[fieldName], control.GetUIType(), displayFormat),
+          value: this._getJSValue(obj[fieldName], {
+            uiType, dataType, displayFormat, currencyCode,
+          }),
           uiType,
           readonly: !this.pm.ExecuteMethod('CanUpdate', controlName),
           isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
@@ -610,6 +645,9 @@ export default class N19baseApplet {
           fieldName,
           displayFormat,
           isLOV: staticPick || this.consts.get('SWE_CTRL_COMBOBOX') === uiType,
+          dataType,
+          currencyCodeField,
+          currencyCode,
         };
       } else { // no record displayed
         _controls[controlName] = { // eslint-disable-line no-param-reassign
@@ -624,6 +662,9 @@ export default class N19baseApplet {
           fieldName,
           displayFormat,
           isLOV: staticPick || this.consts.get('SWE_CTRL_COMBOBOX') === uiType,
+          dataType,
+          currencyCodeField,
+          currencyCode,
         };
       }
     });
@@ -864,11 +905,14 @@ export default class N19baseApplet {
       const fieldName = control.GetFieldName();
       if (fieldName) {
         const uiType = control.GetUIType();
+        const dataType = this.pm.ExecuteMethod('GetFieldDataType', fieldName);
         ret[fieldName] = {
           name: controlName,
           isPostChanges: control.IsPostChanges(),
           uiType,
           displayFormat: control.GetDisplayFormat() || this.getControlDisplayFormat(uiType),
+          dataType,
+          currencyCodeField: 'currency' === dataType ? this._getCurrencyCodeField(control) : '',
         };
       }
     });
@@ -885,9 +929,12 @@ export default class N19baseApplet {
       ret[i] = Object.keys(ret[i]).filter(el => this.fieldToControlMap[el]).reduce((acc, el) => ({
         ...acc,
         ...{
-          [this.fieldToControlMap[el].name]: this._getJSValue(ret[i][el],
-            this.fieldToControlMap[el].uiType,
-            this.fieldToControlMap[el].displayFormat),
+          [this.fieldToControlMap[el].name]: this._getJSValue(ret[i][el], {
+            uiType: this.fieldToControlMap[el].uiType,
+            dataType: this.fieldToControlMap[el].dataType,
+            displayFormat: this.fieldToControlMap[el].displayFormat,
+            currencyCode: rawRecordSet[i][this.fieldToControlMap[el].currencyCodeField],
+          }),
         },
       }), {});
       if (id) {

@@ -22,7 +22,7 @@ export default class N19popupController {
     this.popupAppletN19 = null;
     this.assocAppletN19 = null;
 
-    console.log(`${this.constructor.name} started...`); // eslint-disable-line no-console
+    console.log('popup controller started...'); // eslint-disable-line no-console
 
     this.N19resizeAvailable = SiebelApp.MvgBeautifier.resizeAvailable;
     SiebelApp.MvgBeautifier.resizeAvailable = () => {
@@ -56,12 +56,12 @@ export default class N19popupController {
           throw new Error('Open Applet Name is not found in OnLoadPopupContent resolving Promise');
         }
         const applet = N19popupController.GetPopupApplet(appletName);
-        this.popupAppletN19 = new N19popupApplet({ pm: applet.GetPModel() });
+        this.popupAppletN19 = this._createNexusInstance(applet.GetPModel());
         const obj = { appletName, popupAppletN19: this.popupAppletN19 };
 
         const assocApplet = applet.GetPopupApplet(); // is it always assoc?
         if (assocApplet) { // we got a shuttle
-          this.assocAppletN19 = new N19popupApplet({ pm: assocApplet.GetPModel() });
+          this.assocAppletN19 = this._createNexusInstance(assocApplet.GetPModel());
           obj.assocAppletN19 = this.assocAppletN19;
           obj.availableRecordSet = this.assocAppletN19.getControlsRecordSet();
           obj.selectedRecordSet = this.popupAppletN19.getControlsRecordSet();
@@ -73,6 +73,11 @@ export default class N19popupController {
         this.resolvePromise = null;
       }
     });
+  }
+
+  _createNexusInstance(pm) {
+    const obj = { pm };
+    return new N19popupApplet(Object.assign({}, this.settings, obj));
   }
 
   canOpenPopup() {

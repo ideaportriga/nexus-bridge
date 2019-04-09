@@ -89,8 +89,8 @@ const Form = ({ n19Helper, accountName }) => {
     setControlValue(name, event.target.checked);
   };
 
-  const handleChangeList = event => {
-    setControlValue(event.target.name, event.target.value);
+  const handleChangeList = name => event => {
+    setControlValue(name, event.target.value);
   };
 
   const setControlValue = (id, value) => {
@@ -136,7 +136,7 @@ const Form = ({ n19Helper, accountName }) => {
         <Grid item xs={4} sm={4} lg={4} xl={4}>
           <SelectField
             controlState={fromState["AccountStatus"]}
-            onChange={handleChangeList}
+            onChange={handleChangeList("AccountStatus")}
             style={{ width: "100%" }}
           >
             {accountStatusList}
@@ -146,7 +146,7 @@ const Form = ({ n19Helper, accountName }) => {
         <Grid item xs={4} sm={4} lg={4} xl={4}>
           <SelectField
             controlState={fromState["AccountTypeCode"]}
-            onChange={handleChangeList}
+            onChange={handleChangeList("AccountTypeCode")}
             style={{ width: "100%" }}
           >
             {accountTypeCodeList}
@@ -156,7 +156,7 @@ const Form = ({ n19Helper, accountName }) => {
         <Grid item xs={4} sm={4} lg={4} xl={4}>
           <SelectField
             controlState={fromState["Type"]}
-            onChange={handleChangeList}
+            onChange={handleChangeList("Type")}
             style={{ width: "100%" }}
           >
             {accountTypeList}

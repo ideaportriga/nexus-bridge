@@ -401,6 +401,7 @@ export default class N19baseApplet {
   }
 
   _setControlValueInternal(control, value) {
+    // should it be PHYEVENT_COLUMN_FOCUS/PHYEVENT_COLUMN_BLUR for list applet
     this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_FOCUS'), control);
     return this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_BLUR'), control, value);
   }
@@ -902,18 +903,20 @@ export default class N19baseApplet {
     const arr = Object.keys(_controls || appletControls);
     arr.forEach((controlName) => {
       const control = appletControls[controlName];
-      const fieldName = control.GetFieldName();
-      if (fieldName) {
-        const uiType = control.GetUIType();
-        const dataType = this.pm.ExecuteMethod('GetFieldDataType', fieldName);
-        ret[fieldName] = {
-          name: controlName,
-          isPostChanges: control.IsPostChanges(),
-          uiType,
-          displayFormat: control.GetDisplayFormat() || this.getControlDisplayFormat(uiType),
-          dataType,
-          currencyCodeField: 'currency' === dataType ? this._getCurrencyCodeField(control) : '',
-        };
+      if (typeof control !== 'undefined') { // just in case somebody gave the incorrect control name
+        const fieldName = control.GetFieldName();
+        if (fieldName) {
+          const uiType = control.GetUIType();
+          const dataType = this.pm.ExecuteMethod('GetFieldDataType', fieldName);
+          ret[fieldName] = {
+            name: controlName,
+            isPostChanges: control.IsPostChanges(),
+            uiType,
+            displayFormat: control.GetDisplayFormat() || this.getControlDisplayFormat(uiType),
+            dataType,
+            currencyCodeField: 'currency' === dataType ? this._getCurrencyCodeField(control) : '',
+          };
+        }
       }
     });
     return ret;

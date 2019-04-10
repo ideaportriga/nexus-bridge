@@ -23,7 +23,6 @@ const SelectField = ({
       displayEmpty={controlState.value === "" ? true : false}
       input={
         <Input
-          name={"Type"}
           id={`${controlName}_placeholder`}
           readOnly={controlState.readonly ? true : false}
         />

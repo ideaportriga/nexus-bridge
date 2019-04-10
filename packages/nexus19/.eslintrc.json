@@ -24,7 +24,6 @@
   "globals": {
     "SiebelApp": false,
     "SiebelAppFacade": false,
-    "SiebelJS": false,
-    "CCFMiscUtil_StringToArray": false
+    "SiebelJS": false
   }
 }

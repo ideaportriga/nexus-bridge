@@ -960,4 +960,15 @@ export default class N19baseApplet {
     }
     return false;
   }
+
+  getPaginationInfo() {
+    const start = this.pm.ExecuteMethod('GetWSStartRowNum');
+    return {
+      start,
+      end: this.pm.Get('GetWSEndRowNum'),
+      total: this.getNumRows(),
+      hasMore: !this.pm.Get('IsNumRowsKnown'),
+      current: this.getSelection() + start,
+    };
+  }
 }

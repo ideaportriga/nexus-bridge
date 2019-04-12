@@ -134,13 +134,13 @@ export default class N19popupController {
       return { isOpen: false };
     }
     if (1 === currPopups.length) {
-      return { isOpen: true, appletName: currPopups[0].GetName(), controlName: currPopups[0].GetPopupControl() };
+      return { isOpen: true, appletName: currPopups[0].GetName() };
     }
     if (2 === currPopups.length) {
-      // is this always a shuttle when we have a sedond applet
+      // is this always a shuttle when we have more one applet
       for (let i = 0, len = currPopups.length; i < len; i += 1) {
         if (typeof currPopups[1].GetPopupAppletName === 'function') {
-          return { isOpen: true, appletName: currPopups[i].GetName(), controlName: currPopups[i].GetPopupControl() };
+          return { isOpen: true, appletName: currPopups[i].GetName() };
         }
       }
       throw new Error('Mvg applet is not found...');

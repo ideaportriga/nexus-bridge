@@ -36,8 +36,7 @@ export default class N19baseApplet {
 
     // listener to get dynamic LOVs
     this.pm.AttachPMBinding('UpdateQuickPickInfo', (inputName, arg, arr) => {
-      const viewName = this.view.GetName();
-      if (viewName === arr[1] && this.appletName === arr[2]) {
+      if (this.appletName === arr[2]) {
         if ('false' === arr[4]) {
           // eslint-disable-next-line no-console
           console.warn(`[N19]Picklist is not associated with the control - ${JSON.stringify(arr)}`);
@@ -206,6 +205,7 @@ export default class N19baseApplet {
           dataType,
           isLOV: staticPick || this.consts.get('SWE_CTRL_COMBOBOX') === uiType,
           currencyCodeField: 'currency' === dataType ? this._getCurrencyCodeField(control) : '',
+          popupType: control.GetPopupType(), // always correlate to uiType?
         };
         Object.defineProperty(obj, 'readOnly', {
           get: () => {
@@ -395,7 +395,7 @@ export default class N19baseApplet {
     // TODO: should we use SetCellValue for list applets?
     const ret = this._setControlValueInternal(control, value);
     if (!ret) {
-      console.log(`Value ${value} was not set for ${control.GetName()}`); // eslint-disable-line no-console
+      console.log(`Value ${value} was not set for ${name} control`); // eslint-disable-line no-console
     }
     return ret;
   }
@@ -521,7 +521,7 @@ export default class N19baseApplet {
     }
     if (this.returnRawCurrencies && this.isListApplet && 'currency' === dataType && currencyCode) {
       // it is already not formatted on form applet, so only for list applet
-      SiebelApp.S_App.LocaleObject.m_sCurrencyCode = currencyCode; // TODO: do we need to restore the m_sCurrencyCode?
+      SiebelApp.S_App.LocaleObject.SetCurrencyCode(currencyCode); // TODO: do we need to restore the m_sCurrencyCode?
       return SiebelApp.S_App.LocaleObject.FormattedToString(dataType, value, displayFormat);
     }
     return value;

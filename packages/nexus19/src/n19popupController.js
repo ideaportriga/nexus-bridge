@@ -91,11 +91,6 @@ export default class N19popupController {
       popupPM.Setup(); // to create PR
     }
 
-    const activeView = SiebelApp.S_App.GetActiveView();
-    const activeApplet = activeView.GetActiveApplet();
-    if (activeApplet) {
-      activeView.SetActiveAppletBeforePopup(activeApplet);
-    }
 
     // this property is added using AttachPMBinding into the Init PR (called by PM Setup)
     // it is the reason why we have reinit procedure where Setup PM is called

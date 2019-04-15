@@ -33,7 +33,6 @@ export default class Nexus19 extends N19baseApplet {
       throw new Error('Cannot open popup (currently exists resolve function)!');
       // return false;
     }
-    this.view.SetActiveAppletInternal(this.applet); // or SetActiveApplet
     this._setActiveControl(name);
     return this.n19popupController.showPopupApplet(hide, cb, this);
   }

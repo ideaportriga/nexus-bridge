@@ -91,7 +91,6 @@ export default class N19popupController {
       popupPM.Setup(); // to create PR
     }
 
-
     // this property is added using AttachPMBinding into the Init PR (called by PM Setup)
     // it is the reason why we have reinit procedure where Setup PM is called
     popupPM.AddProperty('state', this.consts.get('POPUP_STATE_VISIBLE'));

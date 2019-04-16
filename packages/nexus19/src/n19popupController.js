@@ -19,8 +19,8 @@ export default class N19popupController {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.isPopupHidden = false;
     this.resolvePromise = null;
-    this.popupAppletN19 = null;
-    this.assocAppletN19 = null;
+    this.popupAppletN19 = null; // it could be removed in the next version
+    this.assocAppletN19 = null; // it could be removed in the next version
 
     console.log('popup controller started...'); // eslint-disable-line no-console
 
@@ -51,16 +51,14 @@ export default class N19popupController {
     // other option - resolve it in SiebelApp.contentUpdater.viewLoaded
     SiebelApp.S_App.GetPopupPM().AttachPMBinding('OnLoadPopupContent', () => {
       if (typeof this.resolvePromise === 'function') {
-        const { appletName } = N19popupController.IsPopupOpen();
+        const { appletName, applet, assocApplet } = N19popupController.IsPopupOpen();
         if (!appletName) {
           throw new Error('Open Applet Name is not found in OnLoadPopupContent resolving Promise');
         }
-        const applet = N19popupController.GetPopupApplet(appletName);
         this.popupAppletN19 = this._createNexusInstance(applet.GetPModel());
         const obj = { appletName, popupAppletN19: this.popupAppletN19 };
 
-        const assocApplet = applet.GetPopupApplet(); // is it always assoc?
-        if (assocApplet) { // we got a shuttle
+        if (assocApplet) { // shuttle
           this.assocAppletN19 = this._createNexusInstance(assocApplet.GetPModel());
           obj.assocAppletN19 = this.assocAppletN19;
           obj.availableRecordSet = this.assocAppletN19.getControlsRecordSet();
@@ -128,35 +126,25 @@ export default class N19popupController {
       return { isOpen: false };
     }
     if (1 === currPopups.length) {
-      return { isOpen: true, appletName: currPopups[0].GetName() };
+      return { isOpen: true, appletName: currPopups[0].GetName(), applet: currPopups[0] };
     }
     if (2 === currPopups.length) {
       // is this always a shuttle when we have more one applet
-      for (let i = 0, len = currPopups.length; i < len; i += 1) {
-        if (typeof currPopups[1].GetPopupAppletName === 'function') {
-          return { isOpen: true, appletName: currPopups[i].GetName() };
-        }
-      }
-      throw new Error('Mvg applet is not found...');
+      // OpenUI assumes that 0 is mvg, so do I
+      return {
+        isOpen: true, appletName: currPopups[0].GetName(), applet: currPopups[0], assocApplet: currPopups[1],
+      };
     }
     throw new Error('should not be here...');
   }
 
-  static GetPopupApplet(appletName) {
-    const applet = SiebelApp.S_App.GetActiveView().GetApplet(appletName);
-    if (!applet) {
-      throw new Error(`The reference to ${appletName} is not instantiated.`);
-    }
-    return applet;
-  }
-
   checkOpenedPopup(closeIfOpen) {
-    const { isOpen, appletName } = N19popupController.IsPopupOpen();
+    const { isOpen, appletName, applet } = N19popupController.IsPopupOpen();
     if (isOpen && closeIfOpen) {
       // this code will close the applet even if this applet was originated by another applet
       console.log(`closing ${appletName} in showPopupApplet...`); // eslint-disable-line no-console
       // maybe do not close if the applet to be opened if the same as already opened?
-      return this.closePopupApplet(N19popupController.GetPopupApplet(appletName));
+      return this.closePopupApplet(applet);
     }
     return {
       isOpen,

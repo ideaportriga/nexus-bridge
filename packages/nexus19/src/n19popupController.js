@@ -51,12 +51,12 @@ export default class N19popupController {
     // other option - resolve it in SiebelApp.contentUpdater.viewLoaded
     SiebelApp.S_App.GetPopupPM().AttachPMBinding('OnLoadPopupContent', () => {
       if (typeof this.resolvePromise === 'function') {
-        const { appletName, applet, assocApplet } = N19popupController.IsPopupOpen();
-        if (!appletName) {
-          throw new Error('Open Applet Name is not found in OnLoadPopupContent resolving Promise');
+        const { applet, assocApplet } = N19popupController.IsPopupOpen();
+        if (!applet) {
+          throw new Error('Open Popup Applet is not found in OnLoadPopupContent resolving Promise');
         }
         this.popupAppletN19 = this._createNexusInstance(applet.GetPModel());
-        const obj = { appletName, popupAppletN19: this.popupAppletN19 };
+        const obj = { appletName: this.popupAppletN19.appletName, popupAppletN19: this.popupAppletN19 };
 
         if (assocApplet) { // shuttle
           this.assocAppletN19 = this._createNexusInstance(assocApplet.GetPModel());
@@ -126,30 +126,25 @@ export default class N19popupController {
       return { isOpen: false };
     }
     if (1 === currPopups.length) {
-      return { isOpen: true, appletName: currPopups[0].GetName(), applet: currPopups[0] };
+      return { isOpen: true, applet: currPopups[0] };
     }
     if (2 === currPopups.length) {
       // is this always a shuttle when we have more one applet
       // OpenUI assumes that 0 is mvg, so do I
-      return {
-        isOpen: true, appletName: currPopups[0].GetName(), applet: currPopups[0], assocApplet: currPopups[1],
-      };
+      return { isOpen: true, applet: currPopups[0], assocApplet: currPopups[1] };
     }
     throw new Error('should not be here...');
   }
 
   checkOpenedPopup(closeIfOpen) {
-    const { isOpen, appletName, applet } = N19popupController.IsPopupOpen();
+    const { isOpen, applet } = N19popupController.IsPopupOpen();
     if (isOpen && closeIfOpen) {
       // this code will close the applet even if this applet was originated by another applet
-      console.log(`closing ${appletName} in showPopupApplet...`); // eslint-disable-line no-console
+      console.log('closing already opened popup applet in showPopupApplet...'); // eslint-disable-line no-console
       // maybe do not close if the applet to be opened if the same as already opened?
       return this.closePopupApplet(applet);
     }
-    return {
-      isOpen,
-      appletName,
-    };
+    return isOpen;
   }
 
   _openAssocApplet(newRecordFunc, cb) {

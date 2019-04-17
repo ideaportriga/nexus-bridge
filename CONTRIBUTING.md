@@ -1,4 +1,4 @@
-# Contributing to Nexus19
+# Contributing to Nexus Bridge
 
 Please note we have a code of conduct, please follow it in all your interactions with the project.
 

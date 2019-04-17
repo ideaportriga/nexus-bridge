@@ -1,17 +1,17 @@
-# Nexus19
-Nexus19 is a JS library that wraps a Siebel Presentation Model and allows building sophisticated UI for Siebel using modern JS frameworks.
+# Nexus Bridge
+Nexus   is a JS library that wraps a Siebel Presentation Model and allows building sophisticated UI for Siebel using modern JS frameworks.
 
 ## Documentation
 The [Wiki](/../wikis/home) provides a Nexus19 library documentation.
 
 ## Setup
-Make a clean Nexus19 Setup by following [this guide](/../wikis/Setup Nexus19).
+Make a clean Nexus Bridge Setup by following [this guide](/../wikis/Setup Nexus19).
 
 ## Quick Start
 The below guides will help you to setup Nexus19 library with a lightweight UI demo (built using a modern web framework):
-- [Nexus19 Setup + Vue.js example quick start guide](https://cbox.ideaportriga.lv/oleg.koleskin/n19helper/blob/master/examples/VUE.JS%20Examples/Demo%20Example/readme.md)
-- [Nexus19 Setup + React example quick start guide](https://cbox.ideaportriga.lv/oleg.koleskin/n19helper/blob/master/examples/REACT%20Examples/Demo%20Example/readme.md)
-- [Nexus19 Setup + Angular example quick start guide](https://cbox.ideaportriga.lv/oleg.koleskin/n19helper/blob/master/examples/ANGULAR%20Examples/SR%20Form%20Applet/README.md)
+- [Nexus Bridge Setup + Vue.js example quick start guide](https://cbox.ideaportriga.lv/oleg.koleskin/n19helper/blob/master/examples/VUE.JS%20Examples/Demo%20Example/readme.md)
+- [Nexus Bridge Setup + React example quick start guide](https://cbox.ideaportriga.lv/oleg.koleskin/n19helper/blob/master/examples/REACT%20Examples/Demo%20Example/readme.md)
+- [Nexus Bridge Setup + Angular example quick start guide](https://cbox.ideaportriga.lv/oleg.koleskin/n19helper/blob/master/examples/ANGULAR%20Examples/SR%20Form%20Applet/README.md)
 
 ** Please take into account that above examples were tested on Siebel IP16+ versions. Please get in touch with Nexus19 support team for assistance, if you are planning to run the examples on the earlier Siebel version (the sif-files should be modified) **
 

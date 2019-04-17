@@ -1,6 +1,6 @@
-# Nexus19
+# Nexus Bridge
 
-> `Nexus19`
+> `Nexus Bridge`
 
 ## Development
 

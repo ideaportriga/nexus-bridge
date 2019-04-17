@@ -25,16 +25,18 @@ export default class Nexus19 extends N19baseApplet {
   }
 
   _showPopupApplet(name, hide, cb) {
-    if (!this.n19popupController) {
-      // it is a popup - probably should never happen?
-      throw new Error('Openning popup on the popup is not supported now');
-    }
     if (!this.n19popupController.canOpenPopup()) {
       throw new Error('Cannot open popup (currently exists resolve function)!');
-      // return false;
     }
     this._setActiveControl(name);
-    return this.n19popupController.showPopupApplet(hide, cb, this);
+    return this.n19popupController.showPopupApplet(hide, cb, this, 'EditPopup');
+  }
+
+  changeRecords(hide, cb) {
+    if (!this.n19popupController.canOpenPopup()) {
+      throw new Error('Cannot open popup (currently exists resolve function)!');
+    }
+    return this.n19popupController.showPopupApplet(hide, cb, this, 'ChangeRecords');
   }
 
   showMvgApplet(name, hide, cb) {

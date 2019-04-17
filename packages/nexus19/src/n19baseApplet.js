@@ -285,7 +285,7 @@ export default class N19baseApplet {
     return this._navigate('GotoNextSet');
   }
 
-  positionOnRow(index, ctrlKey, shiftKey) {
+  positionOnRow(index, keys) {
     if (this.isListApplet) {
       if (!this.pm.ExecuteMethod('CanInvokeMethod', 'PositionOnRow')) {
         return false;
@@ -302,7 +302,8 @@ export default class N19baseApplet {
       }
       // TODO: if we got to this point
       //  should we check GetActiveControl (applet.prototype.InvokeMethod)
-      //  and nullify it if active?
+      //  and nullify it if active? otherwise if there is an active control
+      const { ctrlKey, shiftKey } = keys;
       return this.pm.ExecuteMethod('HandleRowSelect', index, ctrlKey, shiftKey);
     }
     return false;

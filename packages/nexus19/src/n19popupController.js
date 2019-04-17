@@ -160,13 +160,14 @@ export default class N19popupController {
     return ret;
   }
 
-  showPopupApplet(hide, cb, n19) {
+  showPopupApplet(hide, cb, n19, methodName) {
     // TODO: maybe use the properties set on promise resolving?
     this.checkOpenedPopup(true);
 
     this.isPopupHidden = !!hide;
 
-    n19.pm.ExecuteMethod('InvokeMethod', 'EditPopup'); // can call EditField?
+    n19.pm.ExecuteMethod('InvokeMethod', methodName);
+    // can call EditField if EditPopup?
 
     if (hide) { // we will populate the instances only when applet should be hidden
       let ret = new Promise((resolve) => { this.resolvePromise = resolve; });

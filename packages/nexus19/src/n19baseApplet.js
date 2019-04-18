@@ -430,8 +430,6 @@ export default class N19baseApplet {
         }
       });
     }
-    console.log(ret);
-    console.log(ret.controls);
     return ret;
   }
 

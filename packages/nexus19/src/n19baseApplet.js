@@ -401,6 +401,40 @@ export default class N19baseApplet {
     return ret;
   }
 
+  // experimental method, still safer to use setContolVaue
+  // not described in wiki
+  // could be removed in the next version
+  _setControlValue(name, value) {
+    const control = this._getControl(name);
+    if (!control) {
+      throw new Error(`Cannot find a control by name ${name} to set ${value}.`);
+    }
+    const uiType = control.GetUIType();
+    const isPostChanges = control.IsPostChanges();
+    const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
+    // eslint-disable-next-line no-param-reassign
+    value = this._getSiebelValue(value, uiType, displayFormat);
+    let ret = this._setControlValueInternal(control, value);
+    if (!ret) {
+      console.log(`Value ${value} was not set for ${name} control`); // eslint-disable-line no-console
+      return ret;
+    }
+    ret = this.getCurrentRecordModel();
+    // TODO: do we need to check the state, or can we assume that we always have a record?
+    if (!isPostChanges) {
+      Object.keys(ret.controls).forEach((el) => {
+        if (!ret.controls[el].isPostChanges) {
+          if (ret.controls[el].name) { // it has name
+            ret.controls[el].value = this.applet.GetControlValueByName(el);
+          }
+        }
+      });
+    }
+    console.log(ret);
+    console.log(ret.controls);
+    return ret;
+  }
+
   _setControlValueInternal(control, value) {
     // should it be PHYEVENT_COLUMN_FOCUS/PHYEVENT_COLUMN_BLUR for list applet
     this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_FOCUS'), control);
@@ -650,6 +684,7 @@ export default class N19baseApplet {
           dataType,
           currencyCodeField,
           currencyCode,
+          name: controlName,
         };
       } else { // no record displayed
         _controls[controlName] = { // eslint-disable-line no-param-reassign
@@ -667,6 +702,7 @@ export default class N19baseApplet {
           dataType,
           currencyCodeField,
           currencyCode,
+          name: controlName,
         };
       }
     });

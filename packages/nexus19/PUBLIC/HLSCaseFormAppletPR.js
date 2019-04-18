@@ -729,7 +729,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
               },
               changeValue(name) {
-                var isChanged = n19helper.setControlValue(name, this.controls[name].value);
+                var isChanged = n19helper._setControlValue(name, this.controls[name].value);
                 if (!isChanged) { // the value is not set
                   var fieldName = n19helper._getFieldNameForControl(name);
                   var currentValue = n19helper.getCurrentRecord()[fieldName];

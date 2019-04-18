@@ -174,6 +174,16 @@ export default class N19baseApplet {
     return SiebelApp.S_App.LookupStringCache(fieldNumber).split('|')[0];
   }
 
+  static GetPropSet(control) {
+    const ret = [];
+    const propSet = control.GetPMPropSet();
+    if (propSet && propSet.propArray) {
+      const { propArray } = propSet;
+      Object.keys(propArray).forEach(prop => ret.push({ prop, val: propArray[prop] }));
+    }
+    return ret;
+  }
+
   getControls() {
     const controls = {};
     const appletControls = this._returnControls();
@@ -206,6 +216,7 @@ export default class N19baseApplet {
           isLOV: staticPick || this.consts.get('SWE_CTRL_COMBOBOX') === uiType,
           currencyCodeField: 'currency' === dataType ? this._getCurrencyCodeField(control) : '',
           popupType: control.GetPopupType(), // always correlate to uiType?
+          props: N19baseApplet.GetPropSet(control),
         };
         Object.defineProperty(obj, 'readOnly', {
           get: () => {

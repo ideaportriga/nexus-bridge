@@ -64,17 +64,27 @@ export default class N19notifications {
     if (typeof func !== 'function') {
       throw new Error('func is not a function');
     }
+    const functionName = func.name;
+    if (functionName) { // named function, unsubscrie first, and only then subscribe
+      this.unsubscribe(functionName);
+      this.subscribers.push({ token: functionName, func });
+      return functionName;
+    }
+    // function is anonymous, just subscribe
     this.token += 1;
     this.subscribers.push({ token: this.token, func });
     return this.token;
   }
 
+  subIndexOf(subToken) {
+    return this.subscribers.findIndex(el => el.token === subToken);
+  }
+
   unsubscribe(subToken) {
-    for (let i = 0, len = this.subscribers.length; i < len; i += 1) {
-      if (subToken === this.subscribers[i].token) {
-        return this.subscribers.splice(i, 1);
-      }
+    const i = this.subIndexOf(subToken);
+    if (i > -1) {
+      this.subscribers.splice(i, 1);
     }
-    return false;
+    return i;
   }
 }

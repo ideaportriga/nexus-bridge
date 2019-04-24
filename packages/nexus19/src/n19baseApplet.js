@@ -35,14 +35,19 @@ export default class N19baseApplet {
     }
 
     // listener to get dynamic LOVs
-    this.pm.AttachPMBinding('UpdateQuickPickInfo', (inputName, arg, arr) => {
-      if (this.appletName === arr[2]) {
-        if ('false' === arr[4]) {
-          // eslint-disable-next-line no-console
-          console.warn(`[N19]Picklist is not associated with the control - ${JSON.stringify(arr)}`);
+    this.pm.AttachPMBinding('UpdateQuickPickInfo', (inputName, b, arr, i) => {
+      if (i === 6) { // this is a normal flow, could it be 5 as in Bookshelf stated?
+        if (this.appletName === arr[2]) {
+          if ('false' === arr[4]) {
+            // eslint-disable-next-line no-console
+            console.warn(`[N19]Picklist is not associated with the control - ${JSON.stringify(arr)}`);
+          }
+          this.lov[inputName] = arr.slice().splice(i);
         }
-        this.lov[arr[3]] = arr.slice().splice(5).filter(el => el !== '');
-        // TODO: do we need to indicate when an empty value is allowed?
+      } else if (i === 0) { // this is a misconfiguration, when getting dynamic LOV is called second+ time?
+        // eslint-disable-next-line no-console
+        console.warn('[N19]It seems the control/list column is incorrectly configured in the Tools.');
+        this.lov[inputName] = arr;
       }
     }, { scope: this });
 
@@ -87,7 +92,7 @@ export default class N19baseApplet {
   }
 
   subscribe(func) { // eslint-disable-line class-methods-use-this
-    // TODO : accept also context for function, or the caller binds the context to the function?
+    // TODO: accept also context for function, or the caller binds the context to the function?
     return this.notifications.subscribe(func);
   }
 
@@ -112,17 +117,14 @@ export default class N19baseApplet {
     // maybe we need to exclude more types
     return (type === this.consts.get('SWE_PST_BUTTON_CTRL'))
       || (type === this.consts.get('SWE_CTRL_LINK'))
-      || (type === this.consts.get('SWE_CTRL_PLAINTEXT'))
+      // || (type === this.consts.get('SWE_CTRL_PLAINTEXT'))
       || (type === 'null'); // GetUiType returns string
   }
 
   _isRequired(inputName) {
-    // required is empty for list applets, hopefully for now
+    // required is empty for list applets
+    // it would be very good to use IsRequired and RequiredControl PM prop
     return this.required.indexOf(inputName) > -1;
-  }
-
-  static GetStaticLOV(arr) {
-    return arr.map(el => el.propArray);
   }
 
   _setActiveControl(name) {
@@ -139,7 +141,6 @@ export default class N19baseApplet {
   }
 
   _getSiebelValue(value, uiType, displayFormat) {
-    // TODO: numbers, currencies, and phones?
     if (this.consts.get('SWE_CTRL_CHECKBOX') === uiType) {
       // convert true/false => Y/N // null is not handled (the same as in standard Open UI)
       // value = value ? 'Y' : 'N';
@@ -184,6 +185,10 @@ export default class N19baseApplet {
     return ret;
   }
 
+  static GetControlStaticLOV(control) {
+    return control.GetRadioGroupPropSet().childArray.map(el => el.propArray.DisplayName).sort();
+  }
+
   getControls() {
     const controls = {};
     const appletControls = this._returnControls();
@@ -217,21 +222,34 @@ export default class N19baseApplet {
           currencyCodeField: 'currency' === dataType ? this._getCurrencyCodeField(control) : '',
           popupType: control.GetPopupType(), // always correlate to uiType?
           props: N19baseApplet.GetPropSet(control),
+          isSortable: control.IsSortable(),
         };
         Object.defineProperty(obj, 'readOnly', {
           get: () => {
             // eslint-disable-next-line no-console
-            console.warn('[N19]The readOnly property will be removed soon; use readonly instead of it.');
+            console.warn('[N19]The readOnly property will be removed; use readonly instead of it.');
             return obj.readonly;
           },
         });
-        // add values to be displayed in the static pick list - 2 different formats for now
-        if (obj.staticPick) {
-          obj.staticLOV = N19baseApplet.GetStaticLOV(control.GetRadioGroupPropSet().childArray);
-          obj.lovs = obj.staticLOV.reduce((acc, el) => { // normalized
-            acc.push({ lic: el.FieldValue, val: el.DisplayName });
-            return acc;
-          }, []);
+        if (obj.staticPick) { // add values to be displayed in the static picklist - 2 properties are deprecated
+          Object.defineProperty(obj, 'staticLOV', { // TODO: to be removed
+            enumerable: true,
+            get: () => {
+              // eslint-disable-next-line no-console
+              console.warn('[N19]The staticLOV property will be removed; use options instead of it.');
+              return control.GetRadioGroupPropSet().childArray.map(el => el.propArray);
+            },
+          });
+          Object.defineProperty(obj, 'lovs', { // TODO: to be removed
+            enumerable: true,
+            get: () => {
+              // eslint-disable-next-line no-console
+              console.warn('[N19]The lovs property will be removed; use options instead of it.');
+              return control.GetRadioGroupPropSet().childArray
+                .map(el => ({ lic: el.propArray.FieldValue, val: el.propArray.DisplayName }));
+            },
+          });
+          obj.options = N19baseApplet.GetControlStaticLOV(control);
         }
         controls[name] = obj;
       }
@@ -304,17 +322,12 @@ export default class N19baseApplet {
       if (index < 0) {
         return false;
       }
-      // seems this check is redundant
-      // if (this.getNumRows() < index + 1) {
-      //   return false;
-      // }
       if (this.getRowListRowCount() < index + 1) {
         throw new Error(`${index} is equal/higher than amount of records in the applet ${this.getRowListRowCount()}`);
       }
-      // TODO: if we got to this point
-      //  should we check GetActiveControl (applet.prototype.InvokeMethod)
-      //  and nullify it if active? otherwise if there is an active control
-      const { ctrlKey, shiftKey } = keys;
+      // TODO: if we got here, should we check GetActiveControl (applet.prototype.InvokeMethod)
+      // and nullify it if active? otherwise if there is an active control, the navigation doesn't happen
+      const { ctrlKey, shiftKey } = keys || {};
       return this.pm.ExecuteMethod('HandleRowSelect', index, ctrlKey, shiftKey);
     }
     return false;
@@ -450,7 +463,7 @@ export default class N19baseApplet {
     return this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_BLUR'), control, value);
   }
 
-  _validatePickControl(control, isStatic) {
+  _validatePickControl(control, staticPick) {
     // Possible results:
     // no pick
     // static pick
@@ -462,14 +475,14 @@ export default class N19baseApplet {
     const isStaticPick = this.isStatic(control);
     const uiType = control.GetUIType();
 
-    if (isStatic) { // called getStaticLOV
+    if (staticPick) { // static
       if (!isStaticPick) {
         // eslint-disable-next-line no-console
-        console.warn(`[N19]The getStaticLOV called for not static control - ${uiType}. Use getDynamicLOV or pick/mvg`);
+        console.warn(`[N19]It seems the getStaticLOV called for not static control - ${uiType}.`);
       }
-    } else { // called getDynamicLOV
+    } else { // dynamic
       if (isStaticPick) {
-        console.warn('[N19]The getDynamicLOV called for static control.'); // eslint-disable-line no-console
+        console.warn('[N19]It seems the getDynamicLOV called for static control.'); // eslint-disable-line no-console
       }
       if (this.consts.get('SWE_CTRL_COMBOBOX') !== uiType) { // the control is not "JComboBox"
         switch (uiType) {
@@ -496,7 +509,6 @@ export default class N19baseApplet {
   }
 
   _getControlDynamicLOV(control) {
-    this._validatePickControl(control, false);
     const controlInputName = control.GetInputName();
     this.lov[controlInputName] = {};
     const ps = SiebelApp.S_App.NewPropertySet();
@@ -507,32 +519,29 @@ export default class N19baseApplet {
     return this.lov[controlInputName];
   }
 
-  _getControlStaticLOV(control) {
-    this._validatePickControl(control, true);
-    const arr = N19baseApplet.GetStaticLOV(control.GetRadioGroupPropSet().childArray);
-    const ret = arr.map(el => el.DisplayName);
-    return ret.sort();
-  }
-
   getLOV(controlName) {
     const control = this._getControl(controlName);
     if (this.isStatic(control)) {
-      return this._getControlStaticLOV(control);
+      return N19baseApplet.GetControlStaticLOV(control);
     }
-    if (this.isDynamic(control)) {
-      return this._getControlDynamicLOV(control);
+    if (!this.isDynamic(control)) {
+      // Take the dynamic path in the hope that it will work
+      // eslint-disable-next-line no-console
+      console.warn(`[N19]It seems ${controlName} is not properly configured in the Tools or not a picklist.`);
     }
-    throw new Error(`${controlName} is not a static or a dynamic`);
+    return this._getControlDynamicLOV(control);
   }
 
   getDynamicLOV(controlName) {
     const control = this._getControl(controlName);
+    this._validatePickControl(control, false);
     return this._getControlDynamicLOV(control);
   }
 
   getStaticLOV(controlName) {
     const control = this._getControl(controlName);
-    return this._getControlStaticLOV(control);
+    this._validatePickControl(control, true);
+    return N19baseApplet.GetControlStaticLOV(control);
   }
 
   _getJSValue(value, attr) {
@@ -572,10 +581,10 @@ export default class N19baseApplet {
   }
 
   getCurrentRecord(raw) {
-    // TODO: need conversion
+    // TODO: need conversion?
     const index = this.getSelection();
     // TODO: check if there is a record
-    // TODO: make a copy of returned object (to avoid the accidental modification of the recordset)?
+    // TODO: make a copy of returned object?
     if (raw) {
       return this.getRawRecordSet()[index];
     }
@@ -583,7 +592,7 @@ export default class N19baseApplet {
   }
 
   calculateCurrentRecordState() {
-    // TODO: do we need to delete pending
+    // TODO: do we need to delete pending?
     // 0 - No records displayed
     // 1 - Record is being created
     // 2 - Record is being edited
@@ -601,7 +610,7 @@ export default class N19baseApplet {
     if (this.getSelection() < 0) {
       return 0;
     }
-    if (bc.IsInsertPending()) { // seems the insertPending property gives more accurate value
+    if (bc.IsInsertPending()) { // or insertPending property
       return 1;
     }
     if (bc.IsCommitPending()) { // bc.commitPending or this.pm.GetStateUIMap().CommitPending
@@ -644,10 +653,6 @@ export default class N19baseApplet {
     if (!_controls) {
       _controls = this.getControls(); // eslint-disable-line no-param-reassign
     }
-    if (!_methods) {
-      // Is it better to use applet.GetCanInvokeArray?
-      _methods = this._getMethods(); // eslint-disable-line no-param-reassign
-    }
     _controls.state = this.calculateCurrentRecordState(); // eslint-disable-line no-param-reassign
     _controls.id = ''; // eslint-disable-line no-param-reassign
     let obj = {};
@@ -658,70 +663,71 @@ export default class N19baseApplet {
     }
     const appletControls = this._returnControls();
     // populate controls
-    let arr = Object.keys(_controls);
-    arr.forEach((controlName) => {
+    Object.keys(_controls).forEach((controlName) => {
       const control = appletControls[controlName];
-      if (typeof control === 'undefined') { // just if somebody sends incorrect name of the control
-        return;
-      }
-      const fieldName = control.GetFieldName();
-      const uiType = control.GetUIType();
-      const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
-      const staticPick = control.IsStaticBounded() === '1';
-      const dataType = this.pm.ExecuteMethod('GetFieldDataType', fieldName);
-      let currencyCodeField = '';
-      let currencyCode = '';
-      if ('currency' === dataType) {
-        currencyCodeField = this._getCurrencyCodeField(control);
-        currencyCode = this.getRawRecordSet()[index][currencyCodeField];
-      }
-      if (_controls.id) {
-        _controls[controlName] = { // eslint-disable-line no-param-reassign
-          value: this._getJSValue(obj[fieldName], {
-            uiType, dataType, displayFormat, currencyCode,
-          }),
-          uiType,
-          readonly: !this.pm.ExecuteMethod('CanUpdate', controlName),
-          isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
-          label: control.GetDisplayName(),
-          isPostChanges: control.IsPostChanges(),
-          required: this._isRequired(control.GetInputName()),
-          maxSize: control.GetMaxSize(),
-          fieldName,
-          displayFormat,
-          isLOV: staticPick || this.consts.get('SWE_CTRL_COMBOBOX') === uiType,
-          dataType,
-          currencyCodeField,
-          currencyCode,
-          name: controlName,
-        };
-      } else { // no record displayed
-        _controls[controlName] = { // eslint-disable-line no-param-reassign
-          value: '',
-          uiType,
-          readonly: _controls.state !== 3, // should be edittable in query mode
-          isLink: false,
-          label: control.GetDisplayName(),
-          isPostChanges: control.IsPostChanges(),
-          required: this._isRequired(control.GetInputName()),
-          maxSize: control.GetMaxSize(),
-          fieldName,
-          displayFormat,
-          isLOV: staticPick || this.consts.get('SWE_CTRL_COMBOBOX') === uiType,
-          dataType,
-          currencyCodeField,
-          currencyCode,
-          name: controlName,
-        };
+      if (typeof control !== 'undefined') { // just if somebody sends incorrect name of the control
+        const fieldName = control.GetFieldName();
+        const uiType = control.GetUIType();
+        const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
+        const staticPick = control.IsStaticBounded() === '1';
+        const dataType = this.pm.ExecuteMethod('GetFieldDataType', fieldName);
+        let currencyCodeField = '';
+        let currencyCode = '';
+        if ('currency' === dataType) {
+          currencyCodeField = this._getCurrencyCodeField(control);
+          if (currencyCodeField && index > -1) {
+            currencyCode = this.getRawRecordSet()[index][currencyCodeField];
+          }
+        }
+        if (_controls.id) {
+          _controls[controlName] = { // eslint-disable-line no-param-reassign
+            value: this._getJSValue(obj[fieldName], {
+              uiType, dataType, displayFormat, currencyCode,
+            }),
+            uiType,
+            readonly: !this.pm.ExecuteMethod('CanUpdate', controlName),
+            isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
+            label: control.GetDisplayName(),
+            isPostChanges: control.IsPostChanges(),
+            required: this._isRequired(control.GetInputName()),
+            maxSize: control.GetMaxSize(),
+            fieldName,
+            displayFormat,
+            isLOV: staticPick || this.consts.get('SWE_CTRL_COMBOBOX') === uiType,
+            dataType,
+            currencyCodeField,
+            currencyCode,
+            name: controlName,
+          };
+        } else { // no record displayed
+          _controls[controlName] = { // eslint-disable-line no-param-reassign
+            value: '',
+            uiType,
+            readonly: _controls.state !== 3, // should be edittable in query mode
+            isLink: false,
+            label: control.GetDisplayName(),
+            isPostChanges: control.IsPostChanges(),
+            required: this._isRequired(control.GetInputName()),
+            maxSize: control.GetMaxSize(),
+            fieldName,
+            displayFormat,
+            isLOV: staticPick || this.consts.get('SWE_CTRL_COMBOBOX') === uiType,
+            dataType,
+            currencyCodeField,
+            currencyCode,
+            name: controlName,
+          };
+        }
       }
     });
     // populate methods
-    if (_methods) {
-      arr = Object.keys(_methods);
-      // TODO: could be an exception if method name is incorrect
-      // eslint-disable-next-line no-param-reassign
-      arr.forEach((methodName) => { _methods[methodName] = this.canInvokeMethod(methodName); });
+    if (!_methods) {
+      // Is it better to use applet.GetCanInvokeArray?
+      _methods = this._getMethods(); // eslint-disable-line no-param-reassign
     }
+    // TODO: could be an exception if method name is incorrect?
+    // eslint-disable-next-line no-param-reassign
+    Object.keys(_methods).forEach((methodName) => { _methods[methodName] = this.canInvokeMethod(methodName); });
     return {
       controls: _controls,
       methods: _methods,
@@ -895,8 +901,7 @@ export default class N19baseApplet {
   }
 
   savePref(name, value) {
-    // value is a string
-    // value is bound to applet and view
+    // value is a string, and bound to applet and view
     const psInput = SiebelApp.S_App.NewPropertySet();
     psInput.SetProperty('Key', name);
     psInput.SetProperty(name, value);
@@ -986,19 +991,15 @@ export default class N19baseApplet {
           }),
         },
       }), {});
-      if (id) {
-        ret[i].Id = id;
-      } else {
-        ret[i].Id = rawRecordSet[i].Id;
-      }
+      ret[i].Id = id || rawRecordSet[i].Id;
     }
 
     return ret;
   }
 
   sort(controlName, isAscending) {
-    // TODO: check if sortable? e.g. not in query mode
-    // TODO: check if we can sort by this control? control has IsSortable func, but we don't return the output of it
+    // TODO: check if dataset is sortable? e.g. not in query or in insert mode?
+    // TODO: check if we can sort by this control
     if (this.isListApplet) {
       const sortOrder = isAscending ? this.consts.get('SORT_ASCENDING') : this.consts.get('SORT_DESCENDING');
       this.pm.ExecuteMethod('OnClickSort', controlName, sortOrder);

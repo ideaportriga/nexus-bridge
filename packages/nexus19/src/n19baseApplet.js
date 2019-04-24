@@ -203,6 +203,7 @@ export default class N19baseApplet {
         const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
         const staticPick = control.IsStaticBounded() === '1';
         const dataType = this.pm.ExecuteMethod('GetFieldDataType', fieldName);
+        const iconMap = control.GetIconMap();
         const obj = {
           name,
           label: control.GetDisplayName(),
@@ -223,6 +224,7 @@ export default class N19baseApplet {
           popupType: control.GetPopupType(), // always correlate to uiType?
           props: N19baseApplet.GetPropSet(control),
           isSortable: control.IsSortable(),
+          iconMap: iconMap ? SiebelApp.S_App.GetIconMap()[SiebelApp.S_App.LookupStringCache(iconMap)] : null,
         };
         Object.defineProperty(obj, 'readOnly', {
           get: () => {

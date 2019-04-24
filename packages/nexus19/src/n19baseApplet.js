@@ -117,7 +117,7 @@ export default class N19baseApplet {
     // maybe we need to exclude more types
     return (type === this.consts.get('SWE_PST_BUTTON_CTRL'))
       || (type === this.consts.get('SWE_CTRL_LINK'))
-      // || (type === this.consts.get('SWE_CTRL_PLAINTEXT'))
+      // || (type === this.consts.get('SWE_CTRL_PLAINTEXT')) // KC IM
       || (type === 'null'); // GetUiType returns string
   }
 

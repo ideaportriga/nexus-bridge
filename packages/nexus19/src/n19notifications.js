@@ -30,9 +30,8 @@ export default class N19notifications {
       if (bcId === propSet.GetProperty('bc')) {
         const fieldName = propSet.GetProperty(consts.get('SWE_PROP_NOTI_FIELD'));
         const control = fieldToControlMap[fieldName];
-        // added isPostChanges as we don't need to listen to not immediate post chnages
-        //  for not immediate post changes, the notifications sent only on write record
-        if (control && control.uiType !== consts.get('SWE_CTRL_MVG') && control.isPostChanges) {
+        if (control && control.uiType !== consts.get('SWE_CTRL_MVG')
+          && control.uiType !== consts.get('SWE_CTRL_PICK')) {
           receivedNotifications.push('SWE_PROP_BC_NOTI_NEW_DATA_WS');
         }
       }

@@ -919,10 +919,16 @@ export default class N19baseApplet {
     return this.pm.Get(name);
   }
 
-  _retrieveData(amount) { // temp method - will be removed
-    const data = new Map();
+  _retrieveData(amount) { // could be removed in the next version
+    // it starts from the current position
+    if (!this.isListApplet) {
+      return false;
+    }
 
-    while (data.size < amount) {
+    const data = new Map();
+    const allRecords = amount === 0;
+
+    while (data.size < amount || allRecords) {
       const arr = this.getRawRecordSet();
 
       // avoid the duplicates

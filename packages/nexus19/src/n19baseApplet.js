@@ -17,7 +17,7 @@ export default class N19baseApplet {
     this.lov = {};
     this.boolObject = new SiebelApp.S_App.DatumBoolObject();
 
-    this.loadLocaleData();
+    this.loadLocaleData(); // TODO: do not create for the popup applet?
 
     this.fieldToControlMap = this._getFieldToControlMap();
     const bcId = this.applet.GetBCId();

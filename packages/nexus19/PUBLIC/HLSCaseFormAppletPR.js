@@ -125,6 +125,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_GENERIC'), function (propSet) {
             var type = propSet.GetProperty(consts.get('SWE_PROP_NOTI_TYPE'));
+            if ('ClosePopup' === type) {
+              SiebelAppFacade.N19Helper.ReInitPopup()
+            }
             console.log('SWE_PROP_BC_NOTI_GENERIC ', type, propSet);
           });
 
@@ -428,12 +431,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   });
                 }
               });
-              pmListApplet.AddMethod('InvokeMethod', function (method) {
-                if ('EditPopup' === method) {
-                  // to make it visible, if popup was opened thru invisible flow
-                  n19helper.reInitPopup();
-                }
-              }, { sequence: true, scope: this });
 
               this.fieldToControlsMap = n19helper._getFieldToControlMap(this.controls);
               this.caseCategoryArr = n19helper.getStaticLOV('Category');
@@ -704,14 +701,12 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 console.log(ret);
               },
               openPickApplet() {
-                n19helper.reInitPopup();
                 this.pickApplet = null;
                 if (!n19helper.showPickApplet('Audit Employee Last Name')) {
                   alert('openPickApplet(returned value is false)')
                 }
               },
               showMvgApplet() {
-                n19helper.reInitPopup();
                 var obj = n19helper.showMvgApplet('Sales Rep');
                 if (!obj) {
                   alert('showMvgApplet(returned value is false)')
@@ -969,8 +964,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           $("link[href*='vuetify.min.css']").remove();
           $("link[href*='https://fonts.googleapis.com/css']").remove();
           $('#vuetify-theme-stylesheet').remove();
-
-          SiebelAppFacade.N19Helper.ReInitPopup();
 
           n19helper = null;
           if (SiebelAppFacade.N19 && SiebelAppFacade.N19[appletName]) {

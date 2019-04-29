@@ -27,31 +27,26 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           var pm = this.GetPM();
 
-          pm.AddMethod("UpdateStateChange", function(...args) {
-            console.log('Method UpdateStateChange.....', args);
-          }, { sequence:false, override:false, scope: this });
+          // notifications replacement?
+          // pm.AddMethod("UpdateStateChange", function(...args) {
+          //   console.log('Method UpdateStateChange.....', args);
+          // }, { sequence:false, override:false, scope: this });
+          // pm.AddMethod("InvokeStateChange", function(...args) {
+          //   console.log('Method InvokeStateChange.....', args);
+          // }, { sequence:false, override:false, scope: this });
+          // pm.AddMethod("FieldChange", function(...args) {
+          //   console.log('Method FieldChange.....', args);
+          // }, { sequence:false, override:false, scope: this });
+          // pm.AttachPMBinding('UpdateStateChange', function(...args) {
+          //   console.log('Bind UpdateStateChange.....', args);
+          // });
+          // pm.AttachPMBinding('InvokeStateChange', function(...args) {
+          //   console.log('Bind InvokeStateChange.....', args);
+          // });
+          // pm.AttachPMBinding('FieldChange', function(...args) {
+          //   console.log('Bind FieldChange.....', args);
+          // });
 
-          pm.AddMethod("InvokeStateChange", function(...args) {
-            console.log('Method InvokeStateChange.....', args);
-          }, { sequence:false, override:false, scope: this });
-
-          pm.AddMethod("FieldChange", function(...args) {
-            console.log('Method FieldChange.....', args);
-          }, { sequence:false, override:false, scope: this });
-
-          pm.AttachPMBinding('UpdateStateChange', function(...args) {
-            console.log('Bind UpdateStateChange.....', args);
-          });
-
-          pm.AttachPMBinding('InvokeStateChange', function(...args) {
-            console.log('Bind InvokeStateChange.....', args);
-          });
-
-          pm.AttachPMBinding('FieldChange', function(...args) {
-            console.log('Bind FieldChange.....', args);
-          });
-
-          // initialize helper
           appletName = pm.Get('GetName');
 
           var viewName = SiebelApp.S_App.GetActiveView().GetName();
@@ -64,18 +59,17 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm, convertDates: true });
           n19helper = SiebelAppFacade.N19[appletName];
 
-          // todo: remove in EndLife
           $('head').append('<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" rel="stylesheet"></link>');
           $('head').append('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>');
           $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
 
-          // pm.AddMethod('InvokeMethod', function (method) {
-          //   console.log('>>> InvokeMethod, sequence true', method, arguments);
-          // }, { sequence: true, scope: this });
+          pm.AddMethod('InvokeMethod', function (method) {
+            console.log(`>>> InvokeMethod ${method}, sequence true`, arguments);
+          }, { sequence: true, scope: this });
 
-          // pm.AddMethod('InvokeMethod', function (method) {
-          //   console.log('>>> InvokeMethod, sequence false', method, arguments);
-          // }, { sequence: false, scope: this });
+          pm.AddMethod('InvokeMethod', function (method) {
+            console.log(`>>> InvokeMethod ${method}, sequence false`, arguments);
+          }, { sequence: false, scope: this });
 
           pm.AttachPostProxyExecuteBinding('EditField', function(method, psInput) {
             if (app) { // this was a show popup
@@ -90,15 +84,18 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           });
 
-          pm.AttachPostProxyExecuteBinding("ALL", function (method) {
+          pm.AttachPostProxyExecuteBinding('ALL', function (method) {
             console.log('>>>>>> AttachPostProxyExecuteBinding', method, arguments);
-            // AttachPostProxyExecuteBinding is not called for EditPopup
+            // AttachPostProxyExecuteBinding is not called for EditPopup, it is called for EditField
           });
 
-          //hide the server rendered html, better to remove, but not now
+          pm.AttachPreProxyExecuteBinding('ALL', function (method) {
+            console.log('>>>>>> AttachPreProxyExecuteBinding', method, arguments);
+          });
+
           divId = "s_" + pm.Get('GetFullId') + "_div";
           document.querySelector('#' + divId + ' form').style.display = 'none';
-          //document.querySelector('#' + divId + ' form').parentNode.removeChild('form');
+          // document.querySelector('#' + divId + ' form').parentNode.removeChild('form');
 
           // for commit pending indicator
           document.getElementById(divId).classList.add('siebui-applet', 'siebui-active');
@@ -107,8 +104,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           // good to know that...
           //   when we modified immediate post change field, and made the undo record,
           //   notify new field data is not invoked
-          //   when for the same field the immediate post change is unchecked, this procedure will be invoked
-          // to have immediately update the new
+          //   when for the same field and immediate post change is unchecked, this procedure will be invoked
           SiebelAppFacade.N19notifyNewFieldData = SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData;
           SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = function (name, value) {
             SiebelAppFacade.N19notifyNewFieldData.apply(this, arguments);
@@ -127,144 +123,144 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           }
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_GENERIC'), function (propSet) {
-          //   var type = propSet.GetProperty(consts.get('SWE_PROP_NOTI_TYPE'));
-          //   console.log('SWE_PROP_BC_NOTI_GENERIC ', type, propSet);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_GENERIC'), function (propSet) {
+            var type = propSet.GetProperty(consts.get('SWE_PROP_NOTI_TYPE'));
+            console.log('SWE_PROP_BC_NOTI_GENERIC ', type, propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_NOTI_SELECTED'), function () {
-          //   console.log('>>>SWE_PROP_NOTI_SELECTED', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_NOTI_SELECTED'), function (propSet) {
+            console.log('>>>SWE_PROP_NOTI_SELECTED', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW'), function () {
-          //   console.log('>>>SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW'), function (propSet) {
+            console.log('>>>SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'), function (ps) {
-          //   console.log('SWE_PROP_BC_NOTI_STATE_CHANGED', arguments, ps.GetProperty('state'));
-          //   if ('cp' === ps.GetProperty('state')) { //commit pending?
-          //     // alert('cp');
-          //   }
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_STATE_CHANGED', propSet, propSet.GetProperty('state'));
+            if ('cp' === propSet.GetProperty('state')) { //commit pending?
+            }
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_LIST'), function (ps) {
-          //   console.log('SWE_PROP_BC_NOTI_NEW_FIELD_LIST', arguments, ps.GetProperty('state'));
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_LIST'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_NEW_FIELD_LIST', propSet, propSet.GetProperty('state'));
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA_WS'), function (propSet) {
-          //   console.log('SWE_PROP_BC_NOTI_NEW_DATA_WS', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA_WS'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_NEW_DATA_WS', propSet, propSet.GetProperty(consts.get('SWE_PROP_NOTI_FIELD')));
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_BEGIN'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_BEGIN', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_BEGIN'), function (propSet) {
+            console.groupCollapsed(`NOTIFY ${propSet.GetProperty(consts.get('SWE_PROP_BC_OPERATION'))} ${propSet.GetProperty(consts.get("SWE_PROP_BC"))}`);
+            console.log('SWE_PROP_BC_NOTI_BEGIN', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_LONG_OPERATION_PROCESS'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_LONG_OPERATION_PROCESS', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_LONG_OPERATION_PROCESS'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_LONG_OPERATION_PROCESS', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NEW_ACTIVE_FIELD'), function () {
-          //   console.log('SWE_PROP_BC_NEW_ACTIVE_FIELD', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NEW_ACTIVE_FIELD'), function (propSet) {
+            console.log('SWE_PROP_BC_NEW_ACTIVE_FIELD', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_END', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_END', propSet);
+            console.groupEnd();
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_SELECTION'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_NEW_SELECTION', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_SELECTION'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_NEW_SELECTION', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_NEW_DATA', arguments);
-          //   alert('SWE_PROP_BC_NOTI_NEW_DATA');
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_DATA'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_NEW_DATA', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'), function (propSet) {
-          //   console.log('SWE_PROP_BC_NOTI_DELETE_RECORD', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_DELETE_RECORD', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_WORKSET'), function (propSet) {
-          //   console.log('SWE_PROP_BC_NOTI_DELETE_WORKSET', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_DELETE_WORKSET'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_DELETE_WORKSET', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_PRIMARY'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_NEW_PRIMARY', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_PRIMARY'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_NEW_PRIMARY', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_INSERT_WORKSET', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_INSERT_WORKSET', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET_FIELD_VALUES'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_INSERT_WORKSET_FIELD_VALUES', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_INSERT_WORKSET_FIELD_VALUES'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_INSERT_WORKSET_FIELD_VALUES', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_EXECUTE'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_EXECUTE', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_EXECUTE'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_EXECUTE', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_CHANGE_SELECTION'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_CHANGE_SELECTION', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_CHANGE_SELECTION'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_CHANGE_SELECTION', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_SELECTION_MODE_CHANGE'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_SELECTION_MODE_CHANGE', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_SELECTION_MODE_CHANGE'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_SELECTION_MODE_CHANGE', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_BEGIN_QUERY'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_BEGIN_QUERY', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_BEGIN_QUERY'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_BEGIN_QUERY', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_QUERYSPEC'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_NEW_QUERYSPEC', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_QUERYSPEC'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_NEW_QUERYSPEC', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_QUERYSPEC'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_NEW_FIELD_QUERYSPEC', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_QUERYSPEC'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_NEW_FIELD_QUERYSPEC', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END_QUERY'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_END_QUERY', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END_QUERY'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_END_QUERY', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_NEW_RECORD', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_NEW_RECORD', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get("SWE_PROP_BC_NOTI_NEW_RECORD_DATA"), function () {
-          //   console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD_DATA'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_NEW_RECORD_DATA_WS', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD_SCROLL_DATA'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_NEW_RECORD_SCROLL_DATA', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_RECORD_SCROLL_DATA'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_NEW_RECORD_SCROLL_DATA', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_PAGE_REFRESH'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_PAGE_REFRESH', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_PAGE_REFRESH'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_PAGE_REFRESH', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_DATA'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_NEW_FIELD_DATA', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_NEW_FIELD_DATA'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_NEW_FIELD_DATA', propSet, propSet.GetProperty(consts.get('SWE_PROP_NOTI_FIELD')));
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_SCROLL_AMOUNT'), function () {
-          //   console.log('SWE_PROP_BC_NOTI_SCROLL_AMOUNT', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_SCROLL_AMOUNT'), function (propSet) {
+            console.log('SWE_PROP_BC_NOTI_SCROLL_AMOUNT', propSet);
+          });
 
-          // pm.AttachNotificationHandler(consts.get('SWE_NOTIFY_PAGE_REFRESH'), function () {
-          //   console.log('SWE_NOTIFY_PAGE_REFRESH', arguments);
-          // });
+          pm.AttachNotificationHandler(consts.get('SWE_NOTIFY_PAGE_REFRESH'), function (propSet) {
+            console.log('SWE_NOTIFY_PAGE_REFRESH', propSet);
+          });
 
         }
 
-        // HLSCaseFormAppletPR.prototype.preInvokeMethod = function (methodName, args, lp, returnStructure) {
-        //   SiebelJS.Log(this.GetPM().Get("GetName") + " preInvokeMethod -  " + methodName);
-        // }
+        HLSCaseFormAppletPR.prototype.preInvokeMethod = function (method, args, lp, returnStructure) {
+          SiebelJS.Log(`${this.GetPM().Get('GetName')} preInvokeMethod - ${methodName}`);
+        }
 
         HLSCaseFormAppletPR.prototype.ShowUI = function () {
           if (skipVue) {
@@ -281,7 +277,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         HLSCaseFormAppletPR.prototype.BindData = function (bRefresh) {
           if (skipVue) {
             SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindData.apply(this, arguments);
-            console.log('BindData called.....')
+            console.log('BindData called.....');
             return;
           }
 
@@ -291,7 +287,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
         function putVue(divId) {
           var html = '\
-          <div id="vue_sample">                                                                                                                                        \n\
+          <div id="vue_sample">                                                                                                                                 \n\
             <v-app id="inspire">                                                                                                                                \n\
             <v-snackbar v-model="snackBar" :timeout="3000" :top="true" :color="snackBarColor">{{snackBarText}}<v-btn :color="snackBarButtonColor" flat @click="snackBar = false">Close</v-btn></v-snackbar>\n\
             <v-container fluid>                                                                                                                                 \n\
@@ -317,10 +313,10 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 </v-flex>                                                                                                                                                         \n\
                 <v-flex md4 pa-2>                                                                                                                                                 \n\
                   <v-autocomplete :attach=true :rules="controls.Category.required ? [\'Required\'] : []" v-model="controls.Category.value" :disabled="controls.Category.readonly" :items="caseCategoryArr" v-on:change="changeValue(\'Category\')" :label="controls.Category.label" clearable v-on:keyup.27="escapeOnControl(\'Category\')"> \n\
-                </v-flex>                                                                                                                                                         \n\
+                </v-flex>                                                                                                                                       \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
                   <v-label>Sales Rep:</v-label>                                                                                                                 \n\
-                  <v-tooltip :attach=true top v-for="salesRep in caseSalesRepArr" >                                                                                          \n\
+                  <v-tooltip :key="salesRep.id" :attach=true top v-for="salesRep in caseSalesRepArr" >                                                          \n\
                   <v-chip slot="activator" :close="salesRep.id!=caseSalesRepPrimary" @input="clickDeleteSalesRep(salesRep)"><v-avatar :class="{teal : salesRep.id!=caseSalesRepPrimary}">   \n\
                   <v-icon v-if="salesRep.id==caseSalesRepPrimary">check_circle</v-icon>{{salesRep.id==caseSalesRepPrimary ? "" : salesRep.login[0]}}</v-avatar>{{salesRep.login}}</v-chip>  \n\
                   <span>{{salesRep.firstName + " " + salesRep.lastName}}</span></v-tooltip>                                                                     \n\
@@ -330,7 +326,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   <v-text-field append-icon="report" @click:append="openPickApplet" :rules="controls[\'Audit Employee Last Name\'].required ? [\'Required\'] : []" v-on:input="changeValue(\'Audit Employee Last Name\')" :disabled="controls[\'Audit Employee Last Name\'].readonly" :label="controls[\'Audit Employee Last Name\'].label" v-model="controls[\'Audit Employee Last Name\'].value" clearable v-on:keyup.27="escapeOnControl(\'Audit Employee Last Name\')" v-on:click:clear="handleClear(\'Audit Employee Last Name\')" :counter="controls[\'Audit Employee Last Name\'].maxSize"></v-text-field> \n\
                 </v-flex>                                                                                                                                       \n\
                 <v-flex md4 pa-2>                                                                                                                               \n\
-                  <v-autocomplete :attach=true                                                               \n\
+                  <v-autocomplete :attach=true                                                              \n\
                     placeholder="Start typing to Search"                                                    \n\
                     @blur="blurAuditEmployee"                                                               \n\
                     @focus="focusAuditEmployee"                                                             \n\
@@ -347,17 +343,15 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     :search-input.sync="search">                                                            \n\
                     </v-autocomplete>                                                                       \n\
                     <v-divider></v-divider>                                                                 \n\
-                </v-flex>                                                                                                                                      \n\
-                <v-flex md4 pa-2>                                                                                                                              \n\
+                </v-flex>                                                                                   \n\
+                <v-flex md4 pa-2>                                                                           \n\
                   <v-text-field :rules="controls.SubjectPhone.required ? [\'Required\'] : []" v-on:input="changeValue(\'SubjectPhone\')" :disabled="controls.SubjectPhone.readonly" :label="controls.SubjectPhone.label" v-model="controls.SubjectPhone.value" clearable v-on:keyup.27="escapeOnControl(\'SubjectPhone\')" v-on:click:clear="handleClear(\'SubjectPhone\')" :counter="controls.SubjectPhone.maxSize"></v-text-field> \n\
-                </v-flex> \n\
-                <v-flex md4 pa-2>                                                                                                                              \n\
-                   \n\
-                </v-flex> \n\
-                <v-flex md4 pa-2>                                                                                                                              \n\
-                   \n\
-                </v-flex> \n\
-                <v-flex md4 pa-2>                                                                                                                              \n\
+                </v-flex>                                                                                   \n\
+                <v-flex md4 pa-2>                                                                           \n\
+                </v-flex>                                                                                   \n\
+                <v-flex md4 pa-2>                                                                           \n\
+                </v-flex>                                                                                   \n\
+                <v-flex md4 pa-2>                                                                           \n\
                   <v-textarea v-on:change="changeValue(\'Description\')" rows="12" :disabled="controls.Description.readonly" :label="controls.Description.label" v-model="controls.Description.value" :counter="controls.Description.maxSize" box name="input-7-1"></v-textarea> \n\
                 </v-flex>                                                                                                                                      \n\
                 <v-flex md4 pa-2>                                                                                                                              \n\
@@ -490,7 +484,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               caseSalesRepPrimary: '',
               isLoading: false,
               entries: [],
-              search: null
+              search: null,
             },
             computed: {
               ratingColor: function () {
@@ -851,8 +845,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
                 // MVG applet exists
                 if (SiebelApp.S_App.GetActiveView().GetAppletMap()['Contact Team Mvg Applet']) {
-                  // alert('mvg applet exists'); // TODO: test when it runs
-                  // todo : get arr as formatted values???
                   var arr = SiebelApp.S_App.GetActiveView().GetAppletMap()['Contact Team Mvg Applet'].GetPModel().Get('GetRawRecordSet');
                   this.caseSalesRepArr = [];
                   for (var i = 0; i < arr.length; i++) {
@@ -931,11 +923,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               afterSelection: function () {
                 console.log('>>>>>>>>>>>>>>>>>>> AFTER SELECTION STARTED....');
                 // this.controls = n19helper.getCurrentRecordModel(this.controls).controls;
+                const id = this.controls.id||'';
                 n19helper.getCurrentRecordModel(this.controls, this.methods);
-
-                // if (0 === this.caseCategoryArr.length) {
-                //   this.caseCategoryArr = n19helper.getStaticLOV('Category');
-                // }
 
                 if (this.controls['Created Date'].value) {
                   var arr = this.controls['Created Date'].value.toLocaleString('sv-SV').split(' ');
@@ -950,7 +939,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 this.caseStatusArr = [this.controls.Status.value];
                 this.caseSubStatusArr = [this.controls['Sub Status'].value];
                 if (this.controls.id) {
-                  this.getSalesRep();
+                  if (id !== this.controls.id) { // get the sales rep only row is changed? how to optimize it better
+                    this.getSalesRep();
+                  }
                 } else {
                   this.caseSalesRepArr = [];
                   this.caseSalesRepPrimary = '';
@@ -959,6 +950,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           });
         }
+
         HLSCaseFormAppletPR.prototype.EndLife = function () {
           if (SiebelAppFacade.N19notifyNewFieldData) {
             SiebelApp.S_App.NotifyObject.prototype.NotifyNewFieldData = SiebelAppFacade.N19notifyNewFieldData;

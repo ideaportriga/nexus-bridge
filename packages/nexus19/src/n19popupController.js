@@ -147,9 +147,9 @@ export default class N19popupController {
     return isOpen;
   }
 
-  _openAssocApplet(newRecordFunc, cb) {
+  _openAssocApplet(hide, newRecordFunc, cb) {
     this.checkOpenedPopup(true);
-    this.isPopupHidden = true;
+    this.isPopupHidden = !!hide;
 
     newRecordFunc(); // make async of invokeMethod?
 

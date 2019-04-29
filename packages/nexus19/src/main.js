@@ -41,6 +41,9 @@ export default class Nexus19 extends N19baseApplet {
 
   showMvgApplet(name, hide, cb) {
     // TODO: check if name is correct?
+    if (this.pm.Get('IsInQueryMode')) {
+      throw new Error('Mvg applet cannot be opened in query mode');
+    }
     return this._showPopupApplet(name, hide, cb);
   }
 
@@ -56,12 +59,15 @@ export default class Nexus19 extends N19baseApplet {
     }));
   }
 
-  openAssocApplet(cb) { // this method should be available for child business component in M:M relationship
+  openAssocApplet(hide, cb) { // this method should be available for child business component in M:M relationship
     // TODO: check if applet provides such capabilities?
     if (!this.n19popupController.canOpenPopup()) {
       throw new Error('Cannot open popup (currently exists resolve function)!');
     }
-    return this.n19popupController._openAssocApplet(this._newAssocRecord.bind(this), cb);
+    if (!this.canInvokeMethod('NewRecord')) {
+      throw new Error('NewRecord is not available!'); // also when in query mode
+    }
+    return this.n19popupController._openAssocApplet(hide, this._newAssocRecord.bind(this), cb);
   }
 
   drilldown(controlName) {

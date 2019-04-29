@@ -835,31 +835,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
               },
               getSalesRep: async function () {
-                // TODO: - refactore this function
                 console.log('<<<<<<<<< get sales rep primary <<<', this.caseSalesRepArr, this.caseSalesRepPrimary);
-
-                // MVG applet exists
-                if (SiebelApp.S_App.GetActiveView().GetAppletMap()['Contact Team Mvg Applet']) {
-                  var arr = SiebelApp.S_App.GetActiveView().GetAppletMap()['Contact Team Mvg Applet'].GetPModel().Get('GetRawRecordSet');
-                  this.caseSalesRepArr = [];
-                  for (var i = 0; i < arr.length; i++) {
-                    this.caseSalesRepArr.push({
-                      firstName: arr[i]["Active First Name"],
-                      lastName: arr[i]["Active Last Name"],
-                      login: arr[i]["Active Login Name"],
-                      id: arr[i].Id
-                    });
-                    if (arr[i]['SSA Primary Field'] == 'Y') {
-                      this.caseSalesRepPrimary = arr[i].Id;
-                    }
-                  }
-                  this.caseSalesRepArr.sort(function (a, b) {
-                    return (a.login > b.login) ? -1 : 1;
-                  });
-                  return;
-                }
-
-                //we don't have an applet, query the server
                 let ret = await n19helper.getMVF(
                   [this.controls.id],
                   {
@@ -867,20 +843,19 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   },
                   true
                 );
-                if (ret[this.controls.id]) { // something returned
-                  var arr = ret[this.controls.id]["Sales Rep"];
+                if (ret[this.controls.id]) {
                   this.caseSalesRepArr = [];
-                  for (var i = 0; i < arr.length; i++) {
+                  ret[this.controls.id]["Sales Rep"].forEach((salesRep) => {
                     this.caseSalesRepArr.push({
-                      firstName: arr[i]['Active First Name'],
-                      lastName: arr[i]['Active Last Name'],
-                      login: arr[i]['Active Login Name'],
-                      id: arr[i].Id
+                      firstName: salesRep['Active First Name'],
+                      lastName: salesRep['Active Last Name'],
+                      login: salesRep['Active Login Name'],
+                      id: salesRep.Id
                     });
-                    if (arr[i]['SSA Primary Field']) {
-                      this.caseSalesRepPrimary = arr[i].Id;
+                    if (salesRep['SSA Primary Field']) {
+                      this.caseSalesRepPrimary = salesRep.Id;
                     }
-                  }
+                  });
                   this.caseSalesRepArr.sort(function (a, b) {
                     return (a.login > b.login) ? -1 : 1;
                   });

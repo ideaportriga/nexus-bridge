@@ -321,10 +321,10 @@ export default class N19baseApplet {
       if (!this.pm.ExecuteMethod('CanInvokeMethod', 'PositionOnRow')) {
         return false;
       }
-      if (index < 0) {
+      if (Number(index) < 0) {
         return false;
       }
-      if (this.getRowListRowCount() < index + 1) {
+      if (this.getRowListRowCount() < Number(index) + 1) {
         throw new Error(`${index} is equal/higher than amount of records in the applet ${this.getRowListRowCount()}`);
       }
       // TODO: if we got here, should we check GetActiveControl (applet.prototype.InvokeMethod)

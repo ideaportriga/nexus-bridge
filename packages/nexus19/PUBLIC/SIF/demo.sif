@@ -14,7 +14,7 @@
 	   LOCKED="N"
 	   NAME="PUB Case"
 	   UI_FREEZE="N"
-	   UPDATED="03/14/2019 14:19:32"
+	   UPDATED="04/30/2019 16:00:46"
 	   UPDATED_BY="SADMIN"
 	   CREATED="06/03/2003 03:15:45"
 	   CREATED_BY="SADMIN"
@@ -41,7 +41,7 @@
 		   UPGRADE_BEHAVIOR="Preserve"
 		   WIDTH="2"
 		   OBJECT_LOCKED_BY_NAME="SADMIN"
-		   UPDATED="03/12/2019 13:18:07"
+		   UPDATED="04/30/2019 16:00:46"
 		   UPDATED_BY="SADMIN"
 		   CREATED="06/04/2003 08:34:23"
 		   CREATED_BY="SADMIN"
@@ -211,6 +211,15 @@
 			</APPLET_USER_PROP>
 			<APPLET_USER_PROP
 			   INACTIVE="N"
+			   NAME="ClientPMUserProp1"
+			   VALUE="Default Aspect, Resize Control"
+			   UPDATED="04/10/2019 10:05:05"
+			   UPDATED_BY="SADMIN"
+			   CREATED="04/10/2019 10:04:52"
+			   CREATED_BY="SADMIN">
+			</APPLET_USER_PROP>
+			<APPLET_USER_PROP
+			   INACTIVE="N"
 			   NAME="Default Aspect"
 			   VALUE="Phone"
 			   UPDATED="07/10/2003 19:22:24"
@@ -253,7 +262,7 @@
 			   SEQUENCE="0"
 			   TYPE="Edit"
 			   WEB_TEMPLATE="Applet Form Grid Layout"
-			   UPDATED="03/06/2019 10:45:47"
+			   UPDATED="04/30/2019 13:30:37"
 			   UPDATED_BY="SADMIN"
 			   CREATED="06/05/2003 08:03:23"
 			   CREATED_BY="SADMIN"
@@ -2302,7 +2311,7 @@
 			   VISIBLE="Y"
 			   WANT_RETURN="N"
 			   WIDTH="130"
-			   UPDATED="05/27/2013 11:07:54"
+			   UPDATED="04/24/2019 15:49:36"
 			   UPDATED_BY="SADMIN"
 			   CREATED="08/27/2005 07:32:51"
 			   CREATED_BY="SADMIN">
@@ -2985,6 +2994,7 @@
 			   HEIGHT="24"
 			   INACTIVE="N"
 			   LEFT="152"
+			   METHOD_INVOKED="Drilldown"
 			   MULTI_LINE="N"
 			   NAME="Name"
 			   OWNER_DRAW="N"
@@ -3004,10 +3014,37 @@
 			   VISIBLE="Y"
 			   WANT_RETURN="N"
 			   WIDTH="130"
-			   UPDATED="11/21/2018 14:32:57"
+			   UPDATED="04/30/2019 14:14:00"
 			   UPDATED_BY="SADMIN"
 			   CREATED="06/06/2003 03:45:24"
 			   CREATED_BY="SADMIN">
+				<CONTROL_USER_PROP
+				   INACTIVE="N"
+				   NAME="ClientPMUserProp1"
+				   VALUE="TestProperty1, TestProperty2"
+				   UPDATED="04/18/2019 16:15:52"
+				   UPDATED_BY="SADMIN"
+				   CREATED="04/10/2019 10:13:16"
+				   CREATED_BY="SADMIN">
+				</CONTROL_USER_PROP>
+				<CONTROL_USER_PROP
+				   INACTIVE="N"
+				   NAME="TestProperty1"
+				   VALUE="1"
+				   UPDATED="04/18/2019 08:50:24"
+				   UPDATED_BY="SADMIN"
+				   CREATED="04/10/2019 10:13:09"
+				   CREATED_BY="SADMIN">
+				</CONTROL_USER_PROP>
+				<CONTROL_USER_PROP
+				   INACTIVE="N"
+				   NAME="TestProperty2"
+				   VALUE="2"
+				   UPDATED="04/18/2019 08:50:21"
+				   UPDATED_BY="SADMIN"
+				   CREATED="04/18/2019 08:50:13"
+				   CREATED_BY="SADMIN">
+				</CONTROL_USER_PROP>
 			</CONTROL>
 			<CONTROL
 			   AUTOMATIC_HORIZONTAL_SCROLL="Y"
@@ -3909,7 +3946,7 @@
 			   POPUP_EDIT="N"
 			   PROMPT="N"
 			   READ_ONLY="N"
-			   RUNTIME="N"
+			   RUNTIME="Y"
 			   SHOW_POPUP="N"
 			   SORT="Y"
 			   TAB_STOP="Y"
@@ -3921,7 +3958,7 @@
 			   VISIBLE="Y"
 			   WANT_RETURN="N"
 			   WIDTH="120"
-			   UPDATED="11/06/2018 15:24:12"
+			   UPDATED="04/15/2019 17:17:02"
 			   UPDATED_BY="SADMIN"
 			   CREATED="11/06/2018 15:16:06"
 			   CREATED_BY="SADMIN">
@@ -4173,6 +4210,16 @@
 			   CREATED="04/05/2016 05:08:56"
 			   CREATED_BY="SADMIN">
 			</CONTROL>
+			<DRILLDOWN_OBJECT
+			   HYPERLINK_FIELD="Name"
+			   INACTIVE="N"
+			   NAME="GotoCase"
+			   VIEW="HLS Case Activities View"
+			   UPDATED="04/30/2019 13:17:11"
+			   UPDATED_BY="SADMIN"
+			   CREATED="04/30/2019 13:16:03"
+			   CREATED_BY="SADMIN">
+			</DRILLDOWN_OBJECT>
 		</APPLET>
 		<APPLET
 		   ASSOCIATE_APPLET="HLS Contact Case Assoc Applet"
@@ -4196,7 +4243,7 @@
 		   UPGRADE_BEHAVIOR="Preserve"
 		   WIDTH="2"
 		   OBJECT_LOCKED_BY_NAME="SADMIN"
-		   UPDATED="03/14/2019 14:19:21"
+		   UPDATED="04/24/2019 15:49:49"
 		   UPDATED_BY="SADMIN"
 		   CREATED="06/04/2003 08:34:23"
 		   CREATED_BY="SADMIN"
@@ -6893,7 +6940,7 @@
 			   NAME="List"
 			   TOTAL_DISPLAYED="N"
 			   TOTAL_REQUIRED="N"
-			   UPDATED="03/14/2019 14:18:12"
+			   UPDATED="04/24/2019 15:49:49"
 			   UPDATED_BY="SADMIN"
 			   CREATED="06/04/2003 08:41:43"
 			   CREATED_BY="SADMIN">
@@ -7041,7 +7088,7 @@
 				   TOTAL_REQUIRED="N"
 				   TYPE="TextBox"
 				   WIDTH="20"
-				   UPDATED="08/27/2005 11:25:17"
+				   UPDATED="04/24/2019 15:49:49"
 				   UPDATED_BY="SADMIN"
 				   CREATED="08/27/2005 06:04:39"
 				   CREATED_BY="SADMIN">
@@ -8077,7 +8124,7 @@
 		   TABLE="S_CASE"
 		   TYPE="Non-Transient"
 		   OBJECT_LOCKED_BY_NAME="SADMIN"
-		   UPDATED="02/18/2019 09:21:50"
+		   UPDATED="04/18/2019 08:04:29"
 		   UPDATED_BY="SADMIN"
 		   CREATED="06/04/2003 02:14:24"
 		   CREATED_BY="SADMIN">
@@ -10795,7 +10842,7 @@ Web access flag for old  primary contact of the case is didabled if flag set to 
 			   TEXT_LENGTH="30"
 			   TYPE="DTYPE_TEXT"
 			   USE_DEFAULT_SENSITIVITY="Y"
-			   UPDATED="01/10/2019 13:02:25"
+			   UPDATED="04/18/2019 08:04:27"
 			   UPDATED_BY="SADMIN"
 			   CREATED="08/27/2005 08:47:41"
 			   CREATED_BY="SADMIN">
@@ -12108,7 +12155,7 @@ Web access flag for old  primary contact of the case is didabled if flag set to 
 			   TEXT_LENGTH="100"
 			   TYPE="DTYPE_TEXT"
 			   USE_DEFAULT_SENSITIVITY="Y"
-			   UPDATED="01/06/2015 02:38:30"
+			   UPDATED="04/18/2019 08:04:28"
 			   UPDATED_BY="SADMIN"
 			   CREATED="02/07/2013 18:04:21"
 			   CREATED_BY="SADMIN">
@@ -12938,7 +12985,7 @@ Web access flag for old  primary contact of the case is didabled if flag set to 
 			   TEXT_LENGTH="30"
 			   TYPE="DTYPE_TEXT"
 			   USE_DEFAULT_SENSITIVITY="Y"
-			   UPDATED="01/10/2019 12:58:01"
+			   UPDATED="04/18/2019 08:04:28"
 			   UPDATED_BY="SADMIN"
 			   CREATED="06/04/2003 03:55:44"
 			   CREATED_BY="SADMIN">
@@ -12985,7 +13032,7 @@ Web access flag for old  primary contact of the case is didabled if flag set to 
 			   TEXT_LENGTH="30"
 			   TYPE="DTYPE_TEXT"
 			   USE_DEFAULT_SENSITIVITY="Y"
-			   UPDATED="07/14/2004 01:41:38"
+			   UPDATED="04/18/2019 08:04:28"
 			   UPDATED_BY="SADMIN"
 			   CREATED="06/04/2003 03:55:44"
 			   CREATED_BY="SADMIN">
@@ -13232,7 +13279,7 @@ Web access flag for old  primary contact of the case is didabled if flag set to 
 			   READ_ONLY="N"
 			   REQUIRED="N"
 			   USE_DEFAULT_SENSITIVITY="Y"
-			   UPDATED="09/09/2008 10:46:17"
+			   UPDATED="04/18/2019 08:04:29"
 			   UPDATED_BY="SADMIN"
 			   CREATED="06/04/2003 03:55:44"
 			   CREATED_BY="SADMIN">
@@ -13521,7 +13568,7 @@ Web access flag for old  primary contact of the case is didabled if flag set to 
 			   TEXT_LENGTH="40"
 			   TYPE="DTYPE_PHONE"
 			   USE_DEFAULT_SENSITIVITY="Y"
-			   UPDATED="06/04/2003 03:55:44"
+			   UPDATED="03/14/2019 15:37:50"
 			   UPDATED_BY="SADMIN"
 			   CREATED="06/04/2003 03:55:44"
 			   CREATED_BY="SADMIN">
@@ -13998,7 +14045,7 @@ Web access flag for old  primary contact of the case is didabled if flag set to 
 			   TEXT_LENGTH="30"
 			   TYPE="DTYPE_TEXT"
 			   USE_DEFAULT_SENSITIVITY="Y"
-			   UPDATED="05/11/2006 13:59:21"
+			   UPDATED="04/18/2019 08:04:29"
 			   UPDATED_BY="SADMIN"
 			   CREATED="06/04/2003 03:55:45"
 			   CREATED_BY="SADMIN">

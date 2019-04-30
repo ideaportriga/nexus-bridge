@@ -713,9 +713,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
               },
               doDrillDown() {
-                if (SiebelAppFacade.N19['HLS Case List Applet']) {
-                  SiebelAppFacade.N19['HLS Case List Applet'].drilldown('Name');
-                }
+                  n19helper.drilldown('Name');
               },
               changeValue(name) {
                 var isChanged = n19helper._setControlValue(name, this.controls[name].value);

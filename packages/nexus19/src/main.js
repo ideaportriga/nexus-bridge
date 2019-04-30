@@ -71,13 +71,21 @@ export default class Nexus19 extends N19baseApplet {
   }
 
   drilldown(controlName) {
-    // TODO: check isLink of control?
-    // index is not effective, and drilldown anyway happens on the selected record
-    if (!this.isListApplet) {
-      return false;
+    if (this.isListApplet) {
+      // TODO: check isLink of control?
+      // index is not effective, and drilldown anyway happens on the selected record
+      const index = this.getSelection();
+      return this.pm.ExecuteMethod('OnDrillDown', controlName, index);
     }
-    const index = this.getSelection();
-    return this.pm.ExecuteMethod('OnDrillDown', controlName, index);
+    // else assumes it is form applet
+    const control = this._getControl(controlName);
+    if (!control) {
+      throw new Error(`Control ${controlName} is not found!`);
+    }
+    const controlInputName = control.GetFieldName();
+    const ps = SiebelApp.S_App.NewPropertySet();
+    ps.SetProperty('SWEField', controlInputName);
+    return this.pm.ExecuteMethod('InvokeMethod', 'DrillDown', ps);
   }
 
   gotoView(targetViewName, targetAppletName, id) {

@@ -46,13 +46,11 @@ export default class N19popupController {
       return ret;
     };
 
-    // we could use pm.AttachPostProxyExecuteBinding for 'EditField', pm exists, but GetRenderer returns null
-    // open until we get rid of GetRenderer (Oracle review)
-    // other option - resolve it in SiebelApp.contentUpdater.viewLoaded
-    SiebelApp.S_App.GetPopupPM().AttachPMBinding('OnLoadPopupContent', () => {
+    SiebelApp.S_App.GetPopupPM().AddMethod('OnLoadPopupContent', () => {
       if (typeof this.resolvePromise === 'function') {
         const { applet, assocApplet } = N19popupController.IsPopupOpen();
         if (!applet) {
+          this.resolvePromise = null; // how do we do error handling
           throw new Error('Open Popup Applet is not found in OnLoadPopupContent resolving Promise');
         }
         this.popupAppletN19 = this._createNexusInstance(applet.GetPModel());
@@ -70,7 +68,7 @@ export default class N19popupController {
         this.resolvePromise(obj);
         this.resolvePromise = null;
       }
-    });
+    }, { sequence: false });
   }
 
   _createNexusInstance(pm) {

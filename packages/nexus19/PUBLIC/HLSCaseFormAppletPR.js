@@ -21,7 +21,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
           document.addEventListener('UpdateMVG', function (event) {
             if (app) {
-              app.getSalesRep();
+              setTimeout(() => {
+                app.getSalesRep();
+              });
             }
           });
 
@@ -71,7 +73,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log(`>>> InvokeMethod ${method}, sequence false`, arguments);
           }, { sequence: false, scope: this });
 
-          pm.AttachPostProxyExecuteBinding('EditField', function(method, psInput) {
+          pm.AttachPostProxyExecuteBinding('EditField', function (method, psInput) {
             if (app) { // this was a show popup
               if (psInput.GetProperty('SWEField') === n19helper.getControls()['Sales Rep'].inputName) { // this is sales rep
                 let applet = SiebelApp.S_App.GetActiveView().GetApplet('Contact Team Mvg Applet');
@@ -82,6 +84,14 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
               }
             }
+          });
+
+          SiebelApp.S_App.GetPopupPM().AddMethod('OnLoadPopupContent', (...args) => {
+            console.log('OnLoadPopupContent ADD METHOD PR', args);
+          }, { sequence: false });
+
+          SiebelApp.S_App.GetPopupPM().AttachPMBinding('OnLoadPopupContent', (...args) => {
+            console.log('OnLoadPopupContent ATTACH PR', args);
           });
 
           pm.AttachPostProxyExecuteBinding('ALL', function (method) {
@@ -514,7 +524,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               }
             },
             methods: {
-              titleDateFormat(date)  {
+              titleDateFormat(date) {
                 const value = new Date(date);
                 const day = value.getDate();
                 const month = n19helper.localeData.shortMonths[value.getMonth()];
@@ -618,7 +628,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   var obj = await n19helper.showMvgApplet('Sales Rep', true);
                   this.testShuttleOpened(obj);
                   var mvg = obj.popupAppletN19;
-                  this.addPmHandlerForPopup(mvg.pm);
+                  // this.addPmHandlerForPopup(mvg.pm);
                 } else {
                   var mvg = n19helper.n19popupController.popupAppletN19;
                 }
@@ -642,7 +652,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   var obj = await n19helper.showMvgApplet('Sales Rep', true);
                   this.testShuttleOpened(obj);
                   var mvg = obj.popupAppletN19;
-                  this.addPmHandlerForPopup(mvg.pm);
+                  // this.addPmHandlerForPopup(mvg.pm);
                   var assoc = obj.assocAppletN19;
                 } else {
                   var mvg = n19helper.n19popupController.popupAppletN19;
@@ -727,9 +737,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
               },
               changeCreatedDate() {
-                 const date = new Date(this.date + ' ' + this.time);
-                 this.controls['Created Date'].value = date;
-                 this.changeValue('Created Date');
+                const date = new Date(this.date + ' ' + this.time);
+                this.controls['Created Date'].value = date;
+                this.changeValue('Created Date');
 
               },
               changeThreatLevel(val) {
@@ -810,7 +820,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     } else if ('Created Date' === name) {
                       var arr = this.controls[control.name].value.toLocaleString('sv-SV').split(' ');
                       this.date = arr[0];
-                      this.time = arr[1].substr(0,8);
+                      this.time = arr[1].substr(0, 8);
                     } else if ('Status' === name) {
                       this.caseStatusArr = [value];
                     } else if ('Sub Status' === name) {
@@ -833,7 +843,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
               },
               getSalesRep: async function () {
-                console.log('<<<<<<<<< get sales rep primary <<<', this.caseSalesRepArr, this.caseSalesRepPrimary);
+                console.log('<<< get sales rep <<<', this.caseSalesRepArr, this.caseSalesRepPrimary);
                 let ret = await n19helper.getMVF(
                   [this.controls.id],
                   {
@@ -891,13 +901,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               afterSelection: function () {
                 console.log('>>>>>>>>>>>>>>>>>>> AFTER SELECTION STARTED....');
                 // this.controls = n19helper.getCurrentRecordModel(this.controls).controls;
-                const id = this.controls.id||'';
+                const id = this.controls.id || '';
                 n19helper.getCurrentRecordModel(this.controls, this.methods);
 
                 if (this.controls['Created Date'].value) {
                   var arr = this.controls['Created Date'].value.toLocaleString('sv-SV').split(' ');
                   this.date = arr[0];
-                  this.time = arr[1].substr(0,8);
+                  this.time = arr[1].substr(0, 8);
                 } else {
                   this.date = null;
                   this.time = null;
@@ -907,7 +917,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 this.caseStatusArr = [this.controls.Status.value];
                 this.caseSubStatusArr = [this.controls['Sub Status'].value];
                 if (this.controls.id) {
-                  if (id !== this.controls.id) { // get the sales rep only row is changed? how to optimize it better
+                  if (id !== this.controls.id) { // get the sales rep only row is changed? how to do it better
                     this.getSalesRep();
                   }
                 } else {

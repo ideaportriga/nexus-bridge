@@ -16,7 +16,7 @@ The demo example was tested with 16.0 ENU.
 ![result](images/form-demo.png)
 
 
-1. Make a clean [Nexus19 Setup](/../wikis/Setup Nexus19) if you haven't done it before.
+1. Make a clean [Nexus19 Setup](/../wikis/Setup Nexus Bridge) if you haven't done it before.
 1. Import SIF files in `siebel/sif/*` into the Siebel Tools.
 1. Add the `Nexus Angular Demo Screen` to your application:
       * Findout your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` in Chrome Developer Tools console.

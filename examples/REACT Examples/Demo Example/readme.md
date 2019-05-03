@@ -15,7 +15,7 @@ The demo example was tested on Seibel 16.19 and 18.08 ENU.
 
  ![result](demo_react.png)
 
-1. Make a clean [Nexus19 Setup](/../wikis/Setup Nexus19) if you haven't done it before.
+1. Make a clean [Nexus19 Setup](/../wikis/Setup Nexus Bridge) if you haven't done it before.
 1. Import the `n19helper-master/examples/REACT Examples/Demo Example/SIF/*` into the Siebel Tools.
 1. Add the `N19 React Account Screen` to your application:
       * Findout your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` into Chrome Developer Tools console.

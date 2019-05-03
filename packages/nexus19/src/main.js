@@ -82,9 +82,7 @@ export default class Nexus19 extends N19baseApplet {
     if (!control) {
       throw new Error(`Control ${controlName} is not found!`);
     }
-    const controlInputName = control.GetFieldName();
-    const ps = SiebelApp.S_App.NewPropertySet();
-    ps.SetProperty('SWEField', controlInputName);
+    const ps = control.GetMethodPropSet();
     return this.pm.ExecuteMethod('InvokeMethod', 'DrillDown', ps);
   }
 

@@ -105,9 +105,9 @@ export default class N19baseApplet {
   }
 
   _returnControls() {
-    if (this.isListApplet) {
-      return this.pm.Get('GetListOfColumns');
-    }
+    // if (this.isListApplet) { // commented to return buttons for list applet
+    //  return this.pm.Get('GetListOfColumns');
+    // }
     return this.pm.Get('GetControls');
   }
 
@@ -115,8 +115,8 @@ export default class N19baseApplet {
   _isSkipControl(type) {
     // https://docs.oracle.com/cd/E74890_01/books/ConfigOpenUI/appendix_a_api002.htm
     // maybe we need to exclude more types
-    return (type === this.consts.get('SWE_PST_BUTTON_CTRL'))
-      || (type === this.consts.get('SWE_CTRL_LINK'))
+    return (type === this.consts.get('SWE_CTRL_LINK'))
+      // || (type === this.consts.get('SWE_PST_BUTTON_CTRL'))
       // || (type === this.consts.get('SWE_CTRL_PLAINTEXT')) // KC IM
       || (type === 'null'); // GetUiType returns string
   }
@@ -225,6 +225,7 @@ export default class N19baseApplet {
           props: N19baseApplet.GetPropSet(control),
           isSortable: control.IsSortable(),
           iconMap: iconMap ? SiebelApp.S_App.GetIconMap()[SiebelApp.S_App.LookupStringCache(iconMap)] : null,
+          methodName: control.GetMethodName(),
         };
         Object.defineProperty(obj, 'readOnly', {
           get: () => {
@@ -742,8 +743,10 @@ export default class N19baseApplet {
     const found = arr.find((control) => {
       const controlUiType = control.GetUIType();
       if (!this._isSkipControl(controlUiType)) {
-        // skipping also JCheckbox
-        return controlUiType !== this.consts.get('SWE_CTRL_CHECKBOX');
+        // skipping also checkbox, plaintext and button
+        return controlUiType !== this.consts.get('SWE_CTRL_CHECKBOX')
+          && controlUiType !== this.consts.get('SWE_PST_BUTTON_CTRL')
+          && controlUiType !== this.consts.get('SWE_CTRL_PLAINTEXT');
       }
       return false;
     });

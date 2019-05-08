@@ -950,12 +950,6 @@ export default class N19baseApplet {
     };
   }
 
-  _setFieldValue(name, value) {
-    console.warn('[N19]_setFieldValue will be removed in the future!'); // eslint-disable-line no-console
-    this.applet.SetControlValueByName(name, value);
-    return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord');
-  }
-
   // this is also called from the the demo where Siebel and custom rendered applet coexist
   _getFieldToControlMap(_controls) {
     // list applet has the GetColumnsByFieldName that could be used for that purpose

@@ -3,7 +3,6 @@ import N19notifications from './n19notifications';
 export default class N19baseApplet {
   constructor(settings) {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
-    this.utils = SiebelJS.Dependency('SiebelApp.Utils');
     this.pm = settings.pm;
     this.convertDates = settings.convertDates;
     this.returnRawNumbers = settings.returnRawNumbers;
@@ -147,9 +146,9 @@ export default class N19baseApplet {
       return this.boolObject.GetAsString();
     }
     if (this.convertDates && displayFormat && this._isDateTimeControl(uiType)) {
-      // TODO: check if a valid date is inputted
+      // TODO: check if a valid date is inputted?
       const date = value.toLocaleString('en-US', { hour12: false }).split(',').join('');
-      return SiebelApp.S_App.LocaleObject.GetStringFromDateTime(date, 'M/D/YYYY HH:mm:ss', displayFormat, false);
+      return SiebelApp.S_App.LocaleObject.GetStringFromDateTime(date, 'M/D/YYYY HH:mm:ss', displayFormat);
     }
     return `${value}`; // to implicitly convert to string? Number for currencies/numbers
   }
@@ -546,10 +545,7 @@ export default class N19baseApplet {
     return N19baseApplet.GetControlStaticLOV(control);
   }
 
-  _getJSValue(value, attr) {
-    const {
-      uiType, dataType, displayFormat, currencyCode,
-    } = attr;
+  _getJSValue(value, { uiType, dataType, displayFormat, currencyCode }) {
     if (this.consts.get('SWE_CTRL_CHECKBOX') === uiType) {
       // convert Y/N/null -> true/false // null comes as false?
       this.boolObject.SetAsString(value);
@@ -559,14 +555,12 @@ export default class N19baseApplet {
       if (value === '') {
         return null;
       }
-      let ISO = '';
-      if (this.isListApplet) {
-        ISO = this.utils.ToISOFormat(value, this.consts.get('SWE_CTRL_DATE_PICK') !== uiType, displayFormat);
-      } else {
-        ISO = this.utils.GetISODateTime(value, true);
-      }
+      // assuming that form applet returns not formatted values
+      const inputFormat = this.isListApplet ? displayFormat : 'MM/DD/YYYY HH:mm:ss';
+      const ISO = SiebelApp.S_App.LocaleObject
+        .GetStringFromDateTime(value, inputFormat, this.consts.get('ISO8601_DATETIME_FORMAT'));
       if (ISO === '') {
-        throw new Error(`ISO value is empty after converting ${value}`);
+        throw new Error(`ISO value is empty after converting ${value}/${inputFormat}`);
       }
       return new Date(ISO);
     }

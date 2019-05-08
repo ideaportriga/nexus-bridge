@@ -20,8 +20,7 @@ export default class N19baseApplet {
     this.loadLocaleData(); // TODO: do not create for the popup applet?
 
     this.fieldToControlMap = this._getFieldToControlMap();
-    const bcId = this.applet.GetBCId();
-    this.notifications = new N19notifications(this.pm, this.consts, bcId, this.fieldToControlMap);
+    this.notifications = new N19notifications(this.pm, this.consts, this.fieldToControlMap);
 
     // populate the required array for form applets
     if (!this.isListApplet) {

@@ -102,10 +102,8 @@ export default class N19popupController {
     // TODO: check canInvokeMethod?
     let ret;
     if (applet) {
-      const isPopupApplet = typeof applet.GetPopupAppletName === 'function';
-      const isPickApplet = typeof applet.GetPickAppletName === 'function';
-      if (!isPopupApplet && !isPickApplet) {
-        throw new Error('This applet is neither pick nor popup');
+      if (!this.canInvokeMethod('CloseApplet')) {
+        throw new Error('The method CloseApplet is not allowed!');
       }
       ret = applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
     } else {

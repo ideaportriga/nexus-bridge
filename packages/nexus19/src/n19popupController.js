@@ -13,7 +13,7 @@ export default class N19popupController {
 
   constructor(enforcer) {
     if (enforcer !== singletonEnforcer) {
-      throw new Error('Instantiation failed: use Singleton.getInstance() instead of new.');
+      throw new Error('Instantiation failed: get popup controller instance instead of new.');
     }
 
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');

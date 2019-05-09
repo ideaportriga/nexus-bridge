@@ -1,4 +1,5 @@
 import N19notifications from './n19notifications';
+import N19localeData from './n19localeData';
 
 export default class N19baseApplet {
   constructor(settings) {
@@ -16,7 +17,7 @@ export default class N19baseApplet {
     this.lov = {};
     this.boolObject = new SiebelApp.S_App.DatumBoolObject();
 
-    this.loadLocaleData(); // TODO: do not create for the popup applet?
+    this.localeData = N19localeData.instance; // get the instance of locale data object
 
     this.fieldToControlMap = this._getFieldToControlMap();
     this.notifications = new N19notifications(this.pm, this.consts, this.fieldToControlMap);
@@ -53,39 +54,6 @@ export default class N19baseApplet {
     if (this.isTreeApplet) {
       // eslint-disable-next-line no-console
       console.warn('This is a tree applet... it is easier and safer to use list or form applets');
-    }
-  }
-
-  loadLocaleData() {
-    const localeObject = SiebelApp.S_App.LocaleObject;
-    const dateTimeFormat = localeObject.GetProfile(this.consts.get('LOCAL_DATETIME_FORMAT'));
-    this.localeData = {
-      firstDayOfWeek: localeObject.GetWeekStartDay(),
-      dateFormat: localeObject.GetProfile(this.consts.get('LOCAL_DATE_FORMAT')),
-      dateTimeFormat,
-      is24hoursFormat: !/p$/.test(dateTimeFormat),
-      localCountryPhoneCode: localeObject.GetProfile(this.consts.get('LOCAL_PHONE_COUNTRY')),
-      currencyDecimal: localeObject.GetDispCurrencyDecimal(),
-      currencySeparator: localeObject.GetDispCurrencySeparator(),
-      numberDecimal: localeObject.GetDispNumberDecimal(),
-      numberSeparator: localeObject.GetDispNumberSeparator(),
-    };
-    this.localeData.months = [];
-    this.localeData.shortMonths = [];
-    const months = localeObject.GetData('Month', localeObject.m_spMonthPS);
-    for (let i = 1; i <= 12; i += 1) {
-      this.localeData.months.push(months.GetProperty(`${i}:0`));
-      this.localeData.shortMonths.push(months.GetProperty(`${i}:1`));
-    }
-
-    const weekDays = localeObject.GetData('DayOfWeek', localeObject.m_spDayOfWeekPS);
-    this.localeData.weekDays = [];
-    this.localeData.weekDays3 = [];
-    this.localeData.weekDays1 = [];
-    for (let i = 0; i < 7; i += 1) {
-      this.localeData.weekDays.push(weekDays.GetProperty(`${i}:0`));
-      this.localeData.weekDays3.push(weekDays.GetProperty(`${i}:1`));
-      this.localeData.weekDays1.push(weekDays.GetProperty(`${i}:2`));
     }
   }
 

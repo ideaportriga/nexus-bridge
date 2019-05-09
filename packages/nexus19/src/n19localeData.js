@@ -30,22 +30,11 @@ export default class N19localeData {
     this.numberDecimal = localeObject.GetDispNumberDecimal();
     this.numberSeparator = localeObject.GetDispNumberSeparator();
 
-    this.months = [];
-    this.shortMonths = [];
-    const months = localeObject.GetData('Month', localeObject.m_spMonthPS);
-    for (let i = 1; i <= 12; i += 1) {
-      this.months.push(months.GetProperty(`${i}:0`));
-      this.shortMonths.push(months.GetProperty(`${i}:1`));
-    }
+    this.months = Array.from({ length: 12 }, (el, i) => localeObject.GetMonth(i + 1, false));
+    this.shortMonths = Array.from({ length: 12 }, (el, i) => localeObject.GetMonth(i + 1, true));
 
-    const weekDays = localeObject.GetData('DayOfWeek', localeObject.m_spDayOfWeekPS);
-    this.weekDays = [];
-    this.weekDays3 = [];
-    this.weekDays1 = [];
-    for (let i = 0; i < 7; i += 1) {
-      this.weekDays.push(weekDays.GetProperty(`${i}:0`));
-      this.weekDays3.push(weekDays.GetProperty(`${i}:1`));
-      this.weekDays1.push(weekDays.GetProperty(`${i}:2`));
-    }
+    this.weekDays = Array.from({ length: 7 }, (el, i) => localeObject.GetDayOfWeek(i, 0));
+    this.weekDays3 = Array.from({ length: 7 }, (el, i) => localeObject.GetDayOfWeek(i, 1));
+    this.weekDays1 = Array.from({ length: 7 }, (el, i) => localeObject.GetDayOfWeek(i, 2));
   }
 }

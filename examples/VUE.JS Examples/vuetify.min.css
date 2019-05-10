@@ -4,6 +4,11 @@
 * Released under the MIT License.
 */
 
+/* make readonly input visible */
+#vue_sample input[readonly] {
+  opacity: 0.6;
+}
+
 @-webkit-keyframes shake {
   59% {
     margin-left: 0

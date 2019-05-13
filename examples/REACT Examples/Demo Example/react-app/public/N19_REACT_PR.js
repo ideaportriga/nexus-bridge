@@ -17,8 +17,8 @@ if (typeof SiebelAppFacade.N19_REACT_PR === "undefined") {
       }
 
       N19_REACT_PR.prototype.ShowUI = function() {
-		    var firstApplet=document.getElementById('S_A1')
-		    firstApplet.parentElement.style.display = "none"
+        var firstApplet=document.getElementById('S_A1')
+        firstApplet.parentElement.style.display = "none"
         var rootElement = document.createElement("div")
         rootElement.id = containerId
         firstApplet.parentElement.parentElement.appendChild(rootElement)

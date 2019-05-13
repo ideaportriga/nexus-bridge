@@ -17,15 +17,12 @@ if (typeof SiebelAppFacade.N19_REACT_PR === "undefined") {
       }
 
       N19_REACT_PR.prototype.ShowUI = function() {
-        var rootContainer = document.getElementById("_sweview")
-        rootContainer.firstElementChild.style.display = "none"
-        rootContainer.title = ""
-
+		    var firstApplet=document.getElementById('S_A1')
+		    firstApplet.parentElement.style.display = "none"
         var rootElement = document.createElement("div")
         rootElement.id = containerId
-        rootContainer.appendChild(rootElement)
+        firstApplet.parentElement.parentElement.appendChild(rootElement)
         SiebReact.mountComponent(containerId)
-
         SiebelAppFacade.N19_REACT_PR.superclass.ShowUI.apply(this, arguments)
       }
 
@@ -42,9 +39,6 @@ if (typeof SiebelAppFacade.N19_REACT_PR === "undefined") {
           SiebReact.unmountComponent(containerId)
           document.getElementById(containerId).remove()
         }
-        var rootContainer = document.getElementById("_sweview")
-        rootContainer.firstElementChild.style.display = ""
-
         SiebelAppFacade.N19_REACT_PR.superclass.EndLife.apply(this, arguments)
       }
 

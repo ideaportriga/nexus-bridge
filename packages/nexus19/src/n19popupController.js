@@ -149,11 +149,15 @@ export default class N19popupController {
 
     newRecordFunc(); // make async of invokeMethod?
 
-    let ret = new Promise((resolve) => { this.resolvePromise = resolve; });
-    if (typeof cb === 'function') {
-      ret = ret.then(cb);
+    if (hide) {
+      let ret = new Promise((resolve) => { this.resolvePromise = resolve; });
+      if (typeof cb === 'function') {
+        ret = ret.then(cb);
+      }
+      return ret;
     }
-    return ret;
+
+    return true;
   }
 
   showPopupApplet(hide, cb, n19, methodName) {

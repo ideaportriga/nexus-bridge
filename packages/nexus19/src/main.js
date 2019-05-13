@@ -76,8 +76,10 @@ export default class Nexus19 extends N19baseApplet {
       // index is not effective, and drilldown anyway happens on the selected record
       const index = this.getSelection();
       return this.pm.ExecuteMethod('OnDrillDown', controlName, index);
+      // return this.pm.OnControlEvent(this.consts.get('PHYEVENT_DRILLDOWN_LIST'), controlName, index);
     }
     // else assumes it is form applet
+    // return this.pm.OnControlEvent(this.consts.get('PHYEVENT_DRILLDOWN_FORM'), this._getControl(controlName));
     const control = this._getControl(controlName);
     if (!control) {
       throw new Error(`Control ${controlName} is not found!`);

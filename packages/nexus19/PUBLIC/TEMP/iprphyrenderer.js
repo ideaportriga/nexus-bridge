@@ -1,5 +1,5 @@
 typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace("SiebelAppFacade.IPRPhysicalRenderer"),
-define("siebel/phyrenderer", ["siebel/basephyrenderer", "siebel/htmltmplmgr"], function() {
+define("siebel/iprphyrenderer", ["siebel/iprbasephyrenderer", "siebel/htmltmplmgr"], function() {
     return SiebelAppFacade.IPRPhysicalRenderer = function() {
         function F(e) {
             SiebelAppFacade.IPRPhysicalRenderer.superclass.constructor.call(this, e);
@@ -730,7 +730,7 @@ define("siebel/phyrenderer", ["siebel/basephyrenderer", "siebel/htmltmplmgr"], f
           , H = t.get("SWE_PST_APPLET_MODE_QUERY")
           , B = t.get("SWE_PST_APPLET_MODE_EDIT")
           , j = t.get("SWE_PST_APPLET_MODE_NEW");
-        return SiebelJS.Extend(F, SiebelAppFacade.BasePR),
+        return SiebelJS.Extend(F, SiebelAppFacade.IPRBasePR),
         F.prototype.Init = function() {
             SiebelAppFacade.IPRPhysicalRenderer.superclass.Init.call(this),
             this.AttachPMBinding("RemoveControls", q),

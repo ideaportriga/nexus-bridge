@@ -703,11 +703,17 @@ export default class N19baseApplet {
     const arr = Object.values(appletControls);
     const found = arr.find((control) => {
       const controlUiType = control.GetUIType();
+      const controlName = control.GetName();
       if (!this._isSkipControl(controlUiType)) {
-        // skipping also checkbox, plaintext and button
-        return controlUiType !== this.consts.get('SWE_CTRL_CHECKBOX')
+        // skipping also checkbox, plaintext, button, and label
+        let ret = controlUiType !== this.consts.get('SWE_CTRL_CHECKBOX')
           && controlUiType !== this.consts.get('SWE_PST_BUTTON_CTRL')
-          && controlUiType !== this.consts.get('SWE_CTRL_PLAINTEXT');
+          && controlUiType !== this.consts.get('SWE_CTRL_PLAINTEXT')
+          && controlUiType !== this.consts.get('SWE_CTRL_LABEL');
+
+        // maybe it would be better for list applets take only columns as it was before?
+        ret = ret && !['PopupQueryCombobox', 'PopupQuerySrchspec'].includes(controlName);
+        return ret;
       }
       return false;
     });

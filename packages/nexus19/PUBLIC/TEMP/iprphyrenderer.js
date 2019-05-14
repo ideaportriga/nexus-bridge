@@ -1,7 +1,6 @@
 typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace("SiebelAppFacade.IPRPhysicalRenderer"),
   define("siebel/iprphyrenderer", ["siebel/iprbasephyrenderer", "siebel/htmltmplmgr"], function () {
     return SiebelAppFacade.IPRPhysicalRenderer = function () {
-      window.__internal = {}; // TEMP: KEEP IT IN WINDOW FOR NOW
       function F(e) {
         SiebelAppFacade.IPRPhysicalRenderer.superclass.constructor.call(this, e);
         var t = null;
@@ -732,8 +731,9 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         , j = consts.get("SWE_PST_APPLET_MODE_NEW");
       return SiebelJS.Extend(F, SiebelAppFacade.IPRBasePR),
         F.prototype.Init = function () {
+          this.GetPM().AddProperty('n19internal', {});
           this.GetPM().AttachNotificationHandler('SWE_PROP_BC_NOTI_BEGIN', () => {
-            __internal = {};
+            this.GetPM().AddProperty('n19internal', {});
           });
             // SiebelAppFacade.IPRPhysicalRenderer.superclass.Init.call(this);
             // this.AttachPMBinding("RemoveControls", attRenameControls),
@@ -1542,20 +1542,21 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
           }
         },
         F.prototype.N19SetControlValue = function (control, value, r) {
-          debugger;
-          console.log('N19SetControlValue start', __internal, arguments);
-          __internal[control.GetName()] = value;
-          console.log('N19SetControlValue end', __internal, arguments);
+          var pm = this.GetPM();
+          var obj = pm.Get('n19internal');
+          console.log('N19SetControlValue start', obj, arguments);
+          obj[control.GetName()] = value;
+          pm.AddProperty('n19internal', obj)
+          console.log('N19SetControlValue end', obj, arguments);
         },
         F.prototype.N19GetPhysicalControlValue = function (control) {
-          debugger;
-          console.log('N19GetPhysicalControlValue start', __internal, arguments);
+          var pm = this.GetPM();
+          console.log('N19GetPhysicalControlValue start', pm.Get('n19internal'), arguments);
           if (control) {
-            var pm = this.GetPM();
-            var val = __internal[control.GetName()];
+            var val = pm.Get('n19internal')[control.GetName()];
             pm.AddProperty("PhysicalCtrlVal", val);
           }
-          console.log('N19GetPhysicalControlValue start', __internal, arguments);
+          console.log('N19GetPhysicalControlValue start', pm.Get('n19internal'), arguments);
         },
         F.prototype.GetPhysicalControlValue = function (control) {
           return; // TEMP

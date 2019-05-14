@@ -96,32 +96,32 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
         IPRJQGridRenderer.prototype.Init = function () {
           SiebelAppFacade.IPRJQGridRenderer.superclass.Init.call(this);
 
-          this.AttachPMBinding("NavigateState", PreUpdateNavigateInfo);
+          // this.AttachPMBinding("NavigateState", PreUpdateNavigateInfo);
 
-          this.AttachPMBinding("isControlPopupOpen", CloseControlPopup);
+          // this.AttachPMBinding("isControlPopupOpen", CloseControlPopup);
 
-          this.AttachPMBinding("MultiSelectMode", SetCellEdit);
+          // this.AttachPMBinding("MultiSelectMode", SetCellEdit);
 
-          this.AttachPMBinding("InQueryMode", function () {
-            SetCellEdit.apply(this, arguments);
-            UpdateHeaderMenu.apply(this, arguments);
-          });
+          // this.AttachPMBinding("InQueryMode", function () {
+          //   SetCellEdit.apply(this, arguments);
+          //   UpdateHeaderMenu.apply(this, arguments);
+          // });
 
-          this.AttachPMBinding("SortRecord", AddSortInfo);
+          // this.AttachPMBinding("SortRecord", AddSortInfo);
 
-          this.AttachPMBinding("SetFocusToGridCell", SetFocustoFirstCell);
+          // this.AttachPMBinding("SetFocusToGridCell", SetFocustoFirstCell);
 
-          this.AttachPMBinding("CellChange", this.SetCellValue);
+          // this.AttachPMBinding("CellChange", this.SetCellValue);
 
-          this.AttachPMBinding("TotalSet", ShowTotal);
+          // this.AttachPMBinding("TotalSet", ShowTotal);
 
-          this.AttachPMBinding("DisplaySortInfo", DisplaySortInfo);
+          // this.AttachPMBinding("DisplaySortInfo", DisplaySortInfo);
 
-          this.AttachPMBinding("InvokeStateChange", UpdateHeaderControl);
+          // this.AttachPMBinding("InvokeStateChange", UpdateHeaderControl);
 
-          this.AttachPMBinding("OnScrollComplete", OnScrollComplete);
+          // this.AttachPMBinding("OnScrollComplete", OnScrollComplete);
 
-          this.AttachPMBinding("ForceFocusOnControl", ForceFocusOnControl);
+          // this.AttachPMBinding("ForceFocusOnControl", ForceFocusOnControl);
         };
 
         function UpdateHeaderMenu() {

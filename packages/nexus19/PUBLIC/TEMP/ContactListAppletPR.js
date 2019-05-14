@@ -2,7 +2,7 @@
 if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
 
   SiebelJS.Namespace("SiebelAppFacade.ContactListAppletPR");
-  define("siebel/custom/ContactListAppletPR", ["siebel/jqgridrenderer"],
+  define("siebel/custom/ContactListAppletPR", ["siebel/iprjqgridrenderer"],
     function () {
       SiebelAppFacade.ContactListAppletPR = (function () {
 
@@ -10,16 +10,14 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
           SiebelAppFacade.ContactListAppletPR.superclass.constructor.apply(this, arguments);
         }
 
-        SiebelJS.Extend(ContactListAppletPR, SiebelAppFacade.JQGridRenderer);
+        SiebelJS.Extend(ContactListAppletPR, SiebelAppFacade.IPRJQGridRenderer);
         var appletName;
         var pm;
         var viewName;
 
         ContactListAppletPR.prototype.Init = function () {
           viewName = SiebelApp.S_App.GetActiveView().GetName();
-          // if ('Visible Contact List View' !== viewName) {
-            SiebelAppFacade.ContactListAppletPR.superclass.Init.apply(this, arguments);
-          // }
+          SiebelAppFacade.ContactListAppletPR.superclass.Init.apply(this, arguments);
 
           pm = this.GetPM();
           appletName = pm.Get("GetName");
@@ -29,33 +27,30 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
         }
 
         ContactListAppletPR.prototype.ShowUI = function () {
-          // if ('Visible Contact List View' !== viewName) {
+          if ('Visible Contact List View' !== viewName) {
             SiebelAppFacade.ContactListAppletPR.superclass.ShowUI.apply(this, arguments);
-          // }
+          }
         }
 
         ContactListAppletPR.prototype.BindData = function (bRefresh) {
-          // if ('Visible Contact List View' !== viewName) {
+          if ('Visible Contact List View' !== viewName) {
             SiebelAppFacade.ContactListAppletPR.superclass.BindData.apply(this, arguments);
-          //}
+          }
         }
 
         ContactListAppletPR.prototype.BindEvents = function () {
-          // if ('Visible Contact List View' !== viewName) {
+          if ('Visible Contact List View' !== viewName) {
             SiebelAppFacade.ContactListAppletPR.superclass.BindEvents.apply(this, arguments);
-          // }
+          }
         }
 
         ContactListAppletPR.prototype.EndLife = function () {
           // EndLife is where we perform any required cleanup.
           // Add code here that should happen before default processing
-          // if (SiebelAppFacade.N19[appletName]) {
+          if (SiebelAppFacade.N19[appletName]) {
             delete SiebelAppFacade.N19[appletName];
-          // }
-
-          // if ('Visible Contact List View' !== viewName) {
-            SiebelAppFacade.ContactListAppletPR.superclass.EndLife.apply(this, arguments);
-          // }
+          }
+          SiebelAppFacade.ContactListAppletPR.superclass.EndLife.apply(this, arguments);
         }
 
         return ContactListAppletPR;

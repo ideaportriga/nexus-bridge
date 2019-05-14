@@ -1,6 +1,7 @@
 typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace("SiebelAppFacade.IPRPhysicalRenderer"),
   define("siebel/iprphyrenderer", ["siebel/iprbasephyrenderer", "siebel/htmltmplmgr"], function () {
     return SiebelAppFacade.IPRPhysicalRenderer = function () {
+      var internal = {};
       function F(e) {
         SiebelAppFacade.IPRPhysicalRenderer.superclass.constructor.call(this, e);
         var t = null;
@@ -25,7 +26,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             t = null
           }
       }
-      function I(e) {
+      function attOnCommitStateChange(e) {
         var t = $("#s_" + this.GetPM().Get("GetFullId") + "_div");
         e ? t.addClass("siebui-commit-pending") : t.removeClass("siebui-commit-pending"),
           this.CacheState("CommitPending", !!e)
@@ -74,7 +75,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
           s.hideExchDate || (f += '<div id="' + s.dateId + '_cc" class="siebui-popup-input-row">' + '<span class="siebui-popup-label">' + s.dateName + "</span>" + '<input type="text" id="' + s.dateId + '" tabindex="101" aria-label="' + s.dateName + '" class="siebui-ctrl-date" value="' + c + '" ' + (s.eDateReadOnly ? ' readonly="readonly" ' : "") + "></div>"),
           f += '<div id="' + s.calcId + '_cc" class="siebui-popup-input-row">' + '<span class="siebui-popup-label">' + s.calcName + "</span>" + '<input type="text" id="' + s.calcId + '" tabindex="102" aria-label="' + s.calcName + '" class="siebui-ctrl-calc" value="' + s.calcValue + '" ' + (s.AmountReadOnly ? 'readonly="readonly" ' : "") + "></div>",
           f += "</div>",
-          r.Get("state") === t.get("POPUP_STATE_UNLOADED") && r.Setup(),
+          r.Get("state") === consts.get("POPUP_STATE_UNLOADED") && r.Setup(),
           r.SetProperty("isCurrencyOpen", !0),
           r.ExecuteMethod("OpenPopup", f, 0, 0, !1, !1, !0),
           r.SetProperty("isCurrencyOpen", !0),
@@ -180,7 +181,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
                       $(this).parents("body").length && $(this).calculator("destroy").next("img").styleShow().end().focus(),
                       r.GetPM().SetProperty("isControlPopupOpen", !1),
                       $.removeData("innerCtrlElem"),
-                      r.GetPM().OnControlEvent(t.get("PHYEVENT_CONTROL_FOCUS"), e),
+                      r.GetPM().OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), e),
                       SiebelAppFacade.DecisionManager.ResumeVKeyboard($(this))
                   }
                 })
@@ -192,7 +193,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             ctrl: o
           }, function (e) {
             var n = e.data.ctx.GetPM();
-            n.OnControlEvent(t.get("PHYEVENT_CONTROL_FOCUS"), e.data.ctrl, $(this).val()),
+            n.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), e.data.ctrl, $(this).val()),
               n.SetProperty("activeCurrencyCtrl", s.pickId)
           }).bind("blur", {
             ctx: this,
@@ -217,7 +218,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             ctrl: o
           }, function (e) {
             var n = e.data.ctx.GetPM();
-            n.OnControlEvent(t.get("PHYEVENT_CONTROL_FOCUS"), e.data.ctrl, $(this).val()),
+            n.OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), e.data.ctrl, $(this).val()),
               n.SetProperty("activeCurrencyCtrl", s.calcId)
           }).bind("blur", {
             ctx: this,
@@ -232,7 +233,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
               while (isNaN(r.charAt(i)))
                 i++;
               r = r.substring(i),
-                n.OnControlEvent(t.get("PHYEVENT_CONTROL_BLUR"), e.data.ctrl, r),
+                n.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), e.data.ctrl, r),
                 n.ExecuteMethod("CurrencyPostChanges");
               var s = n.ExecuteMethod("GetCurrencyCalInfo")
                 , o = $("#" + s[6]);
@@ -334,7 +335,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             this.CacheState("GetQueryModePrompt", n)
         }
       }
-      function W() {
+      function attProcessCancelQueryPopup() {
         SiebelApp.S_App.uiStatus.Free();
         var e = SiebelApp.S_App.GetPopupPM();
         $("[name=cancelQuery]").remove();
@@ -349,7 +350,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         var f = '<button id="cancelQry_Ctrl_CQ" class="appletButton" type="button" title="' + a + '" ' + ">" + a + "</button>";
         r += '<div align="center" id = "cancelbtn_div">' + f + "</div>",
           n.append(r),
-          e.Get("state") === t.get("POPUP_STATE_UNLOADED") && e.Setup(),
+          e.Get("state") === consts.get("POPUP_STATE_UNLOADED") && e.Setup(),
           e.SetProperty("IsCancelQryPopupOpen", !0);
         if (e.Get("state") !== "visible")
           e.ExecuteMethod("SetPopupVisible", !0),
@@ -387,11 +388,11 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
           h.bind("click", function (n) {
             var r = '<p id="responseTxt_CQ"><b>' + o + "</b></p>";
             $("#initTxt_CQ").replaceWith(r),
-              e.OnControlEvent(t.get("PHYEVENT_CANCEL_QRY_POPUP"), n)
+              e.OnControlEvent(consts.get("PHYEVENT_CANCEL_QRY_POPUP"), n)
           })
         }
       }
-      function X() {
+      function attSetCanInvokeState() {
         var e = this.GetPM()
           , t = $("#s_" + e.Get("GetFullId") + "_div");
         e.ExecuteMethod("IsMethodDefault", "MaximizeApplet") && e.ExecuteMethod("CanInvokeMethod", "MaximizeApplet") === !1 ? t.removeClass("siebui-applet-minimize").addClass("siebui-applet-maximize") : e.ExecuteMethod("IsMethodDefault", "MinimizeApplet") && e.ExecuteMethod("CanInvokeMethod", "MinimizeApplet") === !1 ? t.removeClass("siebui-applet-maximize").addClass("siebui-applet-minimize") : t.removeClass("siebui-applet-maximize siebui-applet-minimize")
@@ -448,17 +449,17 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
           , u = this.GetPM();
         switch (n.GetUIType()) {
           case y:
-          case L:
+          case controlURL:
           case N:
           case w:
-          case E:
+          case controlRTCEmbText:
           case S:
           case x:
           case T:
           case r:
             s = !0;
             break;
-          case L:
+          case controlURL:
             s = u.Get("IsInQueryMode") ? !1 : !0;
             break;
           case o:
@@ -468,12 +469,12 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             it.call(this, e, n, i)
         }
         return (n.GetUIType() === d || n.GetUIType() == f && e.attr("autocomplete")) && this.GetUIWrapper(n).HandleKey(e, i),
-          s ? s : u.OnControlEvent(t.get("PHYEVENT_ENTER_KEY_PRESS"), n)
+          s ? s : u.OnControlEvent(consts.get("PHYEVENT_ENTER_KEY_PRESS"), n)
       }
       function tt(e, n, r) {
         var i = this.GetPM()
           , s = i.Get("isControlPopupOpen");
-        return i.OnControlEvent(t.get("PHYEVENT_ESCAPE_KEY_PRESS"), n),
+        return i.OnControlEvent(consts.get("PHYEVENT_ESCAPE_KEY_PRESS"), n),
           i.Get("isControlPopupOpen") !== s
       }
       function nt(e, t, n) {
@@ -562,7 +563,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         lastindex = r.index($("#" + n)),
           lastindex + 1 === i ? r.eq(0).focus() : r.eq(lastindex + 1).focus()
       }
-      function at() {
+      function attisControlPopupOpen() {
         if (this.GetPM().Get("isControlPopupOpen") === !1) {
           var e = this.GetPM().Get("GetActiveControl");
           if (e) {
@@ -633,11 +634,11 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
               lt.call(this, !1, s, !0, t)
         }
       }
-      function pt(e, t) {
+      function attSetHighlightState(e, t) {
         var n = $("#s_" + this.GetPM().Get("GetFullId") + "_div");
         e ? n.addClass("Selected siebui-active").removeClass("NotSelected siebui-nonactive") : n.removeClass("Selected siebui-active").addClass("NotSelected siebui-nonactive")
       }
-      function dt(e) {
+      function attFocusOnApplet(e) {
         e = typeof e == "undefined" ? !1 : e;
         var t = $("#s_" + this.GetPM().Get("GetFullId") + "_div")
           , n = null;
@@ -657,7 +658,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
           if (r.hasOwnProperty(l)) {
             o = r[l],
               u = o.GetMethodName();
-            if (l === t.get("SWE_POPUP_QUERY_COMBO_BOX") || l === t.get("SWE_POPUP_QUERY_SEARCH_SPEC") || l === t.get("SWE_POPUP_QUERY_EXECUTE") || l === t.get("SWE_QUERY_COMBO_BOX") || l === t.get("SWE_QUERY_SEARCH_SPEC")) {
+            if (l === consts.get("SWE_POPUP_QUERY_COMBO_BOX") || l === consts.get("SWE_POPUP_QUERY_SEARCH_SPEC") || l === consts.get("SWE_POPUP_QUERY_EXECUTE") || l === consts.get("SWE_QUERY_COMBO_BOX") || l === consts.get("SWE_QUERY_SEARCH_SPEC")) {
               this.GetUIWrapper(o).SetState(consts.get("ENABLE"), !i);
               continue
             }
@@ -667,17 +668,17 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
               this.GetUIWrapper(o).SetState(consts.get("SHOW"), a, 0)
           }
       }
-      function gt() {
+      function attBeginQueryState() {
         var e = this.GetPM().Get("GetControls");
         for (var t in e)
           e.hasOwnProperty(t) && this.GetUIWrapper(e[t]).BeginQuery()
       }
-      function yt() {
+      function attEndQueryState() {
         var e = this.GetPM().Get("GetControls");
         for (var t in e)
           e.hasOwnProperty(t) && this.GetUIWrapper(e[t]).EndQuery()
       }
-      function bt() {
+      function attUpdateRowCounter() {
         var t = this.GetPM()
           , n = t.Get("GetRowCounter", {
             getDiff: !0
@@ -693,77 +694,76 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         }
       }
       var e = SiebelJS.Dependency("SiebelApp.Utils")
-        , t = SiebelJS.Dependency("SiebelApp.Constants")
+        , consts = SiebelJS.Dependency("SiebelApp.Constants")
         , n = SiebelJS.Dependency("SiebelAppFacade.HTMLTemplateManager")
-        , r = t.get("SWE_PST_BUTTON_CTRL")
-        , i = t.get("SWE_CTRL_DETAIL")
-        , s = t.get("SWE_CTRL_MVG")
-        , o = t.get("SWE_CTRL_PICK")
-        , u = t.get("SWE_CTRL_RADIO")
-        , a = t.get("SWE_CTRL_CHECKBOX")
-        , f = t.get("SWE_CTRL_COMBOBOX")
-        , l = t.get("SWE_CTRL_CHART")
-        , c = t.get("SWE_CTRL_PLAINTEXT")
-        , h = t.get("SWE_CTRL_DATE_TIME_PICK")
-        , p = t.get("SWE_CTRL_DATE_PICK")
-        , d = t.get("SWE_CTRL_CALC")
-        , v = t.get("SWE_CTRL_DATE_TZ_PICK")
-        , m = t.get("SWE_CTRL_CURRENCY_CALC")
-        , g = t.get("SWE_CTRL_TEXT")
-        , y = t.get("SWE_CTRL_TEXTAREA")
-        , b = t.get("SWE_CTRL_PWD")
-        , w = t.get("SWE_CTRL_RTCEMBEDDED")
-        , E = t.get("SWE_CTRL_RTCEMBEDDEDTEXTONLY")
-        , S = t.get("SWE_CTRL_RTCEMBEDDEDLINKFIELD")
-        , x = t.get("SWE_CTRL_RTCPOPUP")
-        , T = t.get("SWE_CTRL_RTCIO")
-        , N = t.get("SWE_CTRL_INKDATA")
-        , C = t.get("SWE_CTRL_LINK")
-        , k = t.get("SWE_CTRL_LABEL")
-        , L = t.get("SWE_CTRL_URL")
-        , A = t.get("SWE_CTRL_MAILTO")
+        , r = consts.get("SWE_PST_BUTTON_CTRL")
+        , i = consts.get("SWE_CTRL_DETAIL")
+        , s = consts.get("SWE_CTRL_MVG")
+        , o = consts.get("SWE_CTRL_PICK")
+        , u = consts.get("SWE_CTRL_RADIO")
+        , a = consts.get("SWE_CTRL_CHECKBOX")
+        , f = consts.get("SWE_CTRL_COMBOBOX")
+        , controlChart = consts.get("SWE_CTRL_CHART")
+        , h = consts.get("SWE_CTRL_DATE_TIME_PICK")
+        , p = consts.get("SWE_CTRL_DATE_PICK")
+        , d = consts.get("SWE_CTRL_CALC")
+        , v = consts.get("SWE_CTRL_DATE_TZ_PICK")
+        , m = consts.get("SWE_CTRL_CURRENCY_CALC")
+        , g = consts.get("SWE_CTRL_TEXT")
+        , y = consts.get("SWE_CTRL_TEXTAREA")
+        , b = consts.get("SWE_CTRL_PWD")
+        , w = consts.get("SWE_CTRL_RTCEMBEDDED")
+        , controlRTCEmbText = consts.get("SWE_CTRL_RTCEMBEDDEDTEXTONLY")
+        , S = consts.get("SWE_CTRL_RTCEMBEDDEDLINKFIELD")
+        , x = consts.get("SWE_CTRL_RTCPOPUP")
+        , T = consts.get("SWE_CTRL_RTCIO")
+        , N = consts.get("SWE_CTRL_INKDATA")
+        , C = consts.get("SWE_CTRL_LINK")
+        , k = consts.get("SWE_CTRL_LABEL")
+        , controlURL = consts.get("SWE_CTRL_URL")
+        , A = consts.get("SWE_CTRL_MAILTO")
         , O = /(About Record Applet\w*)|(About SRF Applet\w*)|(About Siebel Applet\w*)|(About View Applet\w*)|(Record Count Applet\w*)|(Technical Support Applet\w*)/
-        , M = t.get("SWE_CTRL_EFFDAT")
-        , _ = t.get("SWE_CTRL_IMAGECONTROL")
-        , D = t.get("SWE_CTRL_FILE")
-        , P = t.get("SWE_PST_COL")
-        , H = t.get("SWE_PST_APPLET_MODE_QUERY")
-        , B = t.get("SWE_PST_APPLET_MODE_EDIT")
-        , j = t.get("SWE_PST_APPLET_MODE_NEW");
+        , M = consts.get("SWE_CTRL_EFFDAT")
+        , _ = consts.get("SWE_CTRL_IMAGECONTROL")
+        , D = consts.get("SWE_CTRL_FILE")
+        , P = consts.get("SWE_PST_COL")
+        , H = consts.get("SWE_PST_APPLET_MODE_QUERY")
+        , B = consts.get("SWE_PST_APPLET_MODE_EDIT")
+        , j = consts.get("SWE_PST_APPLET_MODE_NEW");
       return SiebelJS.Extend(F, SiebelAppFacade.IPRBasePR),
         F.prototype.Init = function () {
-          SiebelAppFacade.IPRPhysicalRenderer.superclass.Init.call(this),
+          // SiebelAppFacade.IPRPhysicalRenderer.superclass.Init.call(this);
             // this.AttachPMBinding("RemoveControls", attRenameControls),
             // this.AttachPMBinding("UpdateQuickPickInfo", this.UpdatePick),
             // this.AttachPMBinding("UpdateAppletMessage", attUpdateAppletMessage),
             // this.AttachPMBinding("UpdateCurrencyCalcInfo", attUpdateCurrencyCalcInfo),
-            this.AttachPMBinding("UpdateConditionals", attUpdateConditionals),
-            this.AttachPMBinding("ProcessCancelQueryPopup", W),
-            this.AttachPMBinding("FocusOnApplet", dt),
-            this.AttachPMBinding("HandleCtrlDefChange", this.RefreshControl),
-            this.AttachPMBinding("SetCanInvokeState", X),
-            this.AttachPMBinding("BeginQueryState", gt),
-            this.AttachPMBinding("EndQueryState", yt),
-            this.AttachPMBinding("UpdateRowCounter", bt),
-            this.AttachPMBinding("ShowPopup", this.ShowPopup),
-            this.AttachPMBinding("isControlPopupOpen", at),
-            this.AttachPMBinding("MaskLeaveField", this.MaskLeaveField),
-            this.AttachPMBinding("ShowSelection", this.ShowSelection),
-            this.AttachPMBinding("ResetAppletState", this.ResetRendererState),
-            this.AttachPMBinding("RefreshData", this.BindData),
-            this.AttachPMBinding("FieldChange", this.SetControlValue),
-            this.AttachPMBinding("UpdateStateChange", this.UpdateUIControls),
-            this.AttachPMBinding("InvokeStateChange", this.UpdateUIButtons),
-            this.AttachPMBinding("GetPhysicalControlValue", this.GetPhysicalControlValue),
-            this.AttachPMBinding("SetFocusToCtrl", this.SetFocusToControl),
-            this.AttachPMBinding("FocusFirstControl", this.FocusFirstControl),
-            this.AttachPMBinding("SetHighlightState", pt),
-            this.AttachPMBinding("UpdateUI", function () {
-              this.GetPM().Get("UpdateUI") && this.ShowSelection()
-            }),
-            this.AttachPMBinding("OnCommitStateChange", I);
-          var e = SiebelApp.S_App.PluginBuilder.GetHoByName("ResponsiveFieldHO");
-          e && e.SetUp(this, $("#s_" + this.GetPM().Get("GetFullId") + "_div"))
+            // this.AttachPMBinding("UpdateConditionals", attUpdateConditionals),
+            // this.AttachPMBinding("ProcessCancelQueryPopup", attProcessCancelQueryPopup),
+            // this.AttachPMBinding("FocusOnApplet", attFocusOnApplet),
+            // this.AttachPMBinding("HandleCtrlDefChange", this.RefreshControl),
+            // this.AttachPMBinding("SetCanInvokeState", attSetCanInvokeState),
+            // this.AttachPMBinding("BeginQueryState", attBeginQueryState),
+            // this.AttachPMBinding("EndQueryState", attEndQueryState),
+            // this.AttachPMBinding("UpdateRowCounter", attUpdateRowCounter),
+            // this.AttachPMBinding("ShowPopup", this.ShowPopup),
+            // this.AttachPMBinding("isControlPopupOpen", attisControlPopupOpen),
+            // this.AttachPMBinding("MaskLeaveField", this.MaskLeaveField),
+            // this.AttachPMBinding("ShowSelection", this.ShowSelection),
+            // this.AttachPMBinding("ResetAppletState", this.ResetRendererState),
+            // this.AttachPMBinding("RefreshData", this.BindData),
+            this.AttachPMBinding("FieldChange", this.SetControlValue), // LOV disappeared
+            // this.AttachPMBinding("UpdateStateChange", this.UpdateUIControls),
+            // this.AttachPMBinding("InvokeStateChange", this.UpdateUIButtons),
+            this.AttachPMBinding("GetPhysicalControlValue", this.GetPhysicalControlValue); // LOV disappeared
+            // this.AttachPMBinding("SetFocusToCtrl", this.SetFocusToControl),
+            // this.AttachPMBinding("FocusFirstControl", this.FocusFirstControl),
+            // this.AttachPMBinding("SetHighlightState", attSetHighlightState),
+            // this.AttachPMBinding("UpdateUI", function () {
+            //   this.GetPM().Get("UpdateUI") && this.ShowSelection()
+            // }),
+            // this.AttachPMBinding("OnCommitStateChange", attOnCommitStateChange);
+          // var e = SiebelApp.S_App.PluginBuilder.GetHoByName("ResponsiveFieldHO");
+          // e && e.SetUp(this, $("#s_" + this.GetPM().Get("GetFullId") + "_div"))
         }
         ,
         F.prototype.RefreshControl = function (e) {
@@ -817,9 +817,9 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         ,
         F.prototype.ShowUI = function () {
           SiebelAppFacade.IPRPhysicalRenderer.superclass.ShowUI.call(this);
-          var n = this.GetPM(), r = n.Get(t.get("SWE_VIS_MODE_LIST")), i = n.Get(t.get("SWE_LDC_VIS_MODE_LIST")), s = r ? r.length : 0, o = i ? i.length : 0, u = n.Get("GetFullId"), a = n.Get("GetPlaceholder"), f, l, c = n.Get(t.get("SWE_VIS_MODE_DEFAULT")), h = "<div align='center' id = 's_div_" + a + "_VisualModes" + "' " + "class = " + "'" + "siebui-viz-buttonbar AppletButtons" + "'" + ">";
+          var n = this.GetPM(), r = n.Get(consts.get("SWE_VIS_MODE_LIST")), i = n.Get(consts.get("SWE_LDC_VIS_MODE_LIST")), s = r ? r.length : 0, o = i ? i.length : 0, u = n.Get("GetFullId"), a = n.Get("GetPlaceholder"), f, l, c = n.Get(consts.get("SWE_VIS_MODE_DEFAULT")), h = "<div align='center' id = 's_div_" + a + "_VisualModes" + "' " + "class = " + "'" + "siebui-viz-buttonbar AppletButtons" + "'" + ">";
           n.AddProperty("IsTaggedApplet", O.test(n.Get("GetName"))),
-            X.call(this),
+            attSetCanInvokeState.call(this),
             this.CacheState("Init");
           var p = $("#s_" + u + "_div");
           p.addClass(" siebui-applet siebui-form "),
@@ -883,7 +883,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
           o = this.GetUIWrapper(t),
             o.ShowUI(),
             n.Get("IsInQueryMode") && o.BeginQuery(),
-            s = i === L || i === E || o.constructor.name === "BasePW";
+            s = i === controlURL || i === controlRTCEmbText || o.constructor.name === "BasePW";
           var u;
           if (s || r) {
             var a = arguments[1] ? arguments[1] : t.GetInputName()
@@ -907,11 +907,11 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             l = null
           }
           switch (t.GetUIType()) {
-            case L:
+            case controlURL:
               t.GetName() === "BookmarkImage" && n.GetPMName() === "Bookmark URL Popup Applet (SWE)_PM" && (u.remove(),
                 $($("table.FormSection")[0]).remove());
               break;
-            case E:
+            case controlRTCEmbText:
               var d = u.siblings(".siebui-email-rtc-stripbtn").find(".siebui-email-rtc-stripbtn-link");
               if (d.length > 0) {
                 var v = SiebelApp.S_App.LocaleObject.GetLocalString("RTCStripHTML");
@@ -956,7 +956,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         F.prototype.BindEvents = function (n, r) {
           SiebelAppFacade.IPRPhysicalRenderer.superclass.BindEvents.call(this);
           var i = this.GetPM()
-            , s = i.Get(t.get("SWE_VIS_MODE_LIST"))
+            , s = i.Get(consts.get("SWE_VIS_MODE_LIST"))
             , o = s ? s.length : 0
             , u = i.Get("GetFullId")
             , a = ""
@@ -984,7 +984,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
                 }
                   ,
                   i.SetProperty("VisualMode", e.data.visMode),
-                  r.OnControlEvent(t.get("PHYEVENT_INVOKE_CONTROL"), r.Get(t.get("SWE_VIS_MODE_FLIP_METHOD")), i, s)
+                  r.OnControlEvent(consts.get("PHYEVENT_INVOKE_CONTROL"), r.Get(consts.get("SWE_VIS_MODE_FLIP_METHOD")), i, s)
               });
           if (this.constructor == F) {
             var h = $("#SWEBottomHidden" + i.Get("GetId"));
@@ -1008,7 +1008,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
               if (SiebelApp.S_App.GetPopupPM().Get("state") === consts.get("POPUP_STATE_VISIBLE") && $(e.currentTarget).find("div[id^='s_S_A'][id$='_div']").find($(e.target)).length > 0)
                 return;
               var n = e.data.ctx;
-              n.IsValidClick(e.srcElement || e.target) && n && n.GetPM() && (n.GetPM().Get("IsActive") || n.GetPM().OnControlEvent(t.get("PHYEVENT_APPLET_FOCUS")),
+              n.IsValidClick(e.srcElement || e.target) && n && n.GetPM() && (n.GetPM().Get("IsActive") || n.GetPM().OnControlEvent(consts.get("PHYEVENT_APPLET_FOCUS")),
                 ht.call(n, e))
             }),
             $("#" + l + " #s_" + i.Get("GetFullId") + "_div").on("click", ".siebui-task-assist-list-item", {
@@ -1036,7 +1036,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
               for (var s in n)
                 if (n.hasOwnProperty(s)) {
                   var o = n[s];
-                  o.GetInputName() === i && e.data.ctx.GetPM().OnControlEvent(t.get("PHYEVENT_DRILLDOWN_FORM"), o)
+                  o.GetInputName() === i && e.data.ctx.GetPM().OnControlEvent(consts.get("PHYEVENT_DRILLDOWN_FORM"), o)
                 }
             });
           var d = i.ExecuteMethod("GetControlId");
@@ -1044,7 +1044,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             $(d).bind("change", {
               ctx: this
             }, function (e) {
-              e.data.ctx.GetPM().OnControlEvent(t.get("PHYEVENT_INVOKE_TOGGLE"), $(this).val())
+              e.data.ctx.GetPM().OnControlEvent(consts.get("PHYEVENT_INVOKE_TOGGLE"), $(this).val())
             })),
             p = null;
           if (r === !0)
@@ -1062,12 +1062,12 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             n.cb = function () {
               var e = Array.prototype.slice.call(arguments)
                 , n = e ? e[e.length - 1] : "";
-              n !== t.get("SWE_RPC_PROP_NEW_LAYOUT") && n !== t.get("SWE_RPC_PROP_REFRESH_LAYOUT") && n !== t.get("SWE_RPC_PROP_NEW_PAGE") && SiebelApp.S_App.uiStatus.Free()
+              n !== consts.get("SWE_RPC_PROP_NEW_LAYOUT") && n !== consts.get("SWE_RPC_PROP_REFRESH_LAYOUT") && n !== consts.get("SWE_RPC_PROP_NEW_PAGE") && SiebelApp.S_App.uiStatus.Free()
             }
             ;
           var r = e.GetMethodPropSet()
             , i = r.Clone();
-          this.GetPM().OnControlEvent(t.get("PHYEVENT_INVOKE_CONTROL"), e.GetMethodName(), i, n)
+          this.GetPM().OnControlEvent(consts.get("PHYEVENT_INVOKE_CONTROL"), e.GetMethodName(), i, n)
         }
         ,
         F.prototype.IsValidClick = function (t) {
@@ -1093,7 +1093,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             case a:
             case u:
             case A:
-            case L:
+            case controlURL:
             case C:
             case k:
             case p:
@@ -1107,7 +1107,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             case M:
             case m:
             case w:
-            case l:
+            case controlChart:
             case d:
             case N:
               this.GetUIWrapper(n).BindEvents();
@@ -1142,7 +1142,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
                   }
               });
               break;
-            case E:
+            case controlRTCEmbText:
               var T = c.siblings(".siebui-email-rtc-stripbtn").find(".siebui-email-rtc-stripbtn-link");
               T.length > 0 && T.bind("click", function () {
                 var e = SiebelApp.S_App.LocaleObject.GetLocalString("RTCStripHtmlConfirm")
@@ -1171,7 +1171,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
                     , s = $(this).is("input,select,textarea") ? $(this).val() : $(this).text() ? $(this).text().trim() : ""
                     , o = r.ExecuteMethod("CanUpdate", i.GetName()) ? s : r.ExecuteMethod("GetUIFieldValue", i, r.Get("GetSelection"));
                   V.call(n, i, this, !1);
-                  var u = r.OnControlEvent(t.get("PHYEVENT_CONTROL_BLUR"), i, o);
+                  var u = r.OnControlEvent(consts.get("PHYEVENT_CONTROL_BLUR"), i, o);
                   V.call(n, i, this, !0)
                 }),
                 c.bind("focus", {
@@ -1180,7 +1180,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
                 }, function (e) {
                   V.call(e.data.ctx, e.data.ctrl, this, !1);
                   var n = $(this).is("input,select,textarea") ? $(this).val() : $(this).text() ? $(this).text().trim() : "";
-                  e.data.ctx.GetPM().OnControlEvent(t.get("PHYEVENT_CONTROL_FOCUS"), e.data.ctrl, n)
+                  e.data.ctx.GetPM().OnControlEvent(consts.get("PHYEVENT_CONTROL_FOCUS"), e.data.ctrl, n)
                 })
           }
           c = null
@@ -1216,7 +1216,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
                 case $.ui.keyCode.TAB:
                   i = st.call(this, e, o, n);
                   break;
-                case t.get("SWE_F2_KEY"):
+                case consts.get("SWE_F2_KEY"):
                   i = rt.call(this, e, o, n);
                   break;
                 default:
@@ -1236,7 +1236,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             e = n ? undefined : e;
           if (this.inProgress || e === !0)
             return !1;
-          var r = this.GetPM(), i = r.Get("FocusCtrlOnNL"), s = [t.get("SWE_QUERY_COMBO_BOX"), t.get("SWE_QUERY_SEARCH_SPEC"), t.get("SWE_POPUP_QUERY_COMBO_BOX"), t.get("SWE_POPUP_QUERY_SEARCH_SPEC")], o = s.length, u, a, f;
+          var r = this.GetPM(), i = r.Get("FocusCtrlOnNL"), s = [consts.get("SWE_QUERY_COMBO_BOX"), consts.get("SWE_QUERY_SEARCH_SPEC"), consts.get("SWE_POPUP_QUERY_COMBO_BOX"), consts.get("SWE_POPUP_QUERY_SEARCH_SPEC")], o = s.length, u, a, f;
           for (var l = 0; l < o; l++)
             a = s[l],
               u = r.ExecuteMethod("GetControl", a),
@@ -1244,7 +1244,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
                 f && r.ExecuteMethod("LeaveField", u, f, !0));
           var c = r.Get("GetControls", {
             getDiff: !0,
-            stateName: t.get("CTRLVALUE"),
+            stateName: consts.get("CTRLVALUE"),
             index: e,
             CtrlMap: n
           }), h = [], p;
@@ -1304,46 +1304,44 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
           r ? (u.length === 1 ? u.html(r) : t.after("<span class='" + n + "'>" + r + "</span>"),
             e.DecideVisibility(u, a)) : u.styleHide(),
             i || !i && e.IsEmpty(s) ? e.DecideVisibility(t.val(s), a) : t.styleHide()
-        }
-        ,
-        F.prototype.SetControlValue = function (t, n, r) {
-          var i = this.GetPM()
-            , s = r === undefined || r === null ? i.Get("GetSelection") : r
-            , o = !1;
-          switch (t.GetUIType()) {
-            case L:
-            case l:
-            case E:
+        },
+        F.prototype.SetControlValue = function (control, value, r) {
+          var pm = this.GetPM();
+          var s = r === undefined || r === null ? pm.Get("GetSelection") : r;
+          var o = !1;
+          switch (control.GetUIType()) {
+            case controlURL:
+            case controlChart:
+            case controlRTCEmbText:
               break;
             default:
-              this.GetUIWrapper(t).SetValue(n, s),
-                o = !0
+              this.GetUIWrapper(control).SetValue(value, s);
+              o = !0
           }
           if (!o) {
             var u = r ? r : 0
-              , a = $("#" + t.GetInputName())[u] || $("[name=" + t.GetInputName() + "]")[u];
+              , a = $("#" + control.GetInputName())[u] || $("[name=" + control.GetInputName() + "]")[u];
             a || (o = !0);
             if (!o) {
               a = $(a);
-              switch (t.GetUIType()) {
-                case L:
-                  if (t.GetName() === "BookmarkURL" && i.GetPMName() === "Bookmark URL Popup Applet (SWE)_PM")
-                    var f = a.replaceWith('<textarea name="' + t.GetInputName() + '" class="siebui-bookmark-textarea" readonly="readonly" rows="3" cols="150" value=\'' + n + "'>" + n + "</textarea>");
+              switch (control.GetUIType()) {
+                case controlURL:
+                  if (control.GetName() === "BookmarkURL" && pm.GetPMName() === "Bookmark URL Popup Applet (SWE)_PM")
+                    var f = a.replaceWith('<textarea name="' + control.GetInputName() + '" class="siebui-bookmark-textarea" readonly="readonly" rows="3" cols="150" value=\'' + value + "'>" + value + "</textarea>");
                   else
-                    this.GetUIWrapper(t).SetValue(n, s);
+                    this.GetUIWrapper(control).SetValue(value, s);
                   break;
-                case l:
-                  this.GetUIWrapper(t, !0).SetValue(n, s);
+                case controlChart:
+                  this.GetUIWrapper(control, !0).SetValue(value, s);
                   break;
-                case E:
+                case controlRTCEmbText:
                   var c = a.next("textarea");
-                  c.length > 0 && (e.IsEmpty(n) ? c.val("") : c.val(n))
+                  c.length > 0 && (e.IsEmpty(value) ? c.val("") : c.val(value))
               }
             }
             a = null
           }
-        }
-        ,
+        },
         F.prototype.EnableControl = function (n, i, l) {
           var c, S, x;
           if (!vt(n))
@@ -1362,20 +1360,20 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             case o:
             case m:
             case A:
-            case L:
+            case controlURL:
             case k:
             case w:
             case v:
             case h:
             case d:
-              this.GetUIWrapper(n).SetState(t.get("EDITABLE"), i, T);
+              this.GetUIWrapper(n).SetState(consts.get("EDITABLE"), i, T);
               return;
             case C:
             case r:
-              this.GetUIWrapper(n).SetState(t.get("ENABLE"), i, T);
+              this.GetUIWrapper(n).SetState(consts.get("ENABLE"), i, T);
               return
           }
-          if (n.GetUIType() == E) {
+          if (n.GetUIType() == controlRTCEmbText) {
             c = $("[name=" + n.GetInputName() + "]");
             if (c.length > 0) {
               c.attr("readOnly", !i).attr("aria-readonly", !i);
@@ -1386,12 +1384,12 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             c = $("#" + n.GetInputName()),
               c = c.length > 0 ? c : $("[name=" + n.GetInputName() + "]"),
               c.eq(c.length > l ? l : 0).removeAttr("readOnly").attr("readOnly", !i).attr("aria-readonly", !i);
-          c.length === 1 ? this.CacheState(t.get("EDITABLE"), {
+          c.length === 1 ? this.CacheState(consts.get("EDITABLE"), {
             stateValue: i,
             index: 0,
             ctrlName: n.GetName(),
             oneEl: !0
-          }) : this.CacheState(t.get("EDITABLE"), {
+          }) : this.CacheState(consts.get("EDITABLE"), {
             stateValue: i,
             index: l,
             ctrlName: n.GetName()
@@ -1474,7 +1472,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             , o = i[n]
             , u = this.GetPM().Get("GetSelection");
           if (o)
-            return e.IsEmpty(o.GetMethodName()) ? this.GetUIWrapper(o).SetState(t.get("FOCUS"), r, u) : (s = $("#" + (o.GetInputName() + "_Ctrl")),
+            return e.IsEmpty(o.GetMethodName()) ? this.GetUIWrapper(o).SetState(consts.get("FOCUS"), r, u) : (s = $("#" + (o.GetInputName() + "_Ctrl")),
               r ? $(s).focus() : $(s).blur()),
               !0
         }
@@ -1499,21 +1497,57 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         ,
         F.prototype.ShowPopup = function (e) {
           this.GetUIWrapper(e).OpenPopup()
-        }
-        ,
-        F.prototype.GetPhysicalControlValue = function (e) {
-          var t, n, r = this.GetPM(), i = r.Get("GetSelection");
-          if (e) {
-            r.AddProperty("PhysicalCtrlVal", n),
-              t = $("[name='" + e.GetInputName() + "']"),
-              n = this.GetUIWrapper(e).GetValue(i) || "",
-              r.Get("IsInQueryMode") && e.GetCaseSensitive() && n === SiebelApp.S_App.LocaleObject.GetLocalString("IDS_SWE_CSQ_WATERMARK") && (n = "");
-            var s = e.GetUIType();
-            switch (s) {
-              case f:
-                t.data("iscache") ? n = r.ExecuteMethod("GetFormattedFieldValue", e) : n = this.FormatDDInQueryMode(e, n)
+        },
+        F.prototype.SetControlValue = function (control, value, r) {
+          var pm = this.GetPM();
+          var s = r === undefined || r === null ? pm.Get("GetSelection") : r;
+          var o = !1;
+          switch (control.GetUIType()) {
+            case controlURL:
+            case controlChart:
+            case controlRTCEmbText:
+              break;
+            default:
+              this.GetUIWrapper(control).SetValue(value, s);
+              o = !0
+          }
+          if (!o) {
+            var u = r ? r : 0
+              , a = $("#" + control.GetInputName())[u] || $("[name=" + control.GetInputName() + "]")[u];
+            a || (o = !0);
+            if (!o) {
+              a = $(a);
+              switch (control.GetUIType()) {
+                case controlURL:
+                  if (control.GetName() === "BookmarkURL" && pm.GetPMName() === "Bookmark URL Popup Applet (SWE)_PM")
+                    var f = a.replaceWith('<textarea name="' + control.GetInputName() + '" class="siebui-bookmark-textarea" readonly="readonly" rows="3" cols="150" value=\'' + value + "'>" + value + "</textarea>");
+                  else
+                    this.GetUIWrapper(control).SetValue(value, s);
+                  break;
+                case controlChart:
+                  this.GetUIWrapper(control, !0).SetValue(value, s);
+                  break;
+                case controlRTCEmbText:
+                  var c = a.next("textarea");
+                  c.length > 0 && (e.IsEmpty(value) ? c.val("") : c.val(value))
+              }
             }
-            r.AddProperty("PhysicalCtrlVal", n)
+            a = null
+          }
+        },
+        F.prototype.GetPhysicalControlValue = function (control) {
+          var t, n, pm = this.GetPM(), i = pm.Get("GetSelection");
+          if (control) {
+            pm.AddProperty("PhysicalCtrlVal", n),
+              t = $("[name='" + control.GetInputName() + "']"),
+              n = this.GetUIWrapper(control).GetValue(i) || "",
+              pm.Get("IsInQueryMode") && control.GetCaseSensitive() && n === SiebelApp.S_App.LocaleObject.GetLocalString("IDS_SWE_CSQ_WATERMARK") && (n = "");
+            var uiType = control.GetUIType();
+            switch (uiType) {
+              case f:
+                t.data("iscache") ? n = pm.ExecuteMethod("GetFormattedFieldValue", control) : n = this.FormatDDInQueryMode(control, n)
+            }
+            pm.AddProperty("PhysicalCtrlVal", n)
           }
         }
         ,

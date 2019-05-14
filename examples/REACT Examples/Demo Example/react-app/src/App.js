@@ -45,6 +45,7 @@ const App = () => {
 
   const [isOpenSnackbar, toggleSnackbar] = useState(false);
   const [snackbarText, setSnackbarText] = useState("");
+  const [queryMode, setQueryMode] = useState(false);
 
   const saveRecord = () => {
     n19Helper.writeRecord(
@@ -98,7 +99,7 @@ const App = () => {
         </Grid>
       </Grid>
 
-      <Form n19Helper={n19Helper} accountName={state.controls.Name.value} />
+      <Form n19Helper={n19Helper} accountName={state.controls.Name.value} queryMode={queryMode}/>
 
       <Divider variant="middle" />
 
@@ -121,7 +122,7 @@ const App = () => {
             <Button
               disabled={!state.methods.NewQuery}
               style={{ width: "100%" }}
-              onClick={() => n19Helper.invokeMethod("NewQuery")}
+              onClick={() => {setQueryMode(true); n19Helper.invokeMethod("NewQuery")}}
               variant="contained"
               color="primary"
             >
@@ -136,12 +137,12 @@ const App = () => {
             <Button
               disabled={state.controls.state !== 3}
               style={{ width: "100%" }}
-              onClick={() => n19Helper.invokeMethod("ExecuteQuery")}
+              onClick={() => {setQueryMode(false); n19Helper.invokeMethod("ExecuteQuery")}}
               variant="contained"
               color="primary"
             >
               <Search />
-              &nbsp;Run
+              &nbsp;Run Query
             </Button>
           </Grid>
         ) : null}

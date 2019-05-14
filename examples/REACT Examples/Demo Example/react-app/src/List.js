@@ -17,8 +17,12 @@ const ContactsList = ({ accountName }) => {
 
   // subscribe to account name
   useEffect(() => {
-    const currentContacts = n19Helper.getRecordSet();
-    setContacts(currentContacts);
+    if(accountName) {
+      const currentContacts = n19Helper.getRecordSet();
+      setContacts(currentContacts);
+    }
+    else
+      setContacts([])
   }, [accountName]);
 
   return (

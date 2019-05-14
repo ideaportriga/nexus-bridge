@@ -10,6 +10,7 @@ const SelectField = ({
   controlName,
   controlState,
   onChange,
+  queryMode,
   style
 }) => (
   <div>
@@ -18,7 +19,7 @@ const SelectField = ({
     </InputLabel>
     <Select
       id={controlName}
-      error={!!controlState.required && !controlState.value}
+      error={!queryMode && !!controlState.required && !controlState.value}
       value={controlState.value || ""}
       displayEmpty={controlState.value === "" ? true : false}
       input={

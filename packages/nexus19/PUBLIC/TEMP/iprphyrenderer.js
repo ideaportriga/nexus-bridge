@@ -732,6 +732,9 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         , j = consts.get("SWE_PST_APPLET_MODE_NEW");
       return SiebelJS.Extend(F, SiebelAppFacade.IPRBasePR),
         F.prototype.Init = function () {
+          this.GetPM().AttachNotificationHandler('SWE_PROP_BC_NOTI_BEGIN', () => {
+            __internal = {};
+          });
             // SiebelAppFacade.IPRPhysicalRenderer.superclass.Init.call(this);
             // this.AttachPMBinding("RemoveControls", attRenameControls),
             // this.AttachPMBinding("UpdateQuickPickInfo", this.UpdatePick),

@@ -1,7 +1,7 @@
 typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace("SiebelAppFacade.IPRPhysicalRenderer"),
   define("siebel/iprphyrenderer", ["siebel/iprbasephyrenderer", "siebel/htmltmplmgr"], function () {
     return SiebelAppFacade.IPRPhysicalRenderer = function () {
-      var internal = {};
+      window.__internal = {}; // TEMP: KEEP IT IN WINDOW FOR NOW
       function F(e) {
         SiebelAppFacade.IPRPhysicalRenderer.superclass.constructor.call(this, e);
         var t = null;
@@ -435,19 +435,19 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         var r = this.GetUIWrapper(t).HandleKey(e, n);
         return r === !0
       }
-      function Y(e, t, n) {
+      function Y(e, control, n) {
         var r = n.ctrlKey || n.altKey || n.shiftKey && n.keyCode == 16;
-        t.GetUIType() == f && !r && e.autocomplete("option", "source").length == 0 && this.GetUIWrapper(t).HandleKey(e, n)
+        control.GetUIType() == controlComboBox && !r && e.autocomplete("option", "source").length == 0 && this.GetUIWrapper(control).HandleKey(e, n)
       }
       function Z(e, t, n) {
         var r = !1;
         return n.altKey && (r = tt.call(this, e, t, n)),
           r
       }
-      function et(e, n, i) {
+      function et(e, control, i) {
         var s = !1
           , u = this.GetPM();
-        switch (n.GetUIType()) {
+        switch (control.GetUIType()) {
           case y:
           case controlURL:
           case N:
@@ -465,11 +465,11 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
           case o:
             i.preventDefault();
             break;
-          case f:
-            it.call(this, e, n, i)
+          case controlComboBox:
+            it.call(this, e, control, i)
         }
-        return (n.GetUIType() === d || n.GetUIType() == f && e.attr("autocomplete")) && this.GetUIWrapper(n).HandleKey(e, i),
-          s ? s : u.OnControlEvent(consts.get("PHYEVENT_ENTER_KEY_PRESS"), n)
+        return (control.GetUIType() === d || control.GetUIType() == controlComboBox && e.attr("autocomplete")) && this.GetUIWrapper(control).HandleKey(e, i),
+          s ? s : u.OnControlEvent(consts.get("PHYEVENT_ENTER_KEY_PRESS"), control)
       }
       function tt(e, n, r) {
         var i = this.GetPM()
@@ -484,8 +484,8 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         return n.data.readOnly ? !1 : ($(e).nextAll("span[id$='_icon']").click(),
           !0)
       }
-      function it(e, t, n) {
-        if (t && t.GetUIType() == f && e.attr("autocomplete") && t.IsBoundedPick() && e.autocomplete("widget").not(":hidden").length > 0) {
+      function it(e, control, n) {
+        if (control && control.GetUIType() == controlComboBox && e.attr("autocomplete") && control.IsBoundedPick() && e.autocomplete("widget").not(":hidden").length > 0) {
           var r = e.autocomplete("widget").find(".ui-state-focus");
           r.length && e.val(r.text()),
             r = null
@@ -569,7 +569,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
           if (e) {
             var t = $($('input[name="' + e.GetInputName() + '"]')[0] || $("#" + e.GetInputName())[0]);
             switch (e.GetUIType()) {
-              case f:
+              case controlComboBox:
                 t.autocomplete("close");
                 break;
               case p:
@@ -702,7 +702,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         , o = consts.get("SWE_CTRL_PICK")
         , u = consts.get("SWE_CTRL_RADIO")
         , a = consts.get("SWE_CTRL_CHECKBOX")
-        , f = consts.get("SWE_CTRL_COMBOBOX")
+        , controlComboBox = consts.get("SWE_CTRL_COMBOBOX")
         , controlChart = consts.get("SWE_CTRL_CHART")
         , h = consts.get("SWE_CTRL_DATE_TIME_PICK")
         , p = consts.get("SWE_CTRL_DATE_PICK")
@@ -732,7 +732,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         , j = consts.get("SWE_PST_APPLET_MODE_NEW");
       return SiebelJS.Extend(F, SiebelAppFacade.IPRBasePR),
         F.prototype.Init = function () {
-          // SiebelAppFacade.IPRPhysicalRenderer.superclass.Init.call(this);
+            // SiebelAppFacade.IPRPhysicalRenderer.superclass.Init.call(this);
             // this.AttachPMBinding("RemoveControls", attRenameControls),
             // this.AttachPMBinding("UpdateQuickPickInfo", this.UpdatePick),
             // this.AttachPMBinding("UpdateAppletMessage", attUpdateAppletMessage),
@@ -752,9 +752,11 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             // this.AttachPMBinding("ResetAppletState", this.ResetRendererState),
             // this.AttachPMBinding("RefreshData", this.BindData),
             this.AttachPMBinding("FieldChange", this.SetControlValue), // LOV disappeared
+            this.AttachPMBinding("FieldChange", this.N19SetControlValue);
             // this.AttachPMBinding("UpdateStateChange", this.UpdateUIControls),
             // this.AttachPMBinding("InvokeStateChange", this.UpdateUIButtons),
             this.AttachPMBinding("GetPhysicalControlValue", this.GetPhysicalControlValue); // LOV disappeared
+            this.AttachPMBinding("GetPhysicalControlValue", this.N19GetPhysicalControlValue);
             // this.AttachPMBinding("SetFocusToCtrl", this.SetFocusToControl),
             // this.AttachPMBinding("FocusFirstControl", this.FocusFirstControl),
             // this.AttachPMBinding("SetHighlightState", attSetHighlightState),
@@ -1074,22 +1076,22 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
           return e.IndexOf(["input", "textarea", "button", "a", "img", "select"], t.tagName.toLowerCase()) === -1 || (t.type || "").toLowerCase() === "file"
         }
         ,
-        F.prototype.FormatDDInQueryMode = function (e, t) {
+        F.prototype.FormatDDInQueryMode = function (control, t) {
           if (this.GetPM().Get("IsInQueryMode")) {
             var n = this.GetPM().Get("DDUserSelected");
-            n && t && t.charAt(0) !== '"' && t.charAt(t.length - 1) !== '"' && n.ctrl === e && n.value === t && (t = '"' + t + '"',
+            n && t && t.charAt(0) !== '"' && t.charAt(t.length - 1) !== '"' && n.ctrl === control && n.value === t && (t = '"' + t + '"',
               this.GetPM().SetProperty("DDUserSelected", undefined))
           }
-          return t
-        }
-        ,
+          console.log('FormatDDInQueryMode', t);
+          return t;
+        },
         F.prototype.BindControlEvents = function (n) {
           switch (n.GetUIType()) {
             case r:
               if (n.GetMethodName() === "ClearSignature")
                 break;
             case i:
-            case f:
+            case controlComboBox:
             case a:
             case u:
             case A:
@@ -1227,8 +1229,8 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         }
         ,
         F.prototype.BindData = function () {
-          SiebelAppFacade.IPRPhysicalRenderer.superclass.BindData.call(this),
-            this.ShowSelection()
+          SiebelAppFacade.IPRPhysicalRenderer.superclass.BindData.call(this);
+          this.ShowSelection();
         }
         ,
         F.prototype.ShowSelection = function (e, n) {
@@ -1352,7 +1354,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             case u:
             case a:
             case p:
-            case f:
+            case controlComboBox:
             case g:
             case y:
             case b:
@@ -1499,6 +1501,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
           this.GetUIWrapper(e).OpenPopup()
         },
         F.prototype.SetControlValue = function (control, value, r) {
+          return; // TEMP
           var pm = this.GetPM();
           var s = r === undefined || r === null ? pm.Get("GetSelection") : r;
           var o = !1;
@@ -1535,22 +1538,38 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
             a = null
           }
         },
-        F.prototype.GetPhysicalControlValue = function (control) {
-          var t, n, pm = this.GetPM(), i = pm.Get("GetSelection");
+        F.prototype.N19SetControlValue = function (control, value, r) {
+          debugger;
+          console.log('N19SetControlValue start', __internal, arguments);
+          __internal[control.GetName()] = value;
+          console.log('N19SetControlValue end', __internal, arguments);
+        },
+        F.prototype.N19GetPhysicalControlValue = function (control) {
+          debugger;
+          console.log('N19GetPhysicalControlValue start', __internal, arguments);
           if (control) {
-            pm.AddProperty("PhysicalCtrlVal", n),
-              t = $("[name='" + control.GetInputName() + "']"),
-              n = this.GetUIWrapper(control).GetValue(i) || "",
-              pm.Get("IsInQueryMode") && control.GetCaseSensitive() && n === SiebelApp.S_App.LocaleObject.GetLocalString("IDS_SWE_CSQ_WATERMARK") && (n = "");
+            var pm = this.GetPM();
+            var val = __internal[control.GetName()];
+            pm.AddProperty("PhysicalCtrlVal", val);
+          }
+          console.log('N19GetPhysicalControlValue start', __internal, arguments);
+        },
+        F.prototype.GetPhysicalControlValue = function (control) {
+          return; // TEMP
+          var $element, val, pm = this.GetPM(), i = pm.Get("GetSelection");
+          if (control) {
+            pm.AddProperty("PhysicalCtrlVal", val);
+              $element = $("[name='" + control.GetInputName() + "']");
+              val = this.GetUIWrapper(control).GetValue(i) || "";
+              pm.Get("IsInQueryMode") && control.GetCaseSensitive() && val === SiebelApp.S_App.LocaleObject.GetLocalString("IDS_SWE_CSQ_WATERMARK") && (val = "");
             var uiType = control.GetUIType();
             switch (uiType) {
-              case f:
-                t.data("iscache") ? n = pm.ExecuteMethod("GetFormattedFieldValue", control) : n = this.FormatDDInQueryMode(control, n)
+              case controlComboBox:
+                $element.data("iscache") ? val = pm.ExecuteMethod("GetFormattedFieldValue", control) : val = this.FormatDDInQueryMode(control, val)
             }
-            pm.AddProperty("PhysicalCtrlVal", n)
+            pm.AddProperty("PhysicalCtrlVal", val);
           }
-        }
-        ,
+        },
         F
     }(),
       "SiebelAppFacade.IPRPhysicalRenderer"

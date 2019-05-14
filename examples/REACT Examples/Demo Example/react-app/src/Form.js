@@ -5,7 +5,7 @@ import InputField from "./components/InputField";
 import SelectField from "./components/SelectField";
 import SwitchField from "./components/SwitchField";
 
-const Form = ({ n19Helper, accountName }) => {
+const Form = ({ n19Helper, accountName, queryMode }) => {
   const initialState = {
     Name: {},
     AccountStatus: {},
@@ -118,6 +118,7 @@ const Form = ({ n19Helper, accountName }) => {
             controlName="Name"
             controlState={fromState["Name"]}
             onChange={handleChangeInput("Name")}
+            queryMode={queryMode}
             style={{ width: "100%" }}
           />
         </Grid>
@@ -127,6 +128,7 @@ const Form = ({ n19Helper, accountName }) => {
             controlName="Fund Eligible Flag"
             controlState={fromState["Fund Eligible Flag"]}
             onChange={handleChangeSwitch("Fund Eligible Flag")}
+            queryMode={queryMode}
           />
           &nbsp;Fund Eligible
         </Grid>
@@ -138,6 +140,7 @@ const Form = ({ n19Helper, accountName }) => {
             controlState={fromState["AccountStatus"]}
             onChange={handleChangeList("AccountStatus")}
             style={{ width: "100%" }}
+            queryMode={queryMode}
           >
             {accountStatusList}
           </SelectField>
@@ -148,6 +151,7 @@ const Form = ({ n19Helper, accountName }) => {
             controlState={fromState["AccountTypeCode"]}
             onChange={handleChangeList("AccountTypeCode")}
             style={{ width: "100%" }}
+            queryMode={queryMode}
           >
             {accountTypeCodeList}
           </SelectField>
@@ -158,6 +162,7 @@ const Form = ({ n19Helper, accountName }) => {
             controlState={fromState["Type"]}
             onChange={handleChangeList("Type")}
             style={{ width: "100%" }}
+            queryMode={queryMode}
           >
             {accountTypeList}
           </SelectField>

@@ -104,8 +104,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           });
 
           divId = "s_" + pm.Get('GetFullId') + "_div";
-          document.querySelector('#' + divId + ' form').style.display = 'none';
-          // document.querySelector('#' + divId + ' form').parentNode.removeChild('form');
+          // document.querySelector('#' + divId + ' form').style.display = 'none';
+          const el = document.querySelector('#' + divId + ' form');
+          el.parentNode.removeChild(el);
 
           // for commit pending indicator
           document.getElementById(divId).classList.add('siebui-applet', 'siebui-active');

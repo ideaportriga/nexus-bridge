@@ -99,10 +99,9 @@ export default class N19popupController {
   }
 
   closePopupApplet(applet) {
-    // TODO: check canInvokeMethod?
     let ret;
     if (applet) {
-      if (!this.canInvokeMethod('CloseApplet')) {
+      if (!applet.GetPModel().ExecuteMethod('CanInvokeMethod', 'CloseApplet')) {
         throw new Error('The method CloseApplet is not allowed!');
       }
       ret = applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');

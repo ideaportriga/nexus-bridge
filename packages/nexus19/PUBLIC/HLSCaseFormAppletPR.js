@@ -1,7 +1,7 @@
 if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
   SiebelJS.Namespace("SiebelAppFacade.HLSCaseFormAppletPR");
-  define("siebel/custom/HLSCaseFormAppletPR", ["siebel/custom/iprphyrenderer", "siebel/custom/vue.js", "siebel/custom/vuetify.js"],
+  define("siebel/custom/HLSCaseFormAppletPR", ["siebel/custom/nbphyrenderer", "siebel/custom/vue.js", "siebel/custom/vuetify.js"],
     function () {
       SiebelAppFacade.HLSCaseFormAppletPR = (function () {
 
@@ -9,7 +9,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.constructor.apply(this, arguments);
         }
 
-        SiebelJS.Extend(HLSCaseFormAppletPR, SiebelAppFacade.IPRPhysicalRenderer);
+        SiebelJS.Extend(HLSCaseFormAppletPR, SiebelAppFacade.NBPhysicalRenderer);
         var app;
         var divId;
         var n19helper;

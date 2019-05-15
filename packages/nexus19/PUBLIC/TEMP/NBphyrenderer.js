@@ -1,8 +1,8 @@
-typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace("SiebelAppFacade.IPRPhysicalRenderer"),
-  define("siebel/iprphyrenderer", ["siebel/iprbasephyrenderer", "siebel/htmltmplmgr"], function () {
-    return SiebelAppFacade.IPRPhysicalRenderer = function () {
+typeof SiebelAppFacade.NBPhysicalRenderer == "undefined" && (SiebelJS.Namespace("SiebelAppFacade.NBPhysicalRenderer"),
+  define("siebel/custom/nbphyrenderer", ["siebel/basephyrenderer", "siebel/htmltmplmgr"], function () {
+    return SiebelAppFacade.NBPhysicalRenderer = function () {
       function F(e) {
-        SiebelAppFacade.IPRPhysicalRenderer.superclass.constructor.call(this, e);
+        SiebelAppFacade.NBPhysicalRenderer.superclass.constructor.call(this, e);
         var t = null;
         this.SetFirstControl = function (e) {
           t = e
@@ -729,44 +729,44 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         , H = consts.get("SWE_PST_APPLET_MODE_QUERY")
         , B = consts.get("SWE_PST_APPLET_MODE_EDIT")
         , j = consts.get("SWE_PST_APPLET_MODE_NEW");
-      return SiebelJS.Extend(F, SiebelAppFacade.IPRBasePR),
+      return SiebelJS.Extend(F, SiebelAppFacade.BasePR),
         F.prototype.Init = function () {
           this.GetPM().AddProperty('n19internal', {});
           this.GetPM().AttachNotificationHandler('SWE_PROP_BC_NOTI_BEGIN', () => {
             this.GetPM().AddProperty('n19internal', {});
           });
-            // SiebelAppFacade.IPRPhysicalRenderer.superclass.Init.call(this);
-            // this.AttachPMBinding("RemoveControls", attRenameControls),
-            // this.AttachPMBinding("UpdateQuickPickInfo", this.UpdatePick),
-            // this.AttachPMBinding("UpdateAppletMessage", attUpdateAppletMessage),
-            // this.AttachPMBinding("UpdateCurrencyCalcInfo", attUpdateCurrencyCalcInfo),
-            // this.AttachPMBinding("UpdateConditionals", attUpdateConditionals),
-            // this.AttachPMBinding("ProcessCancelQueryPopup", attProcessCancelQueryPopup),
-            // this.AttachPMBinding("FocusOnApplet", attFocusOnApplet),
-            // this.AttachPMBinding("HandleCtrlDefChange", this.RefreshControl),
-            // this.AttachPMBinding("SetCanInvokeState", attSetCanInvokeState),
-            // this.AttachPMBinding("BeginQueryState", attBeginQueryState),
-            // this.AttachPMBinding("EndQueryState", attEndQueryState),
-            // this.AttachPMBinding("UpdateRowCounter", attUpdateRowCounter),
-            // this.AttachPMBinding("ShowPopup", this.ShowPopup),
-            // this.AttachPMBinding("isControlPopupOpen", attisControlPopupOpen),
-            // this.AttachPMBinding("MaskLeaveField", this.MaskLeaveField),
-            // this.AttachPMBinding("ShowSelection", this.ShowSelection),
-            // this.AttachPMBinding("ResetAppletState", this.ResetRendererState),
-            // this.AttachPMBinding("RefreshData", this.BindData),
-            this.AttachPMBinding("FieldChange", this.SetControlValue), // LOV disappeared
+          // SiebelAppFacade.NBPhysicalRenderer.superclass.Init.call(this);
+          // this.AttachPMBinding("RemoveControls", attRenameControls),
+          // this.AttachPMBinding("UpdateQuickPickInfo", this.UpdatePick),
+          // this.AttachPMBinding("UpdateAppletMessage", attUpdateAppletMessage),
+          // this.AttachPMBinding("UpdateCurrencyCalcInfo", attUpdateCurrencyCalcInfo),
+          // this.AttachPMBinding("UpdateConditionals", attUpdateConditionals),
+          // this.AttachPMBinding("ProcessCancelQueryPopup", attProcessCancelQueryPopup),
+          // this.AttachPMBinding("FocusOnApplet", attFocusOnApplet),
+          // this.AttachPMBinding("HandleCtrlDefChange", this.RefreshControl),
+          // this.AttachPMBinding("SetCanInvokeState", attSetCanInvokeState),
+          // this.AttachPMBinding("BeginQueryState", attBeginQueryState),
+          // this.AttachPMBinding("EndQueryState", attEndQueryState),
+          // this.AttachPMBinding("UpdateRowCounter", attUpdateRowCounter),
+          // this.AttachPMBinding("ShowPopup", this.ShowPopup),
+          // this.AttachPMBinding("isControlPopupOpen", attisControlPopupOpen),
+          // this.AttachPMBinding("MaskLeaveField", this.MaskLeaveField),
+          // this.AttachPMBinding("ShowSelection", this.ShowSelection),
+          // this.AttachPMBinding("ResetAppletState", this.ResetRendererState),
+          // this.AttachPMBinding("RefreshData", this.BindData),
+          this.AttachPMBinding("FieldChange", this.SetControlValue), // LOV disappeared
             this.AttachPMBinding("FieldChange", this.N19SetControlValue);
-            // this.AttachPMBinding("UpdateStateChange", this.UpdateUIControls),
-            // this.AttachPMBinding("InvokeStateChange", this.UpdateUIButtons),
-            this.AttachPMBinding("GetPhysicalControlValue", this.GetPhysicalControlValue); // LOV disappeared
-            this.AttachPMBinding("GetPhysicalControlValue", this.N19GetPhysicalControlValue);
-            // this.AttachPMBinding("SetFocusToCtrl", this.SetFocusToControl),
-            // this.AttachPMBinding("FocusFirstControl", this.FocusFirstControl),
-            // this.AttachPMBinding("SetHighlightState", attSetHighlightState),
-            // this.AttachPMBinding("UpdateUI", function () {
-            //   this.GetPM().Get("UpdateUI") && this.ShowSelection()
-            // }),
-            // this.AttachPMBinding("OnCommitStateChange", attOnCommitStateChange);
+          // this.AttachPMBinding("UpdateStateChange", this.UpdateUIControls),
+          // this.AttachPMBinding("InvokeStateChange", this.UpdateUIButtons),
+          this.AttachPMBinding("GetPhysicalControlValue", this.GetPhysicalControlValue); // LOV disappeared
+          this.AttachPMBinding("GetPhysicalControlValue", this.N19GetPhysicalControlValue);
+          // this.AttachPMBinding("SetFocusToCtrl", this.SetFocusToControl),
+          // this.AttachPMBinding("FocusFirstControl", this.FocusFirstControl),
+          // this.AttachPMBinding("SetHighlightState", attSetHighlightState),
+          // this.AttachPMBinding("UpdateUI", function () {
+          //   this.GetPM().Get("UpdateUI") && this.ShowSelection()
+          // }),
+          // this.AttachPMBinding("OnCommitStateChange", attOnCommitStateChange);
           // var e = SiebelApp.S_App.PluginBuilder.GetHoByName("ResponsiveFieldHO");
           // e && e.SetUp(this, $("#s_" + this.GetPM().Get("GetFullId") + "_div"))
         }
@@ -796,7 +796,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
           }
           $("#s_" + e.Get("GetFullId") + "_div").off("click click.drilldown"),
             this._EndLife(),
-            SiebelAppFacade.IPRPhysicalRenderer.superclass.EndLife.call(this)
+            SiebelAppFacade.NBPhysicalRenderer.superclass.EndLife.call(this)
         }
         ,
         F.prototype.ResetRendererState = function () { }
@@ -821,7 +821,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         }
         ,
         F.prototype.ShowUI = function () {
-          SiebelAppFacade.IPRPhysicalRenderer.superclass.ShowUI.call(this);
+          SiebelAppFacade.NBPhysicalRenderer.superclass.ShowUI.call(this);
           var n = this.GetPM(), r = n.Get(consts.get("SWE_VIS_MODE_LIST")), i = n.Get(consts.get("SWE_LDC_VIS_MODE_LIST")), s = r ? r.length : 0, o = i ? i.length : 0, u = n.Get("GetFullId"), a = n.Get("GetPlaceholder"), f, l, c = n.Get(consts.get("SWE_VIS_MODE_DEFAULT")), h = "<div align='center' id = 's_div_" + a + "_VisualModes" + "' " + "class = " + "'" + "siebui-viz-buttonbar AppletButtons" + "'" + ">";
           n.AddProperty("IsTaggedApplet", O.test(n.Get("GetName"))),
             attSetCanInvokeState.call(this),
@@ -959,7 +959,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         }
         ,
         F.prototype.BindEvents = function (n, r) {
-          SiebelAppFacade.IPRPhysicalRenderer.superclass.BindEvents.call(this);
+          SiebelAppFacade.NBPhysicalRenderer.superclass.BindEvents.call(this);
           var i = this.GetPM()
             , s = i.Get(consts.get("SWE_VIS_MODE_LIST"))
             , o = s ? s.length : 0
@@ -1232,7 +1232,7 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         }
         ,
         F.prototype.BindData = function () {
-          SiebelAppFacade.IPRPhysicalRenderer.superclass.BindData.call(this);
+          SiebelAppFacade.NBPhysicalRenderer.superclass.BindData.call(this);
           this.ShowSelection();
         }
         ,
@@ -1563,9 +1563,9 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
           var $element, val, pm = this.GetPM(), i = pm.Get("GetSelection");
           if (control) {
             pm.AddProperty("PhysicalCtrlVal", val);
-              $element = $("[name='" + control.GetInputName() + "']");
-              val = this.GetUIWrapper(control).GetValue(i) || "";
-              pm.Get("IsInQueryMode") && control.GetCaseSensitive() && val === SiebelApp.S_App.LocaleObject.GetLocalString("IDS_SWE_CSQ_WATERMARK") && (val = "");
+            $element = $("[name='" + control.GetInputName() + "']");
+            val = this.GetUIWrapper(control).GetValue(i) || "";
+            pm.Get("IsInQueryMode") && control.GetCaseSensitive() && val === SiebelApp.S_App.LocaleObject.GetLocalString("IDS_SWE_CSQ_WATERMARK") && (val = "");
             var uiType = control.GetUIType();
             switch (uiType) {
               case controlComboBox:
@@ -1576,5 +1576,5 @@ typeof SiebelAppFacade.IPRPhysicalRenderer == "undefined" && (SiebelJS.Namespace
         },
         F
     }(),
-      "SiebelAppFacade.IPRPhysicalRenderer"
+      "SiebelAppFacade.NBPhysicalRenderer"
   }))

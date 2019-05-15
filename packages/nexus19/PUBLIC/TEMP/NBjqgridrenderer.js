@@ -1,12 +1,12 @@
 /*globals HtmlEncode */
-if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
-  SiebelJS.Namespace('SiebelAppFacade.IPRJQGridRenderer');
+if (typeof (SiebelAppFacade.NBJQGridRenderer) === "undefined") {
+  SiebelJS.Namespace('SiebelAppFacade.NBJQGridRenderer');
 
   //Module with its dependencies
-  define("siebel/iprjqgridrenderer", ["3rdParty/jqGrid/current/js/i18n/grid.locale-en.js", "3rdParty/jqGrid/current/js/jquery.jqGrid.min.js", "3rdParty/jqgrid-ext.js",
-  "siebel/custom/iprphyrenderer"],
+  define("siebel/custom/nbjqgridrenderer", ["3rdParty/jqGrid/current/js/i18n/grid.locale-en.js", "3rdParty/jqGrid/current/js/jquery.jqGrid.min.js", "3rdParty/jqgrid-ext.js",
+    "siebel/custom/nbphyrenderer"],
     function () {
-      SiebelAppFacade.IPRJQGridRenderer = (function () {
+      SiebelAppFacade.NBJQGridRenderer = (function () {
         // dependencies
         var utils = SiebelJS.Dependency("SiebelApp.Utils");
         var siebConsts = SiebelJS.Dependency("SiebelApp.Constants");
@@ -48,8 +48,8 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
         var scrollTimer = 0;
         var eventHelper = SiebelApp.S_App.PluginBuilder.GetHoByName("EventHelper");
 
-        function IPRJQGridRenderer(pm) {
-          SiebelAppFacade.IPRJQGridRenderer.superclass.constructor.call(this, pm);
+        function NBJQGridRenderer(pm) {
+          SiebelAppFacade.NBJQGridRenderer.superclass.constructor.call(this, pm);
           //private
           var m_jqGrid = $();
           var m_colMap = new SiebelAppFacade.GridColumnHelper();
@@ -91,10 +91,10 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           SiebelApp.S_App.PluginBuilder.SetUIContext(this, GetUIContext);
         }
 
-        SiebelJS.Extend(IPRJQGridRenderer, SiebelAppFacade.IPRPhysicalRenderer);
+        SiebelJS.Extend(NBJQGridRenderer, SiebelAppFacade.NBPhysicalRenderer);
 
-        IPRJQGridRenderer.prototype.Init = function () {
-          SiebelAppFacade.IPRJQGridRenderer.superclass.Init.call(this);
+        NBJQGridRenderer.prototype.Init = function () {
+          SiebelAppFacade.NBJQGridRenderer.superclass.Init.call(this);
 
           // this.AttachPMBinding("NavigateState", PreUpdateNavigateInfo);
 
@@ -171,7 +171,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
 
         //VT:This funciton creates the new column model and refreshes the existing control with the new model
         //Used by NotifyCtrlDefChanged notification(use case:Work Flow policy actions for type ServiceRequest)
-        IPRJQGridRenderer.prototype.RefreshControl = function (control) {
+        NBJQGridRenderer.prototype.RefreshControl = function (control) {
           var pm = this.GetPM(),
             listOfColumns = pm.Get("ListOfColumns"),
             bFound = false,
@@ -201,11 +201,11 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           }
           listOfColumns = null;
           if (!bFound) {
-            SiebelAppFacade.IPRJQGridRenderer.superclass.RefreshControl.call(this, control);
+            SiebelAppFacade.NBJQGridRenderer.superclass.RefreshControl.call(this, control);
           }
         };
 
-        IPRJQGridRenderer.prototype.MaskLeaveField = function (ctrl, bLeaveFieldState) {
+        NBJQGridRenderer.prototype.MaskLeaveField = function (ctrl, bLeaveFieldState) {
           var jqGridCtrl = this.GetGrid(),
             fieldName = this.GetColumnHelper().GetModifiedColumnName(ctrl.GetName()),
             pm = this.GetPM(),
@@ -224,11 +224,11 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
             }
           }
           else {
-            SiebelAppFacade.IPRJQGridRenderer.superclass.MaskLeaveField.call(this, ctrl, bLeaveFieldState);
+            SiebelAppFacade.NBJQGridRenderer.superclass.MaskLeaveField.call(this, ctrl, bLeaveFieldState);
           }
         };
 
-        IPRJQGridRenderer.prototype.EndLife = function () {
+        NBJQGridRenderer.prototype.EndLife = function () {
           var grid = this.GetGrid(),
             pm = this.GetPM();
           grid.removeData("jqGrid");
@@ -249,15 +249,15 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           grid.jqGrid("GridDestroy");
           this.SetGrid(null);
 
-          SiebelAppFacade.IPRJQGridRenderer.superclass.EndLife.call(this);
+          SiebelAppFacade.NBJQGridRenderer.superclass.EndLife.call(this);
         };
 
-        IPRJQGridRenderer.prototype.ResetRendererState = function () {
+        NBJQGridRenderer.prototype.ResetRendererState = function () {
           if (SiebelApp.S_App.GetPopupPM().Get("isCurrencyOpen")) {
             return false;
           }
           this.UpdateSelectedRow();
-          SiebelAppFacade.IPRJQGridRenderer.superclass.ResetRendererState.call(this);
+          SiebelAppFacade.NBJQGridRenderer.superclass.ResetRendererState.call(this);
         };
 
         function OnCloseDatePicker(dateElement, ctrl, inputText, isEscapeKey) {
@@ -997,7 +997,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           return ("" + rowId + "_" + ctxId + "_" + ctrlName).replace(/style/i, 'style').replace(/title/i, 'title');
         }
 
-        IPRJQGridRenderer.prototype.resetCell = function (name) {
+        NBJQGridRenderer.prototype.resetCell = function (name) {
           var jqGridCtrl = this.GetGrid();
           var currentRow = Number(jqGridCtrl.jqGrid('getGridParam', 'selrow'));
           var listOfColumns = this.GetPM().Get("ListOfColumns");
@@ -1231,8 +1231,8 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           }
         };
 
-        IPRJQGridRenderer.prototype.ShowUI = function () {
-          SiebelAppFacade.IPRJQGridRenderer.superclass.ShowUI.call(this);
+        NBJQGridRenderer.prototype.ShowUI = function () {
+          SiebelAppFacade.NBJQGridRenderer.superclass.ShowUI.call(this);
           var that = this;
           var pm = this.GetPM();
           var listctrl = pm.Get("ListOfColumns"),
@@ -1400,12 +1400,12 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
                 var currentCol = columnInfo.columnModel[colIndex];
                 if (isAutoOn) {
                   var target = $(temp + "_" + currentCol.name);
-                  SiebelAppFacade.IPRJQGridRenderer.superclass.InjectQTPInfo.call(this, target, this.GetColumnControl(currentCol.name));
+                  SiebelAppFacade.NBJQGridRenderer.superclass.InjectQTPInfo.call(this, target, this.GetColumnControl(currentCol.name));
 
                 }
                 if (SiebelApp.S_App.IsConfigMode()) {
                   var parent_target = $(temp + "_" + currentCol.name).parent();
-                  SiebelAppFacade.IPRJQGridRenderer.superclass.InjectConfigInfo.call(this, parent_target, this.GetColumnControl(currentCol.name), "AWTI");
+                  SiebelAppFacade.NBJQGridRenderer.superclass.InjectConfigInfo.call(this, parent_target, this.GetColumnControl(currentCol.name), "AWTI");
                 }
                 if (currentCol.headerAlign) {
                   jqGridCtrl.jqGrid('setLabel', currentCol.name, '', { 'text-align': currentCol.headerAlign });
@@ -1690,7 +1690,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
 
 
         /* TODO: If addRowData is capable of taking multiple records, why aren't we pushing it. */
-        IPRJQGridRenderer.prototype.BindData = function (bRefresh) {
+        NBJQGridRenderer.prototype.BindData = function (bRefresh) {
           if (this.inProgress) {
             return false;
           }
@@ -1902,7 +1902,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
                       //call super class show selection to make sure formatting is taken care
                     }
                   }
-                  SiebelAppFacade.IPRJQGridRenderer.superclass.ShowSelection.call(this, recordIndex);
+                  SiebelAppFacade.NBJQGridRenderer.superclass.ShowSelection.call(this, recordIndex);
                   this.CacheState("RecordSet", { index: recordIndex, stateValue: recordSet[recordIndex] });
                 }
               }
@@ -1999,7 +1999,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
 
         }
 
-        IPRJQGridRenderer.prototype.AddAccessibilityTags = function () {
+        NBJQGridRenderer.prototype.AddAccessibilityTags = function () {
           var pm = this.GetPM(),
             jqGridCtrl = this.GetGrid(),
             appletSummary = pm.Get("GetAppletSummary"),
@@ -2035,7 +2035,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
 
         };
 
-        IPRJQGridRenderer.prototype.AddAccessibilityInfo = function (controlType, isLink, val) {
+        NBJQGridRenderer.prototype.AddAccessibilityInfo = function (controlType, isLink, val) {
           var altText = "",
             descby = "",
             placeHolder = this.GetPM().Get("GetPlaceholder"),
@@ -2088,7 +2088,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           return retval;
         };
 
-        IPRJQGridRenderer.prototype.PostBindData = function () {
+        NBJQGridRenderer.prototype.PostBindData = function () {
           var pm = this.GetPM(),
             placeHolder = pm.Get("GetPlaceholder"),
             showElastic = SiebelApp.S_App.GetEnableElasticGrid(),
@@ -2137,7 +2137,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
         };
 
         //Focus model
-        IPRJQGridRenderer.prototype.IsValidClick = function (source) {
+        NBJQGridRenderer.prototype.IsValidClick = function (source) {
           return (((utils.IndexOf(["input", "button", "a", "img", "select"], source.tagName.toLowerCase()) === -1) || ((source.type || "").toLowerCase() === "file"))
             && ((source.tagName == "SPAN" && source.className == "siebui-icon-arrowsm-sort") ? false : true)
           ) && $(source).parents("#" + this.GetPM().Get("GetPlaceholder")).length <= 0;
@@ -2447,7 +2447,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
         }
 
 
-        IPRJQGridRenderer.prototype.BindEvents = function (controlSet) {
+        NBJQGridRenderer.prototype.BindEvents = function (controlSet) {
           var pm = this.GetPM(),
             grid = this.GetGrid(),
             controls = pm.Get("GetControls"),
@@ -2467,7 +2467,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
 
             controls = limitedControls;
           }
-          SiebelAppFacade.IPRJQGridRenderer.superclass.BindEvents.call(this, controls);
+          SiebelAppFacade.NBJQGridRenderer.superclass.BindEvents.call(this, controls);
 
           if (grid.length === 1) {
             grid.data("jqGrid", this);
@@ -3318,7 +3318,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           SiebelApp.S_App.uiStatus.Free();
         }
 
-        IPRJQGridRenderer.prototype.SetControlValue = function (control, value, index) {
+        NBJQGridRenderer.prototype.SetControlValue = function (control, value, index) {
           var ret = false;
           if (this.GetPM().Get("UpdateUI")) {
             ret = this.SetCellValue(index ? index : this.GetSelectedRow(), control.GetName(), value);
@@ -3327,10 +3327,10 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
             ret = !!this.GetGrid().length && control.GetControlType() === consts.get("SWE_PST_COL");
           }
           if (!ret)
-            SiebelAppFacade.IPRJQGridRenderer.superclass.SetControlValue.call(this, control, value, index);
+            SiebelAppFacade.NBJQGridRenderer.superclass.SetControlValue.call(this, control, value, index);
         };
 
-        IPRJQGridRenderer.prototype.SetCellValue = function (rowId, fieldName, newValue) {
+        NBJQGridRenderer.prototype.SetCellValue = function (rowId, fieldName, newValue) {
           var retValue = false,
             pm = this.GetPM();
           if (pm.Get("MultiSelectColumn") !== fieldName) {
@@ -3379,7 +3379,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
         };
 
         //Focus model
-        IPRJQGridRenderer.prototype.FocusFirstControl = function () {
+        NBJQGridRenderer.prototype.FocusFirstControl = function () {
           var jqGridCtrl = this.GetGrid();
           var currentRow = Number(jqGridCtrl.jqGrid('getGridParam', 'selrow'));
           var that = this;
@@ -3390,7 +3390,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           var colModel = this.GetGrid().jqGrid("getGridParam", "colModel");
           if (!colModel) {
             // This is list masquerading as a form. Let the base class handle it.
-            SiebelAppFacade.IPRJQGridRenderer.superclass.FocusFirstControl.call(this);
+            SiebelAppFacade.NBJQGridRenderer.superclass.FocusFirstControl.call(this);
             return;
           }
           var map_col = this.GetColumnHelper().GetColMap();
@@ -3426,11 +3426,11 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
             }
           }
 
-          SiebelAppFacade.IPRJQGridRenderer.superclass.FocusFirstControl.call(this); //call super class method if the foucs is for control
+          SiebelAppFacade.NBJQGridRenderer.superclass.FocusFirstControl.call(this); //call super class method if the foucs is for control
           return;
         };
 
-        IPRJQGridRenderer.prototype.GetFirstEditControl = function () {
+        NBJQGridRenderer.prototype.GetFirstEditControl = function () {
           var jqGridCtrl = this.GetGrid();
           var currentRow = Number(jqGridCtrl.jqGrid('getGridParam', 'selrow'));
           var listofColumns = this.GetPM().Get("ListOfColumns");
@@ -3453,7 +3453,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           return;
         };
 
-        IPRJQGridRenderer.prototype.SetFocusToControl = function (name, setFocus) {
+        NBJQGridRenderer.prototype.SetFocusToControl = function (name, setFocus) {
           var jqGridCtrl = this.GetGrid();
           var currentRow = Number(jqGridCtrl.jqGrid('getGridParam', 'selrow'));
           if (currentRow === 0) {
@@ -3510,7 +3510,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           }
 
 
-          SiebelAppFacade.IPRJQGridRenderer.superclass.SetFocusToControl.call(this, name, setFocus); //call super class method if the foucs is for control
+          SiebelAppFacade.NBJQGridRenderer.superclass.SetFocusToControl.call(this, name, setFocus); //call super class method if the foucs is for control
           return false;
         };
 
@@ -3529,7 +3529,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           this.GetPM().ExecuteMethod("SetActiveControl", null);
         }
 
-        IPRJQGridRenderer.prototype.GetPhysicalControlValue = function (control) {
+        NBJQGridRenderer.prototype.GetPhysicalControlValue = function (control) {
           var field, fieldValue,
             jqGridCtrl = this.GetGrid(),
             pm = this.GetPM();
@@ -3573,11 +3573,11 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           }
           //VT: If list turned to form , then invoke base class method to get the value
           else {
-            SiebelAppFacade.IPRJQGridRenderer.superclass.GetPhysicalControlValue.call(this, control);
+            SiebelAppFacade.NBJQGridRenderer.superclass.GetPhysicalControlValue.call(this, control);
           }
         };
 
-        IPRJQGridRenderer.prototype.ShowSelection = function (index) {
+        NBJQGridRenderer.prototype.ShowSelection = function (index) {
           if (this.inProgress) {
             return false;
           }
@@ -3588,7 +3588,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
             this.ClearSelection();
             jqGridCtrl.setSelection(1, false);
             this.CacheState("SelectedRowArray", ["true"]);
-            SiebelAppFacade.IPRJQGridRenderer.superclass.ShowSelection.call(this);
+            SiebelAppFacade.NBJQGridRenderer.superclass.ShowSelection.call(this);
           }
           else {
             var rowCount = jqGridCtrl.length > 0 ? pm.Get("RecordSetLength") : pm.Get("GetRecordSet").length,
@@ -3603,7 +3603,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
               selArray = pm.Get("GetRowsSelectedArray");
               len = selArray.length;
               for (var i = 0; i < rowCount && i < len; i++) {
-                SiebelAppFacade.IPRJQGridRenderer.superclass.ShowSelection.call(this, i);
+                SiebelAppFacade.NBJQGridRenderer.superclass.ShowSelection.call(this, i);
               }
             } else {
               selArray = pm.Get("GetRowsSelectedArray", { getDiff: true });
@@ -3652,7 +3652,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
                 this.UpdateSelectedRow();
                 jqGridCtrl.jqGrid('resetEditCell');
               }
-              SiebelAppFacade.IPRJQGridRenderer.superclass.ShowSelection.call(this, (index && jqGridCtrl.length > 0) || undefined, pm.Get("BaseAppletControls"));
+              SiebelAppFacade.NBJQGridRenderer.superclass.ShowSelection.call(this, (index && jqGridCtrl.length > 0) || undefined, pm.Get("BaseAppletControls"));
             }
           }
         };
@@ -3682,18 +3682,18 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           return retVal;
         };
 
-        IPRJQGridRenderer.prototype.UpdateUIControls = function () {
-          SiebelAppFacade.IPRJQGridRenderer.superclass.UpdateUIControls.call(this, arguments[0], this.GetGrid().length > 0 ? this.GetPM().Get("BaseAppletControls") : arguments[1]);
+        NBJQGridRenderer.prototype.UpdateUIControls = function () {
+          SiebelAppFacade.NBJQGridRenderer.superclass.UpdateUIControls.call(this, arguments[0], this.GetGrid().length > 0 ? this.GetPM().Get("BaseAppletControls") : arguments[1]);
         };
 
-        IPRJQGridRenderer.prototype.SelectRow = function (index, bSelected) {
+        NBJQGridRenderer.prototype.SelectRow = function (index, bSelected) {
           if (this.inProgress) { return false; }
           if (bSelected) {
             this.GetGrid().setSelection(index, false);
           }
         };
 
-        IPRJQGridRenderer.prototype.ClearSelection = function () {
+        NBJQGridRenderer.prototype.ClearSelection = function () {
           if (this.inProgress) { return false; }
           this.UpdateSelectedRow();
           var cellname = this.GetPM().Get("MultiSelectColumn");
@@ -3717,7 +3717,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           this.GetGrid().resetSelection();
         };
 
-        IPRJQGridRenderer.prototype.UpdateSelectedRow = function () {
+        NBJQGridRenderer.prototype.UpdateSelectedRow = function () {
           if (this.inProgress) {
             return false;
           }
@@ -3739,13 +3739,13 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           rowId = map_col = grid = multiSelCol = null;
         };
 
-        IPRJQGridRenderer.prototype.ClearData = function () {
+        NBJQGridRenderer.prototype.ClearData = function () {
           if (this.inProgress) { return false; }
           this.GetGrid().jqGrid('clearGridData');
         };
 
         /* Event Handling Methods... */
-        IPRJQGridRenderer.prototype.OnPagination = function (title) {
+        NBJQGridRenderer.prototype.OnPagination = function (title) {
           var direction = "";
           switch (title) {
             case "next_pager": // Next Record
@@ -3774,7 +3774,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           }
         };
 
-        IPRJQGridRenderer.prototype.OnRowSelect = function (rowId, ctrlKey, shiftKey) {
+        NBJQGridRenderer.prototype.OnRowSelect = function (rowId, ctrlKey, shiftKey) {
           var bReturn = false,
             that = this,
             pm = this.GetPM(),
@@ -3813,19 +3813,19 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           return bReturn;
         };
 
-        IPRJQGridRenderer.prototype.CommitPending = function () {
+        NBJQGridRenderer.prototype.CommitPending = function () {
           this.UpdateSelectedRow();
         };
 
-        IPRJQGridRenderer.prototype.CanUpdateControl = function (rowid, cellname, value, iRow, iCol) {
+        NBJQGridRenderer.prototype.CanUpdateControl = function (rowid, cellname, value, iRow, iCol) {
           return this.GetPM().ExecuteMethod("CanUpdate", this.GetColumnHelper().GetActualControlName(cellname));
         };
 
-        IPRJQGridRenderer.prototype.GetColumnControl = function (cellname) {
+        NBJQGridRenderer.prototype.GetColumnControl = function (cellname) {
           return this.GetColumnHelper().GetColumnControl(cellname);
         };
 
-        IPRJQGridRenderer.prototype.resize = function () {
+        NBJQGridRenderer.prototype.resize = function () {
           if (this.GetGrid().length > 0 && $("#gbox_" + this.GetPM().Get("GetPlaceholder")).parent().is(':visible')) {
             //this.GetGrid().setGridWidth(0, false);
             var containerWidth,
@@ -3855,7 +3855,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           }
         };
 
-        IPRJQGridRenderer.prototype.fixHeight = function (data) {
+        NBJQGridRenderer.prototype.fixHeight = function (data) {
           if (data && data.id === ("#s_" + this.GetRendererBridge().GetProxy().GetFullId() + "_div")) {
             var parentContainer = $("#s_" + this.GetRendererBridge().GetProxy().GetFullId() + "_div");
 
@@ -3865,13 +3865,13 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           }
         };
 
-        IPRJQGridRenderer.prototype.GetSelectedRow = function (mode) {
+        NBJQGridRenderer.prototype.GetSelectedRow = function (mode) {
           return (mode === "all") ?
             this.GetGrid().jqGrid("getGridParam", "selarrrow") :
             this.GetGrid().jqGrid("getGridParam", "selrow");
         };
 
-        IPRJQGridRenderer.prototype.ShowPopup = function (control) {
+        NBJQGridRenderer.prototype.ShowPopup = function (control) {
           var jqGridCtrl = this.GetGrid();
           var currentRow = Number(jqGridCtrl.jqGrid('getGridParam', 'selrow'));
           var listofColumns = this.GetPM().Get("ListOfColumns");
@@ -3879,7 +3879,7 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           var controlName = control.GetName();
           var that = this;
           if (!colModel) {
-            SiebelAppFacade.IPRJQGridRenderer.superclass.ShowPopup.call(this, control);
+            SiebelAppFacade.NBJQGridRenderer.superclass.ShowPopup.call(this, control);
             return;
           }
           var column_num = listofColumns.length;
@@ -3977,10 +3977,10 @@ if (typeof (SiebelAppFacade.IPRJQGridRenderer) === "undefined") {
           columnHelper = null;
         }
 
-        return IPRJQGridRenderer;
+        return NBJQGridRenderer;
       }());
 
-      return "SiebelAppFacade.IPRJQGridRenderer";
+      return "SiebelAppFacade.NBJQGridRenderer";
     });
 
   SiebelAppFacade.GridColumnHelper = function () {

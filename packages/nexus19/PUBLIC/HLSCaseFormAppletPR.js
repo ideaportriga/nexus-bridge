@@ -17,7 +17,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         var appletName;
 
         HLSCaseFormAppletPR.prototype.Init = function () {
-          SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
+          var viewName = SiebelApp.S_App.GetActiveView().GetName();
+          skipVue = viewName.indexOf('List View') === -1;
+          if (skipVue) {
+            SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
+            return;
+          }
+          SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init2.apply(this, arguments);
 
           document.addEventListener('UpdateMVG', function (event) {
             if (app) {
@@ -50,12 +56,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           // });
 
           appletName = pm.Get('GetName');
-
-          var viewName = SiebelApp.S_App.GetActiveView().GetName();
-          skipVue = viewName.indexOf('List View') === -1;
-          if (skipVue) {
-            return;
-          }
 
           SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
           SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm, convertDates: true });

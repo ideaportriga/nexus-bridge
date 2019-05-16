@@ -15,7 +15,7 @@ if (typeof (SiebelAppFacade.NBFormAppletPR) === "undefined") {
         var pm;
 
         NBFormAppletPR.prototype.Init = function () {
-          SiebelAppFacade.NBFormAppletPR.superclass.Init.apply(this, arguments);
+          SiebelAppFacade.NBFormAppletPR.superclass.Init2.apply(this, arguments);
 
           pm = this.GetPM();
           appletName = pm.Get("GetName");

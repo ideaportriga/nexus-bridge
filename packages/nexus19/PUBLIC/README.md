@@ -2,4 +2,4 @@
 
 Note: please remember that to make the Siebel Tools business service available, you need to create a new application user property. E.g. if your application is Siebel Public Sector, in the Siebel Tools create a new user property for the `Siebel Public Sector` application with the following attributes: the name is `ClientBusinessServiceX` where `X` is the next sequential number, and the value is the name of the Siebel Tools business service - `N19 BS`. 
 
-  * `NexusDefaultFormAppletPR.js` and `NexusDefaultListAppletPR.js` - the examples of Nexus PRs. These PRs could be used if the implementation adopts the approach when the instances of the Nexus classes are created by applet PRs (good option only when the view has few applets).
+

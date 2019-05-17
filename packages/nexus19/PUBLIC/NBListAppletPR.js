@@ -1,8 +1,7 @@
-//Regenerate using:http://duncanford.github.io/prpm-code-generator/?prpm=PR&object=DesktopList&name=ContactListApplet&userprops=&comments=Yes&logging=No
 if (typeof (SiebelAppFacade.NBListAppletPR) === "undefined") {
 
   SiebelJS.Namespace("SiebelAppFacade.NBListAppletPR");
-  define("siebel/custom/NBListAppletPR", ["siebel/custom/nbjqgridrenderer"],
+  define("siebel/custom/NBListAppletPR", ["siebel/custom/NBDefaultListAppletPR"],
     function () {
       SiebelAppFacade.NBListAppletPR = (function () {
 
@@ -10,17 +9,12 @@ if (typeof (SiebelAppFacade.NBListAppletPR) === "undefined") {
           SiebelAppFacade.NBListAppletPR.superclass.constructor.apply(this, arguments);
         }
 
-        SiebelJS.Extend(NBListAppletPR, SiebelAppFacade.NBJQGridRenderer);
-        var appletName;
-        var pm;
+        SiebelJS.Extend(NBListAppletPR, SiebelAppFacade.NBDefaultListAppletPR);
 
         NBListAppletPR.prototype.Init = function () {
-          SiebelAppFacade.NBListAppletPR.superclass.Init.apply(this, arguments);
-
-          pm = this.GetPM();
-          appletName = pm.Get("GetName");
-          SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
-          SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm });
+          SiebelAppFacade.NBListAppletPR.superclass.NBInit.apply(this, arguments);
+          this.removeHtml();
+          this.initializeNexus({convertDates: true});
         }
 
         NBListAppletPR.prototype.ShowUI = function () {
@@ -36,9 +30,7 @@ if (typeof (SiebelAppFacade.NBListAppletPR) === "undefined") {
         }
 
         NBListAppletPR.prototype.EndLife = function () {
-          if (SiebelAppFacade.N19[appletName]) {
-            delete SiebelAppFacade.N19[appletName];
-          }
+          this.destroyNexus();
           SiebelAppFacade.NBListAppletPR.superclass.EndLife.apply(this, arguments);
         }
 

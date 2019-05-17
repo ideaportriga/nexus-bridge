@@ -1,7 +1,7 @@
 if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
   SiebelJS.Namespace("SiebelAppFacade.HLSCaseFormAppletPR");
-  define("siebel/custom/HLSCaseFormAppletPR", ["siebel/custom/nbphyrenderer", "siebel/custom/vue.js", "siebel/custom/vuetify.js"],
+  define("siebel/custom/HLSCaseFormAppletPR", ["siebel/custom/NBDefaultFormAppletPR", "siebel/custom/vue.js", "siebel/custom/vuetify.js"],
     function () {
       SiebelAppFacade.HLSCaseFormAppletPR = (function () {
 
@@ -9,12 +9,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.constructor.apply(this, arguments);
         }
 
-        SiebelJS.Extend(HLSCaseFormAppletPR, SiebelAppFacade.NBPhysicalRenderer);
+        SiebelJS.Extend(HLSCaseFormAppletPR, SiebelAppFacade.NBDefaultFormAppletPR);
         var app;
-        var divId;
+        var pm;
         var n19helper;
         var skipVue = true;
-        var appletName;
 
         HLSCaseFormAppletPR.prototype.Init = function () {
           var viewName = SiebelApp.S_App.GetActiveView().GetName();
@@ -23,7 +22,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
             return;
           }
-          SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init2.apply(this, arguments);
+          SiebelAppFacade.HLSCaseFormAppletPR.superclass.NBInit.apply(this, arguments);
 
           document.addEventListener('UpdateMVG', function (event) {
             if (app) {
@@ -33,7 +32,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           });
 
-          var pm = this.GetPM();
+          pm = this.GetPM();
 
           // notifications replacement?
           // pm.AddMethod("UpdateStateChange", function(...args) {
@@ -55,11 +54,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           //   console.log('Bind FieldChange.....', args);
           // });
 
-          appletName = pm.Get('GetName');
-
-          SiebelAppFacade.N19 = SiebelAppFacade.N19 || {};
-          SiebelAppFacade.N19[appletName] = new SiebelAppFacade.N19Helper({ pm: pm, convertDates: true });
-          n19helper = SiebelAppFacade.N19[appletName];
+          n19helper = this.initializeNexus({convertDates: true});
 
           $('head').append('<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" rel="stylesheet"></link>');
           $('head').append('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>');
@@ -103,13 +98,10 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log('>>>>>> AttachPreProxyExecuteBinding', method, arguments);
           });
 
-          divId = "s_" + pm.Get('GetFullId') + "_div";
-          // document.querySelector('#' + divId + ' form').style.display = 'none';
-          const el = document.querySelector('#' + divId + ' form');
-          el.parentNode.removeChild(el);
+          this.removeHtml();
 
           // for commit pending indicator
-          document.getElementById(divId).classList.add('siebui-applet', 'siebui-active');
+          document.getElementById("s_" + pm.Get('GetFullId') + "_div").classList.add('siebui-applet', 'siebui-active');
 
           //todo: maybe use applet.prototype.RepopulateField instead of it?
           // good to know that...
@@ -269,7 +261,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           pm.AttachNotificationHandler(consts.get('SWE_NOTIFY_PAGE_REFRESH'), function (propSet) {
             console.log('SWE_NOTIFY_PAGE_REFRESH', propSet);
           });
-
         }
 
         HLSCaseFormAppletPR.prototype.preInvokeMethod = function (method, args, lp, returnStructure) {
@@ -296,12 +287,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           }
 
           document.getElementById('_sweview').title = '';
-          putVue(divId);
+          putVue("s_" + pm.Get('GetFullId') + "_div");
         }
 
         function putVue(divId) {
           var html = '\
-          <div id="vue_sample">                                                                                                                                 \n\
+          <style>[v-cloak]{display:none;}</style> \n\
+          <div v-cloak id="vue_sample">                                                                                                                                 \n\
             <v-app id="inspire">                                                                                                                                \n\
             <v-snackbar v-model="snackBar" :timeout="3000" :top="true" :color="snackBarColor">{{snackBarText}}<v-btn :color="snackBarButtonColor" flat @click="snackBar = false">Close</v-btn></v-snackbar>\n\
             <v-container fluid>                                                                                                                                 \n\
@@ -599,7 +591,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   alert('Contact Team Mvg Applet is not created');
                 }
                 if (Object.keys(obj).length !== 5) {
-                  alert('Returned object length has not expected value - ' + Object.keys(SiebelAppFacade.N19).length);
+                  alert('Returned object length has not expected value - ' + Object.keys(obj).length);
                 }
               },
               getControlForOpenPopup() {
@@ -949,10 +941,8 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           $("link[href*='https://fonts.googleapis.com/css']").remove();
           $('#vuetify-theme-stylesheet').remove();
 
+          this.destroyNexus();
           n19helper = null;
-          if (SiebelAppFacade.N19 && SiebelAppFacade.N19[appletName]) {
-            delete SiebelAppFacade.N19[appletName];
-          }
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.EndLife.apply(this, arguments);
         }
         return HLSCaseFormAppletPR;

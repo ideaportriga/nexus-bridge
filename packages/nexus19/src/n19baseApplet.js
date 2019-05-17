@@ -283,7 +283,7 @@ export default class N19baseApplet {
     return this._navigate('GotoNextSet');
   }
 
-  positionOnRow(index, keys) {
+  positionOnRow(index, keys, skipIfAlreadyPositioned) {
     if (this.isListApplet) {
       if (!this.pm.ExecuteMethod('CanInvokeMethod', 'PositionOnRow')) {
         return false;
@@ -293,6 +293,11 @@ export default class N19baseApplet {
       }
       if (this.getRowListRowCount() < Number(index) + 1) {
         throw new Error(`${index} is equal/higher than amount of records in the applet ${this.getRowListRowCount()}`);
+      }
+      if (skipIfAlreadyPositioned) { // check if already on the same row
+        if (Number(index) === this.getSelection()) {
+          return true; // do not call the server
+        }
       }
       // TODO: if we got here, should we check GetActiveControl (applet.prototype.InvokeMethod)
       // and nullify it if active? otherwise if there is an active control, the navigation doesn't happen
@@ -945,7 +950,7 @@ export default class N19baseApplet {
     return ret;
   }
 
-  getControlsRecordSet() {
+  getControlsRecordSet(addRecordIndex) {
     // used slice to avoid modification of the record set
     const ret = this.getRecordSet().slice();
     const rawRecordSet = this.getRawRecordSet(); // just fallback if record set does not have Id
@@ -964,6 +969,9 @@ export default class N19baseApplet {
         },
       }), {});
       ret[i].Id = id || rawRecordSet[i].Id;
+      if (addRecordIndex) {
+        ret[i]._indx = i;
+      }
     }
 
     return ret;

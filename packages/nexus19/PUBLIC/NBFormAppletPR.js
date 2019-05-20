@@ -13,8 +13,8 @@ if (typeof (SiebelAppFacade.NBFormAppletPR) === "undefined") {
 
         NBFormAppletPR.prototype.Init = function () {
           SiebelAppFacade.NBFormAppletPR.superclass.NBInit.apply(this, arguments);
+          this.initializeNexus({convertDates: true}); // should be before removing to read the required fields
           this.removeHtml();
-          this.initializeNexus({convertDates: true});
         }
 
         NBFormAppletPR.prototype.ShowUI = function () {

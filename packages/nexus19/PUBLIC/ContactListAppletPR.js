@@ -7,6 +7,7 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
 
         var n19helper;
         var app;
+        var keepOUI = false;
 
         function ContactListAppletPR(pm) {
           SiebelAppFacade.ContactListAppletPR.superclass.constructor.apply(this, arguments);
@@ -15,23 +16,39 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
         SiebelJS.Extend(ContactListAppletPR, SiebelAppFacade.NBDefaultListAppletPR);
 
         ContactListAppletPR.prototype.Init = function () {
-          SiebelAppFacade.ContactListAppletPR.superclass.NBInit.apply(this, arguments);
-          this.removeHtml();
-          n19helper = this.initializeNexus({ convertDates: true });
+          if (keepOUI) {
+            SiebelAppFacade.ContactListAppletPR.superclass.Init.apply(this, arguments);
+          } else {
+            SiebelAppFacade.ContactListAppletPR.superclass.NBInit.apply(this, arguments);
 
-          $('head').append('<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet"></link>');
-          $('head').append('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>');
-          $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
+            this.removeHtml();
+            n19helper = this.initializeNexus({ convertDates: true });
 
+            $('head').append('<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet"></link>');
+            $('head').append('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>');
+            $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
+          }
         }
 
         ContactListAppletPR.prototype.ShowUI = function () {
-          // SiebelAppFacade.ContactListAppletPR.superclass.ShowUI.apply(this, arguments);
+          if (keepOUI) {
+            SiebelAppFacade.ContactListAppletPR.superclass.ShowUI.apply(this, arguments);
+          }
         }
 
+        ContactListAppletPR.prototype.BindEvents = function () {
+          if (keepOUI) {
+            SiebelAppFacade.ContactListAppletPR.superclass.BindEvents.apply(this, arguments);
+          }
+        }
+
+
         ContactListAppletPR.prototype.BindData = function (bRefresh) {
-          // SiebelAppFacade.ContactListAppletPR.superclass.BindData.apply(this, arguments);
-          putVue("s_" + this.GetPM().Get('GetFullId') + "_div");
+          if (keepOUI) {
+            SiebelAppFacade.ContactListAppletPR.superclass.BindData.apply(this, arguments);
+          } else {
+            putVue("s_" + this.GetPM().Get('GetFullId') + "_div");
+          }
         }
 
         var html = '\
@@ -46,8 +63,8 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
                 <v-divider class="mx-2" inset vertical></v-divider> \n\
                 <v-spacer></v-spacer> \n\
                 <v-dialog v-model="dialog" max-width="500px"> \n\
-                  <template v-slot:activator="{ on }"> \n\
-                    <v-btn color="primary" dark class="mb-2" v-on="on">New Contact</v-btn> \n\
+                  <template v-slot:activator="scope"> \n\
+                    <v-btn color="primary" dark class="mb-2" v-on:click="newButtonClick(scope)">New Contact</v-btn> \n\
                   </template> \n\
                   <v-card> \n\
                     <v-card-title> \n\
@@ -57,19 +74,19 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
                       <v-container grid-list-md> \n\
                         <v-layout wrap> \n\
                           <v-flex xs12 sm6 md4> \n\
-                            <v-text-field v-model="editedItem[\'Last Name\']" label="Last Name"></v-text-field> \n\
+                            <v-text-field v-on:change="changeValue($event, \'Last Name\')" v-model="editedItem[\'Last Name\']" label="Last Name"></v-text-field> \n\
                           </v-flex> \n\
                           <v-flex xs12 sm6 md4> \n\
-                            <v-text-field v-model="editedItem[\'First Name\']" label="First Name"></v-text-field> \n\
+                            <v-text-field v-on:change="changeValue($event, \'First Name\')" v-model="editedItem[\'First Name\']" label="First Name"></v-text-field> \n\
                           </v-flex> \n\
                           <v-flex xs12 sm6 md4> \n\
-                            <v-text-field v-model="editedItem[\'M/M\']" label="Mr/Ms"></v-text-field> \n\
+                            <v-autocomplete v-on:change="changeValue($event, \'M/M\')" v-model="editedItem[\'M/M\']" label="Mr/Ms" :items="mmLovArr"></v-autocomplete> \n\
                           </v-flex> \n\
                           <v-flex xs12 sm6 md4> \n\
-                            <v-text-field v-model="editedItem[\'Work Phone #\']" label="Work Phone #"></v-text-field> \n\
+                            <v-text-field v-on:change="changeValue($event, \'Work Phone #\')" v-model="editedItem[\'Work Phone #\']" label="Work Phone #"></v-text-field> \n\
                           </v-flex> \n\
                           <v-flex xs12 sm6 md4> \n\
-                            <v-text-field v-model="editedItem[\'Email Address\']" label="Email"></v-text-field> \n\
+                            <v-text-field v-on:change="changeValue($event, \'Email Address\')" v-model="editedItem[\'Email Address\']" label="Email"></v-text-field> \n\
                           </v-flex> \n\
                         </v-layout> \n\
                       </v-container> \n\
@@ -115,11 +132,13 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
           mounted: function () {
             this.afterSelection();
             this.subscribeId = n19helper.subscribe(this.afterSelection);
+            this.mmLovArr = n19helper.getLOV('M/M');
           },
           beforeDestroyed() {
             n19helper.unsubscribe(this.subscribeId);
           },
           data: {
+            mmLovArr: [],
             snackBar: false,
             snackBarColor: '',
             snackBarText: '',
@@ -147,14 +166,14 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
             editedItem: {
               'Last Name': '',
               'First Name': '',
-              'M/M': 'Prof.',
+              'M/M': '',
               'Work Phone #': '',
               'Email Address': ''
             },
             defaultItem: {
               'Last Name': '',
               'First Name': '',
-              'M/M': 'Prof.',
+              'M/M': '',
               'Work Phone #': '',
               'Email Address': ''
             }
@@ -165,21 +184,26 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
             }
           },
           watch: {
-            dialog(val) {
-              val || this.close();
-            }
+            // dialog(val) {
+            //   val || this.close();
+            // }
           },
           methods: {
             initialize() {
               this.contacts = n19helper.getControlsRecordSet(true);
             },
             editItem(item) {
-              console.log('edit item', item);
+              n19helper.positionOnRow(item._indx, {}, true);
               this.editedIndex = this.contacts.indexOf(item);
               this.editedItem = Object.assign({}, item);
               this.dialog = true;
             },
-            close() {
+            close( { skipUndo } ) {
+              if (!skipUndo) {
+                if (n19helper.canInvokeMethod('UndoRecord')) {
+                  n19helper.undoRecordSync();
+                }
+              }
               this.dialog = false;
               setTimeout(() => {
                 this.editedItem = Object.assign({}, this.defaultItem);
@@ -187,27 +211,37 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
               }, 300);
             },
             save() {
-              if (this.editedIndex > -1) {
-                Object.assign(this.contacts[this.editedIndex], this.editedItem);
-                // TODO: make position on row and update the record
-              } else {
-                // new
-                this.contacts.push(this.editedItem);
-              }
-              this.close();
+              n19helper.writeRecord().then(() => {
+                this.snackBarColor = 'success';
+                this.snackBarText = 'Record Saved Successfully';
+                this.snackBarButtonColor = 'pink';
+                this.snackBar = true;
+                if (this.editedIndex > -1) {
+                  Object.assign(this.contacts[this.editedIndex], this.editedItem);
+                } else {
+                  this.contacts.push(this.editedItem);
+                }
+                this.close({skipUndo: true});
+              }).catch(() => {
+                this.snackBarColor = 'error';
+                this.snackBarText = 'FAILED TO SAVE';
+                this.snackBarButtonColor = 'black';
+                this.snackBar = true;
+              });
             },
-            changeValue(name) {
-              var isChanged = n19helper._setControlValue(name, this.controls[name].value);
+            changeValue(value, name) {
+              var isChanged = n19helper._setControlValue(name, value);
               if (!isChanged) { // the value is not set
-                var fieldName = n19helper._getFieldNameForControl(name);
-                var currentValue = n19helper.getCurrentRecord()[fieldName];
-                this.controls[name].value = '';
-                setTimeout(function () { //todo: use next tick?
-                  this.controls[name].value = currentValue;
-                }.bind(this))
+                alert('value is not set');
               }
             },
             newButtonClick: function () {
+              n19helper.newRecordSync();
+              const obj = {};
+              Object.entries(n19helper.getCurrentRecordModel().controls).forEach((el)=>obj[el[0]]=el[1].value);
+
+              this.editedItem = Object.assign({}, obj);
+              console.log(this.editedItem);
               this.dialog = true;
             },
             nextButtonClick: function () {
@@ -227,20 +261,17 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
           app = new Vue(vue);
         }
 
-        ContactListAppletPR.prototype.BindEvents = function () {
-          // SiebelAppFacade.ContactListAppletPR.superclass.BindEvents.apply(this, arguments);
-        }
-
         ContactListAppletPR.prototype.EndLife = function () {
           if (app) {
             app.$destroy(true);
             $('#vue_sample').remove();
             app = null;
+
+            $("link[href*='vuetify.min.css']").remove();
+            $("link[href*='https://fonts.googleapis.com/css']").remove();
+            $('#vuetify-theme-stylesheet').remove();
+            this.destroyNexus();
           }
-          $("link[href*='vuetify.min.css']").remove();
-          $("link[href*='https://fonts.googleapis.com/css']").remove();
-          $('#vuetify-theme-stylesheet').remove();
-          this.destroyNexus();
           SiebelAppFacade.ContactListAppletPR.superclass.EndLife.apply(this, arguments);
         }
 

@@ -39,13 +39,13 @@ export default class N19baseApplet {
         if (this.appletName === arr[2]) {
           if ('false' === arr[4]) {
             // eslint-disable-next-line no-console
-            console.warn(`[N19]Picklist is not associated with the control - ${JSON.stringify(arr)}`);
+            console.warn(`[NB]Picklist is not associated with the control ${inputName} - ${JSON.stringify(arr)}`);
           }
           this.lov[inputName] = arr.slice().splice(i);
         }
       } else if (i === 0) { // this is a misconfiguration, when getting dynamic LOV is called second+ time?
         // eslint-disable-next-line no-console
-        console.warn('[N19]It seems the control/list column is incorrectly configured in the Tools.');
+        console.warn(`[NB]It seems the control/list column ${inputName} is incorrectly configured in the Tools.`);
         this.lov[inputName] = arr;
       }
     }, { scope: this });
@@ -53,7 +53,7 @@ export default class N19baseApplet {
     this.isTreeApplet = SiebelAppFacade.ExplorerPresentationModel === this.pm.constructor;
     if (this.isTreeApplet) {
       // eslint-disable-next-line no-console
-      console.warn('This is a tree applet... it is easier and safer to use list or form applets');
+      console.warn(`[NB]This is a tree applet ${this.appletName}... it is better to use list or form applets.`);
     }
   }
 
@@ -196,7 +196,7 @@ export default class N19baseApplet {
         Object.defineProperty(obj, 'readOnly', {
           get: () => {
             // eslint-disable-next-line no-console
-            console.warn('[N19]The readOnly property will be removed; use readonly instead of it.');
+            console.warn('[NB]The readOnly property will be removed; use readonly instead of it.');
             return obj.readonly;
           },
         });
@@ -205,7 +205,7 @@ export default class N19baseApplet {
             enumerable: true,
             get: () => {
               // eslint-disable-next-line no-console
-              console.warn('[N19]The staticLOV property will be removed; use options instead of it.');
+              console.warn('[NB]The staticLOV property will be removed; use options instead of it.');
               return control.GetRadioGroupPropSet().childArray.map(el => el.propArray);
             },
           });
@@ -213,7 +213,7 @@ export default class N19baseApplet {
             enumerable: true,
             get: () => {
               // eslint-disable-next-line no-console
-              console.warn('[N19]The lovs property will be removed; use options instead of it.');
+              console.warn('[NB]The lovs property will be removed; use options instead of it.');
               return control.GetRadioGroupPropSet().childArray
                 .map(el => ({ lic: el.propArray.FieldValue, val: el.propArray.DisplayName }));
             },
@@ -335,7 +335,9 @@ export default class N19baseApplet {
   }
 
   newRecordSync() {
-    // 20190312 - changed from NewRecord to CreateRecord, #31
+    // 20190312 - changed from NewRecord to CreateRecord, #
+    // if there is some configuration (e.g. server script) that works for NewRecord, it will not be invoked
+    // workaround call the NewRecord explicitly
     return this.pm.ExecuteMethod('InvokeMethod', 'CreateRecord');
   }
 
@@ -452,22 +454,22 @@ export default class N19baseApplet {
     if (staticPick) { // static
       if (!isStaticPick) {
         // eslint-disable-next-line no-console
-        console.warn(`[N19]It seems the getStaticLOV called for not static control - ${uiType}.`);
+        console.warn(`[NB]It seems the getStaticLOV called for not static control ${control.GetName()} - ${uiType}.`);
       }
     } else { // dynamic
       if (isStaticPick) {
-        console.warn('[N19]It seems the getDynamicLOV called for static control.'); // eslint-disable-line no-console
+        console.warn(`[NB]It seems the getDynamicLOV called for static control ${control.GetName()}.`); // eslint-disable-line no-console
       }
       if (this.consts.get('SWE_CTRL_COMBOBOX') !== uiType) { // the control is not "JComboBox"
         switch (uiType) {
           case this.consts.get('SWE_CTRL_PICK'): // Pick
           case this.consts.get('SWE_CTRL_MVG'): // MVG
             // eslint-disable-next-line no-console
-            console.warn(`[N19]You need to use the popups instead of getDynamicLOV - ${uiType}.`);
+            console.warn(`[NB]You need to use the popups instead of getDynamicLOV - ${uiType}/${control.GetName()}.`);
             break;
           default:
             // eslint-disable-next-line no-console
-            console.warn(`[N19]Probably getDynamicLOV is not going to work for this control - ${uiType}.`);
+            console.warn(`[NB]It could be that getDynamicLOV is not going to work for this control - ${uiType}/${control.GetName()}.`);
         }
       }
     }
@@ -501,7 +503,7 @@ export default class N19baseApplet {
     if (!this.isDynamic(control)) {
       // Take the dynamic path in the hope that it will work
       // eslint-disable-next-line no-console
-      console.warn(`[N19]It seems ${controlName} is not properly configured in the Tools or not a picklist.`);
+      console.warn(`[NB]It seems ${controlName} is not properly configured in the Tools or not a picklist.`);
     }
     return this._getControlDynamicLOV(control);
   }

@@ -84,7 +84,7 @@ if (typeof (SiebelAppFacade.AccountAttachmentListAppletPR) === "undefined") {
         }
 
         function putPlugin(divId) {
-          $('#' + divId).append("<div id='test1'>This is a upload area<input type='file' id='fileupload' name='s_SweFileName'></div>"); // SWE_FILE_NAME_STR
+          $('#' + divId).append("<div id='test1'>This is a upload area<input type='file' id='fileupload' name='test'></div>"); // SWE_FILE_NAME_STR
           var $element = $('#fileupload');
 
           $element.fileupload({
@@ -94,6 +94,7 @@ if (typeof (SiebelAppFacade.AccountAttachmentListAppletPR) === "undefined") {
             formData: {},
             multipart: true,
             replaceFileInput: false,
+            paramName: 's_SweFileName', // Server relies on this name
             // scope: i
             type: "POST",
             url: SiebelApp.S_App.GetPageURL()

@@ -741,7 +741,7 @@ export default class N19baseApplet {
 
   queryByIdSync(rowId) {
     let expr;
-    if (Array === rowId.constructor) {
+    if (Array.isArray(rowId)) {
       expr = rowId.map(el => `Id="${el}"`).join(' OR ');
     } else {
       expr = `Id="${rowId}"`;

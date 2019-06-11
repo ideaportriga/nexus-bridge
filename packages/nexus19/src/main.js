@@ -3,18 +3,14 @@ import N19popupController from './n19popupController';
 
 export default class Nexus19 extends N19baseApplet {
   constructor(settings) {
-    const { appletName } = settings;
-    if (appletName) {
-      const applet = SiebelApp.S_App.GetActiveView().GetApplet(appletName);
-      if (!applet) {
-        throw new Error(`Failed to get the reference to the applet by the ${appletName} name`);
-      }
-      super(Object.assign({}, settings, { pm: applet.GetPModel() }));
-    } else {
-      super(settings);
+    const { appletName, pm } = settings;
+    if (appletName && !pm) {
+      throw new Error('The creation of Nexus Bridge instance by applet name is not supported... Please provide pm');
     }
 
-    console.log('Nexus main class started....', this.appletName); // eslint-disable-line no-console
+    super(settings);
+
+    console.log('Nexus Bridge main class started....', this.appletName); // eslint-disable-line no-console
     // get the n19popupController singleton instance
     this.n19popupController = N19popupController.instance;
     this.n19popupController.settings = settings; // assign creation settings

@@ -11,7 +11,6 @@ export default class N19baseApplet {
 
     this.view = SiebelApp.S_App.GetActiveView();
     this.appletName = this.pm.Get('GetName');
-    this.applet = this.view.GetApplet(this.appletName);
     this.isListApplet = typeof this.pm.Get('GetListOfColumns') !== 'undefined';
     this.required = []; // will be empty for the list applet
     this.lov = {};
@@ -422,11 +421,9 @@ export default class N19baseApplet {
     ret = this.getCurrentRecordModel();
     // TODO: do we need to check the state, or can we assume that we always have a record?
     if (!isPostChanges) {
-      Object.keys(ret.controls).forEach((el) => {
-        if (!ret.controls[el].isPostChanges) {
-          if (ret.controls[el].name) { // it has name
-            ret.controls[el].value = this.applet.GetControlValueByName(el);
-          }
+      Object.keys(ret.controls).forEach((con) => {
+        if (!ret.controls[con].isPostChanges) {
+          ret.controls[con].value = this.pm.GetFormattedFieldValue('GetFormattedFieldValue', this._getControl(con)); // TODO: NB+ HERE ENSURE WE ALWAYS RETURN THE NOT FORMATTED WHEN NEEDED!!!
         }
       });
     }

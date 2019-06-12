@@ -25,7 +25,7 @@ export default class N19popupController {
     console.log('popup controller started...'); // eslint-disable-line no-console
 
     this.N19resizeAvailable = SiebelApp.MvgBeautifier.resizeAvailable;
-    SiebelApp.MvgBeautifier.resizeAvailable = () => {
+    SiebelApp.MvgBeautifier.resizeAvailable = () => { // TODO: NB+ DO WE NEED IT
       try {
         this.N19resizeAvailable.call(SiebelApp.MvgBeautifier);
       } catch (e) {
@@ -53,10 +53,12 @@ export default class N19popupController {
           this.resolvePromise = null; // how do we do error handling
           throw new Error('Open Popup Applet is not found in OnLoadPopupContent resolving Promise');
         }
+        // TODO: NB+ TAKE IT FROM THE FACADE?
         this.popupAppletN19 = this._createNexusInstance(applet.GetPModel());
         const obj = { appletName: this.popupAppletN19.appletName, popupAppletN19: this.popupAppletN19 };
 
         if (assocApplet) { // shuttle
+          // TODO: NB+ TAKE IT FROM THE FACADE?
           this.assocAppletN19 = this._createNexusInstance(assocApplet.GetPModel());
           obj.assocAppletN19 = this.assocAppletN19;
           obj.availableRecordSet = this.assocAppletN19.getControlsRecordSet();
@@ -72,8 +74,7 @@ export default class N19popupController {
   }
 
   _createNexusInstance(pm) {
-    const obj = { pm };
-    return new N19popupApplet(Object.assign({}, this.settings, obj));
+    return new N19popupApplet(Object.assign({}, this.settings, { pm }));
   }
 
   canOpenPopup() {
@@ -98,16 +99,14 @@ export default class N19popupController {
     return 'refreshpopup';
   }
 
-  closePopupApplet(applet) {
-    let ret;
-    if (applet) {
-      if (!applet.GetPModel().ExecuteMethod('CanInvokeMethod', 'CloseApplet')) {
-        throw new Error('The method CloseApplet is not allowed!');
-      }
-      ret = applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
-    } else {
-      ret = this.popupAppletN19.applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
+  closePopupApplet() {
+    if (!this.popupAppletN19 || !this.popupAppletN19.pm) {
+      throw new Error('The popup applet was not opened by NB!');
     }
+    if (!this.popupAppletN19.pm.ExecuteMethod('CanInvokeMethod', 'CloseApplet')) {
+      throw new Error('The method CloseApplet is not allowed!');
+    }
+    const ret = this.popupAppletN19.pm.ExecuteMethod('InvokeMethod', 'CloseApplet');
     // it could be better if we don't have a Siebel Applet on the view
     // do reinit here on closing?
     this.popupAppletN19 = null;
@@ -128,16 +127,16 @@ export default class N19popupController {
       // OpenUI assumes that 0 is mvg, so do I
       return { isOpen: true, applet: currPopups[0], assocApplet: currPopups[1] };
     }
-    throw new Error('should not be here...');
+    throw new Error('should never have been here...');
   }
 
   checkOpenedPopup(closeIfOpen) {
-    const { isOpen, applet } = N19popupController.IsPopupOpen();
+    const { isOpen } = N19popupController.IsPopupOpen();
     if (isOpen && closeIfOpen) {
       // this code will close the applet even if this applet was originated by another applet
-      console.log('closing already opened popup applet in showPopupApplet...'); // eslint-disable-line no-console
+      console.log('closing already opened popup applet in checkOpenedPopup...'); // eslint-disable-line no-console
       // maybe do not close if the applet to be opened if the same as already opened?
-      return this.closePopupApplet(applet);
+      return this.closePopupApplet();
     }
     return isOpen;
   }

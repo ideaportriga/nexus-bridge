@@ -5,7 +5,7 @@ export default class Nexus19 extends N19baseApplet {
   constructor(settings) {
     const { appletName, pm } = settings;
     if (appletName && !pm) {
-      throw new Error('The creation of Nexus Bridge instance by applet name is not supported... Please provide pm');
+      throw new Error('The creation of Nexus Bridge instance by applet name is not supported... Please provide pm.');
     }
 
     super(settings);

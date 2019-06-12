@@ -595,16 +595,15 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
               },
               getControlForOpenPopup() {
-                var controlName = '';
                 if (n19helper.n19popupController.popupAppletN19) {
                   // check if it was not closed accidentally
                   const appletName = n19helper.n19popupController.popupAppletN19.appletName;
-                  const applet = SiebelApp.S_App.GetActiveView().GetAppletMap()[appletName];
+                  const applet = SiebelApp.S_App.GetActiveView().GetApplet(appletName);
                   if (applet) {
-                    controlName = n19helper.n19popupController.popupAppletN19.applet.GetPopupControl();
+                    return applet.GetPopupControl();
                   }
                 }
-                return controlName;
+                return '';
               },
               addPmHandlerForPopup(pm) {
                 pm.AttachPostProxyExecuteBinding("ALL", function (method) {
@@ -824,9 +823,9 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               updatePrimary() {
                 console.log('<<<<<<<<< change case primary <<<', this.caseSalesRepArr, this.caseSalesRepPrimary);
-                if (SiebelApp.S_App.GetActiveView().GetAppletMap()['Contact Team Mvg Applet']) {
+                if (SiebelApp.S_App.GetActiveView().GetApplet('Contact Team Mvg Applet')) {
                   // in demo primary could be changed only in the applet!
-                  var arr = SiebelApp.S_App.GetActiveView().GetAppletMap()['Contact Team Mvg Applet'].GetPModel().Get('GetRawRecordSet');
+                  var arr = SiebelApp.S_App.GetActiveView().GetApplet('Contact Team Mvg Applet').GetPModel().Get('GetRawRecordSet');
                   for (var i = 0; i < arr.length; i++) {
                     if (arr[i]['SSA Primary Field'] == 'Y') {
                       this.caseSalesRepPrimary = arr[i].Id;
@@ -877,9 +876,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               },
               clickDeleteSalesRep(salesRep) {
                 console.log('>>> clickDeleteSalesRep input', salesRep, salesRep.login, this.caseSalesRepArr);
-                if (n19helper.n19popupController.popupAppletN19) {
-                  var controlName = n19helper.n19popupController.popupAppletN19.applet.GetPopupControl();
-                }
+                const controlName = this.getControlForOpenPopup();
                 if ('Sales Rep' !== controlName) {
                   var ret = n19helper.showMvgApplet('Sales Rep', true, function (obj) {
                     this.deleteSalesRep(obj.popupAppletN19, salesRep.id);

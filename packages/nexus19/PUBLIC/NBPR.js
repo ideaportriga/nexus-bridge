@@ -5,10 +5,8 @@ var NBPR = (function () {
     var pm = this.GetPM();
     var appletName = pm.Get('GetName');
     SiebelAppFacade.NB = SiebelAppFacade.NB || {};
-    SiebelAppFacade.NB[appletName] = new SiebelAppFacade.N19Helper({
-      pm: pm,
-      convertDates: options.convertDates
-    });
+    SiebelAppFacade.NB[appletName] =
+      new SiebelAppFacade.N19Helper(Object.assign({pm: pm}, options));
     return SiebelAppFacade.NB[appletName];
   }
 

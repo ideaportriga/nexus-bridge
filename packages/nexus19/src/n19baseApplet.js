@@ -423,7 +423,8 @@ export default class N19baseApplet {
     if (!isPostChanges) {
       Object.keys(ret.controls).forEach((con) => {
         if (!ret.controls[con].isPostChanges) {
-          ret.controls[con].value = this.pm.GetFormattedFieldValue('GetFormattedFieldValue', this._getControl(con)); // TODO: NB+ HERE ENSURE WE ALWAYS RETURN THE NOT FORMATTED WHEN NEEDED!!!
+          // TODO: NB+ HERE ENSURE WE ALWAYS RETURN THE NOT FORMATTED WHEN NEEDED!!!
+          ret.controls[con].value = this.pm.ExecuteMethod('GetFormattedFieldValue', this._getControl(con));
         }
       });
     }
@@ -455,7 +456,8 @@ export default class N19baseApplet {
       }
     } else { // dynamic
       if (isStaticPick) {
-        console.warn(`[NB]It seems the getDynamicLOV called for static control ${control.GetName()}.`); // eslint-disable-line no-console
+        // eslint-disable-next-line no-console
+        console.warn(`[NB]It seems the getDynamicLOV called for static control ${control.GetName()}.`);
       }
       if (this.consts.get('SWE_CTRL_COMBOBOX') !== uiType) { // the control is not "JComboBox"
         switch (uiType) {

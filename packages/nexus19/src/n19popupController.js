@@ -53,14 +53,26 @@ export default class N19popupController {
           this.resolvePromise = null; // how do we do error handling
           throw new Error('Open Popup Applet is not found in OnLoadPopupContent resolving Promise');
         }
-        // TODO: NB+ TAKE IT FROM THE FACADE?
-        this.popupAppletN19 = this._createNexusInstance(applet.GetPModel());
-        const obj = { appletName: this.popupAppletN19.appletName, popupAppletN19: this.popupAppletN19 };
+
+        const arr = Object.values(SiebelAppFacade.NB);
+        for (let i = 0; i < arr.length; i += 1) {
+          if (arr[i].isPopup) { // this is popup
+            if (assocApplet && arr[i].isMvgAssoc) {
+              this.assocAppletN19 = arr[i];
+            } else {
+              this.popupAppletN19 = arr[i];
+            }
+          }
+        }
+
+        const obj = {
+          appletName: this.popupAppletN19.appletName,
+          popupAppletN19: this.popupAppletN19,
+        };
 
         if (assocApplet) { // shuttle
-          // TODO: NB+ TAKE IT FROM THE FACADE?
-          this.assocAppletN19 = this._createNexusInstance(assocApplet.GetPModel());
           obj.assocAppletN19 = this.assocAppletN19;
+
           obj.availableRecordSet = this.assocAppletN19.getControlsRecordSet();
           obj.selectedRecordSet = this.popupAppletN19.getControlsRecordSet();
         } else { // assoc only OR pick

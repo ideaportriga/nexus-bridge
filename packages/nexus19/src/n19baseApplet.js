@@ -4,6 +4,16 @@ import N19localeData from './n19localeData';
 export default class N19baseApplet {
   constructor(settings) {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
+
+    ({
+      pm: this.pm,
+      convertDates: this.convertDates,
+      returnRawNumbers: this.returnRawNumbers,
+      returnRawCurrencies: this.returnRawCurrencies,
+      isMvgAssoc: this.isMvgAssoc,
+      isPopup: this.isPopup,
+    } = settings);
+
     this.pm = settings.pm;
     this.convertDates = settings.convertDates;
     this.returnRawNumbers = settings.returnRawNumbers;

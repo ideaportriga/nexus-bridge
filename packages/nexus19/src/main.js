@@ -1,5 +1,6 @@
 import N19baseApplet from './n19baseApplet';
 import N19popupController from './n19popupController';
+import N19popupApplet from './n19popupApplet';
 
 export default class Nexus19 extends N19baseApplet {
   constructor(settings) {
@@ -142,6 +143,10 @@ export default class Nexus19 extends N19baseApplet {
           resolve(obj);
         }
       }));
+  }
+
+  static CreatePopupNB(settings) {
+    return new N19popupApplet(settings);
   }
 }
 

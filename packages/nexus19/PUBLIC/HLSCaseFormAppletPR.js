@@ -583,7 +583,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   alert('Ary on Sample DB? The recordset length is not 1 as expected - ' + found);
                 } else {
                   obj.popupAppletN19.pickRecord();
-                  alert('PASSED');
                 }
               },
               testShuttleOpened(obj) {
@@ -686,7 +685,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     mvg.setControlValue('SSA Primary Field', true);
                     await mvg.writeRecord();
                     await mvg.query({});
-                    alert('Finished');
                   } else {
                     alert('Query by Id did not work - ' + found + '/' + id);
                   }

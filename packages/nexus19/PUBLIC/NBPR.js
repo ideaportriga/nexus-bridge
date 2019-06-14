@@ -64,13 +64,15 @@ var NBPR = (function () {
       if (selection > -1) {
         var controls = pm.Get('GetControls');
         var recordSet = pm.Get('GetRecordSet')[selection];
-        Object.keys(controls).forEach(function (controlName) {
-          //TODO: should we use formatted field value?
-          var fieldName = controls[controlName].GetFieldName();
-          if ('' !== fieldName) {
-            obj[controlName] = recordSet[fieldName];
-          }
-        });
+        if (recordSet) { // TODO: is it better to check is in query?
+          Object.keys(controls).forEach(function (controlName) {
+            //TODO: should we use formatted field value?
+              var fieldName = controls[controlName].GetFieldName();
+            if ('' !== fieldName) {
+              obj[controlName] = recordSet[fieldName];
+            }
+          });
+        }
       }
       pm.AddProperty('n19internal', obj);
     });

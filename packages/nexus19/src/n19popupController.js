@@ -16,6 +16,9 @@ export default class N19popupController {
       throw new Error('Instantiation failed: get popup controller instance instead of new.');
     }
 
+    const popupPM = SiebelApp.S_App.GetPopupPM();
+    popupPM.Setup(); // to create PR
+
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.isPopupHidden = false;
     this.resolvePromise = null;
@@ -23,15 +26,6 @@ export default class N19popupController {
     this.assocAppletN19 = null; // it could be removed in the next version
 
     console.log('popup controller started...'); // eslint-disable-line no-console
-
-    this.N19resizeAvailable = SiebelApp.MvgBeautifier.resizeAvailable;
-    SiebelApp.MvgBeautifier.resizeAvailable = () => { // TODO: NB+ DO WE NEED IT
-      try {
-        this.N19resizeAvailable.call(SiebelApp.MvgBeautifier);
-      } catch (e) {
-        console.log(`resizeAvailable Error: ${e.name} ${e.message}`); // eslint-disable-line no-console
-      }
-    };
 
     // it will be a singleton, so there is no cleanup
     this.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
@@ -96,12 +90,7 @@ export default class N19popupController {
   processNewPopup(ps) {
     const popupPM = SiebelApp.S_App.GetPopupPM();
 
-    if (!popupPM.GetRenderer()) {
-      popupPM.Setup(); // to create PR
-    }
-
     // this property is added using AttachPMBinding into the Init PR (called by PM Setup)
-    // it is the reason why we have reinit procedure where Setup PM is called
     popupPM.AddProperty('state', this.consts.get('POPUP_STATE_VISIBLE'));
 
     let url = ps.GetProperty('URL');

@@ -24,7 +24,8 @@ export default class N19notifications {
       const fieldName = propSet.GetProperty(consts.get('SWE_PROP_NOTI_FIELD'));
       const control = fieldToControlMap[fieldName];
       if (control && control.uiType !== consts.get('SWE_CTRL_MVG')
-        && control.uiType !== consts.get('SWE_CTRL_PICK')) {
+      // && control.uiType !== consts.get('SWE_CTRL_PICK')
+      ) {
         receivedNotifications.push('SWE_PROP_BC_NOTI_NEW_DATA_WS');
       }
     });

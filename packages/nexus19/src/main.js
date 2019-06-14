@@ -37,7 +37,6 @@ export default class Nexus19 extends N19baseApplet {
   }
 
   showMvgApplet(name, hide, cb) {
-    // TODO: check if name is correct?
     if (this.pm.Get('IsInQueryMode')) {
       throw new Error('Mvg applet cannot be opened in query mode');
     }
@@ -45,7 +44,6 @@ export default class Nexus19 extends N19baseApplet {
   }
 
   showPickApplet(name, hide, cb) {
-    // TODO: check if name is correct?
     return this._showPopupApplet(name, hide, cb);
   }
 
@@ -57,7 +55,6 @@ export default class Nexus19 extends N19baseApplet {
   }
 
   openAssocApplet(hide, cb) { // this method should be available for child business component in M:M relationship
-    // TODO: check if applet provides such capabilities?
     if (!this.n19popupController.canOpenPopup()) {
       throw new Error('Cannot open popup (currently exists resolve function)!');
     }
@@ -72,21 +69,20 @@ export default class Nexus19 extends N19baseApplet {
       // TODO: check isLink of control?
       // index is not effective, and drilldown anyway happens on the selected record
       const index = this.getSelection();
-      return this.pm.ExecuteMethod('OnDrillDown', controlName, index);
-      // return this.pm.OnControlEvent(this.consts.get('PHYEVENT_DRILLDOWN_LIST'), controlName, index);
+      // return this.pm.ExecuteMethod('OnDrillDown', controlName, index);
+      return this.pm.OnControlEvent(this.consts.get('PHYEVENT_DRILLDOWN_LIST'), controlName, index);
     }
     // else assumes it is form applet
-    // return this.pm.OnControlEvent(this.consts.get('PHYEVENT_DRILLDOWN_FORM'), this._getControl(controlName));
     const control = this._getControl(controlName);
     if (!control) {
       throw new Error(`Control ${controlName} is not found!`);
     }
-    const ps = control.GetMethodPropSet();
-    return this.pm.ExecuteMethod('InvokeMethod', 'DrillDown', ps);
+    return this.pm.OnControlEvent(this.consts.get('PHYEVENT_DRILLDOWN_FORM'), control);
+    // const ps = control.GetMethodPropSet();
+    // return this.pm.ExecuteMethod('InvokeMethod', 'DrillDown', ps);
   }
 
   gotoView(targetViewName, targetAppletName, id) {
-    // TODO: get the applet name from the view definition?
     const rowId = typeof id === 'undefined' ? this.getCurrentRecord(true).Id : id;
     let SWECmd = `GotoView&SWEView=${targetViewName}&SWEApplet0=${targetAppletName}`;
     SWECmd += `&SWEBU=1&SWEKeepContext=FALSE&SWERowId0=${rowId}`;
@@ -109,7 +105,6 @@ export default class Nexus19 extends N19baseApplet {
   }
 
   pickRecordById(controlName, rowId) {
-    // TODO: check if the control allows picking?
     return this.showPickApplet(controlName, true)
       .then(obj => new Promise(resolve => setTimeout(() => resolve(obj), 0)))
       .then((obj) => {
@@ -122,7 +117,6 @@ export default class Nexus19 extends N19baseApplet {
   }
 
   assocRecordsById(controlName, arr, closeApplet) {
-    // TODO: check if the control allows mvg?
     return this.showMvgApplet(controlName, true)
       .then(obj => new Promise(resolve => setTimeout(() => resolve(obj), 0)))
       .then(obj => new Promise((resolve) => {

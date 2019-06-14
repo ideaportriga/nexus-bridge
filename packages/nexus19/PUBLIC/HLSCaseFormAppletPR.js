@@ -81,13 +81,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           });
 
-          SiebelApp.S_App.GetPopupPM().AddMethod('OnLoadPopupContent', (...args) => {
-            console.log('OnLoadPopupContent ADD METHOD PR', args);
-          }, { sequence: false });
+          // SiebelApp.S_App.GetPopupPM().AddMethod('OnLoadPopupContent', (...args) => {
+          //   console.log('OnLoadPopupContent ADD METHOD PR', args);
+          // }, { sequence: false });
 
-          SiebelApp.S_App.GetPopupPM().AttachPMBinding('OnLoadPopupContent', (...args) => {
-            console.log('OnLoadPopupContent ATTACH PR', args);
-          });
+          // SiebelApp.S_App.GetPopupPM().AttachPMBinding('OnLoadPopupContent', (...args) => {
+          //   console.log('OnLoadPopupContent ATTACH PR', args);
+          // });
 
           pm.AttachPostProxyExecuteBinding('ALL', function (method) {
             console.log('>>>>>> AttachPostProxyExecuteBinding', method, arguments);
@@ -635,7 +635,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     isRecord = mvg._firstRecord();
                   }
                 }
-                alert('Finished');
               },
               async testButtonClickShuttle2() {
                 var controlName = this.getControlForOpenPopup();

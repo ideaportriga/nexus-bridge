@@ -17,6 +17,12 @@ if (typeof (SiebelAppFacade.NBFormAppletPR) === "undefined") {
           this.removeHtml();
         }
 
+        NBFormAppletPR.prototype.ShowUI = function () { }
+
+        NBFormAppletPR.prototype.BindData = function (bRefresh) { }
+
+        NBFormAppletPR.prototype.BindEvents = function () { }
+
         NBFormAppletPR.prototype.EndLife = function () {
           this.destroyNexus();
           SiebelAppFacade.NBFormAppletPR.superclass.EndLife.apply(this, arguments);

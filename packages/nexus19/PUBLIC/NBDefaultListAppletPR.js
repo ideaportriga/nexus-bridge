@@ -23,11 +23,17 @@ if (typeof (SiebelAppFacade.NBDefaultListAppletPR) === "undefined") {
           SiebelAppFacade.NBDefaultListAppletPR.superclass.Init.apply(this, arguments);
         }
 
-        NBDefaultListAppletPR.prototype.ShowUI = function () { }
+        NBDefaultListAppletPR.prototype.ShowUI = function () {
+          SiebelAppFacade.NBDefaultListAppletPR.superclass.ShowUI.apply(this, arguments);
+        }
 
-        NBDefaultListAppletPR.prototype.BindData = function (bRefresh) { }
+        NBDefaultListAppletPR.prototype.BindData = function (bRefresh) {
+          SiebelAppFacade.NBDefaultListAppletPR.superclass.BindData.apply(this, arguments);
+        }
 
-        NBDefaultListAppletPR.prototype.BindEvents = function () { }
+        NBDefaultListAppletPR.prototype.BindEvents = function () {
+          SiebelAppFacade.NBDefaultListAppletPR.superclass.BindEvents.apply(this, arguments);
+        }
 
         NBDefaultListAppletPR.prototype.EndLife = function () {
           SiebelAppFacade.NBDefaultListAppletPR.superclass.EndLife.apply(this, arguments);

@@ -434,7 +434,8 @@ export default class N19baseApplet {
       Object.keys(ret.controls).forEach((con) => {
         if (ret.controls[con].name && !ret.controls[con].isPostChanges) {
           // TODO: NB+ HERE ENSURE WE ALWAYS RETURN THE NOT FORMATTED WHEN NEEDED!!!
-          ret.controls[con].value = this.pm.ExecuteMethod('GetFormattedFieldValue', this._getControl(con));
+          const setValue = this.pm.ExecuteMethod('GetFormattedFieldValue', this._getControl(con));
+          ret.controls[con].value = this._getJSValue(setValue, ret.controls[con]);
         }
       });
     }

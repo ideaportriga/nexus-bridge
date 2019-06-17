@@ -55,27 +55,30 @@ var NBPR = (function () {
     }
   }
 
+  function initInternalObject() {
+    var pm = this.GetPM();
+    var obj = {};
+    var selection = pm.Get('GetSelection');
+    if (selection > -1) {
+      var controls = pm.Get('GetControls');
+      var recordSet = pm.Get('GetRecordSet')[selection];
+      if (recordSet) { // TODO: is it better to check is in query?
+        Object.keys(controls).forEach(function (controlName) {
+          //TODO: should we use formatted field value?
+          var fieldName = controls[controlName].GetFieldName();
+          if ('' !== fieldName) {
+            obj[controlName] = recordSet[fieldName];
+          }
+        });
+      }
+    }
+    pm.AddProperty('n19internal', obj);
+  }
+
   function init() {
     var pm = this.GetPM();
     pm.AddProperty('n19internal', {});
-    pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END'), function () {
-      var obj = {};
-      var selection = pm.Get('GetSelection');
-      if (selection > -1) {
-        var controls = pm.Get('GetControls');
-        var recordSet = pm.Get('GetRecordSet')[selection];
-        if (recordSet) { // TODO: is it better to check is in query?
-          Object.keys(controls).forEach(function (controlName) {
-            //TODO: should we use formatted field value?
-              var fieldName = controls[controlName].GetFieldName();
-            if ('' !== fieldName) {
-              obj[controlName] = recordSet[fieldName];
-            }
-          });
-        }
-      }
-      pm.AddProperty('n19internal', obj);
-    });
+    pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END'), initInternalObject.bind(this));
     this.AttachPMBinding("FieldChange", setControlValue);
     this.AttachPMBinding("GetPhysicalControlValue", getPhysicalControlValue);
   }
@@ -84,8 +87,6 @@ var NBPR = (function () {
     initializeNexus: initializeNexus,
     destroyNexus: destroyNexus,
     removeHtml: removeHtml,
-    setControlValue: setControlValue,
-    getPhysicalControlValue: getPhysicalControlValue,
     init: init
   };
 }());

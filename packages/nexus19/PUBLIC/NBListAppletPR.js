@@ -13,20 +13,8 @@ if (typeof (SiebelAppFacade.NBListAppletPR) === "undefined") {
 
         NBListAppletPR.prototype.Init = function () {
           SiebelAppFacade.NBListAppletPR.superclass.NBInit.apply(this, arguments);
+          this.initializeNexus({ convertDates: true });
           this.removeHtml();
-          this.initializeNexus({convertDates: true});
-        }
-
-        NBListAppletPR.prototype.ShowUI = function () {
-          // SiebelAppFacade.NBListAppletPR.superclass.ShowUI.apply(this, arguments);
-        }
-
-        NBListAppletPR.prototype.BindData = function (bRefresh) {
-          // SiebelAppFacade.NBListAppletPR.superclass.BindData.apply(this, arguments);
-        }
-
-        NBListAppletPR.prototype.BindEvents = function () {
-          // SiebelAppFacade.NBListAppletPR.superclass.BindEvents.apply(this, arguments);
         }
 
         NBListAppletPR.prototype.EndLife = function () {

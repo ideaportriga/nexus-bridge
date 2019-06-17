@@ -98,8 +98,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             console.log('>>>>>> AttachPreProxyExecuteBinding', method, arguments);
           });
 
-          this.removeHtml();
-
           // for commit pending indicator
           document.getElementById("s_" + pm.Get('GetFullId') + "_div").classList.add('siebui-applet', 'siebui-active');
 
@@ -287,7 +285,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           }
 
           document.getElementById('_sweview').title = '';
-          putVue("s_" + pm.Get('GetFullId') + "_div");
+          putVue(pm.Get('GetFullId'));
         }
 
         function putVue(divId) {
@@ -416,7 +414,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
               </v-container></v-app>                                                                          \n\
           </div>';
 
-          $('#' + divId).append(html);
+          $('#' + divId).replaceWith(html);
 
           app = new Vue({
             el: '#vue_sample',

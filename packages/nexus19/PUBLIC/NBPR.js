@@ -32,8 +32,8 @@ var NBPR = (function () {
   }
 
   function removeHtml() {
-    var divId = "s_" + this.GetPM().Get('GetFullId') + "_div";
-    var el = document.querySelector('#' + divId + ' > *');
+    var divId = this.GetPM().Get('GetFullId');
+    var el = document.querySelector('#' + divId);
     if (el) { // can't be found for assoc in shuttle when mvg html removed
       el.parentNode.removeChild(el);
     }

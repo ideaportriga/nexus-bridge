@@ -61,6 +61,7 @@ var NBPR = (function () {
     var selection = pm.Get('GetSelection');
     if (selection > -1) {
       var controls = pm.Get('GetControls');
+      // TODO: better for list; form returns not formatted? should we handle it?
       var recordSet = pm.Get('GetRecordSet')[selection];
       if (recordSet) { // TODO: is it better to check is in query?
         Object.keys(controls).forEach(function (controlName) {

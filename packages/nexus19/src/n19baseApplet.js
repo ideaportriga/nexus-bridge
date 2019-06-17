@@ -237,14 +237,27 @@ export default class N19baseApplet {
 
   getRecordSet(addRecordIndex) {
     // TODO: convert the values?
-    if (addRecordIndex) {
-      return this.pm.Get('GetRecordSet').map((el, index) => {
-        const ret = Object.assign({}, el);
-        ret._indx = index;
-        return ret;
+    const recordSet = this.pm.Get('GetRecordSet').map(el => Object.assign({}, el)); // clone
+    // assumes it is form applet for which GetRecordSet returns not formatted values
+    if (!this.isListApplet && !this.pm.Get('IsInQueryMode')) {
+      const controls = this._returnControls();
+      recordSet.forEach((record, index) => {
+        // TODO: return clone of the elements/array?
+        const fields = Object.keys(record);
+        fields.forEach((field) => {
+          if (this.fieldToControlMap[field]) {
+            const controlName = this.fieldToControlMap[field].name;
+            const control = controls[controlName];
+            const value = this.pm.ExecuteMethod('GetFormattedFieldValue', control);
+            recordSet[index][field] = value;
+          }
+        });
       });
     }
-    return this.pm.Get('GetRecordSet');
+    if (addRecordIndex) {
+      recordSet.forEach((record, index) => { recordSet[index]._indx = index; });
+    }
+    return recordSet;
   }
 
   getRawRecordSet(addRecordIndex) {
@@ -541,19 +554,18 @@ export default class N19baseApplet {
         return null;
       }
       // assuming that form applet returns not formatted values
-      const inputFormat = this.isListApplet ? displayFormat : 'MM/DD/YYYY HH:mm:ss';
       const ISO = SiebelApp.S_App.LocaleObject
-        .GetStringFromDateTime(value, inputFormat, this.consts.get('ISO8601_DATETIME_FORMAT'));
+        .GetStringFromDateTime(value, displayFormat, this.consts.get('ISO8601_DATETIME_FORMAT'));
       if (ISO === '') {
-        throw new Error(`ISO value is empty after converting ${value}/${inputFormat}`);
+        throw new Error(`ISO value is empty after converting ${value}/${displayFormat}`);
       }
       return new Date(ISO);
     }
-    if (this.returnRawNumbers && this.isListApplet && 'number' === dataType) {
+    if (this.returnRawNumbers && 'number' === dataType) {
       // it is already not formatted on form applet, so only for list applet
       return SiebelApp.S_App.LocaleObject.FormattedToString(dataType, value, displayFormat);
     }
-    if (this.returnRawCurrencies && this.isListApplet && 'currency' === dataType && currencyCode) {
+    if (this.returnRawCurrencies && 'currency' === dataType && currencyCode) {
       // it is already not formatted on form applet, so only for list applet
       SiebelApp.S_App.LocaleObject.SetCurrencyCode(currencyCode); // TODO: do we need to restore the m_sCurrencyCode?
       return SiebelApp.S_App.LocaleObject.FormattedToString(dataType, value, displayFormat);

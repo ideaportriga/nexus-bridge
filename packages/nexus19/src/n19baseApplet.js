@@ -34,12 +34,18 @@ export default class N19baseApplet {
     // populate the required array for form applets
     if (!this.isListApplet) {
       const appletId = `s_${this.pm.Get('GetFullId')}_div`;
-      const appletInputs = document.getElementById(appletId).querySelectorAll('input');
-      appletInputs.forEach((el) => {
-        if (el.attributes['aria-required']) {
-          this.required.push(el.attributes.name.nodeValue);
-        }
-      });
+      const applet = document.getElementById(appletId);
+      if (applet) {
+        const appletInputs = applet.querySelectorAll('input');
+        appletInputs.forEach((el) => {
+          if (el.attributes['aria-required']) {
+            this.required.push(el.attributes.name.nodeValue);
+          }
+        });
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(`[NB]Cannot get required controls from HTML. HTML was already removed?/${this.appletName}`);
+      }
     }
 
     // listener to get dynamic LOVs

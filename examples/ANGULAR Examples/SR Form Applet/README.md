@@ -32,7 +32,7 @@ The demo example was tested with 16.0 ENU.
       * Click `Clear cache` button under `Administration – Application > Responsibilities` view
 1. Re-login to your Siebel Application and check that the `Nexus Angular Demo` screen is available.
 1. Copy below files to the `[CLIENT_HOME or SERVER_HOME]/public/SCRIPTS/siebel/custom/` folder:
-    * `dist/*.*` excluding `font` folder.
+    * `dist/*.*` excluding `fonts` folder.
 1. Copy below files to the `[CLIENT_HOME or SERVER_HOME]/public/fonts/` folder:
     * `dist/fonts/*.*`.
 1. Use Siebel Client to reference js files in Siebel Open UI Manifest as follows:

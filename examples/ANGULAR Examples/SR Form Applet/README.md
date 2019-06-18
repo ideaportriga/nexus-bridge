@@ -1,6 +1,6 @@
-# Quick Start Guide: Nexus19 + Angular example
+# Quick Start Guide: Nexus Bridge + Angular example
 
-This guide will help to setup Nexus19 with the demo of a Form Applet that is built using Nexus19 and Angular framework.
+This guide will help to setup the demo that is built using Nexus Bridge and Angular framework.
 <br>The applet supports:
 - navigation through records
 - displaying, editing, saving and deleting data
@@ -16,7 +16,7 @@ The demo example was tested with 16.0 ENU.
 ![result](images/form-demo.png)
 
 
-1. Make a clean [Nexus19 Setup](/../wikis/Setup Nexus Bridge) if you haven't done it before.
+1. Make a clean [Nexus Bridge Setup](/../wikis/Setup Nexus Bridge) if you haven't done it before.
 1. Import SIF files in `siebel/sif/*` into the Siebel Tools.
 1. Add the `Nexus Angular Demo Screen` to your application:
       * Findout your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` in Chrome Developer Tools console.

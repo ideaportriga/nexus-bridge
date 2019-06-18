@@ -10,6 +10,8 @@ interface N19Helper {
 
 const memo: any = {}
 
+declare const SiebelApp : any;
+
 const n19Factory = (config: string | N19Config): null | N19Helper => {
   if (config !== null && typeof config === 'object') {
     for (let key in memo) {
@@ -19,8 +21,9 @@ const n19Factory = (config: string | N19Config): null | N19Helper => {
 
     for (let key in config) {
       const appletName = config[key]
+      const pm = SiebelApp.S_App.GetActiveView().GetApplet(appletName).GetPModel() // or take from SiebelAppFacade?
       memo[key] = new Nexus19({
-        appletName,
+        pm,
         convertDates: true,
       })
       console.log(`N19Helper instance created: ${memo[key].appletName}`)

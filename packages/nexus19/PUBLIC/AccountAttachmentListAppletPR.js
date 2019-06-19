@@ -50,7 +50,7 @@ if (typeof (SiebelAppFacade.AccountAttachmentListAppletPR) === "undefined") {
           }
         }
 
-        function __uploadU(event, n, r) {
+        function upload(event, n) {
           console.log('upload started....');
           if (n.files.length > 0) {
             var $element = $('#fileupload');
@@ -60,24 +60,27 @@ if (typeof (SiebelAppFacade.AccountAttachmentListAppletPR) === "undefined") {
             $element.fileupload("option", "remainingFilesToUpload", n.files.length);
             $element.fileupload("option", "formData", newFileAttRetValue);
             $element.fileupload("option", "url", SiebelApp.S_App.GetPageURL() + consts.get("SWE_ARG_START") + srnString);
-            $element = null;
           }
         }
 
-        function uploadDone(event, n) {
+        function uploadDone(event, data) {
           var $element = $('#fileupload');
-          console.log(n.result);
-          var i = null;
-          var s = 0;
+          var result = data.result;
+          var remainingFiles = 0;
+          console.log('upload done...', result);
+
           if ($element.data("blueimp-fileupload")) {
-            s = $element.fileupload("option", "remainingFilesToUpload");
-            $element.fileupload("option", "remainingFilesToUpload", --s);
+            remainingFiles = $element.fileupload("option", "remainingFilesToUpload");
+            $element.fileupload("option", "remainingFilesToUpload", --remainingFiles);
           }
-          n.dataType === "iframe " ? i = $(n.result).find("body").html() : i = n.result; // we are taking n.result
-          utils.IsEmpty(i) || SiebelApp.S_App.ProcessResponse(i).done(function () {
-            SiebelApp.S_App.ProcessError();
-          });
-          if (s <= 0) {
+          if (!utils.IsEmpty(result)) {
+            SiebelApp.S_App.ProcessResponse(result).done(function () {
+              SiebelApp.S_App.ProcessError();
+              pm.ExecuteMethod('InvokeMethod', 'WriteRecord');
+              console.log(pm.Get('GetRecordSet'));
+            });
+          }
+          if (remainingFiles <= 0) {
             $element.val("");
           }
         }
@@ -96,22 +99,16 @@ if (typeof (SiebelAppFacade.AccountAttachmentListAppletPR) === "undefined") {
             paramName: 's_SweFileName', // Server relies on this name
             // scope: i
             type: "POST",
-            url: SiebelApp.S_App.GetPageURL()
+            url: SiebelApp.S_App.GetPageURL(),
+            fail: function () {
+              console.log('upload fail...', arguments);
+            },
+            done: uploadDone
+          }).bind("fileuploadchange", { ctx: this }, function (event, data) {
+            return upload.call(this, event, data);
+          }).bind("fileuploaddrop", { ctx: this }, function (event, data) {
+            return upload.call(this, event, data);
           });
-
-          $element.bind("fileuploadchange", {
-            ctx: this
-          }, function (event, n) {
-            return __uploadU.call(this, event, n, null)
-          }).bind("fileuploaddrop", {
-            ctx: this
-          }, function (event, n) {
-            return __uploadU.call(this, event, n, null)
-          });
-          var obj = {};
-          obj.fail = function () { console.log('fail', arguments) };
-          obj.done = uploadDone;
-          $element.fileupload(obj);
         }
 
         AccountAttachmentListAppletPR.prototype.EndLife = function () {

@@ -357,7 +357,7 @@ export default class N19baseApplet {
   _writeRecord(cb) {
     return this.pm.ExecuteMethod('InvokeMethod', 'WriteRecord', null, {
       async: true,
-      // TODO: selfbusy: true,
+      // selfbusy: true,
       cb,
     });
   }
@@ -563,7 +563,6 @@ export default class N19baseApplet {
   }
 
   calculateCurrentRecordState() {
-    // TODO: do we need to delete pending?
     // 0 - No records displayed
     // 1 - Record is being created
     // 2 - Record is being edited
@@ -696,7 +695,6 @@ export default class N19baseApplet {
       // Is it better to use applet.GetCanInvokeArray?
       _methods = this._getMethods(); // eslint-disable-line no-param-reassign
     }
-    // TODO: could be an exception if method name is incorrect?
     // eslint-disable-next-line no-param-reassign
     Object.keys(_methods).forEach((methodName) => { _methods[methodName] = this.canInvokeMethod(methodName); });
     return {
@@ -732,7 +730,7 @@ export default class N19baseApplet {
   }
 
   queryBySearchExprSync(expr) {
-    this._newQuery(); // ? check or optionally skip
+    this._newQuery(); // check or optionally skip?
     const control = this._findControlToEnterSearchExpr();
     this._setControlValueInternal(control, expr);
     this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery');
@@ -756,7 +754,7 @@ export default class N19baseApplet {
   }
 
   _queryById(rowId, cb) {
-    this._newQuery(); // ? check or optionally skip
+    this._newQuery(); // check or optionally skip?
 
     const ai = {
       scope: this,
@@ -981,7 +979,7 @@ export default class N19baseApplet {
 
   sort(controlName, isAscending) {
     // TODO: check if dataset is sortable? e.g. not in query or in insert mode?
-    // TODO: check if we can sort by this control
+    // TODO: check if we can sort by this control?
     if (this.isListApplet) {
       const sortOrder = isAscending ? this.consts.get('SORT_ASCENDING') : this.consts.get('SORT_DESCENDING');
       this.pm.ExecuteMethod('OnClickSort', controlName, sortOrder);

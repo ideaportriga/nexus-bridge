@@ -128,14 +128,14 @@ export default class N19popupController {
       // OpenUI assumes that 0 is mvg, so do I
       return { isOpen: true, applet: currPopups[0], assocApplet: currPopups[1] };
     }
-    throw new Error('should not be here...');
+    throw new Error('should never have been here...');
   }
 
   checkOpenedPopup(closeIfOpen) {
     const { isOpen, applet } = N19popupController.IsPopupOpen();
     if (isOpen && closeIfOpen) {
       // this code will close the applet even if this applet was originated by another applet
-      console.log('closing already opened popup applet in showPopupApplet...'); // eslint-disable-line no-console
+      console.log('closing already opened popup applet in checkOpenedPopup...'); // eslint-disable-line no-console
       // maybe do not close if the applet to be opened if the same as already opened?
       return this.closePopupApplet(applet);
     }

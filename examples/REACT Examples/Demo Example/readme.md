@@ -1,10 +1,10 @@
 # Quick Start Guide: Nexus19 + React example
 
-This guide will help to setup Nexus19 with the demo of a Form Applet that is built using Nexus19 and React framework.
-<br>The applet supports:
+This guide will help to setup Nexus19 with the demo that is built using Nexus Bridge and React framework.
+<br>The demo supports:
 - navigation through records
 - displaying, editing or deleting records (supporting keyboard shortcuts)
-- query and refine query (supporting keyboard shortcuts)
+- query (supporting keyboard shortcuts)
 - picklists that are read from Siebel configuration
 - field properties that are read from Siebel configuration (required, field length)
 
@@ -15,7 +15,7 @@ The demo example was tested on Seibel 16.19 and 18.08 ENU.
 
  ![result](demo_react.png)
 
-1. Make a clean [Nexus19 Setup](/../wikis/Setup Nexus Bridge) if you haven't done it before.
+1. Make a clean [Nexus Bridge Setup](/../wikis/Setup Nexus Bridge) if you haven't done it before.
 1. Import the `n19helper-master/examples/REACT Examples/Demo Example/SIF/*` into the Siebel Tools.
 1. Add the `N19 React Account Screen` to your application:
       * Findout your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` into Chrome Developer Tools console.

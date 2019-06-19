@@ -1,6 +1,6 @@
-# Quick Start Guide: Nexus19 + Vue.js example
+# Quick Start Guide: Nexus Bridge + Vue.js example
 
-This guide will help to setup Nexus19 with the demo of a Form Applet that is built using Nexus19 and Vue.js framework.
+This guide will help to setup the demo of a Form Applet that is built using Nexus Bridge and Vue.js framework.
 <br>The applet supports:
 - navigation through records
 - displaying, editing or deleting records (supporting keyboard shortcuts)
@@ -15,7 +15,7 @@ The demo example was tested on Seibel 16.19 and 18.08 ENU.
 
  ![result](demo_vuejs.png)
  
-1. Make a clean [Nexus19 Setup](/../wikis/Setup Nexus Bridge) if you haven't done it before.
+1. Make a clean [Nexus Bridge Setup](/../wikis/Setup Nexus Bridge) if you haven't done it before.
 1. Import the `n19helper-master/examples/VUE.JS Examples/Demo Example/SIF/*` sif-files into the Siebel Tools.
 1. Add the `N19 Vue Account Screen` to your application:
       * Findout your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` into Chrome Developer Tools console.

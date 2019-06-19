@@ -69,8 +69,6 @@ var NBPR = (function () {
     initializeNexus: initializeNexus,
     destroyNexus: destroyNexus,
     removeHtml: removeHtml,
-    setControlValue: setControlValue,
-    getPhysicalControlValue: getPhysicalControlValue,
     init: init
   };
 }());

@@ -81,13 +81,13 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
             }
           });
 
-          SiebelApp.S_App.GetPopupPM().AddMethod('OnLoadPopupContent', (...args) => {
-            console.log('OnLoadPopupContent ADD METHOD PR', args);
-          }, { sequence: false });
+          // SiebelApp.S_App.GetPopupPM().AddMethod('OnLoadPopupContent', (...args) => {
+          //   console.log('OnLoadPopupContent ADD METHOD PR', args);
+          // }, { sequence: false });
 
-          SiebelApp.S_App.GetPopupPM().AttachPMBinding('OnLoadPopupContent', (...args) => {
-            console.log('OnLoadPopupContent ATTACH PR', args);
-          });
+          // SiebelApp.S_App.GetPopupPM().AttachPMBinding('OnLoadPopupContent', (...args) => {
+          //   console.log('OnLoadPopupContent ATTACH PR', args);
+          // });
 
           pm.AttachPostProxyExecuteBinding('ALL', function (method) {
             console.log('>>>>>> AttachPostProxyExecuteBinding', method, arguments);
@@ -583,7 +583,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                   alert('Ary on Sample DB? The recordset length is not 1 as expected - ' + found);
                 } else {
                   obj.popupAppletN19.pickRecord();
-                  alert('PASSED');
                 }
               },
               testShuttleOpened(obj) {
@@ -637,7 +636,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     isRecord = mvg._firstRecord();
                   }
                 }
-                alert('Finished');
               },
               async testButtonClickShuttle2() {
                 var controlName = this.getControlForOpenPopup();
@@ -687,7 +685,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     mvg.setControlValue('SSA Primary Field', true);
                     await mvg.writeRecord();
                     await mvg.query({});
-                    alert('Finished');
                   } else {
                     alert('Query by Id did not work - ' + found + '/' + id);
                   }

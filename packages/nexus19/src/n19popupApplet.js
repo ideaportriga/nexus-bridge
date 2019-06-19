@@ -15,14 +15,12 @@ export default class N19popupApplet extends N19baseApplet {
   }
 
   pickRecord() {
-    // TODO: check canInokeMethod?
     return this.pm.ExecuteMethod('InvokeMethod', 'PickRecord');
   }
 
   deleteRecords(cb) {
     // method is not allowed to delete the primary for visibility MVG
     //  in this case it returns "Method DeleteRecords is not allowed here" SBL-UIF-00348
-    // TODO: check canInvokeMethod?
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecords');
     if (typeof cb === 'function') {
       cb();
@@ -32,7 +30,6 @@ export default class N19popupApplet extends N19baseApplet {
 
   deleteAllRecords(cb) {
     // method is not deleting the primary for visibility MVG(!) and still returns true
-    // TODO: check canInvokeMethod?
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'DeleteAllRecords');
     if (typeof cb === 'function') {
       cb();
@@ -41,7 +38,6 @@ export default class N19popupApplet extends N19baseApplet {
   }
 
   addRecords(cb) {
-    // TODO: check canInvokeMethod?
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'AddRecords');
     if (typeof cb === 'function') {
       cb();
@@ -50,7 +46,6 @@ export default class N19popupApplet extends N19baseApplet {
   }
 
   addAllRecords(cb) {
-    // TODO: check canInvokeMethod?
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'AddAllRecords');
     if (typeof cb === 'function') {
       cb();

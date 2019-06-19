@@ -4,6 +4,16 @@ import N19localeData from './n19localeData';
 export default class N19baseApplet {
   constructor(settings) {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
+
+    ({
+      pm: this.pm,
+      convertDates: this.convertDates,
+      returnRawNumbers: this.returnRawNumbers,
+      returnRawCurrencies: this.returnRawCurrencies,
+      isMvgAssoc: this.isMvgAssoc,
+      isPopup: this.isPopup,
+    } = settings);
+
     this.pm = settings.pm;
     this.convertDates = settings.convertDates;
     this.returnRawNumbers = settings.returnRawNumbers;
@@ -11,7 +21,6 @@ export default class N19baseApplet {
 
     this.view = SiebelApp.S_App.GetActiveView();
     this.appletName = this.pm.Get('GetName');
-    this.applet = this.view.GetApplet(this.appletName);
     this.isListApplet = typeof this.pm.Get('GetListOfColumns') !== 'undefined';
     this.required = []; // will be empty for the list applet
     this.lov = {};
@@ -25,12 +34,18 @@ export default class N19baseApplet {
     // populate the required array for form applets
     if (!this.isListApplet) {
       const appletId = `s_${this.pm.Get('GetFullId')}_div`;
-      const appletInputs = document.getElementById(appletId).querySelectorAll('input');
-      appletInputs.forEach((el) => {
-        if (el.attributes['aria-required']) {
-          this.required.push(el.attributes.name.nodeValue);
-        }
-      });
+      const applet = document.getElementById(appletId);
+      if (applet) {
+        const appletInputs = applet.querySelectorAll('input');
+        appletInputs.forEach((el) => {
+          if (el.attributes['aria-required']) {
+            this.required.push(el.attributes.name.nodeValue);
+          }
+        });
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(`[NB]Cannot get required controls from HTML. HTML was already removed?/${this.appletName}`);
+      }
     }
 
     // listener to get dynamic LOVs
@@ -228,14 +243,27 @@ export default class N19baseApplet {
 
   getRecordSet(addRecordIndex) {
     // TODO: convert the values?
-    if (addRecordIndex) {
-      return this.pm.Get('GetRecordSet').map((el, index) => {
-        const ret = Object.assign({}, el);
-        ret._indx = index;
-        return ret;
+    const recordSet = this.pm.Get('GetRecordSet').map(el => Object.assign({}, el)); // clone
+    // assumes it is form applet for which GetRecordSet returns not formatted values
+    if (!this.isListApplet && !this.pm.Get('IsInQueryMode')) {
+      const controls = this._returnControls();
+      recordSet.forEach((record, index) => {
+        // TODO: return clone of the elements/array?
+        const fields = Object.keys(record);
+        fields.forEach((field) => {
+          if (this.fieldToControlMap[field]) {
+            const controlName = this.fieldToControlMap[field].name;
+            const control = controls[controlName];
+            const value = this.pm.ExecuteMethod('GetFormattedFieldValue', control);
+            recordSet[index][field] = value;
+          }
+        });
       });
     }
-    return this.pm.Get('GetRecordSet');
+    if (addRecordIndex) {
+      recordSet.forEach((record, index) => { recordSet[index]._indx = index; });
+    }
+    return recordSet;
   }
 
   getRawRecordSet(addRecordIndex) {
@@ -422,11 +450,11 @@ export default class N19baseApplet {
     ret = this.getCurrentRecordModel();
     // TODO: do we need to check the state, or can we assume that we always have a record?
     if (!isPostChanges) {
-      Object.keys(ret.controls).forEach((el) => {
-        if (!ret.controls[el].isPostChanges) {
-          if (ret.controls[el].name) { // it has name
-            ret.controls[el].value = this.applet.GetControlValueByName(el);
-          }
+      Object.keys(ret.controls).forEach((con) => {
+        if (ret.controls[con].name && !ret.controls[con].isPostChanges) {
+          // TODO: NB+ HERE ENSURE WE ALWAYS RETURN THE NOT FORMATTED WHEN NEEDED!!!
+          const setValue = this.pm.ExecuteMethod('GetFormattedFieldValue', this._getControl(con));
+          ret.controls[con].value = this._getJSValue(setValue, ret.controls[con]);
         }
       });
     }
@@ -458,7 +486,8 @@ export default class N19baseApplet {
       }
     } else { // dynamic
       if (isStaticPick) {
-        console.warn(`[NB]It seems the getDynamicLOV called for static control ${control.GetName()}.`); // eslint-disable-line no-console
+        // eslint-disable-next-line no-console
+        console.warn(`[NB]It seems the getDynamicLOV called for static control ${control.GetName()}.`);
       }
       if (this.consts.get('SWE_CTRL_COMBOBOX') !== uiType) { // the control is not "JComboBox"
         switch (uiType) {
@@ -469,7 +498,7 @@ export default class N19baseApplet {
             break;
           default:
             // eslint-disable-next-line no-console
-            console.warn(`[NB]It could be that getDynamicLOV is not going to work for this control - ${uiType}/${control.GetName()}.`);
+            console.warn(`[NB]Maybe getDynamicLOV won't work for this control - ${uiType}/${control.GetName()}.`);
         }
       }
     }
@@ -531,19 +560,18 @@ export default class N19baseApplet {
         return null;
       }
       // assuming that form applet returns not formatted values
-      const inputFormat = this.isListApplet ? displayFormat : 'MM/DD/YYYY HH:mm:ss';
       const ISO = SiebelApp.S_App.LocaleObject
-        .GetStringFromDateTime(value, inputFormat, this.consts.get('ISO8601_DATETIME_FORMAT'));
+        .GetStringFromDateTime(value, displayFormat, this.consts.get('ISO8601_DATETIME_FORMAT'));
       if (ISO === '') {
-        throw new Error(`ISO value is empty after converting ${value}/${inputFormat}`);
+        throw new Error(`ISO value is empty after converting ${value}/${displayFormat}`);
       }
       return new Date(ISO);
     }
-    if (this.returnRawNumbers && this.isListApplet && 'number' === dataType) {
+    if (this.returnRawNumbers && 'number' === dataType) {
       // it is already not formatted on form applet, so only for list applet
       return SiebelApp.S_App.LocaleObject.FormattedToString(dataType, value, displayFormat);
     }
-    if (this.returnRawCurrencies && this.isListApplet && 'currency' === dataType && currencyCode) {
+    if (this.returnRawCurrencies && 'currency' === dataType && currencyCode) {
       // it is already not formatted on form applet, so only for list applet
       SiebelApp.S_App.LocaleObject.SetCurrencyCode(currencyCode); // TODO: do we need to restore the m_sCurrencyCode?
       return SiebelApp.S_App.LocaleObject.FormattedToString(dataType, value, displayFormat);
@@ -553,8 +581,8 @@ export default class N19baseApplet {
 
   getCurrentRecord(raw) {
     // TODO: need conversion?
-    const index = this.getSelection();
     // TODO: check if there is a record
+    const index = this.getSelection();
     // TODO: make a copy of returned object?
     if (raw) {
       return this.getRawRecordSet()[index];

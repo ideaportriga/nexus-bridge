@@ -30,12 +30,15 @@ The demo example was tested on Seibel 16.19 and 18.08 ENU.
       * Under `Administration - User > Users` – add same Responsibility to your User
       * Click `Clear cache` button under `Administration – Application > Responsibilities` view
 1. Re-login to your Siebel Application and check that the `N19 React Account Screen` Screen is available.
+1. Copy the file below to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom` folder:
+    * `n19helper-master/packages/nexus19/PUBLIC/NBListAppletPR.js`.
 1. Copy below files and folders to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom\react-app` folder:
     * `n19helper-master/examples/REACT Examples/Demo Example/react-app/build/*`.
 1. Use Siebel Client to reference js files in Siebel Open UI Manifest as follows:
 	- under `Administration - Application > Manifest Files` 
 	>- add a new record with: 
 	><br>**Name:** `siebel/custom/react-app/N19_REACT_PR.js`
+	><br>**Name:** `siebel/custom/NBListAppletPR.js`
 
 	- under `Administration - Application > Manifest Administration` 
 
@@ -49,6 +52,19 @@ The demo example was tested on Seibel 16.19 and 18.08 ENU.
 
    >- add a new record under **Files** with:
    ><br>**Name:** `siebel/custom/react-app/N19_REACT_PR.js`
+
+	- under `Administration - Application > Manifest Administration` 
+
+   >- add a new record under **UI Objects** with: 
+   >    <br>**Name:** `N19 React Contact List Applet`
+   >    <br>**Usage Type:** `Physical Renderer`
+   >    <br>**Type:** `Applet`
+
+   >- add a new record under **Object Expression** with:
+   >    <br>**Level:** `1`
+
+   >- add a new record under **Files** with:
+   ><br>**Name:** `siebel/custom/NBListAppletPR.js`
 
 1. Empty browser cache and hard reload
    <br>*(e.g. using Chrome: press F12, then right-click a browser Refresh button and press ‘Empty Cache and Hard Reload’)*

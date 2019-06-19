@@ -17,10 +17,6 @@ if (typeof (SiebelAppFacade.NBDefaultListAppletPR) === "undefined") {
 
         NBDefaultListAppletPR.prototype.removeHtml = NBPR.removeHtml;
 
-        NBDefaultListAppletPR.prototype.N19SetControlValue = NBPR.setControlValue;
-
-        NBDefaultListAppletPR.prototype.N19GetPhysicalControlValue = NBPR.getPhysicalControlValue;
-
         NBDefaultListAppletPR.prototype.NBInit = NBPR.init;
 
         NBDefaultListAppletPR.prototype.Init = function () {

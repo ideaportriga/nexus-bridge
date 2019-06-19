@@ -1,18 +1,15 @@
 import N19baseApplet from './n19baseApplet';
 import N19popupController from './n19popupController';
+import N19popupApplet from './n19popupApplet';
 
 export default class Nexus19 extends N19baseApplet {
   constructor(settings) {
-    const { appletName } = settings;
-    if (appletName) {
-      const applet = SiebelApp.S_App.GetActiveView().GetApplet(appletName);
-      if (!applet) {
-        throw new Error(`Failed to get the reference to the applet by the ${appletName} name`);
-      }
-      super(Object.assign({}, settings, { pm: applet.GetPModel() }));
-    } else {
-      super(settings);
+    const { appletName, pm } = settings;
+    if (appletName && !pm) {
+      throw new Error('The creation of Nexus Bridge instance by applet name is not supported... Please provide pm.');
     }
+
+    super(settings);
 
     console.log('Nexus Bridge main class started....', this.appletName); // eslint-disable-line no-console
     // get the n19popupController singleton instance
@@ -72,17 +69,17 @@ export default class Nexus19 extends N19baseApplet {
       // TODO: check isLink of control?
       // index is not effective, and drilldown anyway happens on the selected record
       const index = this.getSelection();
-      return this.pm.ExecuteMethod('OnDrillDown', controlName, index);
-      // return this.pm.OnControlEvent(this.consts.get('PHYEVENT_DRILLDOWN_LIST'), controlName, index);
+      // return this.pm.ExecuteMethod('OnDrillDown', controlName, index);
+      return this.pm.OnControlEvent(this.consts.get('PHYEVENT_DRILLDOWN_LIST'), controlName, index);
     }
     // else assumes it is form applet
-    // return this.pm.OnControlEvent(this.consts.get('PHYEVENT_DRILLDOWN_FORM'), this._getControl(controlName));
     const control = this._getControl(controlName);
     if (!control) {
       throw new Error(`Control ${controlName} is not found!`);
     }
-    const ps = control.GetMethodPropSet();
-    return this.pm.ExecuteMethod('InvokeMethod', 'DrillDown', ps);
+    return this.pm.OnControlEvent(this.consts.get('PHYEVENT_DRILLDOWN_FORM'), control);
+    // const ps = control.GetMethodPropSet();
+    // return this.pm.ExecuteMethod('InvokeMethod', 'DrillDown', ps);
   }
 
   gotoView(targetViewName, targetAppletName, id) {
@@ -140,6 +137,10 @@ export default class Nexus19 extends N19baseApplet {
           resolve(obj);
         }
       }));
+  }
+
+  static CreatePopupNB(settings) {
+    return new N19popupApplet(settings);
   }
 }
 

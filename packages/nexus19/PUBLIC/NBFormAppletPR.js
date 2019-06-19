@@ -13,21 +13,15 @@ if (typeof (SiebelAppFacade.NBFormAppletPR) === "undefined") {
 
         NBFormAppletPR.prototype.Init = function () {
           SiebelAppFacade.NBFormAppletPR.superclass.NBInit.apply(this, arguments);
-          this.initializeNexus({convertDates: true}); // should be before removing to read the required fields
+          this.initializeNexus({ convertDates: true }); // should be before removing to read the required fields
           this.removeHtml();
         }
 
-        NBFormAppletPR.prototype.ShowUI = function () {
-          // SiebelAppFacade.NBFormAppletPR.superclass.ShowUI.apply(this, arguments);
-        }
+        NBFormAppletPR.prototype.ShowUI = function () { }
 
-        NBFormAppletPR.prototype.BindData = function (bRefresh) {
-          // SiebelAppFacade.NBFormAppletPR.superclass.BindData.apply(this, arguments);
-        }
+        NBFormAppletPR.prototype.BindData = function (bRefresh) { }
 
-        NBFormAppletPR.prototype.BindEvents = function () {
-          // SiebelAppFacade.NBFormAppletPR.superclass.BindEvents.apply(this, arguments);
-        }
+        NBFormAppletPR.prototype.BindEvents = function () { }
 
         NBFormAppletPR.prototype.EndLife = function () {
           this.destroyNexus();

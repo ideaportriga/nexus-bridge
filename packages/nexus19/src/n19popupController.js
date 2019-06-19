@@ -16,6 +16,9 @@ export default class N19popupController {
       throw new Error('Instantiation failed: get popup controller instance instead of new.');
     }
 
+    const popupPM = SiebelApp.S_App.GetPopupPM();
+    popupPM.Setup(); // to create PR
+
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.isPopupHidden = false;
     this.resolvePromise = null;
@@ -23,15 +26,6 @@ export default class N19popupController {
     this.assocAppletN19 = null; // it could be removed in the next version
 
     console.log('popup controller started...'); // eslint-disable-line no-console
-
-    this.N19resizeAvailable = SiebelApp.MvgBeautifier.resizeAvailable;
-    SiebelApp.MvgBeautifier.resizeAvailable = () => {
-      try {
-        this.N19resizeAvailable.call(SiebelApp.MvgBeautifier);
-      } catch (e) {
-        console.log(`resizeAvailable Error: ${e.name} ${e.message}`); // eslint-disable-line no-console
-      }
-    };
 
     // it will be a singleton, so there is no cleanup
     this.N19processNewPopup = SiebelApp.S_App.ProcessNewPopup;
@@ -53,12 +47,26 @@ export default class N19popupController {
           this.resolvePromise = null; // how do we do error handling
           throw new Error('Open Popup Applet is not found in OnLoadPopupContent resolving Promise');
         }
-        this.popupAppletN19 = this._createNexusInstance(applet.GetPModel());
-        const obj = { appletName: this.popupAppletN19.appletName, popupAppletN19: this.popupAppletN19 };
+
+        const arr = Object.values(SiebelAppFacade.NB);
+        for (let i = 0; i < arr.length; i += 1) {
+          if (arr[i].isPopup) { // this is popup
+            if (assocApplet && arr[i].isMvgAssoc) {
+              this.assocAppletN19 = arr[i];
+            } else {
+              this.popupAppletN19 = arr[i];
+            }
+          }
+        }
+
+        const obj = {
+          appletName: this.popupAppletN19.appletName,
+          popupAppletN19: this.popupAppletN19,
+        };
 
         if (assocApplet) { // shuttle
-          this.assocAppletN19 = this._createNexusInstance(assocApplet.GetPModel());
           obj.assocAppletN19 = this.assocAppletN19;
+
           obj.availableRecordSet = this.assocAppletN19.getControlsRecordSet();
           obj.selectedRecordSet = this.popupAppletN19.getControlsRecordSet();
         } else { // assoc only OR pick
@@ -72,8 +80,7 @@ export default class N19popupController {
   }
 
   _createNexusInstance(pm) {
-    const obj = { pm };
-    return new N19popupApplet(Object.assign({}, this.settings, obj));
+    return new N19popupApplet(Object.assign({}, this.settings, { pm }));
   }
 
   canOpenPopup() {
@@ -83,12 +90,7 @@ export default class N19popupController {
   processNewPopup(ps) {
     const popupPM = SiebelApp.S_App.GetPopupPM();
 
-    if (!popupPM.GetRenderer()) {
-      popupPM.Setup(); // to create PR
-    }
-
     // this property is added using AttachPMBinding into the Init PR (called by PM Setup)
-    // it is the reason why we have reinit procedure where Setup PM is called
     popupPM.AddProperty('state', this.consts.get('POPUP_STATE_VISIBLE'));
 
     let url = ps.GetProperty('URL');
@@ -98,16 +100,14 @@ export default class N19popupController {
     return 'refreshpopup';
   }
 
-  closePopupApplet(applet) {
-    let ret;
-    if (applet) {
-      if (!applet.GetPModel().ExecuteMethod('CanInvokeMethod', 'CloseApplet')) {
-        throw new Error('The method CloseApplet is not allowed!');
-      }
-      ret = applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
-    } else {
-      ret = this.popupAppletN19.applet.GetPModel().ExecuteMethod('InvokeMethod', 'CloseApplet');
+  closePopupApplet() {
+    if (!this.popupAppletN19 || !this.popupAppletN19.pm) {
+      throw new Error('The popup applet was not opened by NB!');
     }
+    if (!this.popupAppletN19.pm.ExecuteMethod('CanInvokeMethod', 'CloseApplet')) {
+      throw new Error('The method CloseApplet is not allowed!');
+    }
+    const ret = this.popupAppletN19.pm.ExecuteMethod('InvokeMethod', 'CloseApplet');
     // it could be better if we don't have a Siebel Applet on the view
     // do reinit here on closing?
     this.popupAppletN19 = null;
@@ -132,12 +132,12 @@ export default class N19popupController {
   }
 
   checkOpenedPopup(closeIfOpen) {
-    const { isOpen, applet } = N19popupController.IsPopupOpen();
+    const { isOpen } = N19popupController.IsPopupOpen();
     if (isOpen && closeIfOpen) {
       // this code will close the applet even if this applet was originated by another applet
       console.log('closing already opened popup applet in checkOpenedPopup...'); // eslint-disable-line no-console
       // maybe do not close if the applet to be opened if the same as already opened?
-      return this.closePopupApplet(applet);
+      return this.closePopupApplet();
     }
     return isOpen;
   }

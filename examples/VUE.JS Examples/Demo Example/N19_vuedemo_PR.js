@@ -8,7 +8,7 @@
 
 if (typeof (SiebelAppFacade.N19_vuedemo_PR) === "undefined") {
   SiebelJS.Namespace("SiebelAppFacade.N19_vuedemo_PR");
-  define("siebel/custom/N19_vuedemo_PR", ["siebel/phyrenderer", "siebel/custom/vue.js", "siebel/custom/polyfill.min.js", "siebel/custom/vuetify.js"],
+  define("siebel/custom/N19_vuedemo_PR", ["siebel/custom/NBDefaultFormAppletPR", "siebel/custom/vue.js", "siebel/custom/polyfill.min.js", "siebel/custom/vuetify.js"],
     function () {
       SiebelAppFacade.N19_vuedemo_PR = (function () {
         let vueObj;
@@ -17,11 +17,11 @@ if (typeof (SiebelAppFacade.N19_vuedemo_PR) === "undefined") {
           SiebelAppFacade.N19_vuedemo_PR.superclass.constructor.apply(this, arguments);
         }
 
-        SiebelJS.Extend(N19_vuedemo_PR, SiebelAppFacade.PhysicalRenderer);
+        SiebelJS.Extend(N19_vuedemo_PR, SiebelAppFacade.NBDefaultFormAppletPR);
 
         N19_vuedemo_PR.prototype.Init = function () {
           importCss();
-          SiebelAppFacade.N19_vuedemo_PR.superclass.Init.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
+          SiebelAppFacade.N19_vuedemo_PR.superclass.NBInit.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
 
           // we will use simplified BC, therefore safer to disable the new record creation
           this.GetPM().AddMethod("CanInvokeMethod", function (method, returnStructure) {
@@ -34,16 +34,11 @@ if (typeof (SiebelAppFacade.N19_vuedemo_PR) === "undefined") {
 
         N19_vuedemo_PR.prototype.ShowUI = function () {
           vueObj = mountVueSample("vue_sample", this.GetPM());
-          // SiebelAppFacade.N19_vuedemo_PR.superclass.ShowUI.apply(this, arguments); // Draws UI, drawing our custom applet only if on List view
         }
 
-        N19_vuedemo_PR.prototype.BindData = function (bRefresh) {
-          // SiebelAppFacade.N19_vuedemo_PR.superclass.BindData.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
-        }
+        N19_vuedemo_PR.prototype.BindData = function (bRefresh) { }
 
-        N19_vuedemo_PR.prototype.BindEvents = function () {
-          // SiebelAppFacade.N19_vuedemo_PR.superclass.BindEvents.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
-        }
+        N19_vuedemo_PR.prototype.BindEvents = function () { }
 
         N19_vuedemo_PR.prototype.EndLife = function () {
           //Cleanup before destroying applet object
@@ -73,7 +68,7 @@ function addContainer(pm, vueId) {
   const siebeAppletId = pm.Get('GetFullId');
   const $applet = $("#" + siebeAppletId);
   const $header = $("#s_" + siebeAppletId + "_div");
-  $header.hide();
+  $header.remove();
   $applet.prepend("<div id='" + vueId + "'></div>");
 }
 

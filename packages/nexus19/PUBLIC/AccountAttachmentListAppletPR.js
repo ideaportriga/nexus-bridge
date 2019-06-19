@@ -31,7 +31,7 @@ if (typeof (SiebelAppFacade.AccountAttachmentListAppletPR) === "undefined") {
             SiebelAppFacade.AccountAttachmentListAppletPR.superclass.ShowUI.apply(this, arguments);
           } else {
             var divId = "s_" + this.GetPM().Get('GetFullId') + "_div";
-            $('#' + divId).replaceWith("<div id='app'>This is a upload area<input type='file' id='fileupload' name='test'></div>"); // SWE_FILE_NAME_STR
+            $('#' + divId).replaceWith("<div id='app'>This is upload area<input type='file' id='fileupload' name='test'></div>"); // SWE_FILE_NAME_STR
             putVue();
           }
         }
@@ -123,7 +123,6 @@ if (typeof (SiebelAppFacade.AccountAttachmentListAppletPR) === "undefined") {
             $("link[href*='vuetify.min.css']").remove();
             $("link[href*='https://fonts.googleapis.com/css']").remove();
             $('#vuetify-theme-stylesheet').remove();
-            this.destroyNexus();
           }
           SiebelAppFacade.AccountAttachmentListAppletPR.superclass.EndLife.apply(this, arguments);
         }

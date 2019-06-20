@@ -243,12 +243,23 @@ export default class N19baseApplet {
 
   getRecordSet(addRecordIndex) {
     // TODO: convert the values?
-    const recordSet = this.pm.Get('GetRecordSet').map(el => Object.assign({}, el)); // clone
-    // assumes it is form applet for which GetRecordSet returns not formatted values
+
+    const rawRecordSet = this.getRawRecordSet(); // just fallback if record set does not have Id
+
+    const recordSet = this.pm.Get('GetRecordSet').map((el, index) => {
+      const ret = Object.assign({}, el); // clone
+      if (addRecordIndex) {
+        ret._indx = index;
+      }
+      ret.Id = ret.Id || rawRecordSet[index].Id; // add Id if missing
+      return ret;
+    });
+
+    // assumes it is form applet for which GetRecordSet returns not formatted values,
+    // so we need to get the formatted values
     if (!this.isListApplet && !this.pm.Get('IsInQueryMode')) {
       const controls = this._returnControls();
       recordSet.forEach((record, index) => {
-        // TODO: return clone of the elements/array?
         const fields = Object.keys(record);
         fields.forEach((field) => {
           if (this.fieldToControlMap[field]) {
@@ -260,22 +271,18 @@ export default class N19baseApplet {
         });
       });
     }
-    if (addRecordIndex) {
-      recordSet.forEach((record, index) => { recordSet[index]._indx = index; });
-    }
     return recordSet;
   }
 
   getRawRecordSet(addRecordIndex) {
     // TODO: convert the values?
-    if (addRecordIndex) {
-      return this.pm.Get('GetRawRecordSet').map((el, index) => {
-        const ret = Object.assign({}, el);
+    return this.pm.Get('GetRawRecordSet').map((el, index) => {
+      const ret = Object.assign({}, el);
+      if (addRecordIndex) {
         ret._indx = index;
-        return ret;
-      });
-    }
-    return this.pm.Get('GetRawRecordSet');
+      }
+      return ret;
+    });
   }
 
   getRowListRowCount() {

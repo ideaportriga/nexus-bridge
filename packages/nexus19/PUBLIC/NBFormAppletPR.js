@@ -1,6 +1,6 @@
 if (typeof (SiebelAppFacade.NBFormAppletPR) === "undefined") {
 
-  SiebelJS.Namespace("SiebelAppFacade.NBDefaultFormAppletPR");
+  SiebelJS.Namespace("SiebelAppFacade.NBFormAppletPR");
   define("siebel/custom/NBFormAppletPR", ["siebel/custom/NBDefaultFormAppletPR"],
     function () {
       SiebelAppFacade.NBFormAppletPR = (function () {

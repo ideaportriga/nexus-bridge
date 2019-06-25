@@ -49,6 +49,8 @@ if (typeof (SiebelAppFacade.N19_vuedemo_PR) === "undefined") {
           }
           $("link[href*='vuetify.min.css']").remove();
           $("link[href*='https://fonts.googleapis.com/css']").remove();
+          $('#vuetify-theme-stylesheet').remove();
+
           SiebelAppFacade.N19_vuedemo_PR.superclass.EndLife.apply(this, arguments); //Siebel applet cleanup
         }
         return N19_vuedemo_PR;

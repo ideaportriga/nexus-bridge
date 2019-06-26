@@ -987,7 +987,7 @@ export default class N19baseApplet {
 
   getControlsRecordSet(addRecordIndex) {
     // used slice to avoid modification of the record set
-    const ret = this.getRecordSet().slice();
+    const ret = this.getRecordSet(addRecordIndex).slice();
     const rawRecordSet = this.getRawRecordSet(); // just fallback if record set does not have Id
 
     for (let i = 0, len = ret.length; i < len; i += 1) {
@@ -1004,9 +1004,6 @@ export default class N19baseApplet {
         },
       }), {});
       ret[i].Id = id || rawRecordSet[i].Id;
-      if (addRecordIndex) {
-        ret[i]._indx = i;
-      }
     }
 
     return ret;

@@ -8,7 +8,7 @@
 
 if (typeof (SiebelAppFacade.N19_vuedemo_PR) === "undefined") {
   SiebelJS.Namespace("SiebelAppFacade.N19_vuedemo_PR");
-  define("siebel/custom/N19_vuedemo_PR", ["siebel/custom/NBDefaultFormAppletPR", "siebel/custom/vue.js", "siebel/custom/polyfill.min.js", "siebel/custom/vuetify.js"],
+  define("siebel/custom/N19_vuedemo_PR", ["siebel/custom/NBDefaultAppletPR", "siebel/custom/vue.js", "siebel/custom/polyfill.min.js", "siebel/custom/vuetify.js"],
     function () {
       SiebelAppFacade.N19_vuedemo_PR = (function () {
         let vueObj;
@@ -17,11 +17,11 @@ if (typeof (SiebelAppFacade.N19_vuedemo_PR) === "undefined") {
           SiebelAppFacade.N19_vuedemo_PR.superclass.constructor.apply(this, arguments);
         }
 
-        SiebelJS.Extend(N19_vuedemo_PR, SiebelAppFacade.NBDefaultFormAppletPR);
+        SiebelJS.Extend(N19_vuedemo_PR, SiebelAppFacade.NBDefaultAppletPR);
 
         N19_vuedemo_PR.prototype.Init = function () {
           importCss();
-          SiebelAppFacade.N19_vuedemo_PR.superclass.NBInit.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
+          SiebelAppFacade.N19_vuedemo_PR.superclass.Init.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
 
           // we will use simplified BC, therefore safer to disable the new record creation
           this.GetPM().AddMethod("CanInvokeMethod", function (method, returnStructure) {
@@ -30,15 +30,9 @@ if (typeof (SiebelAppFacade.N19_vuedemo_PR) === "undefined") {
               returnStructure["ReturnValue"] = "";
             }
           }, { sequence: true, scope: this });
-        }
 
-        N19_vuedemo_PR.prototype.ShowUI = function () {
           vueObj = mountVueSample("vue_sample", this.GetPM());
         }
-
-        N19_vuedemo_PR.prototype.BindData = function (bRefresh) { }
-
-        N19_vuedemo_PR.prototype.BindEvents = function () { }
 
         N19_vuedemo_PR.prototype.EndLife = function () {
           //Cleanup before destroying applet object
@@ -140,7 +134,7 @@ function mountVueSample(elementId, pm) {
       prevRecord: function () {
         n19.prevRecord();
       },
-      newQuery: function() {
+      newQuery: function () {
         n19.invokeMethod('NewQuery');
       },
       executeQuery: function () {

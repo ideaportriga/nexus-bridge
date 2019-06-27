@@ -1,7 +1,7 @@
 if (typeof (SiebelAppFacade.SRFormPR) === "undefined") {
   SiebelJS.Namespace("SiebelAppFacade.SRFormPR");
   define("siebel/custom/SRFormPR", [
-    "siebel/custom/NBDefaultFormAppletPR",
+    "siebel/custom/NBDefaultAppletPR",
     "siebel/custom/runtime",
     "siebel/custom/polyfills",
     "siebel/custom/styles",
@@ -16,27 +16,19 @@ if (typeof (SiebelAppFacade.SRFormPR) === "undefined") {
           SiebelAppFacade.SRFormPR.superclass.constructor.apply(this, arguments);
         }
 
-        SiebelJS.Extend(SRFormPR, SiebelAppFacade.NBDefaultFormAppletPR);
+        SiebelJS.Extend(SRFormPR, SiebelAppFacade.NBDefaultAppletPR);
 
         SRFormPR.prototype.Init = function () {
           //Executing vanilla bindings, required to use SiebelApp/pm methods
-          SiebelAppFacade.SRFormPR.superclass.NBInit.apply(this, arguments);
+          SiebelAppFacade.SRFormPR.superclass.Init.apply(this, arguments);
         }
 
         SRFormPR.prototype.ShowUI = function () {
           var appletId = this.GetPM().Get('GetFullId');
-          var $applet = window.$('#'+ appletId);
+          var $applet = window.$('#' + appletId);
           $applet.before("<div id=" + containerId + "></div>");
           SiebelNG.createExample(containerId, this.GetPM());
           $applet.remove();
-        }
-
-        SRFormPR.prototype.BindData = function (bRefresh) {
-          //SiebelAppFacade.SRFormPR.superclass.BindData.apply(this, arguments);
-        }
-
-        SRFormPR.prototype.BindEvents = function () {
-          //SiebelAppFacade.SRFormPR.superclass.BindEvents.apply(this, arguments);
         }
 
         SRFormPR.prototype.EndLife = function () {

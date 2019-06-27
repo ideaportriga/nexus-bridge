@@ -1,54 +1,36 @@
 if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
 
   SiebelJS.Namespace("SiebelAppFacade.ContactListAppletPR");
-  define("siebel/custom/ContactListAppletPR", ["siebel/custom/NBDefaultListAppletPR", "siebel/custom/vue.js", "siebel/custom/vuetify.js"],
+  define("siebel/custom/ContactListAppletPR", ["siebel/custom/NBDefaultAppletPR", "siebel/custom/vue.js", "siebel/custom/vuetify.js"],
     function () {
       SiebelAppFacade.ContactListAppletPR = (function () {
 
         var n19helper;
         var app;
-        var keepOUI = false;
 
         function ContactListAppletPR(pm) {
           SiebelAppFacade.ContactListAppletPR.superclass.constructor.apply(this, arguments);
         }
 
-        SiebelJS.Extend(ContactListAppletPR, SiebelAppFacade.NBDefaultListAppletPR);
+        SiebelJS.Extend(ContactListAppletPR, SiebelAppFacade.NBDefaultAppletPR);
 
         ContactListAppletPR.prototype.Init = function () {
-          if (keepOUI) {
-            SiebelAppFacade.ContactListAppletPR.superclass.Init.apply(this, arguments);
-          } else {
-            SiebelAppFacade.ContactListAppletPR.superclass.NBInit.apply(this, arguments);
+          SiebelAppFacade.ContactListAppletPR.superclass.Init.apply(this, arguments);
 
-            this.removeHtml();
-            n19helper = this.initializeNexus({ convertDates: true });
+          n19helper = this.initializeNexus({ convertDates: true });
+          const divId = `s_${this.GetPM().Get('GetFullId')}_div`;
+          const el = document.querySelector('#' + divId);
+          el.parentNode.removeChild(el);
 
-            $('head').append('<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet"></link>');
-            $('head').append('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>');
-            $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
-          }
+          // TODO: IT DOESN"T HONOUR THE READ ONLY FIELDS AND ALLOW EDITING THEM BUT ACTUALLY IT IS NOT SAVED
+
+          $('head').append('<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet"></link>');
+          $('head').append('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>');
+          $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
         }
 
         ContactListAppletPR.prototype.ShowUI = function () {
-          if (keepOUI) {
-            SiebelAppFacade.ContactListAppletPR.superclass.ShowUI.apply(this, arguments);
-          }
-        }
-
-        ContactListAppletPR.prototype.BindEvents = function () {
-          if (keepOUI) {
-            SiebelAppFacade.ContactListAppletPR.superclass.BindEvents.apply(this, arguments);
-          }
-        }
-
-
-        ContactListAppletPR.prototype.BindData = function (bRefresh) {
-          if (keepOUI) {
-            SiebelAppFacade.ContactListAppletPR.superclass.BindData.apply(this, arguments);
-          } else {
-            putVue("s_" + this.GetPM().Get('GetFullId') + "_div");
-          }
+          putVue(this.GetPM().Get('GetFullId'));
         }
 
         var html = '\
@@ -127,7 +109,7 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
         var vue = {
           el: '#vue_sample',
           created() {
-            this.initialize()
+            this.initialize();
           },
           mounted: function () {
             this.afterSelection();
@@ -198,7 +180,7 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
               this.editedItem = Object.assign({}, item);
               this.dialog = true;
             },
-            close( { skipUndo } ) {
+            close({ skipUndo }) {
               if (!skipUndo) {
                 if (n19helper.canInvokeMethod('UndoRecord')) {
                   n19helper.undoRecordSync();
@@ -221,7 +203,7 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
                 } else {
                   this.contacts.push(this.editedItem);
                 }
-                this.close({skipUndo: true});
+                this.close({ skipUndo: true });
               }).catch(() => {
                 this.snackBarColor = 'error';
                 this.snackBarText = 'FAILED TO SAVE';
@@ -238,7 +220,7 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
             newButtonClick: function () {
               n19helper.newRecordSync();
               const obj = {};
-              Object.entries(n19helper.getCurrentRecordModel().controls).forEach((el)=>obj[el[0]]=el[1].value);
+              Object.entries(n19helper.getCurrentRecordModel().controls).forEach((el) => obj[el[0]] = el[1].value);
 
               this.editedItem = Object.assign({}, obj);
               console.log(this.editedItem);
@@ -257,7 +239,7 @@ if (typeof (SiebelAppFacade.ContactListAppletPR) === "undefined") {
         };
 
         function putVue(divId) {
-          $('#' + divId).append(html);
+          $('#' + divId).replaceWith(html);
           app = new Vue(vue);
         }
 

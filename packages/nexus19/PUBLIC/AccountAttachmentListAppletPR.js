@@ -1,51 +1,30 @@
 if (typeof (SiebelAppFacade.AccountAttachmentListAppletPR) === "undefined") {
 
   SiebelJS.Namespace("SiebelAppFacade.AccountAttachmentListAppletPR");
-  define("siebel/custom/AccountAttachmentListAppletPR", ["siebel/custom/NBDefaultListAppletPR", "siebel/custom/vue.js", "siebel/custom/vuetify.js"],
+  define("siebel/custom/AccountAttachmentListAppletPR", ["siebel/custom/NBDefaultAppletPR", "siebel/custom/vue.js", "siebel/custom/vuetify.js"],
     function () {
       SiebelAppFacade.AccountAttachmentListAppletPR = (function () {
-        var keepOUI = false;
         var _pm;
 
         function AccountAttachmentListAppletPR(pm) {
           SiebelAppFacade.AccountAttachmentListAppletPR.superclass.constructor.apply(this, arguments);
         }
 
-        SiebelJS.Extend(AccountAttachmentListAppletPR, SiebelAppFacade.NBDefaultListAppletPR);
+        SiebelJS.Extend(AccountAttachmentListAppletPR, SiebelAppFacade.NBDefaultAppletPR);
 
         AccountAttachmentListAppletPR.prototype.Init = function () {
-          if (keepOUI) {
-            SiebelAppFacade.AccountAttachmentListAppletPR.superclass.Init.apply(this, arguments);
-          } else {
-            SiebelAppFacade.AccountAttachmentListAppletPR.superclass.NBInit.apply(this, arguments);
+          SiebelAppFacade.AccountAttachmentListAppletPR.superclass.Init.apply(this, arguments);
 
-            $('head').append('<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet"></link>');
-            $('head').append('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>');
-            $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
-            _pm = this.GetPM();
-          }
+          $('head').append('<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet"></link>');
+          $('head').append('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>');
+          $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">');
+          _pm = this.GetPM();
         }
 
         AccountAttachmentListAppletPR.prototype.ShowUI = function () {
-          if (keepOUI) {
-            SiebelAppFacade.AccountAttachmentListAppletPR.superclass.ShowUI.apply(this, arguments);
-          } else {
-            var divId = "s_" + this.GetPM().Get('GetFullId') + "_div";
-            $('#' + divId).replaceWith("<div id='app'>This is upload area<input type='file' id='fileupload' name='test'></div>"); // SWE_FILE_NAME_STR
-            putVue();
-          }
-        }
-
-        AccountAttachmentListAppletPR.prototype.BindEvents = function () {
-          if (keepOUI) {
-            SiebelAppFacade.AccountAttachmentListAppletPR.superclass.BindEvents.apply(this, arguments);
-          }
-        }
-
-        AccountAttachmentListAppletPR.prototype.BindData = function (bRefresh) {
-          if (keepOUI) {
-            SiebelAppFacade.AccountAttachmentListAppletPR.superclass.BindData.apply(this, arguments);
-          }
+          var divId = "s_" + this.GetPM().Get('GetFullId') + "_div";
+          $('#' + divId).replaceWith("<div id='app'>This is upload area<input type='file' id='fileupload' name='test'></div>"); // SWE_FILE_NAME_STR
+          putVue();
         }
 
         function putVue() {
@@ -119,11 +98,9 @@ if (typeof (SiebelAppFacade.AccountAttachmentListAppletPR) === "undefined") {
         }
 
         AccountAttachmentListAppletPR.prototype.EndLife = function () {
-          if (!keepOUI) {
-            $("link[href*='vuetify.min.css']").remove();
-            $("link[href*='https://fonts.googleapis.com/css']").remove();
-            $('#vuetify-theme-stylesheet').remove();
-          }
+          $("link[href*='vuetify.min.css']").remove();
+          $("link[href*='https://fonts.googleapis.com/css']").remove();
+          $('#vuetify-theme-stylesheet').remove();
           SiebelAppFacade.AccountAttachmentListAppletPR.superclass.EndLife.apply(this, arguments);
         }
 

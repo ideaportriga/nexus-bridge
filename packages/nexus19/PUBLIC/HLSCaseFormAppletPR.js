@@ -1,7 +1,7 @@
 if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
   SiebelJS.Namespace("SiebelAppFacade.HLSCaseFormAppletPR");
-  define("siebel/custom/HLSCaseFormAppletPR", ["siebel/custom/NBDefaultFormAppletPR", "siebel/custom/vue.js", "siebel/custom/vuetify.js"],
+  define("siebel/custom/HLSCaseFormAppletPR", ["siebel/custom/NBDefaultAppletPR", "siebel/custom/vue.js", "siebel/custom/vuetify.js"],
     function () {
       SiebelAppFacade.HLSCaseFormAppletPR = (function () {
 
@@ -9,20 +9,19 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           SiebelAppFacade.HLSCaseFormAppletPR.superclass.constructor.apply(this, arguments);
         }
 
-        SiebelJS.Extend(HLSCaseFormAppletPR, SiebelAppFacade.NBDefaultFormAppletPR);
+        SiebelJS.Extend(HLSCaseFormAppletPR, SiebelAppFacade.NBDefaultAppletPR);
         var app;
         var pm;
         var n19helper;
-        var skipVue = true;
 
         HLSCaseFormAppletPR.prototype.Init = function () {
-          var viewName = SiebelApp.S_App.GetActiveView().GetName();
-          skipVue = viewName.indexOf('List View') === -1;
-          if (skipVue) {
-            SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
-            return;
-          }
-          SiebelAppFacade.HLSCaseFormAppletPR.superclass.NBInit.apply(this, arguments);
+          SiebelAppFacade.HLSCaseFormAppletPR.superclass.Init.apply(this, arguments);
+
+          n19helper = this.initializeNexus({ convertDates: true });
+
+          const divId = `s_${this.GetPM().Get('GetFullId')}_div`;
+          const el = document.querySelector('#' + divId);
+          el.parentNode.removeChild(el);
 
           document.addEventListener('UpdateMVG', function (event) {
             if (app) {
@@ -54,7 +53,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           //   console.log('Bind FieldChange.....', args);
           // });
 
-          n19helper = this.initializeNexus({convertDates: true});
 
           $('head').append('<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" rel="stylesheet"></link>');
           $('head').append('<link type="text/css"  rel="stylesheet" href="files/custom/vuetify.min.css"/>');
@@ -97,9 +95,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           pm.AttachPreProxyExecuteBinding('ALL', function (method) {
             console.log('>>>>>> AttachPreProxyExecuteBinding', method, arguments);
           });
-
-          // for commit pending indicator
-          document.getElementById("s_" + pm.Get('GetFullId') + "_div").classList.add('siebui-applet', 'siebui-active');
 
           //todo: maybe use applet.prototype.RepopulateField instead of it?
           // good to know that...
@@ -266,24 +261,6 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
         }
 
         HLSCaseFormAppletPR.prototype.ShowUI = function () {
-          if (skipVue) {
-            SiebelAppFacade.HLSCaseFormAppletPR.superclass.ShowUI.apply(this, arguments);
-          }
-        }
-
-        HLSCaseFormAppletPR.prototype.BindEvents = function () {
-          if (skipVue) {
-            SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindEvents.apply(this, arguments);
-          }
-        }
-
-        HLSCaseFormAppletPR.prototype.BindData = function (bRefresh) {
-          if (skipVue) {
-            SiebelAppFacade.HLSCaseFormAppletPR.superclass.BindData.apply(this, arguments);
-            console.log('BindData called.....');
-            return;
-          }
-
           document.getElementById('_sweview').title = '';
           putVue(pm.Get('GetFullId'));
         }
@@ -710,7 +687,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                 }
               },
               doDrillDown() {
-                  n19helper.drilldown('Name');
+                n19helper.drilldown('Name');
               },
               changeValue(name) {
                 var isChanged = n19helper._setControlValue(name, this.controls[name].value);
@@ -797,7 +774,11 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
                     value = (n19helper.getCurrentRecord() || {})[name];
                   }
                   if (value) {
-                    value = n19helper._getJSValue(value, control);
+                    // if it is date, it comes in American Format, so straightforward replace it
+                    const c = {...control};
+                    c.displayFormat = "MM/DD/YYYY HH:mm:ss";
+
+                    value = n19helper._getJSValue(value, c);
                     if (value == this.controls[control.name].value) {
                       return;
                     }

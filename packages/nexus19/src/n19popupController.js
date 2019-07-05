@@ -94,7 +94,11 @@ export default class N19popupController {
     popupPM.AddProperty('state', this.consts.get('POPUP_STATE_VISIBLE'));
 
     let url = ps.GetProperty('URL');
-    url = SiebelApp.S_App.GetPageURL() + url.split('start.swe')[1];
+    if (url.indexOf('start.swe') > -1) { // pre 17
+      url = SiebelApp.S_App.GetPageURL() + url.split('start.swe')[1];
+    } else { // assuming 17+
+      url = SiebelApp.S_App.GetPageURL() + url.split(SiebelApp.S_App.GetAppExtension())[1];
+    }
     popupPM.SetProperty('url', url);
 
     return 'refreshpopup';

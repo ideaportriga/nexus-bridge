@@ -144,4 +144,4 @@ export default class Nexus19 extends N19baseApplet {
   }
 }
 
-SiebelAppFacade.N19Helper = Nexus19;
+// SiebelAppFacade.N19Helper = Nexus19;

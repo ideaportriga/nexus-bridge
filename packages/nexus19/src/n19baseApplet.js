@@ -752,7 +752,7 @@ export default class N19baseApplet {
           && controlUiType !== this.consts.get('SWE_CTRL_LABEL');
 
         // maybe it would be better for list applets take only columns as it was before?
-        ret = ret && !['PopupQueryCombobox', 'PopupQuerySrchspec'].includes(controlName);
+        ret = ret && !['PopupQueryCombobox', 'PopupQuerySrchspec', 'QueryComboBox', 'QuerySrchSpec'].includes(controlName);
         return ret;
       }
       return false;

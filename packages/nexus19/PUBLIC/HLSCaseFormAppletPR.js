@@ -1,7 +1,7 @@
 if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
 
   SiebelJS.Namespace("SiebelAppFacade.HLSCaseFormAppletPR");
-  define("siebel/custom/HLSCaseFormAppletPR", ["siebel/custom/NBDefaultAppletPR", "siebel/custom/vue.js", "siebel/custom/vuetify.js"],
+  define("siebel/custom/HLSCaseFormAppletPR", ["siebel/custom/NBDefaultAppletPR", "siebel/custom/NexusBridge.js", "siebel/custom/vue.js", "siebel/custom/vuetify.js"],
     function () {
       SiebelAppFacade.HLSCaseFormAppletPR = (function () {
 
@@ -122,7 +122,7 @@ if (typeof (SiebelAppFacade.HLSCaseFormAppletPR) === "undefined") {
           pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_GENERIC'), function (propSet) {
             var type = propSet.GetProperty(consts.get('SWE_PROP_NOTI_TYPE'));
             if ('ClosePopup' === type) {
-              SiebelAppFacade.N19Helper.ReInitPopup()
+              SiebelAppFacade.NexusBridge.ReInitPopup()
             }
             console.log('SWE_PROP_BC_NOTI_GENERIC ', type, propSet);
           });

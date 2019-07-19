@@ -68,12 +68,12 @@ if (typeof (SiebelAppFacade.NBDefaultAppletPR) === "undefined") {
             var applet = SiebelApp.S_App.GetActiveView().GetApplet(appletName)
             var isMvgAssoc = isShuttle && applet && applet === mvgAssoc;
             SiebelAppFacade.NB[appletName] =
-              SiebelAppFacade.N19Helper.CreatePopupNB(Object.assign(
+              SiebelAppFacade.NexusBridge.CreatePopupNB(Object.assign(
                 { pm: pm, isMvgAssoc: isMvgAssoc, isPopup: true }, options
               ));
           } else {
             SiebelAppFacade.NB[appletName] =
-              new SiebelAppFacade.N19Helper(Object.assign({ pm: pm }, options));
+              new SiebelAppFacade.NexusBridge(Object.assign({ pm: pm }, options));
           }
           return SiebelAppFacade.NB[appletName];
         }

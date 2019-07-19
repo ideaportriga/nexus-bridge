@@ -59,6 +59,8 @@ export default class N19popupController {
           }
         }
 
+        // TODO: check if found in SiebelAppFacade.NB!!
+
         const obj = {
           appletName: this.popupAppletN19.appletName,
           popupAppletN19: this.popupAppletN19,

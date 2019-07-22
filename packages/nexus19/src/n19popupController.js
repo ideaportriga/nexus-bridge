@@ -33,7 +33,7 @@ export default class N19popupController {
       let ret;
       if (this.isPopupHidden) {
         ret = this.processNewPopup(ps);
-        this.isPopupHidden = false; // in order to do not affect the next call
+        // this.isPopupHidden = false; // in order to do not affect the next call // it is redundant
       } else {
         ret = this.N19processNewPopup.call(SiebelApp.S_App, ps);
       }
@@ -168,7 +168,6 @@ export default class N19popupController {
   showPopupApplet(hide, cb, n19, methodName) {
     // TODO: maybe use the properties set on promise resolving?
     this.checkOpenedPopup(true);
-
     this.isPopupHidden = !!hide;
 
     n19.pm.ExecuteMethod('InvokeMethod', methodName);

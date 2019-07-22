@@ -251,7 +251,10 @@ export default class N19baseApplet {
       if (addRecordIndex) {
         ret._indx = index;
       }
-      ret.Id = ret.Id || rawRecordSet[index].Id; // add Id if missing
+      // when in query mode, recordSet has 1 record, and rawRecordSet has 0 records.
+      if (!this.pm.Get('IsInQueryMode')) { // not adding Id in Query Mode
+        ret.Id = ret.Id || rawRecordSet[index].Id; // add Id if missing
+      }
       return ret;
     });
 
@@ -662,9 +665,10 @@ export default class N19baseApplet {
     _controls.id = ''; // eslint-disable-line no-param-reassign
     let obj = {};
     const index = this.getSelection();
+    const rawRecordSet = this.getRawRecordSet();
     if (index > -1 && _controls.state !== 3) { // added _controls.state !== 3; we don't need id in query mode
       obj = this.getRecordSet()[index];
-      _controls.id = this.getRawRecordSet()[index].Id; // eslint-disable-line no-param-reassign
+      _controls.id = rawRecordSet[index].Id; // eslint-disable-line no-param-reassign
     }
     const appletControls = this._returnControls();
     // populate controls
@@ -680,8 +684,8 @@ export default class N19baseApplet {
         let currencyCode = '';
         if ('currency' === dataType) {
           currencyCodeField = this._getCurrencyCodeField(control);
-          if (currencyCodeField && index > -1) {
-            currencyCode = this.getRawRecordSet()[index][currencyCodeField];
+          if (currencyCodeField && index > -1 && rawRecordSet[index]) {
+            currencyCode = rawRecordSet[index][currencyCodeField];
           }
         }
         if (_controls.id) {
@@ -752,7 +756,8 @@ export default class N19baseApplet {
           && controlUiType !== this.consts.get('SWE_CTRL_LABEL');
 
         // maybe it would be better for list applets take only columns as it was before?
-        ret = ret && !['PopupQueryCombobox', 'PopupQuerySrchspec', 'QueryComboBox', 'QuerySrchSpec'].includes(controlName);
+        ret = ret
+          && !['PopupQueryCombobox', 'PopupQuerySrchspec', 'QueryComboBox', 'QuerySrchSpec'].includes(controlName);
         return ret;
       }
       return false;
@@ -988,7 +993,7 @@ export default class N19baseApplet {
   getControlsRecordSet(addRecordIndex) {
     // used slice to avoid modification of the record set
     const ret = this.getRecordSet(); // do not send addRecordIndex here
-    const rawRecordSet = this.getRawRecordSet();
+    const rawRecordSet = this.getRawRecordSet(); // TODO: Analyze IsInQueryMode before applying?
 
     for (let i = 0, len = ret.length; i < len; i += 1) {
       ret[i] = Object.keys(ret[i]).filter(el => this.fieldToControlMap[el]).reduce((acc, el) => ({
@@ -998,7 +1003,7 @@ export default class N19baseApplet {
             uiType: this.fieldToControlMap[el].uiType,
             dataType: this.fieldToControlMap[el].dataType,
             displayFormat: this.fieldToControlMap[el].displayFormat,
-            currencyCode: rawRecordSet[i][this.fieldToControlMap[el].currencyCodeField],
+            currencyCode: rawRecordSet[i] && rawRecordSet[i][this.fieldToControlMap[el].currencyCodeField],
           }),
         },
       }), {});

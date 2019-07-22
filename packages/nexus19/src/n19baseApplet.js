@@ -992,11 +992,11 @@ export default class N19baseApplet {
 
   getControlsRecordSet(addRecordIndex) {
     // used slice to avoid modification of the record set
-    const ret = this.getRecordSet(); // do not send addRecordIndex here
+    const ret = this.getRecordSet(addRecordIndex);
     const rawRecordSet = this.getRawRecordSet(); // TODO: Analyze IsInQueryMode before applying?
 
     for (let i = 0, len = ret.length; i < len; i += 1) {
-      ret[i] = Object.keys(ret[i]).filter(el => this.fieldToControlMap[el]).reduce((acc, el) => ({
+      ret[i] = Object.assign(ret[i], Object.keys(ret[i]).filter(el => this.fieldToControlMap[el]).reduce((acc, el) => ({
         ...acc,
         ...{
           [this.fieldToControlMap[el].name]: this._getJSValue(ret[i][el], {
@@ -1006,10 +1006,7 @@ export default class N19baseApplet {
             currencyCode: rawRecordSet[i] && rawRecordSet[i][this.fieldToControlMap[el].currencyCodeField],
           }),
         },
-      }), {});
-      if (addRecordIndex) {
-        ret[i]._indx = i;
-      }
+      }), {}));
     }
 
     return ret;

@@ -322,27 +322,37 @@ export default class N19baseApplet {
   }
 
   positionOnRow(index, keys, skipIfAlreadyPositioned) {
-    if (this.isListApplet) {
-      if (!this.pm.ExecuteMethod('CanInvokeMethod', 'PositionOnRow')) {
-        return false;
-      }
-      if (Number(index) < 0) {
-        return false;
-      }
-      if (this.getRowListRowCount() < Number(index) + 1) {
-        throw new Error(`${index} is equal/higher than amount of records in the applet ${this.getRowListRowCount()}`);
-      }
-      if (skipIfAlreadyPositioned) { // check if already on the same row
-        if (Number(index) === this.getSelection()) {
-          return true; // do not call the server
-        }
-      }
-      // TODO: if we got here, should we check GetActiveControl (applet.prototype.InvokeMethod)
-      // and nullify it if active? otherwise if there is an active control, the navigation doesn't happen
-      const { ctrlKey, shiftKey } = keys || {};
-      return this.pm.ExecuteMethod('HandleRowSelect', index, ctrlKey, shiftKey);
+    // TODO: check IsInQueryMode?, as it still could be invoked in query mode (and even works)
+    if (!this.isListApplet) {
+      throw new Error('Method PositionOnRow is allowed only for list applets');
     }
-    return false;
+    if (!this.pm.ExecuteMethod('CanInvokeMethod', 'PositionOnRow')) {
+      throw new Error('Method PositionOnRow can not be invoked now.');
+    }
+    if (Number(index) < 0) {
+      throw new Error(`incorrect index given for positionOnRow - ${index}`);
+    }
+    if (this.getRowListRowCount() < Number(index) + 1) {
+      throw new Error(`${index} is equal/higher than allowed amount of records - ${this.getRowListRowCount()}.`);
+    }
+    if (this.getNumRows() < Number(index) + 1) {
+      throw new Error(`${index} is equal/higher than displayed amount of records - ${this.getNumRows()}.`);
+    }
+    if (skipIfAlreadyPositioned) { // check if already on the same row
+      if (Number(index) === this.getSelection()) {
+        return true; // do not call the server
+      }
+    }
+    // TODO: if we got here, should we check GetActiveControl (applet.prototype.InvokeMethod)
+    // and nullify it if active? otherwise if there is an active control, the navigation doesn't happen
+    const { ctrlKey, shiftKey } = keys || {};
+    // ret will be false if already positioned and !skipIfAlreadyPositioned (no server communications)
+    const ret = this.pm.ExecuteMethod('HandleRowSelect', index, ctrlKey, shiftKey);
+    // Positioning not happened, TODO: Temp solution? just to check if it is going to happen again (combo)
+    if (index !== this.getSelection()) {
+      throw new Error(`positioning not happened - ${index}/${this.getSelection()}`);
+    }
+    return ret;
   }
 
   prevRecord() {

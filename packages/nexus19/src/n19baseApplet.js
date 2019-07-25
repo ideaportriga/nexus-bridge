@@ -676,13 +676,14 @@ export default class N19baseApplet {
     let obj = {};
     const index = this.getSelection();
     const rawRecordSet = this.getRawRecordSet();
-    if (index > -1 && _controls.state !== 3) { // added _controls.state !== 3; we don't need id in query mode
+    if (index > -1) { // added _controls.state !== 3; we don't need id in query mode
       obj = this.getRecordSet()[index];
       _controls.id = rawRecordSet[index].Id; // eslint-disable-line no-param-reassign
     }
     const appletControls = this._returnControls();
     // populate controls
     Object.keys(_controls).forEach((controlName) => {
+      let ret = {};
       const control = appletControls[controlName];
       if (typeof control !== 'undefined') { // just if somebody sends incorrect name of the control
         const fieldName = control.GetFieldName();
@@ -698,47 +699,42 @@ export default class N19baseApplet {
             currencyCode = rawRecordSet[index][currencyCodeField];
           }
         }
-        if (_controls.id) {
-          _controls[controlName] = { // eslint-disable-line no-param-reassign
+        if (_controls.id && _controls.state !== 3) {
+          ret = {
             value: this._getJSValue(obj[fieldName], {
               uiType, dataType, displayFormat, currencyCode,
             }),
-            uiType,
             readonly: !this.pm.ExecuteMethod('CanUpdate', controlName),
             isLink: this.pm.ExecuteMethod('CanNavigate', controlName),
-            label: control.GetDisplayName(),
-            isPostChanges: control.IsPostChanges(),
-            required: this._isRequired(control.GetInputName()),
-            maxSize: control.GetMaxSize(),
-            fieldName,
-            displayFormat,
-            isLOV: staticPick || this.consts.get('SWE_CTRL_COMBOBOX') === uiType,
-            dataType,
-            currencyCodeField,
-            currencyCode,
-            name: controlName,
           };
-        } else { // no record displayed
-          _controls[controlName] = { // eslint-disable-line no-param-reassign
+        } else { // no record displayed or in query mode
+          ret = {
             value: '',
-            uiType,
             readonly: _controls.state !== 3, // should be edittable in query mode
             isLink: false,
-            label: control.GetDisplayName(),
-            isPostChanges: control.IsPostChanges(),
-            required: this._isRequired(control.GetInputName()),
-            maxSize: control.GetMaxSize(),
-            fieldName,
-            displayFormat,
-            isLOV: staticPick || this.consts.get('SWE_CTRL_COMBOBOX') === uiType,
-            dataType,
-            currencyCodeField,
-            currencyCode,
-            name: controlName,
           };
         }
+        _controls[controlName] = Object.assign(ret, { // eslint-disable-line no-param-reassign
+          uiType,
+          label: control.GetDisplayName(),
+          isPostChanges: control.IsPostChanges(),
+          required: this._isRequired(control.GetInputName()),
+          maxSize: control.GetMaxSize(),
+          fieldName,
+          displayFormat,
+          isLOV: staticPick || this.consts.get('SWE_CTRL_COMBOBOX') === uiType,
+          dataType,
+          currencyCodeField,
+          currencyCode,
+          name: controlName,
+        });
       }
     });
+    if (!_controls.Id) {
+      _controls.Id = { // eslint-disable-line no-param-reassign
+        value: _controls.state !== 3 ? _controls.id : '',
+      };
+    }
     // populate methods
     if (!_methods) {
       // Is it better to use applet.GetCanInvokeArray?

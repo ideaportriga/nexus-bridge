@@ -40,6 +40,7 @@ export default class N19popupController {
       return ret;
     };
 
+    // TODO: REFACTORE IT
     SiebelApp.S_App.GetPopupPM().AddMethod('OnLoadPopupContent', () => {
       if (typeof this.resolvePromise === 'function') {
         const { applet, assocApplet } = N19popupController.IsPopupOpen();
@@ -79,6 +80,25 @@ export default class N19popupController {
         this.resolvePromise = null;
       }
     }, { sequence: false });
+
+    this.viewLoadedResolve = null;
+    this.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded;
+    SiebelApp.contentUpdater.viewLoaded = (...args) => {
+      const ret = this.N19viewLoaded.call(SiebelApp.contentUpdater, ...args);
+      if (typeof this.viewLoadedResolve === 'function') {
+        this.viewLoadedResolve(true);
+        // TODO: Check view name to be safe??
+        this.viewLoadedResolve = null;
+      }
+      return ret;
+    };
+  }
+
+  gotoView(targetViewName) {
+    return new Promise((resolve) => {
+      this.viewLoadedResolve = resolve;
+      SiebelApp.S_App.GotoView(targetViewName);
+    });
   }
 
   _createNexusInstance(pm) {

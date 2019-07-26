@@ -83,11 +83,16 @@ export default class Nexus19 extends N19baseApplet {
   }
 
   gotoView(targetViewName, targetAppletName, id) {
+    // TODO: check if current record exists this.getCurrentRecord
     const rowId = typeof id === 'undefined' ? this.getCurrentRecord(true).Id : id;
     let SWECmd = `GotoView&SWEView=${targetViewName}&SWEApplet0=${targetAppletName}`;
     SWECmd += `&SWEBU=1&SWEKeepContext=FALSE&SWERowId0=${rowId}`;
     SWECmd = encodeURI(SWECmd);
-    SiebelApp.S_App.GotoView(targetViewName, '', SWECmd, '');
+    return SiebelApp.S_App.GotoView(targetViewName, '', SWECmd, '');
+  }
+
+  gotoViewPromised(targetViewName) {
+    return this.n19popupController.gotoView(targetViewName);
   }
 
   reInitPopup() { // do we need to keep also static ReInitPopup

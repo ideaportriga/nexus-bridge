@@ -12,16 +12,18 @@ const memo: any = {}
 
 const n19Factory = (config: string | N19Config): null | N19Helper => {
   if (config !== null && typeof config === 'object') {
-    for (let key in memo) {
+    for (const key in memo) {
       console.log(`N19Helper instance deleted: ${memo[key].appletName}`)
       delete memo[key]
     }
 
-    for (let key in config) {
+    for (const key in config) {
       const appletName = config[key]
       memo[key] = new Nexus19({
         appletName,
         convertDates: true,
+        returnRawNumbers: true,
+        returnRawCurrencies: true,
       })
       console.log(`N19Helper instance created: ${memo[key].appletName}`)
     }

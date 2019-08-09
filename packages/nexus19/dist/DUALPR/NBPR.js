@@ -18,6 +18,7 @@ var NBPR = (function () {
 
   function initInternalObject() {
     var obj = {};
+    var pm = this.GetPM();
     var selection = pm.Get('GetSelection');
     if (selection > -1) {
       var controls = pm.Get('GetControls');

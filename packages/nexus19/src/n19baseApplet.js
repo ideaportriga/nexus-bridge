@@ -691,6 +691,7 @@ export default class N19baseApplet {
         const displayFormat = control.GetDisplayFormat() || this.getControlDisplayFormat(uiType);
         const staticPick = control.IsStaticBounded() === '1';
         const dataType = this.pm.ExecuteMethod('GetFieldDataType', fieldName);
+        const iconMap = control.GetIconMap();
         let currencyCodeField = '';
         let currencyCode = '';
         if ('currency' === dataType) {
@@ -727,6 +728,7 @@ export default class N19baseApplet {
           currencyCodeField,
           currencyCode,
           name: controlName,
+          iconMap: iconMap ? SiebelApp.S_App.GetIconMap()[SiebelApp.S_App.LookupStringCache(iconMap)] : null,
         });
       }
     });

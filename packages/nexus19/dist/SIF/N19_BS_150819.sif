@@ -1,0 +1,493 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<REPOSITORY
+   NAME="Siebel Repository"
+   UPDATED="05/10/2016 09:03:08"
+   UPDATED_BY="SADMIN"
+   CREATED="05/10/2016 08:29:53"
+   CREATED_BY="SADMIN"
+   FIO_PLACEHOLDER_FIO="TRUE">
+	<PROJECT
+	   ALLOW_OBJECT_LOCKING="Y"
+	   INACTIVE="N"
+	   LANGUAGE_LOCKED="ENU"
+	   LOCKED="N"
+	   NAME="COM Workflows"
+	   UI_FREEZE="N"
+	   UPDATED="03/14/2013 04:58:35"
+	   UPDATED_BY="SADMIN"
+	   CREATED="12/20/2003 20:26:55"
+	   CREATED_BY="SADMIN"
+	   FIO_PLACEHOLDER_FIO="TRUE">
+		<BUSINESS_SERVICE
+		   CACHE="N"
+		   CLASS="CSSService"
+		   EXTERNAL_USE="N"
+		   HIDDEN="N"
+		   INACTIVE="N"
+		   NAME="N19 BS"
+		   SERVER_ENABLED="N"
+		   STATE_MANAGEMENT_TYPE="Stateful"
+		   WEB_SERVICE_ENABLED="N"
+		   UPDATED="07/29/2019 23:37:21"
+		   UPDATED_BY="SADMIN"
+		   CREATED="07/29/2019 23:37:17"
+		   CREATED_BY="SADMIN">
+			<BUSINESS_SERVICE_SERVER_SCRIPT
+			   INACTIVE="N"
+			   NAME="(declarations)"
+			   PROGRAM_LANGUAGE="JS"
+			   SCRIPT="//Your public declarations go here...  
+"
+			   SEQUENCE="1"
+			   UPDATED="07/30/2019 00:44:06"
+			   UPDATED_BY="SADMIN"
+			   CREATED="07/30/2019 00:44:06"
+			   CREATED_BY="SADMIN">
+			</BUSINESS_SERVICE_SERVER_SCRIPT>
+			<BUSINESS_SERVICE_SERVER_SCRIPT
+			   INACTIVE="N"
+			   NAME="SendMessage"
+			   PROGRAM_LANGUAGE="JS"
+			   SCRIPT="function SendMessage (Inputs, Outputs)
+{
+	try {
+		var psInputs = TheApplication().NewPropertySet();
+		var psOutputs = TheApplication().NewPropertySet();
+
+		var sActivityId:chars = Inputs.GetProperty(&quot;ActivityId&quot;);
+		var sCommProfile:chars = Inputs.GetProperty(&quot;CommProfile&quot;);
+
+		var bsOutboundManager = TheApplication().GetService(&quot;Outbound Communications Manager&quot;);
+
+			if (sActivityId != &quot;&quot; &amp;&amp; sCommProfile != &quot;&quot;)
+			{
+				psInputs.SetProperty(&quot;ActivityId&quot;, sActivityId);
+				psInputs.SetProperty(&quot;CommProfile&quot;, sCommProfile);
+				bsOutboundManager.InvokeMethod(&quot;SendMessage&quot;, psInputs, psOutputs);
+			}
+		}
+
+	finally 
+	{
+		sActivityId = null;
+		sCommProfile = null;
+		bsOutboundManager = null;
+	}
+	
+	return(CancelOperation);
+}
+
+"
+			   SEQUENCE="7"
+			   UPDATED="07/30/2019 06:05:52"
+			   UPDATED_BY="SADMIN"
+			   CREATED="07/30/2019 00:30:06"
+			   CREATED_BY="SADMIN">
+			</BUSINESS_SERVICE_SERVER_SCRIPT>
+			<BUSINESS_SERVICE_SERVER_SCRIPT
+			   INACTIVE="N"
+			   NAME="Service_PreInvokeMethod"
+			   PROGRAM_LANGUAGE="JS"
+			   SCRIPT="function Service_PreInvokeMethod (MethodName, Inputs, Outputs)
+{
+	if (&quot;Refresh&quot; === MethodName) 
+	{
+		return refresh(Inputs, Outputs);
+	}
+	else if (&quot;Requery&quot; === MethodName) 
+	{
+		return requery(Inputs, Outputs);
+	}
+	else if (&quot;ReturnMVGFields&quot; === MethodName) 
+	{
+		return returnMvgFields(Inputs, Outputs);
+	}
+	else if (&quot;SendMessage&quot; === MethodName)
+	{
+		return SendMessage(Inputs, Outputs);
+	}
+	return (ContinueOperation);
+}"
+			   SEQUENCE="8"
+			   UPDATED="07/30/2019 06:12:17"
+			   UPDATED_BY="SADMIN"
+			   CREATED="07/29/2019 23:37:32"
+			   CREATED_BY="SADMIN">
+			</BUSINESS_SERVICE_SERVER_SCRIPT>
+			<BUSINESS_SERVICE_SERVER_SCRIPT
+			   INACTIVE="Y"
+			   NAME="_returnmvgfields"
+			   PROGRAM_LANGUAGE="JS"
+			   SCRIPT="function returnmvgfields(Inputs, Outputs)
+{
+		try
+		{
+			var oBusObject = TheApplication().GetBusObject(Inputs.GetProperty(&quot;BO&quot;));
+			var oBusComp = oBusObject.GetBusComp(Inputs.GetProperty(&quot;BC&quot;));			
+			var psId = TheApplication().NewPropertySet();
+			var psIdoutput = TheApplication().NewPropertySet();
+			var psMVLoutput = TheApplication().NewPropertySet();
+			var psMVG = TheApplication().NewPropertySet();
+			var psMVGoutput = TheApplication().NewPropertySet();
+			var psMVGfields = TheApplication().NewPropertySet();
+			var MVGpscount = Inputs.GetChildCount();
+			if (MVGpscount&gt;=2)//if we have two child property sets
+			{
+				psId = Inputs.GetChild(0);
+				var propName = psId.GetFirstProperty();
+				var propVal = psId.GetProperty(propName);
+			 	var searchst = &quot;[Id]=&apos;&quot; + propVal + &quot;&apos;&quot;;
+				propName = psId.GetNextProperty();
+				while (propName != &quot;&quot;) {//loop while we have Id properties in first property set
+					propVal = psId.GetProperty(propName);
+					searchst = searchst +&quot; OR [Id]=&apos;&quot; + propVal +&quot;&apos;&quot;;
+					propName = psId.GetNextProperty();
+				}
+				oBusComp.ClearToQuery();
+				oBusComp.SetViewMode(AllView);
+				oBusComp.SetSearchExpr(searchst);
+				oBusComp.ExecuteQuery(ForwardOnly);
+				var isRecord = oBusComp.FirstRecord();
+				while (isRecord){//loop while we have records for which MVG fields values must be returned
+					psIdoutput.Reset();
+					psIdoutput.SetProperty(&quot;Id&quot;, oBusComp.GetFieldValue(&quot;Id&quot;));					
+					for(var i = 1; i &lt; MVGpscount; i++)//loop while we have MVG poperty sets (1-n)
+					{						
+						psMVG = Inputs.GetChild(i);
+						psMVLoutput.Reset();
+						psMVLoutput.SetProperty(&quot;MVLField&quot;, psMVG.GetProperty(&quot;MVLField&quot;));						
+						var oMvgBC : BusComp = oBusComp.GetMVGBusComp(psMVG.GetProperty(&quot;MVLField&quot;)); //MVG property set must contain &apos;MVLField&apos; property												
+						psMVGfields = psMVG.GetChild(0);
+						var propMVFName = psMVGfields.GetFirstProperty();
+						var propMVFVal = &apos;&apos;;
+						while(propMVFName!=&apos;&apos;)//loop through MVG fields passed on input in one MVG property set to activate fields
+						{
+							propMVFVal = psMVGfields.GetProperty(propMVFName);
+							oMvgBC.ActivateField(propMVFVal);
+							propMVFName = psMVGfields.GetNextProperty();
+						}						
+						oMvgBC.ExecuteQuery(ForwardOnly);
+						var bIsRecord = oMvgBC.FirstRecord();						
+						while (bIsRecord){//loop while we have associated records in particular MVG
+							psMVGoutput.Reset();
+							psMVGoutput.SetProperty(&quot;Id&quot;, oMvgBC.GetFieldValue(&quot;Id&quot;));
+							psMVGoutput.SetProperty(&quot;Primary&quot;, oMvgBC.GetFieldValue(&quot;SSA Primary Field&quot;));							
+							propMVFName = psMVGfields.GetFirstProperty();
+							propMVFVal = &apos;&apos;;
+							while(propMVFName!=&apos;&apos;)//loop through MVG fields passed on input in one MVG property set
+							{
+								propMVFVal = psMVGfields.GetProperty(propMVFName);
+								psMVGoutput.SetProperty(propMVFVal, oMvgBC.GetFieldValue(propMVFVal));
+								propMVFName = psMVGfields.GetNextProperty();
+							}
+							psMVLoutput.AddChild(psMVGoutput.Copy());
+							bIsRecord = oMvgBC.NextRecord();
+						}
+						oMvgBC = null;
+						psIdoutput.AddChild(psMVLoutput.Copy());					
+					}
+					Outputs.AddChild(psIdoutput.Copy());
+					isRecord = oBusComp.NextRecord();
+				}
+			}
+			else
+			{
+				TheApplication().RaiseErrorText(&quot;Input parameters not passed!&quot;);
+			}
+		}
+		finally
+		{
+			oMvgBC = null;
+			oBusObject = null;
+			oBusComp = null;
+			psId = null;
+			psIdoutput = null;
+			psMVLoutput = null;
+			psMVG = null;
+			psMVGoutput = null;
+			psMVGfields = null;
+			isRecord = null;
+			bIsRecord = null;
+		}
+		return(CancelOperation);
+}"
+			   SEQUENCE="2"
+			   UPDATED="07/30/2019 06:05:52"
+			   UPDATED_BY="SADMIN"
+			   CREATED="07/30/2019 06:05:03"
+			   CREATED_BY="SADMIN">
+			</BUSINESS_SERVICE_SERVER_SCRIPT>
+			<BUSINESS_SERVICE_SERVER_SCRIPT
+			   INACTIVE="Y"
+			   NAME="deleteSalesRep"
+			   PROGRAM_LANGUAGE="JS"
+			   SCRIPT="function deleteSalesRep(Inputs, Outputs)
+{
+	try
+	{
+		var oBO : BusObject = TheApplication().ActiveBusObject();
+		if (oBO)
+		{
+			var csId = Inputs.GetProperty(&quot;Id&quot;);
+			if (&quot;&quot; === csId)
+			{
+				TheApplication().RaiseErrorText(&quot;N19 BS: Id is empty&quot;);
+			}
+			var oBC : BusComp = oBO.GetBusComp(&quot;HLS Case&quot;);
+			var oMvgBC : BusComp = oBC.GetMVGBusComp(&quot;Sales Rep&quot;);
+			oMvgBC.ClearToQuery();
+			oMvgBC.SetSearchSpec(&quot;Id&quot;, csId);
+			oMvgBC.ExecuteQuery(ForwardBackward);
+			if (oMvgBC.FirstRecord())
+			{
+				oMvgBC.DeleteRecord();
+			}
+			oMvgBC.ClearToQuery();
+			oMvgBC.ExecuteQuery(ForwardBackward);
+
+		}
+		else
+		{
+			TheApplication().RaiseErrorText(&quot;No active business object&quot;);
+		}
+	}
+	finally
+	{
+		oMvgBC = null;
+		oBC = null;
+		oBO = null;
+	}
+	return(CancelOperation);
+}"
+			   SEQUENCE="3"
+			   UPDATED="07/30/2019 06:05:52"
+			   UPDATED_BY="SADMIN"
+			   CREATED="07/29/2019 23:37:32"
+			   CREATED_BY="SADMIN">
+			</BUSINESS_SERVICE_SERVER_SCRIPT>
+			<BUSINESS_SERVICE_SERVER_SCRIPT
+			   INACTIVE="N"
+			   NAME="refresh"
+			   PROGRAM_LANGUAGE="JS"
+			   SCRIPT="function refresh(Inputs, Outpus)
+{
+	var csName : chars = Inputs.GetProperty(&quot;name&quot;);
+
+	if (csName != &quot;&quot;)
+	{
+		var oBO : BusObject = TheApplication().ActiveBusObject();
+		try
+		{
+			if (oBO)
+			{
+				var oBC : BusComp = oBO.GetBusComp(csName);
+				oBC.InvokeMethod(&quot;RefreshBusComp&quot;);
+			}
+		}
+		finally
+		{
+			oBC = null;
+			oBO = null;
+		}
+	}
+
+	return(CancelOperation);
+
+}
+"
+			   SEQUENCE="4"
+			   UPDATED="07/30/2019 06:05:52"
+			   UPDATED_BY="SADMIN"
+			   CREATED="07/29/2019 23:37:32"
+			   CREATED_BY="SADMIN">
+			</BUSINESS_SERVICE_SERVER_SCRIPT>
+			<BUSINESS_SERVICE_SERVER_SCRIPT
+			   INACTIVE="N"
+			   NAME="requery"
+			   PROGRAM_LANGUAGE="JS"
+			   SCRIPT="function requery(Inputs, Outpus)
+{
+	var csName : chars = Inputs.GetProperty(&quot;name&quot;);
+
+	if (csName != &quot;&quot;)
+	{
+		var oBO : BusObject = TheApplication().ActiveBusObject();
+		try
+		{
+			if (oBO)
+			{
+				var oBC : BusComp = oBO.GetBusComp(csName);
+				oBC.ClearToQuery();
+				oBC.ExecuteQuery(ForwardBackward);
+			}
+		}
+		finally
+		{
+			oBC = null;
+			oBO = null;
+		}
+	}
+
+	return(CancelOperation);
+
+}
+"
+			   SEQUENCE="5"
+			   UPDATED="07/30/2019 06:05:52"
+			   UPDATED_BY="SADMIN"
+			   CREATED="07/29/2019 23:37:32"
+			   CREATED_BY="SADMIN">
+			</BUSINESS_SERVICE_SERVER_SCRIPT>
+			<BUSINESS_SERVICE_SERVER_SCRIPT
+			   INACTIVE="N"
+			   NAME="returnMvgFields"
+			   PROGRAM_LANGUAGE="JS"
+			   SCRIPT="function returnMvgFields(Inputs, Outputs)
+{
+	try
+	{
+		// check input parameters
+		var csBOName : chars = Inputs.GetProperty(&quot;BO&quot;);
+		if (&quot;&quot; === csBOName) 
+		{
+			TheApplication().RaiseErrorText(&quot;The BO input parameter is not populated!&quot;);		
+		} 
+		var csBCName : chars = Inputs.GetProperty(&quot;BC&quot;);
+		if (&quot;&quot; === csBCName) 
+		{
+			TheApplication().RaiseErrorText(&quot;The BC input parameter is not populated!&quot;);		
+		} 
+		var useActiveBO : bool = Inputs.GetProperty(&quot;UseActiveBO&quot;) === &quot;Y&quot;;
+
+		// create search specification for main BC
+		var csID : chars = Inputs.GetProperty(&quot;ID&quot;);
+		if (&quot;&quot; === csID) 
+		{
+			TheApplication().RaiseErrorText(&quot;The ID input parameter is not populated!&quot;);
+		}
+		var arrID: Array = csID.split(&quot;,&quot;);
+		var csSearchExpr : chars = &quot;[Id]=&apos;&quot; + arrID[0] + &quot;&apos;&quot;;
+		for (var i = 1; i &lt; arrID.length; i++) 
+		{
+			csSearchExpr += &quot; OR [Id]=&apos;&quot; + arrID[i] +&quot;&apos;&quot;;
+		}
+
+		// create an array of ProprtySets for querying MVF BusComponents
+		var childCount : float = Inputs.GetChildCount();
+		if (0 === childCount) 
+		{
+			TheApplication().RaiseErrorText(&quot;CHILD PROPERTY SETS ARE NOT GIVEN&quot;);
+		}
+		var psTemp : PropertySet = TheApplication().NewPropertySet();
+		var arrMVL : Array = new Array();
+		for (i = 0; i &lt; childCount; i++)
+		{			
+			var csType : chars = Inputs.GetChild(i).GetType(); // field name
+			if (&quot;&quot; === csType) 
+			{
+				TheApplication().RaiseErrorText(&quot;Type of child property set is missing&quot;);
+			}
+			var arrFields : Array = Inputs.GetChild(i).GetProperty(&quot;Fields&quot;).split(&quot;,&quot;); 
+			psTemp.Reset();
+			psTemp.SetType(csType);
+			for (var j = 0; j &lt; arrFields.length; j++) 
+			{
+				if (arrFields[j] !== &quot;&quot;) 
+				{
+					psTemp.SetProperty(arrFields[j], &quot;&quot;);
+				}
+			}
+			psTemp.SetProperty(&quot;Id&quot;, &quot;&quot;);
+			psTemp.SetProperty(&quot;SSA Primary Field&quot;, &quot;&quot;);
+			arrMVL.push(psTemp.Copy());
+		}
+
+		// get BC data
+		var oBO : BusObject = null;
+		var oBC : BusComp = null;
+		var isRecord : bool =false;
+		if (useActiveBO) 
+		{
+			oBO = TheApplication().ActiveBusObject();
+			if (!oBO)
+			{
+				TheApplication().RaiseErrorText(&quot;No Active Bus Object found&quot;);
+			}
+			oBC = oBO.GetBusComp(csBCName);
+			isRecord = true;
+		}
+		else
+		{
+			oBO = TheApplication().GetBusObject(csBOName);
+			oBC = oBO.GetBusComp(csBCName);			
+			oBC.ClearToQuery();
+			oBC.SetViewMode(AllView);
+			oBC.SetSearchExpr(csSearchExpr);
+			oBC.ExecuteQuery(ForwardBackward);
+			isRecord = oBC.FirstRecord();
+		}
+		var psIdOutput : PropertySet = TheApplication().NewPropertySet(); // it has just type - ID from input
+		var psMvlOutput : PropertySet = TheApplication().NewPropertySet(); // it has just type - field name on main BC 
+		var psOutFields : PropertySet = TheApplication().NewPropertySet(); // the fields and values
+		// structure of response Outputs &gt; psIdOutput(1+) &gt; psMvlOutput(1+) &gt; psOutFields(0+)
+		while (isRecord)
+		{
+			psIdOutput.Reset();
+			psIdOutput.SetType(oBC.GetFieldValue(&quot;Id&quot;));
+			
+			for (i = 0; i &lt; arrMVL.length; i++) // query the MVF BusComponents
+			{
+				psTemp = arrMVL[i];
+				psMvlOutput.Reset();
+				psMvlOutput.SetType(psTemp.GetType());
+				var oMvgBC : BusComp = oBC.GetMVGBusComp(psTemp.GetType());
+				try
+				{
+					oMvgBC.ActivateMultipleFields(psTemp);
+					oMvgBC.ExecuteQuery(ForwardBackward);
+					isRecord = oMvgBC.FirstRecord();
+					while (isRecord)
+					{
+						psOutFields.Reset();
+						oMvgBC.GetMultipleFieldValues(psTemp, psOutFields);
+						psMvlOutput.AddChild(psOutFields.Copy());
+						isRecord = oMvgBC.NextRecord();
+					}
+				}
+				finally
+				{
+					oMvgBC = null;
+				}
+				psIdOutput.AddChild(psMvlOutput.Copy());
+			}
+			Outputs.AddChild(psIdOutput.Copy());			
+			isRecord = !useActiveBO &amp;&amp; oBC.NextRecord();
+		}
+	}
+	finally
+	{
+		oBC = null;
+		oBO = null;
+
+		arrMVL = null;
+		arrID = null;
+
+		psOutFields = null;
+		psMvlOutput = null;
+		psIdOutput = null;
+		psTemp = null;
+	}
+	return(CancelOperation);
+}"
+			   SEQUENCE="6"
+			   UPDATED="07/30/2019 06:05:52"
+			   UPDATED_BY="SADMIN"
+			   CREATED="07/29/2019 23:37:32"
+			   CREATED_BY="SADMIN">
+			</BUSINESS_SERVICE_SERVER_SCRIPT>
+		</BUSINESS_SERVICE>
+	</PROJECT>
+</REPOSITORY>
+
+
+

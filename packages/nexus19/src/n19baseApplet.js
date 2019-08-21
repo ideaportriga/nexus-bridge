@@ -1004,17 +1004,22 @@ export default class N19baseApplet {
     const rawRecordSet = this.getRawRecordSet(); // TODO: Analyze IsInQueryMode before applying?
 
     for (let i = 0, len = ret.length; i < len; i += 1) {
-      ret[i] = Object.assign({}, Object.keys(ret[i]).filter(el => this.fieldToControlMap[el]).reduce((acc, el) => ({
-        ...acc,
-        ...{
-          [this.fieldToControlMap[el].name]: this._getJSValue(ret[i][el], {
-            uiType: this.fieldToControlMap[el].uiType,
-            dataType: this.fieldToControlMap[el].dataType,
-            displayFormat: this.fieldToControlMap[el].displayFormat,
-            currencyCode: rawRecordSet[i] && rawRecordSet[i][this.fieldToControlMap[el].currencyCodeField],
-          }),
-        },
-      }), {}));
+      const obj = { Id: ret[i].Id };
+      if (addRecordIndex) {
+        obj._indx = ret[i]._indx;
+      }
+      ret[i] = Object.assign(obj,
+        Object.keys(ret[i]).filter(el => this.fieldToControlMap[el]).reduce((acc, el) => ({
+          ...acc,
+          ...{
+            [this.fieldToControlMap[el].name]: this._getJSValue(ret[i][el], {
+              uiType: this.fieldToControlMap[el].uiType,
+              dataType: this.fieldToControlMap[el].dataType,
+              displayFormat: this.fieldToControlMap[el].displayFormat,
+              currencyCode: rawRecordSet[i] && rawRecordSet[i][this.fieldToControlMap[el].currencyCodeField],
+            }),
+          },
+        }), {}));
     }
 
     return ret;

@@ -1004,7 +1004,7 @@ export default class N19baseApplet {
     const rawRecordSet = this.getRawRecordSet(); // TODO: Analyze IsInQueryMode before applying?
 
     for (let i = 0, len = ret.length; i < len; i += 1) {
-      ret[i] = Object.assign(ret[i], Object.keys(ret[i]).filter(el => this.fieldToControlMap[el]).reduce((acc, el) => ({
+      ret[i] = Object.assign({}, Object.keys(ret[i]).filter(el => this.fieldToControlMap[el]).reduce((acc, el) => ({
         ...acc,
         ...{
           [this.fieldToControlMap[el].name]: this._getJSValue(ret[i][el], {

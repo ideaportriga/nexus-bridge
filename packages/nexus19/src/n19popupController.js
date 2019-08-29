@@ -94,10 +94,16 @@ export default class N19popupController {
     };
   }
 
-  gotoView(targetViewName) {
+  gotoView(viewName, appletName, id) {
     return new Promise((resolve) => {
       this.viewLoadedResolve = resolve;
-      SiebelApp.S_App.GotoView(targetViewName);
+      if (appletName && id) {
+        let SWECmd = `GotoView&SWEView=${viewName}&SWEApplet0=${appletName}`;
+        SWECmd += `&SWEBU=1&SWEKeepContext=FALSE&SWERowId0=${id}`;
+        SWECmd = encodeURI(SWECmd);
+        return SiebelApp.S_App.GotoView(viewName, '', SWECmd, '');
+      }
+      return SiebelApp.S_App.GotoView(viewName);
     });
   }
 

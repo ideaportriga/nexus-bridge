@@ -91,8 +91,8 @@ export default class Nexus19 extends N19baseApplet {
     return SiebelApp.S_App.GotoView(targetViewName, '', SWECmd, '');
   }
 
-  gotoViewPromised(targetViewName) {
-    return this.n19popupController.gotoView(targetViewName);
+  gotoViewPromised(targetViewName, appletName, id) {
+    return this.n19popupController.gotoView(targetViewName, appletName, id);
   }
 
   reInitPopup() { // do we need to keep also static ReInitPopup

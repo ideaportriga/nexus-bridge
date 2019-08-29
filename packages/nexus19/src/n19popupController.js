@@ -101,9 +101,10 @@ export default class N19popupController {
         let SWECmd = `GotoView&SWEView=${viewName}&SWEApplet0=${appletName}`;
         SWECmd += `&SWEBU=1&SWEKeepContext=FALSE&SWERowId0=${id}`;
         SWECmd = encodeURI(SWECmd);
-        return SiebelApp.S_App.GotoView(viewName, '', SWECmd, '');
+        SiebelApp.S_App.GotoView(viewName, '', SWECmd, '');
+      } else {
+        SiebelApp.S_App.GotoView(viewName);
       }
-      return SiebelApp.S_App.GotoView(viewName);
     });
   }
 

@@ -82,6 +82,13 @@ export default class Nexus19 extends N19baseApplet {
     // return this.pm.ExecuteMethod('InvokeMethod', 'DrillDown', ps);
   }
 
+  drilldownPromised(controlName) {
+    return new Promise((resolve) => {
+      this.n19popupController.viewLoadedResolve = resolve;
+      this.drilldown(controlName);
+    });
+  }
+
   gotoView(targetViewName, targetAppletName, id) {
     // TODO: check if current record exists this.getCurrentRecord
     const rowId = typeof id === 'undefined' ? this.getCurrentRecord(true).Id : id;

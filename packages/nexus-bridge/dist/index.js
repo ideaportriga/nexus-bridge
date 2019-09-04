@@ -1859,6 +1859,4 @@ class Nexus extends N19baseApplet {
   }
 }
 
-window.SiebelAppFacade.NexusBridge = Nexus;
-
 module.exports = Nexus;

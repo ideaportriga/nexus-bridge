@@ -188,5 +188,3 @@ export default class Nexus extends N19baseApplet {
     return new N19popupApplet(settings)
   }
 }
-
-window.SiebelAppFacade.NexusBridge = Nexus

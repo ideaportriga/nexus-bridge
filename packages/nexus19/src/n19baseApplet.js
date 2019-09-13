@@ -141,6 +141,7 @@ export default class N19baseApplet {
   }
 
   invokeMethod(method) {
+    // TODO: could be dangerous, check GetCanInvokeByName first?
     if (!this.canInvokeMethod(method)) {
       return false;
     }
@@ -326,9 +327,9 @@ export default class N19baseApplet {
     if (!this.isListApplet) {
       throw new Error('Method PositionOnRow is allowed only for list applets');
     }
-    if (!this.pm.ExecuteMethod('CanInvokeMethod', 'PositionOnRow')) {
-      throw new Error('Method PositionOnRow can not be invoked now.');
-    }
+    // if (!this.pm.ExecuteMethod('CanInvokeMethod', 'PositionOnRow')) {
+    //  throw new Error('Method PositionOnRow can not be invoked now.');
+    // }
     if (Number(index) < 0) {
       throw new Error(`incorrect index given for positionOnRow - ${index}`);
     }

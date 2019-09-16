@@ -16,7 +16,7 @@ var m: NgModuleRef<AppModule>;
 const createExample = (id: string, pm: any) => {
   let n19Helper: any;
   if (window["SiebelAppFacade"]) {
-    n19Helper = new SiebelAppFacade.N19Helper({ pm });
+    n19Helper = new SiebelAppFacade.NexusBridge({ pm });
   }
   document.getElementById(id).insertAdjacentHTML("beforeend", "<app-root></app-root>");
   platformBrowserDynamic([{provide: "N19", useValue: n19Helper}]).bootstrapModule(AppModule)

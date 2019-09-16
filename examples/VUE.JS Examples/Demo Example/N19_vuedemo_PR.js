@@ -69,7 +69,7 @@ function addContainer(pm, vueId) {
 }
 
 function mountVueSample(elementId, pm) {
-  var n19 = new SiebelAppFacade.N19Helper({ pm: pm });
+  var n19 = new SiebelAppFacade.NexusBridge({ pm: pm });
   addContainer(pm, elementId);
 
   return new Vue({

@@ -74,7 +74,7 @@ export default class N19popupController {
           assocAppletName,
           assocApplet,
           popupAppletN19: this.popupAppletN19,
-          assocAppletN19: this.assocAppletN19,  
+          assocAppletN19: this.assocAppletN19,
         };
 
         this.resolvePromise(obj);

@@ -7,14 +7,14 @@ export default class Nexus extends N19baseApplet {
   constructor(settings) {
     const { pm } = settings
     if (!pm) {
-      throw new Error('[NB] Nexus initialisation failed: provide the pm.')
+      throw new Error('[NB] Nexus initialisation failed. Please provide the `pm`')
     }
 
     super(settings)
 
     // get the n19popupController singleton instance
     this.n19popupController = N19popupController.instance
-    this.n19popupController.settings = settings
+    this.n19popupController.settings = Object.assign(this.n19popupController.settings || {}, settings)
   }
 
   closePopupApplet() {

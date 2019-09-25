@@ -358,7 +358,8 @@ export default class N19baseApplet {
 
   prevRecord() {
     if (this.isListApplet) {
-      return this.positionOnRow(this.pm.Get('GetSelection') - 1);
+      // return this.positionOnRow(this.pm.Get('GetSelection') - 1);
+      return this._navigate('GotoPrevious');
     }
     return this._navigate('GotoPreviousSet');
   }

@@ -12,12 +12,8 @@ export default class N19baseApplet {
       returnRawCurrencies: this.returnRawCurrencies,
       isMvgAssoc: this.isMvgAssoc,
       isPopup: this.isPopup,
+      skipNB: this.skipNB,
     } = settings);
-
-    this.pm = settings.pm;
-    this.convertDates = settings.convertDates;
-    this.returnRawNumbers = settings.returnRawNumbers;
-    this.returnRawCurrencies = settings.returnRawCurrencies;
 
     this.view = SiebelApp.S_App.GetActiveView();
     this.appletName = this.pm.Get('GetName');

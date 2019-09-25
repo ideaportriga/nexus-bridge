@@ -14,7 +14,7 @@ export default class Nexus19 extends N19baseApplet {
     console.log('Nexus Bridge main class started....', this.appletName); // eslint-disable-line no-console
     // get the n19popupController singleton instance
     this.n19popupController = N19popupController.instance;
-    this.n19popupController.settings = settings; // assign creation settings
+    this.n19popupController.settings = Object.assign(this.n19popupController.settings || {}, settings); // assign creation settings
   }
 
   closePopupApplet() {

@@ -40,41 +40,39 @@ export default class N19popupController {
       return ret;
     };
 
-    // TODO: REFACTORE IT
     SiebelApp.S_App.GetPopupPM().AddMethod('OnLoadPopupContent', () => {
       if (typeof this.resolvePromise === 'function') {
-        const { applet, assocApplet } = N19popupController.IsPopupOpen();
+        const { applet, assocApplet, appletName, assocAppletName } = N19popupController.IsPopupOpen();
         if (!applet) {
           this.resolvePromise = null; // how do we do error handling
           throw new Error('Open Popup Applet is not found in OnLoadPopupContent resolving Promise');
         }
+        if (!this.settings.skipNB && !SiebelAppFacade.NB) {
+          this.resolvePromise = null;
+          throw new Error('SiebelAppFacade.NB is empty, have you deployed NB PR-files?');
+        }
 
-        const arr = Object.values(SiebelAppFacade.NB);
-        for (let i = 0; i < arr.length; i += 1) {
-          if (arr[i].isPopup) { // this is popup
-            if (assocApplet && arr[i].isMvgAssoc) {
-              this.assocAppletN19 = arr[i];
-            } else {
-              this.popupAppletN19 = arr[i];
+        if (!this.settings.skipNB) {
+          const arr = Object.values(SiebelAppFacade.NB);
+          for (let i = 0; i < arr.length; i += 1) {
+            if (arr[i].isPopup) { // this is popup
+              if (assocApplet && arr[i].isMvgAssoc) {
+                this.assocAppletN19 = arr[i];
+              } else {
+                this.popupAppletN19 = arr[i];
+              }
             }
           }
         }
 
-        // TODO: check if found in SiebelAppFacade.NB!!
-
         const obj = {
-          appletName: this.popupAppletN19.appletName,
+          appletName,
+          applet,
+          assocAppletName,
+          assocApplet,
           popupAppletN19: this.popupAppletN19,
+          assocAppletN19: this.assocAppletN19,
         };
-
-        if (assocApplet) { // shuttle
-          obj.assocAppletN19 = this.assocAppletN19;
-
-          obj.availableRecordSet = this.assocAppletN19.getControlsRecordSet();
-          obj.selectedRecordSet = this.popupAppletN19.getControlsRecordSet();
-        } else { // assoc only OR pick
-          obj.availableRecordSet = this.popupAppletN19.getControlsRecordSet();
-        }
 
         this.resolvePromise(obj);
         this.resolvePromise = null;
@@ -154,12 +152,22 @@ export default class N19popupController {
       return { isOpen: false };
     }
     if (1 === currPopups.length) {
-      return { isOpen: true, applet: currPopups[0] };
+      return {
+        isOpen: true,
+        applet: currPopups[0],
+        appletName: currPopups[0].GetName(),
+      };
     }
     if (2 === currPopups.length) {
       // is this always a shuttle when we have more one applet
       // OpenUI assumes that 0 is mvg, so do I
-      return { isOpen: true, applet: currPopups[0], assocApplet: currPopups[1] };
+      return {
+        isOpen: true,
+        applet: currPopups[0],
+        appletName: currPopups[0].GetName(),
+        assocApplet: currPopups[1],
+        assocAppletName: currPopups[1].GetName(),
+      };
     }
     throw new Error('should never have been here...');
   }

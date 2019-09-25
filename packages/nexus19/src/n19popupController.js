@@ -40,7 +40,6 @@ export default class N19popupController {
       return ret;
     };
 
-
     SiebelApp.S_App.GetPopupPM().AddMethod('OnLoadPopupContent', () => {
       if (typeof this.resolvePromise === 'function') {
         const { applet, assocApplet, appletName, assocAppletName } = N19popupController.IsPopupOpen();

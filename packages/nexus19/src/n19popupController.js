@@ -40,44 +40,44 @@ export default class N19popupController {
       return ret;
     };
 
-    SiebelApp.S_App.GetPopupPM().AddMethod('OnLoadPopupContent', () => {
-      if (typeof this.resolvePromise === 'function') {
-        const { applet, assocApplet, appletName, assocAppletName } = N19popupController.IsPopupOpen();
-        if (!applet) {
-          this.resolvePromise = null; // how do we do error handling
-          throw new Error('Open Popup Applet is not found in OnLoadPopupContent resolving Promise');
-        }
-        if (!this.settings.skipNB && !SiebelAppFacade.NB) {
-          this.resolvePromise = null;
-          throw new Error('SiebelAppFacade.NB is empty, have you deployed NB PR-files?');
-        }
 
-        if (!this.settings.skipNB) {
-          const arr = Object.values(SiebelAppFacade.NB);
-          for (let i = 0; i < arr.length; i += 1) {
-            if (arr[i].isPopup) { // this is popup
-              if (assocApplet && arr[i].isMvgAssoc) {
-                this.assocAppletN19 = arr[i];
-              } else {
-                this.popupAppletN19 = arr[i];
+    SiebelApp.S_App.GetPopupPM().AddMethod('OnLoadPopupContent', () => {
+        if (typeof this.resolvePromise === 'function') {
+          const { applet, assocApplet, appletName, assocAppletName } = N19popupController.IsPopupOpen();
+          if (!applet) {
+            this.resolvePromise = null; // how do we do error handling
+            throw new Error('Open Popup Applet is not found in OnLoadPopupContent resolving Promise');
+          }
+
+          if (!SiebelAppFacade.NB) {
+            console.warn('The `window.SiebelAppFacade.NB` is empty. Please check the PR files deployed');
+          }
+          else {
+            const arr = Object.values(SiebelAppFacade.NB);
+            for (let i = 0; i < arr.length; i += 1) {
+              if (arr[i].isPopup) { // this is popup
+                if (assocApplet && arr[i].isMvgAssoc) {
+                  this.assocAppletN19 = arr[i];
+                } else {
+                  this.popupAppletN19 = arr[i];
+                }
               }
             }
           }
+
+          const obj = {
+            appletName,
+            applet,
+            assocAppletName,
+            assocApplet,
+            popupAppletN19: this.popupAppletN19,
+            assocAppletN19: this.assocAppletN19,  
+          };
+
+          this.resolvePromise(obj);
+          this.resolvePromise = null;
         }
-
-        const obj = {
-          appletName,
-          applet,
-          assocAppletName,
-          assocApplet,
-          popupAppletN19: this.popupAppletN19,
-          assocAppletN19: this.assocAppletN19,
-        };
-
-        this.resolvePromise(obj);
-        this.resolvePromise = null;
-      }
-    }, { sequence: false });
+      }, { sequence: false });
 
     this.viewLoadedResolve = null;
     this.N19viewLoaded = SiebelApp.contentUpdater.viewLoaded;

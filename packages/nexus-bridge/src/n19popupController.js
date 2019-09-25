@@ -55,8 +55,9 @@ export default class N19popupController {
           }
 
           if (!window.SiebelAppFacade.NB) {
-            console.warn('[NB] The `window.SiebelAppFacade.NB` is empty. Please check the PR files deployed')
-            this.resolvePromise = null
+            console.warn(
+              '[NB] The `window.SiebelAppFacade.NB` is empty. Please check the PR files deployed'
+            )
           }
           else {
             const arr = Object.values(window.SiebelAppFacade.NB)
@@ -177,15 +178,19 @@ export default class N19popupController {
       return {
         isOpen: true,
         applet: currPopups[0],
-        appletName: currPopups[0].GetName(),
-        assocApplet: currPopups[1],
-        assocAppletName: currPopups[1].GetName()
+        appletName: currPopups[0].GetName()
       }
     }
     if (2 === currPopups.length) {
       // is this always a shuttle when we have more one applet
       // OpenUI assumes that 0 is mvg, so do I
-      return { isOpen: true, applet: currPopups[0], assocApplet: currPopups[1] }
+      return {
+        isOpen: true,
+        applet: currPopups[0],
+        appletName: currPopups[0].GetName(),
+        assocApplet: currPopups[1],
+        assocAppletName: currPopups[1].GetName()
+      }
     }
     throw new Error('[NB] Should never have been here')
   }

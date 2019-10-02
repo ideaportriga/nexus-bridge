@@ -1,7 +1,5 @@
 # Nexus Bridge
 
-> Bridge between `Nexus` apps and `Open UI` apis
-
 ## Development
 
 ```bash

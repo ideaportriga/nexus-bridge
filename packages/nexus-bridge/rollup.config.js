@@ -1,12 +1,17 @@
 import replace from 'rollup-plugin-replace'
 import resolve from 'rollup-plugin-node-resolve'
+import pkg from './package.json'
 
 export default {
   input: 'src/index.js',
-  output: {
-    file: 'dist/index.js',
-    format: 'cjs'
-  },
+  output: [
+    { file: pkg.main, format: 'iife', name: 'NexusBridge' },
+    { file: pkg.module, format: 'esm' }
+  ],
+  external: [
+    ...Object.keys(pkg.dependencies || {}),
+    ...Object.keys(pkg.peerDependencies || {})
+  ],
   plugins: [
     resolve({
       customResolveOptions: {

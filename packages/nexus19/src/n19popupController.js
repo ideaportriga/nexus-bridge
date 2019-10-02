@@ -47,10 +47,6 @@ export default class N19popupController {
           this.resolvePromise = null; // how do we do error handling
           throw new Error('Open Popup Applet is not found in OnLoadPopupContent resolving Promise');
         }
-        if (!this.settings.skipNB && !SiebelAppFacade.NB) {
-          this.resolvePromise = null;
-          throw new Error('SiebelAppFacade.NB is empty, have you deployed NB PR-files?');
-        }
 
         if (!SiebelAppFacade.NB) {
           console.warn('The `window.SiebelAppFacade.NB` is empty. Please check the PR files deployed');

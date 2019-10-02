@@ -1,5 +1,7 @@
 # Nexus Bridge
 
+> Low-level interface between `Nexus` APIs and `Open UI` APIs
+
 ## Development
 
 ```bash

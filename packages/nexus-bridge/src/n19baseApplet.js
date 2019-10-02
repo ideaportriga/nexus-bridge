@@ -13,11 +13,6 @@ export default class N19baseApplet {
       isPopup: this.isPopup
     } = settings)
 
-    this.pm = settings.pm
-    this.convertDates = settings.convertDates
-    this.returnRawNumbers = settings.returnRawNumbers
-    this.returnRawCurrencies = settings.returnRawCurrencies
-
     this.view = window.SiebelApp.S_App.GetActiveView()
     this.appletName = this.pm.Get('GetName')
     this.isListApplet = typeof this.pm.Get('GetListOfColumns') !== 'undefined'
@@ -167,6 +162,7 @@ export default class N19baseApplet {
   }
 
   canInvokeMethod(method) {
+    // TODO: could be dangerous, check GetCanInvokeByName first?
     return this.pm.ExecuteMethod('CanInvokeMethod', method)
   }
 
@@ -386,9 +382,9 @@ export default class N19baseApplet {
         '[NB] Method PositionOnRow is allowed only for list applets'
       )
     }
-    if (!this.pm.ExecuteMethod('CanInvokeMethod', 'PositionOnRow')) {
-      throw new Error('[NB] Method PositionOnRow can not be invoked now.')
-    }
+    // if (!this.pm.ExecuteMethod('CanInvokeMethod', 'PositionOnRow')) {
+    //   throw new Error('[NB] Method PositionOnRow can not be invoked now.')
+    // }
     if (Number(index) < 0) {
       throw new Error(`[NB] Incorrect index given for positionOnRow - ${index}`)
     }
@@ -429,7 +425,8 @@ export default class N19baseApplet {
 
   prevRecord() {
     if (this.isListApplet) {
-      return this.positionOnRow(this.pm.Get('GetSelection') - 1)
+      // return this.positionOnRow(this.pm.Get('GetSelection') - 1)
+      return this._navigate('GotoPrevious')
     }
     return this._navigate('GotoPreviousSet')
   }
@@ -1208,11 +1205,14 @@ export default class N19baseApplet {
 
   getPaginationInfo() {
     const start = this.pm.ExecuteMethod('GetWSStartRowNum')
+    const end = this.pm.Get('GetWSEndRowNum'); // 0 in query mode
+    const hasMore = this.pm.Get('IsInQueryMode') ? false : !this.pm.Get('IsNumRowsKnown')
+
     return {
       start,
-      end: this.pm.Get('GetWSEndRowNum'),
+      end,
       total: this.getNumRows(),
-      hasMore: !this.pm.Get('IsNumRowsKnown'),
+      hasMore,
       current: this.getSelection() + start
     }
   }

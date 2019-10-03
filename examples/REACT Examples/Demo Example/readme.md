@@ -1,6 +1,6 @@
-# Quick Start Guide: Nexus19 + React example
+# Quick Start Guide: Nexus Bridge + React example
 
-This guide will help to setup Nexus19 with the demo that is built using Nexus Bridge and React framework.
+This guide will help to setup Nexus Bridge with the demo that is built using Nexus Bridge and React framework.
 <br>The demo supports:
 - navigation through records
 - displaying, editing or deleting records (supporting keyboard shortcuts)
@@ -31,7 +31,7 @@ The demo example was tested on Seibel 16.19 and 18.08 ENU.
       * Click `Clear cache` button under `Administration – Application > Responsibilities` view
 1. Re-login to your Siebel Application and check that the `N19 React Account Screen` Screen is available.
 1. Copy the file below to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom` folder:
-    * `n19helper-master/packages/nexus19/PUBLIC/NBAppletPR.js`.
+    * `n19helper-master/packages/nexus-bridge/SIEBEL/PUBLIC/NBAppletPR.js`.
 1. Copy below files and folders to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom\react-app` folder:
     * `n19helper-master/examples/REACT Examples/Demo Example/react-app/build/*`.
 1. Use Siebel Client to reference js files in Siebel Open UI Manifest as follows:

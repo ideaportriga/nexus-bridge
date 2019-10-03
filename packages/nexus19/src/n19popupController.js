@@ -22,8 +22,8 @@ export default class N19popupController {
     this.consts = SiebelJS.Dependency('SiebelApp.Constants');
     this.isPopupHidden = false;
     this.resolvePromise = null;
-    this.popupAppletN19 = null; // it could be removed in the next version
-    this.assocAppletN19 = null; // it could be removed in the next version
+    this.popupAppletN19 = null;
+    this.assocAppletN19 = null;
 
     console.log('popup controller started...'); // eslint-disable-line no-console
 
@@ -50,8 +50,7 @@ export default class N19popupController {
 
         if (!SiebelAppFacade.NB) {
           console.warn('The `window.SiebelAppFacade.NB` is empty. Please check the PR files deployed');
-        }
-        else {
+        } else {
           const arr = Object.values(SiebelAppFacade.NB);
           for (let i = 0; i < arr.length; i += 1) {
             if (arr[i].isPopup) { // this is popup
@@ -132,7 +131,12 @@ export default class N19popupController {
 
   closePopupApplet() {
     if (!this.popupAppletN19 || !this.popupAppletN19.pm) {
-      throw new Error('The popup applet was not opened by NB!');
+      console.warn('The popup applet was not opened by NB or it was opened not using popup PR-files!');
+      const { applet } = N19popupController.IsPopupOpen();
+      if (applet) {
+        return applet.InvokeMethod('CloseApplet');
+      }
+      return false;
     }
     if (!this.popupAppletN19.pm.ExecuteMethod('CanInvokeMethod', 'CloseApplet')) {
       throw new Error('The method CloseApplet is not allowed!');

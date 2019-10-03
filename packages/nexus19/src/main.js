@@ -118,7 +118,7 @@ export default class Nexus19 extends N19baseApplet {
 
   pickRecordById(controlName, rowId) {
     return this.showPickApplet(controlName, true)
-      .then(obj => new Promise(resolve => setTimeout(() => resolve(obj), 0)))
+      .then(obj => new Promise(resolve => setTimeout(() => resolve(obj), 0))) // TODO: not needed with new Nexus?
       .then((obj) => {
         const found = obj.popupAppletN19.queryByIdSync(rowId);
         if (found !== 1) {
@@ -130,7 +130,7 @@ export default class Nexus19 extends N19baseApplet {
 
   assocRecordsById(controlName, arr, closeApplet) {
     return this.showMvgApplet(controlName, true)
-      .then(obj => new Promise(resolve => setTimeout(() => resolve(obj), 0)))
+      .then(obj => new Promise(resolve => setTimeout(() => resolve(obj), 0))) // TODO: not needed with new Nexus?
       .then(obj => new Promise((resolve) => {
         const found = obj.assocAppletN19.queryByIdSync(arr);
         if (found !== arr.length) {

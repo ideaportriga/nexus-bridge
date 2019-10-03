@@ -28,6 +28,8 @@
   "peerDependencies": {},
   "dependencies": {},
   "devDependencies": {
+    "@babel/core": "^7.6.2",
+    "@babel/preset-env": "^7.6.2",
     "@typescript-eslint/eslint-plugin": "^2.3.2",
     "@typescript-eslint/parser": "^2.3.2",
     "eslint": "^6.5.1",
@@ -35,8 +37,8 @@
     "eslint-plugin-prettier": "^3.1.1",
     "prettier": "^1.18.2",
     "rollup": "^1.22.0",
+    "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-replace": "^2.2.0",
     "typescript": "^3.6.3"
   }
 }

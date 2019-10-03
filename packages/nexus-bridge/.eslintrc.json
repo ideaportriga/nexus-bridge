@@ -1,38 +1,30 @@
 {
-  "parser": "@typescript-eslint/parser",
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+    "airbnb"
+  ],
   "parserOptions": {
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
   "env": {
-    "browser": true,
-    "commonjs": true,
     "es6": true,
-    "jest": true,
-    "node": true
+    "browser": true,
+    "commonjs": true
   },
-  "plugins": ["@typescript-eslint", "prettier"],
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
-    "prettier/@typescript-eslint",
-    "plugin:prettier/recommended"
-  ],
   "rules": {
-    "@typescript-eslint/explicit-function-return-type": 0,
-    "@typescript-eslint/no-explicit-any": 0,
-    "@typescript-eslint/no-unused-vars": 0,
-    "@typescript-eslint/no-use-before-define": 0,
-    "no-console": 0,
-    "prettier/prettier": [
-      "error",
-      {
-        "singleQuote": true,
-        "semi": false,
-        "tabWidth": 2,
-        "trailingComma": "none"
-      }
-    ]
+    "linebreak-style": 0,
+    "max-len": [1, 120],
+    "no-console": 1,
+    "no-multiple-empty-lines": [2, { "max": 1, "maxEOF": 1 }],
+    "no-underscore-dangle": 0,
+    "object-curly-newline": 0,
+    "yoda": 0
+  },
+  "globals": {
+    "SiebelApp": false,
+    "SiebelAppFacade": false,
+    "SiebelJS": false
   }
 }

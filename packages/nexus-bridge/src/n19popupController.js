@@ -46,7 +46,12 @@ export default class N19popupController {
       'OnLoadPopupContent',
       () => {
         if (typeof this.resolvePromise === 'function') {
-          const { applet, assocApplet, appletName, assocAppletName } = N19popupController.IsPopupOpen()
+          const {
+            applet,
+            assocApplet,
+            appletName,
+            assocAppletName
+          } = N19popupController.IsPopupOpen()
           if (!applet) {
             this.resolvePromise = null // how do we do error handling
             throw new Error(
@@ -58,8 +63,7 @@ export default class N19popupController {
             console.warn(
               '[NB] The `window.SiebelAppFacade.NB` is empty. Please check the PR files deployed'
             )
-          }
-          else {
+          } else {
             const arr = Object.values(window.SiebelAppFacade.NB)
             for (let i = 0; i < arr.length; i += 1) {
               if (arr[i].isPopup) {
@@ -79,7 +83,7 @@ export default class N19popupController {
             assocAppletName,
             assocApplet,
             popupAppletN19: this.popupAppletN19,
-            assocAppletN19: this.assocAppletN19  
+            assocAppletN19: this.assocAppletN19
           }
 
           this.resolvePromise(obj)

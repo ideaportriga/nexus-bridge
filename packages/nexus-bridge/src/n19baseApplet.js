@@ -1205,8 +1205,10 @@ export default class N19baseApplet {
 
   getPaginationInfo() {
     const start = this.pm.ExecuteMethod('GetWSStartRowNum')
-    const end = this.pm.Get('GetWSEndRowNum'); // 0 in query mode
-    const hasMore = this.pm.Get('IsInQueryMode') ? false : !this.pm.Get('IsNumRowsKnown')
+    const end = this.pm.Get('GetWSEndRowNum') // 0 in query mode
+    const hasMore = this.pm.Get('IsInQueryMode')
+      ? false
+      : !this.pm.Get('IsNumRowsKnown')
 
     return {
       start,

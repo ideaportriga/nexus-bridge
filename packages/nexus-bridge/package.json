@@ -12,7 +12,9 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "rollup -c rollup.config.js",
+    "build": "yarn build:umd && yarn build:esm",
+    "build:umd": "rollup -c rollup.config.js",
+    "build:esm": "tsc -p tsconfig.build.json",
     "prebuild": "yarn clean",
     "prepublishOnly": "yarn build",
     "lint": "eslint --fix **/*.js"

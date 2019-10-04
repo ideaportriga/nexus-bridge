@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "lib": ["esnext"],
+    "outDir": "./dist/esm",
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "module": "esnext",
+    "target": "esnext",
+    "sourceMap": false,
+    "strict": true
+  },
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".cache",
+    "__tests__",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
+}

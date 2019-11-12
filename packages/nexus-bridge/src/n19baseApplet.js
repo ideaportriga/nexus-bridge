@@ -32,7 +32,7 @@ export default class N19baseApplet {
       const applet = document.getElementById(appletId);
       if (applet) {
         const appletInputs = applet.querySelectorAll('input');
-        appletInputs.forEach((el) => {
+        Array.prototype.forEach.call(appletInputs, (el) => {
           if (el.attributes['aria-required']) {
             this.required.push(el.attributes.name.nodeValue);
           }

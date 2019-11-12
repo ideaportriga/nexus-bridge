@@ -1,6 +1,6 @@
 {
   "name": "@ipr/nexus-bridge",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "Idea Port Riga",
   "license": "MIT",
   "main": "dist/NexusBridge.js",

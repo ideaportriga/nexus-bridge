@@ -5,11 +5,11 @@ Nexus is a JS library that wraps a Siebel Presentation Model and allows building
 The [Wiki](/../../wiki) provides the Nexus Bridge library documentation.
 
 ## Setup
-Make a clean Nexus Bridge Setup by following [this guide](/../../wiki/Setup Nexus Bridge).
+Make a clean Nexus Bridge Setup by following [this guide](/wiki/Setup Nexus Bridge).
 
 ## Quick Start
 The below guides will help you to setup Nexus Bridge library with a lightweight UI demo (built using a modern web framework):
-- [Nexus Bridge Setup + Vue.js example quick start guide](/../../examples/VUE.JS%20Examples/Demo%20Example/readme.md)
+- [Nexus Bridge Setup + Vue.js example quick start guide](/examples/VUE.JS%20Examples/Demo%20Example/readme.md)
 - [Nexus Bridge Setup + React example quick start guide](https://cbox.ideaportriga.lv/oleg.koleskin/n19helper/blob/master/examples/REACT%20Examples/Demo%20Example/readme.md)
 - [Nexus Bridge Setup + Angular example quick start guide](https://cbox.ideaportriga.lv/oleg.koleskin/n19helper/blob/master/examples/ANGULAR%20Examples/SR%20Form%20Applet/README.md)
 

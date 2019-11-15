@@ -10,8 +10,8 @@ Make a clean Nexus Bridge Setup by following [this guide](/wiki/Setup Nexus Brid
 ## Quick Start
 The below guides will help you to setup Nexus Bridge library with a lightweight UI demo (built using a modern web framework):
 - [Nexus Bridge Setup + Vue.js example quick start guide](/examples/VUE.JS%20Examples/Demo%20Example/readme.md)
-- [Nexus Bridge Setup + React example quick start guide](https://cbox.ideaportriga.lv/oleg.koleskin/n19helper/blob/master/examples/REACT%20Examples/Demo%20Example/readme.md)
-- [Nexus Bridge Setup + Angular example quick start guide](https://cbox.ideaportriga.lv/oleg.koleskin/n19helper/blob/master/examples/ANGULAR%20Examples/SR%20Form%20Applet/README.md)
+- [Nexus Bridge Setup + React example quick start guide](/examples/REACT%20Examples/Demo%20Example/readme.md)
+- [Nexus Bridge Setup + Angular example quick start guide](/examples/ANGULAR%20Examples/SR%20Form%20Applet/README.md)
 
 ** Please take into account that above examples were tested on Siebel IP16+ versions. Please get in touch with Nexus Bridge support team for assistance, if you are planning to run the examples on the earlier Siebel version (the sif-files should be modified) **
 

@@ -8,7 +8,7 @@ Open an issue, provide the steps to reproduce, describe expected and observed be
 
 ## Request a new feature
 
-Open an issue and describe the desired feature. We will consider it.
+Open an issue and describe the desired feature. 
 
 ## Pull Request Process
 

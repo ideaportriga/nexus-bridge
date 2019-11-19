@@ -4,18 +4,18 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 ## Report a bug
 
-Open an issue. Please use the `Bug` template
+Open an issue, provide the steps to reproduce, describe expected and observed behavior. Specify the used browser and Siebel version. If possible, attach the screenshot. 
 
 ## Request a new feature
 
 Open an issue and describe the desired feature. We will consider it.
 
-## Merge Request Process
+## Pull Request Process
 
 When contributing to this repository, please first discuss the change you wish to make via issue,
 email, or any other method with the owners of this repository before making a change. 
 
-Before submitting the Merge Request:
+Before submitting the Pull Request:
 1. Ensure any install or build dependencies are removed before the end of the layer when doing a 
    build.
 2. Update the README.md and Wiki with details of changes.

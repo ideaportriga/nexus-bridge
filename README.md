@@ -1,13 +1,17 @@
 # Nexus Bridge
-[`Nexus Bridge`](https://pro.ideaportriga.com/offers/siebel-nexus19) is an open-source JavaScript library that wraps the Siebel Open UI Presentation Model layer and exposes the necessary methods that allow building UI for Siebel using modern Javascript frameworks like React, Angular or Vue.js.
+
+[Nexus Bridge](https://pro.ideaportriga.com/offers/siebel-nexus19) is an open-source JavaScript library that wraps the Siebel Open UI Presentation Model layer and exposes the necessary methods that allow building UI for Siebel using modern Javascript frameworks like React, Angular or Vue.js.
 
 ## Documentation
+
 The [Wiki](/../../wiki) provides the Nexus Bridge library documentation.
 
 ## Setup
+
 Make a clean Nexus Bridge Setup by following [this guide](/../../wiki/Setup-Nexus-Bridge).
 
 ## Quick Start
+
 The below guides will help you to setup Nexus Bridge library with a lightweight UI demo (built using a modern web framework):
 - [Nexus Bridge Setup + Vue.js example quick start guide](/examples/VUE.JS%20Examples/Demo%20Example/readme.md)
 - [Nexus Bridge Setup + React example quick start guide](/examples/REACT%20Examples/Demo%20Example/readme.md)
@@ -16,4 +20,5 @@ The below guides will help you to setup Nexus Bridge library with a lightweight 
 ** Please take into account that above examples were tested on Siebel IP16+ versions. **
 
 ## How to contribute
+
 Please read [CONTRIBUTING.md](CONTRIBUTING.md).

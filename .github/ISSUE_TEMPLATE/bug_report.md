@@ -17,7 +17,7 @@ labels: 'bug'
 
 **Possible fixes**
 
-**Other relevant information:**
+**Additional Context:**
 
 Siebel version: *(16+)*
 

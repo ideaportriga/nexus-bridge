@@ -1,6 +1,6 @@
 # Nexus Bridge
 
-[Nexus Bridge](https://pro.ideaportriga.com/offers/siebel-nexus19) is an open-source JavaScript library that wraps the Siebel Open UI Presentation Model layer and exposes the necessary methods that allow building UI for Siebel using modern Javascript frameworks like React, Angular or Vue.js.
+[Nexus Bridge Home Page](https://pro.ideaportriga.com/offers/siebel-nexus19).
 
 ## Documentation
 

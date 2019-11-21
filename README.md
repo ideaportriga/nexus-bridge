@@ -1,7 +1,5 @@
 # [Nexus Bridge](https://pro.ideaportriga.com/offers/siebel-nexus19)
 
-[Nexus Bridge Home Page](https://pro.ideaportriga.com/offers/siebel-nexus19).
-
 ## Documentation
 
 The [Wiki](/../../wiki) provides the Nexus Bridge library documentation.

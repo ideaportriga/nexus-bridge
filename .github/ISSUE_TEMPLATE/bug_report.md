@@ -1,3 +1,10 @@
+---
+name: Bug Report
+about: Create an issue/bug report to improve Nexus Bridge!
+title: ''
+labels: 'bug'
+---
+
 <!-- Before creating an issue please make sure you are using the latest version. -->
 
 # Bug report
@@ -37,5 +44,3 @@ Happens in the web client (Y/N):
 Used browser: *(IE11/Edge/latest Chome and Firefox)*
 
 Nexus version (could be found inside compiled file): 
-
-/label ~bug

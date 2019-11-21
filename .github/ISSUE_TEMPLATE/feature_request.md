@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: I have a suggestion for the Nexus Bridge!
+about: Suggest a feature request for the Nexus Bridge!
 title: ''
 labels: 'enhancement'
 ---

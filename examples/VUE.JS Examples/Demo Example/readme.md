@@ -57,15 +57,13 @@ This is not an example of implementation that can be used on production. It is i
      * under `Administration - Application > Manifest Files` add a new record: 
      	* **Name:** `siebel/custom/N19_vuedemo_PR.js`
 
-	- under `Administration - Application > Manifest Administration` 
+     * under `Administration - Application > Manifest Administration` add a new record under **UI Objects**: 
+    	* **Name:** `N19 SIS Account Entry Applet`
+	* **Usage Type:** `Physical Renderer`
+    	* **Type:** `Applet`
 
-    >- add a new record under **UI Objects** with: 
-    >    <br>**Name:** `N19 SIS Account Entry Applet`
-    >    <br>**Usage Type:** `Physical Renderer`
-    >    <br>**Type:** `Applet`
-
-    >- add a new record under **Object Expression** with:
-    >    <br>**Level:** `1`
+     * and add a new record under **Object Expression** with:
+    	* **Level:** `1`
 
     >- add a new record under **Files** with:
     >    <br>**Name:** `siebel/custom/N19_vuedemo_PR.js`

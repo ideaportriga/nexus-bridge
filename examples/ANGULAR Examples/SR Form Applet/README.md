@@ -1,7 +1,8 @@
 # Quick Start Guide: Nexus Bridge + Angular example
 
-This guide will help to setup the demo that is built using Nexus Bridge and Angular framework.
-<br>The applet supports:
+This guide will help to setup the demo example that is built using the Nexus Bridge and Angular framework.
+
+The applet supports:
 - navigation through records
 - displaying, editing, saving and deleting data
 - picklists that are read from Siebel configuration
@@ -11,17 +12,15 @@ This guide will help to setup the demo that is built using Nexus Bridge and Angu
 Requirements: this example requires access to icons and fonts stored on https://fonts.googleapis.com/
 
 This is not an example of implementation that can be used on production. It is intentionally kept straightforward.
-The demo example was tested with 16.0 ENU.
 
 ![result](images/form-demo.png)
-
 
 1. Make a clean [Nexus Bridge Setup](/../wikis/Setup Nexus Bridge) if you haven't done it before.
 1. Import SIF files in `siebel/sif/*` into the Siebel Tools.
 1. Add the `Nexus Angular Demo Screen` to your application:
-      * Findout your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` in Chrome Developer Tools console.
-      * Use Siebel Tools and add `Nexus Angular Demo Screen` under `Application > Screen Menu Item` for your Siebel Application Name
-      * Also add `Nexus Angular Demo Screen`(with `Nexus Angular Demo` value for `Text - String Override` property) under `Application > Page Tab` for your Siebel Application Name
+      * Find out your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` in Chrome Developer Tools console.
+      * Use the Siebel Tools and add `Nexus Angular Demo Screen` under `Application > Screen Menu Item` for your Siebel Application Name.
+      * Also add `Nexus Angular Demo Screen`(with `Nexus Angular Demo` value for `Text - String Override` property) under `Application > Page Tab` for your Siebel Application Name.
 1. Compile(Siebel IP16 and earlier) or Deliver(Siebel IP17+) following objects: 
     * `Nexus Angular Demo` project
     * Application object, that you've updated above.

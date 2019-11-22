@@ -3,11 +3,11 @@
 This guide will help to setup the demo example that is built using the Nexus Bridge and Angular framework.
 
 The applet supports:
-- navigation through records
-- displaying, editing, saving and deleting data
-- picklists that are read from Siebel configuration
-- field properties that are read from Siebel configuration (required, readonly)
-- query operations
+* navigation through records
+* displaying, editing, saving and deleting data
+* picklists that are read from Siebel configuration
+* field properties that are read from Siebel configuration (required, readonly)
+* query operations
 
 Requirements: this example requires access to icons and fonts stored on https://fonts.googleapis.com/.
 
@@ -17,11 +17,14 @@ This is not an example of implementation that can be used on production. It is i
 
 1. Make a clean [Nexus Bridge Setup](/../../wiki/Setup-Nexus-Bridge) if you haven't done it before.
 
-1. Import SIF files in `siebel/sif/*` into the Siebel Tools.
+1. Import SIF-files in `siebel/sif/*` into the Siebel Tools.
 
 1. Add the `Nexus Angular Demo Screen` to your application:
+
       * Find out your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` in Chrome Developer Tools console.
+      
       * Use the Siebel Tools and add `Nexus Angular Demo Screen` under `Application > Screen Menu Item` for your Siebel Application Name.
+      
       * Add `Nexus Angular Demo Screen`(with `Nexus Angular Demo` value for `Text - String Override` property) under `Application > Page Tab` for your Siebel Application Name.
 
 1. Compile (Siebel IP16 and earlier) or Deliver (Siebel IP17+) the following objects: 

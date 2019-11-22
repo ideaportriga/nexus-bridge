@@ -36,7 +36,7 @@ This is not an example of implementation that can be used on production. It is i
     * `dist/fonts/*.*`.
 1. Use Siebel Client to reference JS-files in Siebel Open UI Manifest as follows:
 	  * under `Administration - Application > Manifest Files` add a new record: 
-      * **Name:** `siebel/custom/SRFormPR.js`.
+        * **Name:** `siebel/custom/SRFormPR.js`.
 	  * under `Administration - Application > Manifest Administration` add a new record under **UI Objects**: 
    >    <br>**Name:** `Nexus Angular Demo Form Applet`
    >    <br>**Usage Type:** `Physical Renderer`

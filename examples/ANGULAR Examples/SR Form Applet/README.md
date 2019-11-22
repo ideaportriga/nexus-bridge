@@ -3,6 +3,7 @@
 This guide will help to setup the demo example that is built using the Nexus Bridge and Angular framework.
 
 The demo supports:
+
 * navigation through records
 * displaying, editing, saving and deleting data
 * picklists that are read from Siebel configuration

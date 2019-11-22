@@ -13,11 +13,3 @@ Open an issue using the feature request template.
 If you would like to contribute, please start by searching through the [issues](/issues) and [pull requests](/pulls) to find out if somebody else has already implemented or requested the change. If you did not find your change listed, and you think it fits into the goals of the Nexus Bridge, do one of the following:
    * If your contribution is minor, such as a bug fixing, open a pull request.
    * If your contribution is major, such as a new feature adding, start by opening an issue first. That way, other people can weigh in on the discussion before you do any work.
-
-### Coding Rules
-
-1. Try to use only the methods/properties documented in the Siebel Bookshelf.
-2. Use the PM methods and properties whenever possible (e.g., when a property/method is available at the PM and applet level, use PM).
-3. Avoid calling the proxy objects (BC, Applet) directly. 
-4. Always lint the code `npm run lint`.
-5. Comment the code.

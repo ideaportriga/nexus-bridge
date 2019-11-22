@@ -1,12 +1,14 @@
-# Quick Start Guide: Nexus Bridge + React example
+# Quick Start Guide: the Nexus Bridge + React example
 
-This guide will help to setup Nexus Bridge with the demo that is built using Nexus Bridge and React framework.
-<br>The demo supports:
-- navigation through records
-- displaying, editing or deleting records (supporting keyboard shortcuts)
-- query (supporting keyboard shortcuts)
-- picklists that are read from Siebel configuration
-- field properties that are read from Siebel configuration (required, field length)
+This guide will help to setup Nexus Bridge the demo example that is built using the Nexus Bridge and React framework.
+
+The demo supports:
+
+* navigation through records
+* displaying, editing or deleting records (supporting keyboard shortcuts)
+* query (supporting keyboard shortcuts)
+* picklists that are read from Siebel configuration
+* field properties that are read from Siebel configuration (required, field length)
 
 Requirements: this example requires access to icons and fonts stored on https://fonts.googleapis.com/
 

@@ -54,38 +54,33 @@ This is not an example of implementation that can be used on production. It is i
 
     * `n19helper-master/examples/REACT Examples/Demo Example/react-app/build/*`.
     
-1. Use Siebel Client to reference js files in Siebel Open UI Manifest as follows:
+1. Use Siebel Client to reference JS-files in Siebel Open UI Manifest as follows:
+	* under `Administration - Application > Manifest Files`  add two new records: 
+		* **Name:** `siebel/custom/react-app/N19_REACT_PR.js`
+		* **Name:** `siebel/custom/NBAppletPR.js`
 
-	- under `Administration - Application > Manifest Files` 
-	>- add a new record with: 
-	><br>**Name:** `siebel/custom/react-app/N19_REACT_PR.js`
-	><br>**Name:** `siebel/custom/NBAppletPR.js`
+	* under `Administration - Application > Manifest Administration` add a new record under **UI Objects**: 
+   		* **Name:** `N19 React SIS Account Entry Applet`
+   		* **Usage Type:** `Physical Renderer`
+   		* **Type:** `Applet`
 
-	- under `Administration - Application > Manifest Administration` 
+   	* and add a new record under **Object Expression** with:
+   		* **Level:** `1`
 
-   >- add a new record under **UI Objects** with: 
-   >    <br>**Name:** `N19 React SIS Account Entry Applet`
-   >    <br>**Usage Type:** `Physical Renderer`
-   >    <br>**Type:** `Applet`
+  	* and add a new record under **Files** with:
+   
+   		* **Name:** `siebel/custom/react-app/N19_REACT_PR.js`
 
-   >- add a new record under **Object Expression** with:
-   >    <br>**Level:** `1`
+	* under `Administration - Application > Manifest Administration` add a new record under **UI Objects**: 
+   		* **Name:** `N19 React Contact List Applet`
+		* **Usage Type:** `Physical Renderer`
+   		* **Type:** `Applet`
 
-   >- add a new record under **Files** with:
-   ><br>**Name:** `siebel/custom/react-app/N19_REACT_PR.js`
+   	* and add a new record under **Object Expression**:
+   		* **Level:** `1`
 
-	- under `Administration - Application > Manifest Administration` 
-
-   >- add a new record under **UI Objects** with: 
-   >    <br>**Name:** `N19 React Contact List Applet`
-   >    <br>**Usage Type:** `Physical Renderer`
-   >    <br>**Type:** `Applet`
-
-   >- add a new record under **Object Expression** with:
-   >    <br>**Level:** `1`
-
-   >- add a new record under **Files** with:
-   ><br>**Name:** `siebel/custom/NBAppletPR.js`
+   	* and add a new record under **Files** with:
+   		* **Name:** `siebel/custom/NBAppletPR.js`
 
 1. Empty browser cache and hard reload *(e.g. using Chrome: press F12, then right-click a browser Refresh button and press ‘Empty Cache and Hard Reload’)*
 

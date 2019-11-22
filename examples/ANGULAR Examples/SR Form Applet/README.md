@@ -6,9 +6,9 @@ The demo supports:
 
 * navigation through records
 * displaying, editing, saving and deleting data
+* query operations
 * picklists that are read from Siebel configuration
 * field properties that are read from Siebel configuration (required, readonly)
-* query operations
 
 Requirements: this example requires access to icons and fonts stored on https://fonts.googleapis.com/.
 

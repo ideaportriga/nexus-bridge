@@ -10,10 +10,9 @@ The demo supports:
 * picklists that are read from Siebel configuration
 * field properties that are read from Siebel configuration (required, field length)
 
-Requirements: this example requires access to icons and fonts stored on https://fonts.googleapis.com/
+Requirements: this example requires access to icons and fonts stored on https://fonts.googleapis.com/.
 
 This is not an example of implementation that can be used on production. It is intentionally kept straightforward.
-The demo example was tested on Seibel 16.19 and 18.08 ENU.
 
  ![result](demo_react.png)
 

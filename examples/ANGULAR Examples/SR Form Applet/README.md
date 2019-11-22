@@ -42,14 +42,15 @@ This is not an example of implementation that can be used on production. It is i
       
       * Under `Administration - User > Users` – add the same responsibility to your user.
       
-      * Click the `Clear cache` button under `Administration – Application > Responsibilities` view.
+      * Click the `Clear cache` button on `Administration – Application > Responsibilities`.
 
 1. Re-login to your Siebel Application and check that the `Nexus Angular Demo` screen is available.
 
-1. Copy below files to the `[CLIENT_HOME or SERVER_HOME]/public/SCRIPTS/siebel/custom/` folder:
+1. Copy the files below to the `[CLIENT_HOME or SERVER_HOME]/public/SCRIPTS/siebel/custom/` folder:
+
     * `dist/*.*` excluding `fonts` folder.
 
-1. Copy below files to the `[CLIENT_HOME or SERVER_HOME]/public/fonts/` folder:
+1. Copy the files below to the `[CLIENT_HOME or SERVER_HOME]/public/fonts/` folder:
     * `dist/fonts/*.*`.
 
 1. Use the Siebel Web Client to reference JS-files in Siebel Open UI Manifest as follows:

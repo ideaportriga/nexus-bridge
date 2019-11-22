@@ -27,14 +27,20 @@ This is not an example of implementation that can be used on production. It is i
       
       * Add `Nexus Angular Demo Screen`(with `Nexus Angular Demo` value for `Text - String Override` property) under `Application > Page Tab` for your Siebel Application Name.
 
-1. Compile (Siebel IP16 and earlier) or Deliver (Siebel IP17+) the following objects: 
+1. Compile (Siebel IP16 and earlier) or deliver (Siebel IP17+) the following objects:
+
     * `Nexus Angular Demo` project.
+    
     * Application object that you've updated above.
 
 1. Add the `Nexus Angular Demo View` to your application:
-      * Use Siebel Web Client to add a new record with Name `Nexus Angular Demo View` under `Administration - Application > Views`.
+
+      * Use the Siebel Web Client to register `Nexus Angular Demo View` under `Administration - Application > Views`.
+      
       * Under `Administration - Application > Views` add your responsibility to this view.
+      
       * Under `Administration - User > Users` – add the same responsibility to your user.
+      
       * Click the `Clear cache` button under `Administration – Application > Responsibilities` view.
 
 1. Re-login to your Siebel Application and check that the `Nexus Angular Demo` screen is available.
@@ -45,16 +51,16 @@ This is not an example of implementation that can be used on production. It is i
 1. Copy below files to the `[CLIENT_HOME or SERVER_HOME]/public/fonts/` folder:
     * `dist/fonts/*.*`.
 
-1. Use Siebel Client to reference JS-files in Siebel Open UI Manifest as follows:
+1. Use the Siebel Web Client to reference JS-files in Siebel Open UI Manifest as follows:
 	  * under `Administration - Application > Manifest Files` add a new record: 
         * **Name:** `siebel/custom/SRFormPR.js`.
 	  * under `Administration - Application > Manifest Administration` add a new record under **UI Objects**: 
         * **Name:** `Nexus Angular Demo Form Applet`
         * **Usage Type:** `Physical Renderer`
         * **Type:** `Applet`
-	  * under `Administration - Application > Manifest Administration` add a new record under **Object Expression**: 
+	  * and add a new record under **Object Expression**: 
         * **Level:** `1`
-	  * under `Administration - Application > Manifest Administration` add a new record under **Files**: 
+	  * and add a new record under **Files**: 
         * **Name:** `siebel/custom/SRFormPR.js`
 
 1. Empty browser cache and hard reload

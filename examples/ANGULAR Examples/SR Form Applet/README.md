@@ -38,16 +38,13 @@ This is not an example of implementation that can be used on production. It is i
 	  * under `Administration - Application > Manifest Files` add a new record: 
         * **Name:** `siebel/custom/SRFormPR.js`.
 	  * under `Administration - Application > Manifest Administration` add a new record under **UI Objects**: 
-   >    <br>**Name:** `Nexus Angular Demo Form Applet`
-   >    <br>**Usage Type:** `Physical Renderer`
-   >    <br>**Type:** `Applet`
-
-   >- add a new record under **Object Expression** with:
-   >    <br>**Level:** `1`
-
-   >- add a new record under **Files** with:
-   ><br>**Name:** `siebel/custom/SRFormPR.js`
-
+        * **Name:** `Nexus Angular Demo Form Applet`
+        * **Usage Type:** `Physical Renderer`
+        * **Type:** `Applet`
+	  * under `Administration - Application > Manifest Administration` add a new record under **Object Expression**: 
+        * **Level:** `1`
+	  * under `Administration - Application > Manifest Administration` add a new record under **Files**: 
+        * **Name:** `siebel/custom/SRFormPR.js`
 1. Empty browser cache and hard reload
    <br>*(e.g. using Chrome: press F12, then right-click a browser Refresh button and press ‘Empty Cache and Hard Reload’)*
 1. Re-login to your Siebel Application.

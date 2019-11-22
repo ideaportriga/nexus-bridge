@@ -1,6 +1,6 @@
 # Quick Start Guide: the Nexus Bridge + React example
 
-This guide will help to setup Nexus Bridge the demo example that is built using the Nexus Bridge and React framework.
+This guide will help to setup the demo example that is built using the Nexus Bridge and React framework.
 
 The demo supports:
 

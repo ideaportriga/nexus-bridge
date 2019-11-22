@@ -57,12 +57,17 @@ This is not an example of implementation that can be used on production. It is i
         * **Name:** `siebel/custom/SRFormPR.js`
         
 	  * under `Administration - Application > Manifest Administration` add a new record under **UI Objects**: 
+    
         * **Name:** `Nexus Angular Demo Form Applet`
         * **Usage Type:** `Physical Renderer`
         * **Type:** `Applet`
+        
 	  * and add a new record under **Object Expression**: 
+    
         * **Level:** `1`
+        
 	  * and add a new record under **Files**: 
+    
         * **Name:** `siebel/custom/SRFormPR.js`
 
 1. Empty browser cache and hard reload

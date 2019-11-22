@@ -5,7 +5,7 @@ This guide will help to setup the demo example that is built using the Nexus Bri
 The demo supports:
 
 * navigation through records
-* displaying, editing or deleting records (supporting keyboard shortcuts)
+* displaying, editing, saving and deleting data (supporting keyboard shortcuts)
 * query (supporting keyboard shortcuts)
 * picklists that are read from Siebel configuration
 * field properties that are read from Siebel configuration (required, field length)

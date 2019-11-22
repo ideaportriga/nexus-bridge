@@ -15,7 +15,7 @@ This is not an example of implementation that can be used on production. It is i
 
 ![result](images/form-demo.png)
 
-1. Make a clean [Nexus Bridge Setup](/../wikis/Setup-Nexus-Bridge) if you haven't done it before.
+1. Make a clean [Nexus Bridge Setup](/../../wiki/Setup-Nexus-Bridge) if you haven't done it before.
 
 1. Import SIF files in `siebel/sif/*` into the Siebel Tools.
 

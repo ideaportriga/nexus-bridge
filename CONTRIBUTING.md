@@ -1,25 +1,18 @@
-# Contributing to Nexus Bridge
+# Contributing to the Nexus Bridge
 
-## Report a bug
+## Report a Bug
 
-Open an issue. 
+Open an issue using the bug report template. 
 
-## Request a new feature
+## Request a New Feature
 
-Open an issue. 
+Open an issue using the feature request template. 
 
-## Pull Request Process
+## Open a Pull Request 
 
-When contributing to this repository, please first discuss the change you wish to make via issue,
-email, or any other method with the owners of this repository before making a change. 
-
-Before submitting the Pull Request:
-1. Ensure any install or build dependencies are removed before the end of the layer when doing a 
-   build.
-2. Update the README.md and Wiki with details of changes.
-3. Increase the version numbers in the `package.json` file, any examples files and the README.md 
-   to the new version that this Merge Request would represent. 
-   The versioning scheme is [SemVer](http://semver.org/).
+If you would like to contribute, please start by searching through the [issues](/issues) and [pull requests](/pulls) to find out if somebody else has already implemented or requested the change. If you did not find your change listed, and you think it fits into the goals of the Nexus Bridge, do one of the following:
+   * If your contribution is minor, such as a bug fixing, open a pull request.
+   * If your contribution is major, such as a new feature adding, start by opening an issue first. That way, other people can weigh in on the discussion before you do any work.
 
 ### Coding Rules
 

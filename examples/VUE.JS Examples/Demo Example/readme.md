@@ -54,19 +54,19 @@ This is not an example of implementation that can be used on production. It is i
 
 1. Use the Siebel Web Client to reference JS-files in Siebel Open UI Manifest as follows:
 
-     * under `Administration - Application > Manifest Files` add a new record: 
-     	* **Name:** `siebel/custom/N19_vuedemo_PR.js`
+	* under `Administration - Application > Manifest Files` add a new record: 
+		* **Name:** `siebel/custom/N19_vuedemo_PR.js`
 
-     * under `Administration - Application > Manifest Administration` add a new record under **UI Objects**: 
-    	* **Name:** `N19 SIS Account Entry Applet`
-	* **Usage Type:** `Physical Renderer`
-    	* **Type:** `Applet`
+	* under `Administration - Application > Manifest Administration` add a new record under **UI Objects**: 
+		* **Name:** `N19 SIS Account Entry Applet`
+		* **Usage Type:** `Physical Renderer`
+		* **Type:** `Applet`
 
-     * and add a new record under **Object Expression** with:
-    	* **Level:** `1`
+	* and add a new record under **Object Expression**:
+		* **Level:** `1`
 
-    >- add a new record under **Files** with:
-    >    <br>**Name:** `siebel/custom/N19_vuedemo_PR.js`
+	* and add a new record under **Files**:
+		* **Name:** `siebel/custom/N19_vuedemo_PR.js`
     
 1. Empty browser cache and hard reload *(e.g. using Chrome: press F12, then right-click a browser Refresh button and press ‘Empty Cache and Hard Reload’)*
 

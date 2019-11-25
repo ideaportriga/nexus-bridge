@@ -12,8 +12,12 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: yarn install
-      - run: yarn build
+      - name: Build nexus-bridge
+        run: |
+          yarn install
+          yarn build
+        env:
+          working-directory: ./packages/nexus-bridge
 
   publish-npm:
     needs: build
@@ -24,6 +28,10 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
-      - run: yarn publish --new-version ${GITHUB_REF#"refs/tags/"} --no-git-tag-version
+
+      - name: Publish nexus-bridge
+        working-directory: ./packages/nexus-bridge
+        run: yarn publish --new-version ${GITHUB_REF#"refs/tags/"} --no-git-tag-version
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          working-directory: ./packages/nexus-bridge

@@ -3,7 +3,7 @@ import N19baseApplet from './n19baseApplet';
 export default class N19popupApplet extends N19baseApplet {
   constructor(settings) {
     super(settings);
-    console.log('popup applet started...'); // eslint-disable-line no-console
+    console.log('[NB] Popup applet started');
   }
 
   pickRecord() {
@@ -45,7 +45,8 @@ export default class N19popupApplet extends N19baseApplet {
     return ret;
   }
 
-  _firstRecord() { // temp method, assumes that no scrolling happened
+  _firstRecord() {
+    // temp method, assumes that no scrolling happened
     if (this.isListApplet) {
       if (this.getSelection() !== 0) {
         return this.positionOnRow(0);

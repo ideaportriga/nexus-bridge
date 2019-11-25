@@ -1,6 +1,7 @@
 {
   "name": "@ipr/nexus-bridge",
-  "version": "1.1.1",
+  "description": "Low-level interface between Open UI and Nexus APIs",
+  "version": "1.1.0",
   "author": "Idea Port Riga",
   "license": "MIT",
   "main": "dist/NexusBridge.js",
@@ -11,7 +12,7 @@
     "README.md"
   ],
   "scripts": {
-    "clean": "rimraf ./dist",
+    "clean": "rm -rf ./dist",
     "build": "rollup -c rollup.config.js",
     "prebuild": "yarn clean",
     "prepublishOnly": "yarn build",

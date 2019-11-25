@@ -1,4 +1,4 @@
-name: NPM Publish
+name: Publish Packages
 
 on:
   release:
@@ -13,11 +13,10 @@ jobs:
         with:
           node-version: 12
       - name: Build nexus-bridge
+        working-directory: ./packages/nexus-bridge
         run: |
           yarn install
           yarn build
-        env:
-          working-directory: ./packages/nexus-bridge
 
   publish-npm:
     needs: build
@@ -34,4 +33,3 @@ jobs:
         run: yarn publish --new-version ${GITHUB_REF#"refs/tags/"} --no-git-tag-version
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-          working-directory: ./packages/nexus-bridge

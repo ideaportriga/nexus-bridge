@@ -15,7 +15,6 @@
     "clean": "rm -rf ./dist",
     "build": "rollup -c rollup.config.js",
     "prebuild": "yarn clean",
-    "prepublishOnly": "yarn build",
     "lint": "eslint --fix **/*.js"
   },
   "peerDependencies": {},

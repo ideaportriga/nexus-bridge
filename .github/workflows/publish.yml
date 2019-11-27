@@ -1,8 +1,12 @@
 name: Publish Packages
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - master
+# on:
+#   release:
+#     types: [published]
 
 jobs:
   build:
@@ -28,8 +32,23 @@ jobs:
           node-version: 12
           registry-url: https://registry.npmjs.org/
 
-      - name: Publish nexus-bridge
+      - name: Publish to NPM
         working-directory: ./packages/nexus-bridge
         run: yarn publish --new-version ${GITHUB_REF#"refs/tags/"} --no-git-tag-version
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+  
+  publish-gpr:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://npm.pkg.github.com
+          scope: '@ipr'
+      - name: Publish to GPR
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

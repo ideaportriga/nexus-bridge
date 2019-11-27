@@ -46,9 +46,11 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
+          working-directory: ./packages/nexus-bridge
           registry-url: https://npm.pkg.github.com
           scope: '@ipr'
       - name: Publish to GPR
+        working-directory: ./packages/nexus-bridge
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

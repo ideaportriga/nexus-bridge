@@ -48,7 +48,7 @@ jobs:
           node-version: 12
           working-directory: ./packages/nexus-bridge
           registry-url: https://npm.pkg.github.com
-          scope: '@ipr'
+          scope: '@ideaportriga'
       - name: Publish to GPR
         working-directory: ./packages/nexus-bridge
         run: npm publish

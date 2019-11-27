@@ -10,9 +10,9 @@ yarn build
 ## Installation
 
 ```bash
-yarn add @ipr/nexus-bridge
+yarn add @ideaportriga/nexus-bridge
 ```
 
 ## References
 
-- [GitHub Wiki](https://github.com/ideaportriga/siebel-nexus-bridge/wiki)
+- [Wiki](https://github.com/ideaportriga/siebel-nexus-bridge/wiki)

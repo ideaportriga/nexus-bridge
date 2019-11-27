@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "lib": ["esnext"],
-    "outDir": "./dist/esm",
+    "outDir": "./dist",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,

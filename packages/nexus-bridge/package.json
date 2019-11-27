@@ -1,7 +1,7 @@
 {
   "name": "@ideaportriga/nexus-bridge",
   "description": "Low-level interface between Open UI and Nexus APIs",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "author": "Idea Port Riga",
   "license": "MIT",
   "main": "dist/NexusBridge.js",

@@ -1,7 +1,7 @@
 {
   "name": "@ideaportriga/nexus-bridge",
   "description": "A low-level interface for Siebel Open UI",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "Idea Port Riga",
   "license": "MIT",
   "main": "dist/index.js",

@@ -1,14 +1,7 @@
 import Nexus from '@ipr/nexus-bridge'
+import { NexusConfig, NexusBridge } from './types'
 
 declare const window: any
-
-interface NexusConfig {
-  [key: string]: string
-}
-
-interface NexusBridge {
-  [key: string]: any
-}
 
 const memo: any = {}
 
@@ -45,4 +38,4 @@ const NexusFactory = (config: string | NexusConfig): null | NexusBridge => {
   return null
 }
 
-export default NexusFactory
+export { NexusConfig, NexusBridge, NexusFactory }

@@ -1,9 +1,8 @@
 name: Publish Packages
 
-on: [push, pull_request]
-# on:
-#   release:
-#     types: [published]
+on:
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -32,26 +31,26 @@ jobs:
 
       - name: Publish to NPM
         working-directory: ./packages/nexus-bridge
-        run: yarn publish # --new-version ${GITHUB_REF#"refs/tags/"} --no-git-tag-version
+        run: yarn publish --new-version ${GITHUB_REF#"refs/tags/"} --no-git-tag-version
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
-#   publish-gpr:
-#     needs: build
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v1
-#       - uses: actions/setup-node@v1
-#         with:
-#           node-version: 12
-#           working-directory: ./packages/nexus-bridge
-#           registry-url: https://npm.pkg.github.com
-#           scope: '@ideaportriga'
+  publish-gpr:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          working-directory: ./packages/nexus-bridge
+          registry-url: https://npm.pkg.github.com
+          scope: '@ideaportriga'
 
-#       - name: Publish to GPR
-#         working-directory: ./packages/nexus-bridge
-#         run: |
-#           echo registry=https://npm.pkg.github.com/ideaportriga >> .npmrc
-#           npm publish
-#         env:
-#           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to GPR
+        working-directory: ./packages/nexus-bridge
+        run: |
+          echo registry=https://npm.pkg.github.com/ideaportriga >> .npmrc
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

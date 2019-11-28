@@ -1,9 +1,6 @@
 name: Publish Packages
 
-on:
-  push:
-    branches:
-      - features/*
+on: push
 # on:
 #   release:
 #     types: [published]

@@ -1,6 +1,10 @@
 name: Publish Packages
 
-on: push
+on:
+  push:
+    branches:
+      - '*'
+      - '!master'
 # on:
 #   release:
 #     types: [published]

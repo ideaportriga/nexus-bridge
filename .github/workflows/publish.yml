@@ -3,7 +3,7 @@ name: Publish Packages
 on:
   push:
     branches:
-      - features/esm-build
+      - 'features/**'
 # on:
 #   release:
 #     types: [published]

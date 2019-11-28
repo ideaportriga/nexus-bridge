@@ -13,6 +13,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
+
       - name: Build nexus-bridge
         working-directory: ./packages/nexus-bridge
         run: |
@@ -31,7 +32,7 @@ jobs:
 
       - name: Publish to NPM
         working-directory: ./packages/nexus-bridge
-        run: yarn publish --new-version ${GITHUB_REF#"refs/tags/"} --no-git-tag-version
+        run: yarn publish # --new-version ${GITHUB_REF#"refs/tags/"} --no-git-tag-version
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 

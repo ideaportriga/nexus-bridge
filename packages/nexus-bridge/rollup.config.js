@@ -13,7 +13,7 @@ export default {
   input: 'src/index.js',
   output: [
     {
-      file: pkg.main,
+      file: 'dist/umd/NexusBridge.js',
       format: 'iife',
       name: 'SiebelAppFacade.NexusBridge',
       sourcemap

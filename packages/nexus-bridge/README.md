@@ -15,4 +15,6 @@ yarn add @ipr/nexus-bridge
 
 ## References
 
-- [GitHub Wiki](https://github.com/ideaportriga/siebel-nexus-bridge/wiki)
+- [@ipr/nexus-bridge][1]
+
+[1]: (https://www.npmjs.com/package/@ipr/nexus-bridge)

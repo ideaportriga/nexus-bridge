@@ -5,22 +5,7 @@ on:
     types: [published]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-
-      - name: Build nexus-bridge
-        working-directory: ./packages/nexus-bridge
-        run: |
-          yarn install
-          yarn build
-
   publish-npm:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -28,15 +13,18 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
-
-      - name: Publish to NPM
+      - name: ESM Build
+        working-directory: ./packages/nexus-bridge
+        run: |
+          yarn install
+          yarn build:esm
+      - name: NPM Publish
         working-directory: ./packages/nexus-bridge
         run: yarn publish --new-version ${GITHUB_REF#"refs/tags/"} --no-git-tag-version
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
   publish-gpr:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -46,8 +34,12 @@ jobs:
           working-directory: ./packages/nexus-bridge
           registry-url: https://npm.pkg.github.com
           scope: '@ideaportriga'
-
-      - name: Publish to GPR
+      - name: UMD Build
+        working-directory: ./packages/nexus-bridge
+        run: |
+          yarn install
+          yarn build:umd
+      - name: GPR Publish
         working-directory: ./packages/nexus-bridge
         run: |
           echo registry=https://npm.pkg.github.com/ideaportriga >> .npmrc

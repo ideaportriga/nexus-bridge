@@ -1,6 +1,6 @@
 name: Publish Packages
 
-on: pull_request
+on: [push, pull_request]
 # on:
 #   release:
 #     types: [published]

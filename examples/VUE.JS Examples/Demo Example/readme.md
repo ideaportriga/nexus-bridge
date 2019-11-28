@@ -68,7 +68,7 @@ This is not an example of implementation that can be used on production. It is i
 	* and add a new record under **Files**:
 		* **Name:** `siebel/custom/N19_vuedemo_PR.js`
     
-1. Empty browser cache and hard reload *(e.g. using Chrome: press F12, then right-click a browser Refresh button and press ‘Empty Cache and Hard Reload’)*
+1. Empty browser cache and hard reload *(e.g. using Chrome with open DevTools: press F12, then right-click a browser Refresh button and press ‘Empty Cache and Hard Reload’)*
 
 1. Re-login to your Siebel Application.
 

@@ -28,27 +28,21 @@ This is not an example of implementation that can be used on production. It is i
 
       * Find out your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` into Chrome Developer Tools console.
       
-      * Use the Siebel Tools and add `N19 React Account Screen` under `Application > Screen Menu Item` for your Siebel Application Name.
+      * Use the Tools to add `N19 React Account Screen` under `Application > Screen Menu Item` for your Siebel Application Name.
       
-      * Add `N19 React Account Screen` under `Application > Page Tab` for your Siebel Application Name
+      * Use the Tools to add `N19 React Account Screen` under `Application > Page Tab` for your Siebel Application Name.
       
-1. Compile (Siebel IP16 and earlier) or deliver (Siebel IP17+) the following objects:
+1. Compile (Siebel IP16) or deliver (Siebel IP17+) your changes:
 
-    * `Nexus19 React Demo Examples` project.
-    
-    * Application object that you've updated above.
+      * Even in 19.11 changes on the Application object still require the Object Manager restart.
     
 1. Add the `N19 React Account View` to your application:
 
       * Use the Siebel Web Client to register `N19 React Account View` under `Administration - Application > Views`.
       
-      * Under `Administration - Application > Views` add your responsibility to this view.
-      
-      * Under `Administration - User > Users` – add the same responsibility to your user.
-      
+      * Add your user's responsibility to this view.
+            
       * Click the `Clear cache` button on `Administration – Application > Responsibilities`.
-      
-1. Re-login to your Siebel Application and check that the `N19 React Account Screen` is available.
 
 1. Copy the file below to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom` folder:
 

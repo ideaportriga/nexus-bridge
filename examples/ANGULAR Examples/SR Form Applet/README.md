@@ -20,7 +20,7 @@ This is not an example of implementation that can be used on production. It is i
 
 1. Make a clean [Nexus Bridge Setup](/../../wiki/Setup-Nexus-Bridge) if you haven't done it before.
 
-1. Clone the project `git clone https://github.com/ideaportriga/nexus-bridge` or download and unpack [the project's archive](../../../../archive/master.zip).
+1. Clone the project `git clone https://github.com/ideaportriga/nexus-bridge` or download and unpack [the project's archive](../../../../../archive/master.zip).
 
 1. Import [sif-file](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/examples/ANGULAR%20Examples/SR%20Form%20Applet/siebel/sif/Nexus%20Angular%20Demo.sif) *(use the mouse right click and `Save link as...` to download the file)* into the Siebel Tools.
 

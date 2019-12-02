@@ -1,16 +1,17 @@
 {
   "name": "@ideaportriga/nexus-factory",
   "description": "Factory of Nexus Bridge singletons",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "Idea Port Riga",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
-    "clean": "rimraf ./dist",
+    "clean": "rm -rf ./dist",
     "start": "tsc -w -p tsconfig.build.json",
     "build": "tsc -p tsconfig.build.json",
     "prebuild": "yarn clean",
@@ -27,6 +28,7 @@
     "@typescript-eslint/eslint-plugin": "^2.9.0",
     "@typescript-eslint/parser": "^2.9.0",
     "eslint-config-prettier": "^6.7.0",
-    "eslint-plugin-prettier": "^3.1.1"
+    "eslint-plugin-prettier": "^3.1.1",
+    "typescript": "^3.7.2"
   }
 }

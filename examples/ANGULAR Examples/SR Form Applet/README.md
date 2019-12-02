@@ -42,7 +42,7 @@ This is not an example of implementation that can be used on production. It is i
 
 1. Copy the files below to the `[CLIENT_HOME or SERVER_HOME]/public/SCRIPTS/siebel/custom/` folder:
 
-    * `dist/*.*` excluding `fonts` folder.
+    * [dist/*.*](/dist) excluding `fonts` folder.
 
 1. Copy the files below to the `[CLIENT_HOME or SERVER_HOME]/public/fonts/` folder:
     * `dist/fonts/*.*`.

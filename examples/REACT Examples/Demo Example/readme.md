@@ -44,6 +44,8 @@ This is not an example of implementation that can be used on production. It is i
             
       * Click the `Clear cache` button on `Administration – Application > Responsibilities`.
     
+1. Copy file [`NBDefaultAppletPR.js`](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/packages/nexus-bridge/SIEBEL/PUBLIC/NBDefaultAppletPR.js) *(use the mouse right click and `Save link as...` to download the file)* into the `[CLIENT_HOME or SERVER_HOME]/public/SCRIPTS/siebel/custom/` folder.
+     
 1. Copy the files and folders in [react-app/build](../../../../../tree/master/examples/REACT%20Examples/Demo%20Example/react-app/build) to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom\react-app` folder.
     
 1. Use the Siebel Web Client to reference JS-files in Siebel Open UI Manifest as follows:
@@ -58,21 +60,6 @@ This is not an example of implementation that can be used on production. It is i
 
    	* and add a new record under **Object Expression** with:
    		* **Level:** `1`
-
-  	* and add a new record under **Files** with:
-   
-   		* **Name:** `siebel/custom/react-app/N19_REACT_PR.js`
-
-	* under `Administration - Application > Manifest Administration` add a new record under **UI Objects**: 
-   		* **Name:** `N19 React Contact List Applet`
-		* **Usage Type:** `Physical Renderer`
-   		* **Type:** `Applet`
-
-   	* and add a new record under **Object Expression**:
-   		* **Level:** `1`
-
-   	* and add a new record under **Files** with:
-   		* **Name:** `siebel/custom/NBAppletPR.js`
 
 1. Empty browser cache and hard reload *(e.g. using Chrome with open DevTools: press F12, then right-click a browser Refresh button and press ‘Empty Cache and Hard Reload’)*
 

@@ -22,7 +22,7 @@ This is not an example of implementation that can be used on production. It is i
 
 1. Clone the project `git clone https://github.com/ideaportriga/nexus-bridge` or download and unpack [the project's archive](../../../../../archive/master.zip).
 
-1. Import [sif-file](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/examples/REACT%20Examples/Demo%20Example/siebel/sif/N19_React_Objects.sif) *(use the mouse right click and `Save link as...` to download the file)* into the Siebel Tools.
+1. Import [sif-file](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/examples/REACT%20Examples/Demo%20Example/siebel/N19_React_Objects.sif) *(use the mouse right click and `Save link as...` to download the file)* into the Siebel Tools.
 
 1. Add the `N19 React Account Screen` to your application:
 

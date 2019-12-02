@@ -10,7 +10,9 @@ The demo supports:
 * picklists that are read from Siebel configuration
 * field properties that are read from Siebel configuration (required, readonly)
 
-Requirements: this example requires access to icons and fonts stored on https://fonts.googleapis.com/.
+Requirements: 
+* Access to icons and fonts stored on https://fonts.googleapis.com/. 
+* Siebel version: 16+
 
 This is not an example of implementation that can be used on production. It is intentionally kept straightforward.
 
@@ -24,27 +26,19 @@ This is not an example of implementation that can be used on production. It is i
 
       * Find out your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` in Chrome Developer Tools console.
       
-      * Use the Siebel Tools and add `Nexus Angular Demo Screen` under `Application > Screen Menu Item` for your Siebel Application Name.
+      * Use the Tools to add `Nexus Angular Demo Screen` under `Application > Screen Menu Item` for your Siebel Application Name.
       
-      * Add `Nexus Angular Demo Screen` under `Application > Page Tab` for your Siebel Application Name.
+      * Use the Tools to add `Nexus Angular Demo Screen` under `Application > Page Tab` for your Siebel Application Name.
 
-1. Compile (Siebel IP16 and earlier) or deliver (Siebel IP17+) the following objects:
-
-    * `Nexus Angular Demo` project.
-    
-    * Application object that you've updated above.
+1. Compile (Siebel IP16) or deliver (Siebel IP17+) your changes.
 
 1. Add the `Nexus Angular Demo View` to your application:
 
       * Use the Siebel Web Client to register `Nexus Angular Demo View` under `Administration - Application > Views`.
       
-      * Under `Administration - Application > Views` add your responsibility to this view.
-      
-      * Under `Administration - User > Users` – add the same responsibility to your user.
-      
+      * Add your user's responsibility to this view.
+            
       * Click the `Clear cache` button on `Administration – Application > Responsibilities`.
-
-1. Re-login to your Siebel Application and check that the `Nexus Angular Demo` screen is available.
 
 1. Copy the files below to the `[CLIENT_HOME or SERVER_HOME]/public/SCRIPTS/siebel/custom/` folder:
 
@@ -76,4 +70,4 @@ This is not an example of implementation that can be used on production. It is i
 
 1. Re-login to your Siebel Application.
 
-1. Navigate to the `Nexus Angular Demo` Screen.
+1. Navigate to the `Nexus Angular Demo Screen`.

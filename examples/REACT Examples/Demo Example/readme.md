@@ -46,10 +46,10 @@ This is not an example of implementation that can be used on production. It is i
     
 1. Copy the files and folders in [react-app/build](../../../../../tree/master/examples/REACT%20Examples/Demo%20Example/react-app/build) to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom\react-app` folder.
     
-1. Use Siebel Client to reference JS-files in Siebel Open UI Manifest as follows:
-	* under `Administration - Application > Manifest Files`  add two new records: 
-		* **Name:** `siebel/custom/react-app/N19_REACT_PR.js`
-		* **Name:** `siebel/custom/NBAppletPR.js`
+1. Use the Siebel Web Client to reference JS-files in Siebel Open UI Manifest as follows:
+    * under `Administration - Application > Manifest Files` add a new record: 
+	  * **Name:** `siebel/custom/react-app/N19_REACT_PR.js`
+    
 
 	* under `Administration - Application > Manifest Administration` add a new record under **UI Objects**: 
    		* **Name:** `N19 React SIS Account Entry Applet`

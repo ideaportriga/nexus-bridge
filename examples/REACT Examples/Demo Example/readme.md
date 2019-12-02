@@ -50,16 +50,24 @@ This is not an example of implementation that can be used on production. It is i
     
 1. Use the Siebel Web Client to reference JS-files in Siebel Open UI Manifest as follows:
     * under `Administration - Application > Manifest Files` add a new record: 
+    
 	  * **Name:** `siebel/custom/react-app/N19_REACT_PR.js`
     
 
 	* under `Administration - Application > Manifest Administration` add a new record under **UI Objects**: 
+	
    		* **Name:** `N19 React SIS Account Entry Applet`
    		* **Usage Type:** `Physical Renderer`
    		* **Type:** `Applet`
 
    	* and add a new record under **Object Expression** with:
+	
    		* **Level:** `1`
+
+  	* and add a new record under **Files** with:
+   
+   		* **Name:** `siebel/custom/react-app/N19_REACT_PR.js`
+
 
 1. Empty browser cache and hard reload *(e.g. using Chrome with open DevTools: press F12, then right-click a browser Refresh button and press ‘Empty Cache and Hard Reload’)*
 

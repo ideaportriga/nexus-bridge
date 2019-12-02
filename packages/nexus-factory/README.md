@@ -1,7 +1,5 @@
 # Nexus Factory
 
-> Factory of `Nexus` singletons
-
 ## Development
 
 ```bash
@@ -12,11 +10,11 @@ yarn build
 ## Installation
 
 ```bash
-yarn add @ipr/nexus-factory
+yarn add @ideaportriga/nexus-factory
 ```
 
 ## References
 
-- [@ipr/nexus-factory][1]
+- [@ideaportriga/nexus-factory][1]
 
-[1]: (https://www.npmjs.com/package/@ipr/nexus-factory)
+[1]: (https://www.npmjs.com/package/@ideaportriga/nexus-factory)

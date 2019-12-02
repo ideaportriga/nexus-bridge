@@ -26,7 +26,7 @@ This is not an example of implementation that can be used on production. It is i
       
       * Use the Siebel Tools and add `Nexus Angular Demo Screen` under `Application > Screen Menu Item` for your Siebel Application Name.
       
-      * Add `Nexus Angular Demo Screen`(with `Nexus Angular Demo` value for `Text - String Override` property) under `Application > Page Tab` for your Siebel Application Name.
+      * Add `Nexus Angular Demo Screen` under `Application > Page Tab` for your Siebel Application Name.
 
 1. Compile (Siebel IP16 and earlier) or deliver (Siebel IP17+) the following objects:
 

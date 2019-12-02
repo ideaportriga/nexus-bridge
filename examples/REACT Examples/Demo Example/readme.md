@@ -43,14 +43,8 @@ This is not an example of implementation that can be used on production. It is i
       * Add your user's responsibility to this view.
             
       * Click the `Clear cache` button on `Administration – Application > Responsibilities`.
-
-1. Copy the file below to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom` folder:
-
-    * `n19helper-master/packages/nexus-bridge/SIEBEL/PUBLIC/NBAppletPR.js`.
     
-1. Copy the files below and folders to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom\react-app` folder:
-
-    * `n19helper-master/examples/REACT Examples/Demo Example/react-app/build/*`.
+1. Copy the files and folders in [react-app/build](../../../../../tree/master/examples/REACT%20Examples/Demo%20Example/react-app/build) to the `[Siebel Client or Server Home]\public\SCRIPTS\siebel\custom\react-app` folder.
     
 1. Use Siebel Client to reference JS-files in Siebel Open UI Manifest as follows:
 	* under `Administration - Application > Manifest Files`  add two new records: 

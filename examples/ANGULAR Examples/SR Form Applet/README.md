@@ -42,9 +42,7 @@ This is not an example of implementation that can be used on production. It is i
             
       * Click the `Clear cache` button on `Administration – Application > Responsibilities`.
 
-1. Copy the files below to the `[CLIENT_HOME or SERVER_HOME]/public/SCRIPTS/siebel/custom/` folder:
-
-    * [dist](../../../../../tree/master/examples/ANGULAR%20Examples/SR%20Form%20Applet/dist) excluding `fonts` folder.
+1. Copy the files in [dist](../../../../../tree/master/examples/ANGULAR%20Examples/SR%20Form%20Applet/dist) excluding `fonts` folder to the `[CLIENT_HOME or SERVER_HOME]/public/SCRIPTS/siebel/custom/` folder:
 
 1. Copy the files below to the `[CLIENT_HOME or SERVER_HOME]/public/fonts/` folder:
     * `dist/fonts/*.*`.

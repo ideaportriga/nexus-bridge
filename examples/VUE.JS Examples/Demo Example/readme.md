@@ -9,7 +9,9 @@ The applet supports:
 * picklists that are read from Siebel configuration
 * field properties that are read from Siebel configuration (required, field length)
 
-Requirements: this example requires access to icons and fonts stored on https://fonts.googleapis.com/
+Requirements: 
+* Access to icons and fonts stored on https://fonts.googleapis.com/.
+* Siebel version: 16+
 
 This is not an example of implementation that can be used on production. It is intentionally kept straightforward.
 
@@ -17,14 +19,16 @@ This is not an example of implementation that can be used on production. It is i
  
 1. Make a clean [Nexus Bridge Setup](/../../wiki/Setup-Nexus-Bridge) if you haven't done it before.
 
-1. Import the `n19helper-master/examples/VUE.JS Examples/Demo Example/SIF/*` sif-files into the Siebel Tools.
+1. Clone the project `git clone https://github.com/ideaportriga/nexus-bridge` or download and unpack [the project's archive](../../../../../archive/master.zip).
+
+1. Import [sif-file](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/examples/VUE.JS%20Examples/Demo%20Example/SIF/N19_Vue_Objects.sif) *(use the mouse right click and `Save link as...` to download the file)* into the Siebel Tools.
 
 1. Add the `N19 Vue Account Screen` to your application:
       * Find out your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` into Chrome Developer Tools console.
       
-      * Use the Siebel Tools and add `N19 Vue Account Screen` under `Application > Screen Menu Item` for your Siebel Application Name.
+      * Use the Tools to add `N19 Vue Account Screen` under `Application > Screen Menu Item` for your Siebel Application Name.
       
-      * Also add `N19 Vue Account Screen`(with `N19 Vue` value for `Text - String Override` property) under `Application > Page Tab` for your Siebel Application Name.
+      * Use the Tools to add `N19 Vue Account Screen` under `Application > Page Tab` for your Siebel Application Name.
       
 1. Compile (Siebel IP16 and earlier) or deliver (Siebel IP17+) the following objects:
 

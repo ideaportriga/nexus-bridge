@@ -50,8 +50,8 @@ This is not an example of implementation that can be used on production. It is i
     * `n19helper-master\examples\VUE.JS Examples\Demo Example\N19_vuedemo_PR.js`
     
 1. Copy [`N19_vuedemo_PR.js`](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/examples/VUE.JS%20Examples/Demo%20Example/N19_vuedemo_PR.js) *(use the mouse right click and `Save link as...` to download the file)* into the `[CLIENT_HOME or SERVER_HOME]/public/SCRIPTS/siebel/custom/` folder.
-    
-1. Copy `n19helper-master\examples\VUE.JS Examples\vuetify.min.css` file to the `[Siebel Client or Server Home]\public\files\custom` folder.
+
+1. Copy [`N19_vuedemo_PR.js`](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/examples/VUE.JS%20Examples/vuetify.min.css) *(use the mouse right click and `Save link as...` to download the file)* into the `[Siebel Client or Server Home]\public\files\custom` folder.
 
 1. Use the Siebel Web Client to reference JS-files in Siebel Open UI Manifest as follows:
 

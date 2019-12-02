@@ -18,7 +18,7 @@ This is not an example of implementation that can be used on production. It is i
 
 1. Make a clean [Nexus Bridge Setup](/../../wiki/Setup-Nexus-Bridge) if you haven't done it before.
 
-1. Import SIF-files in `siebel/sif/*` into the Siebel Tools.
+1. Import [sif-file](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/examples/ANGULAR%20Examples/SR%20Form%20Applet/siebel/sif/Nexus%20Angular%20Demo.sif) into the Siebel Tools.
 
 1. Add the `Nexus Angular Demo Screen` to your application:
 

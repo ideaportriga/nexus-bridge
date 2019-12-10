@@ -50,6 +50,18 @@ export default class Nexus extends N19baseApplet {
   }
 
   showMvgApplet(name, hide, cb) {
+    const control = this._getControl(name)
+    if (!control) {
+      throw new Error(
+        `[NB] Cannot find a control by name ${name} to show Mvg applet.`
+      )
+    }
+    const uiType = control.GetUIType()
+    if (uiType !== this.consts.get('SWE_CTRL_MVG')) {
+      throw new Error(
+        `Control ${name} is not of supported type ${uiType} to show Mvg applet`
+      )
+    }
     if (this.pm.Get('IsInQueryMode')) {
       throw new Error('[NB] Mvg applet cannot be opened in query mode')
     }
@@ -57,6 +69,18 @@ export default class Nexus extends N19baseApplet {
   }
 
   showPickApplet(name, hide, cb) {
+    const control = this._getControl(name)
+    if (!control) {
+      throw new Error(
+        `[NB] Cannot find a control by name ${name} to show Pick applet.`
+      )
+    }
+    const uiType = control.GetUIType()
+    if (uiType !== this.consts.get('SWE_CTRL_PICK')) {
+      throw new Error(
+        `Control ${name} is not of supported type ${uiType} to show Pick applet`
+      )
+    }
     return this._showPopupApplet(name, hide, cb)
   }
 

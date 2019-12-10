@@ -1,0 +1,33 @@
+{
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "eslint.autoFixOnSave": true,
+  "eslint.enable": true,
+  "eslint.packageManager": "yarn",
+  "eslint.validate": [
+    {
+      "language": "javascript",
+      "autoFix": true
+    },
+    {
+      "language": "javascriptreact",
+      "autoFix": true
+    },
+    {
+      "language": "typescript",
+      "autoFix": true
+    },
+    {
+      "language": "typescriptreact",
+      "autoFix": true
+    }
+  ],
+  "javascript.validate.enable": false,
+  "typescript.validate.enable": true,
+  "prettier.disableLanguages": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ]
+}

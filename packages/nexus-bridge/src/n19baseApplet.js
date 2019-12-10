@@ -520,6 +520,12 @@ export default class N19baseApplet {
         `[NB] Cannot find a control by name ${name} to set ${value}.`
       )
     }
+
+    // check if reaonly
+    if (!this.pm.ExecuteMethod('CanUpdate', name)) {
+      throw new Error(`[NB] The control ${name} is read-only.`)
+    }
+
     const uiType = control.GetUIType()
     const displayFormat =
       control.GetDisplayFormat() || this.getControlDisplayFormat(uiType)
@@ -532,42 +538,30 @@ export default class N19baseApplet {
     return ret
   }
 
-  // experimental method, still safer to use setContolVaue
-  // not described in wiki
+  // experimental method, not needed when API is used?
   // could be removed in the next version
   _setControlValue(name, value) {
-    const control = this._getControl(name)
-    if (!control) {
-      throw new Error(
-        `[NB] Cannot find a control by name ${name} to set ${value}.`
-      )
-    }
-    const uiType = control.GetUIType()
-    const isPostChanges = control.IsPostChanges()
-    const displayFormat =
-      control.GetDisplayFormat() || this.getControlDisplayFormat(uiType)
-    value = this._getSiebelValue(value, uiType, displayFormat)
-    let ret = this._setControlValueInternal(control, value)
-    if (!ret) {
-      console.log(`[NB] Value ${value} was not set for ${name} control`)
-      return ret
-    }
-    ret = this.getCurrentRecordModel()
-    // TODO: do we need to check the state, or can we assume that we always have a record?
-    if (!isPostChanges) {
-      Object.keys(ret.controls).forEach(con => {
-        if (ret.controls[con].name && !ret.controls[con].isPostChanges) {
-          // TODO: NB+ HERE ENSURE WE ALWAYS RETURN THE NOT FORMATTED WHEN NEEDED!!!
-          const setValue = this.pm.ExecuteMethod(
-            'GetFormattedFieldValue',
-            this._getControl(con)
-          )
-          ret.controls[con].value = this._getJSValue(
-            setValue,
-            ret.controls[con]
-          )
-        }
-      })
+    let ret = this.setControlValue(name, value)
+    if (ret) {
+      const control = this._getControl(name)
+      const isPostChanges = control.IsPostChanges()
+
+      ret = this.getCurrentRecordModel()
+      // TODO: do we need to check the state, or can we assume that we always have a record?
+      if (!isPostChanges) {
+        Object.keys(ret.controls).forEach(con => {
+          if (ret.controls[con].name && !ret.controls[con].isPostChanges) {
+            const setValue = this.pm.ExecuteMethod(
+              'GetFormattedFieldValue',
+              this._getControl(con)
+            )
+            ret.controls[con].value = this._getJSValue(
+              setValue,
+              ret.controls[con]
+            )
+          }
+        })
+      }
     }
     return ret
   }

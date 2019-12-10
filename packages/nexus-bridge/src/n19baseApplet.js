@@ -379,9 +379,14 @@ export default class N19baseApplet {
         '[NB] Method PositionOnRow is allowed only for list applets'
       )
     }
-    // if (!this.pm.ExecuteMethod('CanInvokeMethod', 'PositionOnRow')) {
+    // if (!this.pm.ExecuteMethod('CanInvokeMethod', 'PositionOnRow')) { // TODO: check if can invoke already known?
     //   throw new Error('[NB] Method PositionOnRow can not be invoked now.')
     // }
+    if (!Number.isInteger(+index)) {
+      throw new Error(
+        `[NB] The index for positionOnRow should be integer number, given value - ${index}`
+      )
+    }
     if (Number(index) < 0) {
       throw new Error(`[NB] Incorrect index given for positionOnRow - ${index}`)
     }
@@ -401,23 +406,30 @@ export default class N19baseApplet {
         return true // do not call the server
       }
     }
-    // TODO: if we got here, should we check GetActiveControl (applet.prototype.InvokeMethod)
-    // and nullify it if active? otherwise if there is an active control, the navigation doesn't happen
+
+    // nullify the active picklist control as the active picklist prevents positioning
+    const control = this.pm.Get('GetActiveControl') 
+    if (control) {
+      if (this.consts.get('SWE_CTRL_COMBOBOX') === control.GetUIType()) { // control is a picklist
+        this.pm.ExecuteMethod('SetActiveControl', null)
+      }
+    }
+
     const { ctrlKey, shiftKey } = keys || {}
-    // ret will be false if already positioned and !skipIfAlreadyPositioned (no server communications)
     const ret = this.pm.ExecuteMethod(
       'HandleRowSelect',
       index,
       ctrlKey,
       shiftKey
     )
-    // Positioning not happened, TODO: Temp solution? just to check if it is going to happen again (combo)
-    if (index !== this.getSelection()) {
+
+    // TODO: remove it? instead of it, the ext app have to check `ret`
+    if (+index !== this.getSelection()) {
       throw new Error(
         `positioning not happened - ${index}/${this.getSelection()}`
       )
     }
-    return ret
+    return ret // true if success, false is positioning not happened
   }
 
   prevRecord() {

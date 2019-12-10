@@ -408,9 +408,10 @@ export default class N19baseApplet {
     }
 
     // nullify the active picklist control as the active picklist prevents positioning
-    const control = this.pm.Get('GetActiveControl') 
+    const control = this.pm.Get('GetActiveControl')
     if (control) {
-      if (this.consts.get('SWE_CTRL_COMBOBOX') === control.GetUIType()) { // control is a picklist
+      // control is a picklist
+      if (this.consts.get('SWE_CTRL_COMBOBOX') === control.GetUIType()) {
         this.pm.ExecuteMethod('SetActiveControl', null)
       }
     }

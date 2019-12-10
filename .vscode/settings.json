@@ -22,6 +22,10 @@
       "autoFix": true
     }
   ],
+  "eslint.workingDirectories": [
+    "./packages/nexus-bridge",
+    "./packages/nexus-factory"
+  ],
   "javascript.validate.enable": false,
   "typescript.validate.enable": true,
   "prettier.disableLanguages": [

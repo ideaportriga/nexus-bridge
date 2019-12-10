@@ -31,7 +31,7 @@ export default class N19popupController {
 
     // it will be a singleton, so there is no cleanup
     this.N19processNewPopup = window.SiebelApp.S_App.ProcessNewPopup
-    window.SiebelApp.S_App.ProcessNewPopup = (ps) => {
+    window.SiebelApp.S_App.ProcessNewPopup = ps => {
       let ret
       if (this.isPopupHidden) {
         ret = this.processNewPopup(ps)
@@ -111,7 +111,7 @@ export default class N19popupController {
   }
 
   gotoView(viewName, appletName, id) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       this.viewLoadedResolve = resolve
       if (appletName && id) {
         let SWECmd = `GotoView&SWEView=${viewName}&SWEApplet0=${appletName}`
@@ -220,7 +220,7 @@ export default class N19popupController {
     newRecordFunc() // make async of invokeMethod?
 
     if (hide) {
-      let ret = new Promise((resolve) => {
+      let ret = new Promise(resolve => {
         this.resolvePromise = resolve
       })
       if (typeof cb === 'function') {
@@ -242,7 +242,7 @@ export default class N19popupController {
 
     if (hide) {
       // we will populate the instances only when applet should be hidden
-      let ret = new Promise((resolve) => {
+      let ret = new Promise(resolve => {
         this.resolvePromise = resolve
       })
       if (typeof cb === 'function') {

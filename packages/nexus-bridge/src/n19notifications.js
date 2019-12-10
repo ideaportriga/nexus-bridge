@@ -17,7 +17,7 @@ export default class N19notifications {
 
     pm.AttachNotificationHandler(
       consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'),
-      (propSet) => {
+      propSet => {
         const states = ['cp', 'n']
         if (!states.includes(propSet.GetProperty('state'))) {
           receivedNotifications.push('SWE_PROP_BC_NOTI_STATE_CHANGED')
@@ -28,7 +28,7 @@ export default class N19notifications {
     // or SWE_PROP_BC_NOTI_NEW_FIELD_DATA?
     pm.AttachNotificationHandler(
       consts.get('SWE_PROP_BC_NOTI_NEW_DATA_WS'),
-      (propSet) => {
+      propSet => {
         const fieldName = propSet.GetProperty(consts.get('SWE_PROP_NOTI_FIELD'))
         const control = fieldToControlMap[fieldName]
         if (
@@ -58,7 +58,7 @@ export default class N19notifications {
     pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END'), () => {
       if (receivedNotifications.length > 0) {
         // we assume that the function does not throw an error, so no error handling here
-        this.subscribers.forEach((el) => el.func())
+        this.subscribers.forEach(el => el.func())
       }
     })
   }
@@ -81,7 +81,7 @@ export default class N19notifications {
   }
 
   subIndexOf(subToken) {
-    return this.subscribers.findIndex((el) => el.token === subToken)
+    return this.subscribers.findIndex(el => el.token === subToken)
   }
 
   unsubscribe(subToken) {

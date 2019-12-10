@@ -35,7 +35,7 @@ export default class N19baseApplet {
       const applet = document.getElementById(appletId)
       if (applet) {
         const appletInputs = applet.querySelectorAll('input')
-        appletInputs.forEach((el) => {
+        appletInputs.forEach(el => {
           if (el.attributes['aria-required']) {
             this.required.push(el.attributes.name.nodeValue)
           }
@@ -85,13 +85,11 @@ export default class N19baseApplet {
   }
 
   subscribe(func) {
-    // eslint-disable-line class-methods-use-this
     // TODO: accept also context for function, or the caller binds the context to the function?
     return this.notifications.subscribe(func)
   }
 
   unsubscribe(token) {
-    // eslint-disable-line class-methods-use-this
     return this.notifications.unsubscribe(token)
   }
 
@@ -174,7 +172,6 @@ export default class N19baseApplet {
   }
 
   _getCurrencyCodeField(control) {
-    // eslint-disable-line class-methods-use-this
     const fieldNumber = control.GetCurrField()
     if (!fieldNumber) {
       throw new Error(
@@ -190,7 +187,7 @@ export default class N19baseApplet {
     const propSet = control.GetPMPropSet()
     if (propSet && propSet.propArray) {
       const { propArray } = propSet
-      Object.keys(propArray).forEach((prop) =>
+      Object.keys(propArray).forEach(prop =>
         ret.push({ prop, val: propArray[prop] })
       )
     }
@@ -200,7 +197,7 @@ export default class N19baseApplet {
   static GetControlStaticLOV(control) {
     return control
       .GetRadioGroupPropSet()
-      .childArray.map((el) => el.propArray.DisplayName)
+      .childArray.map(el => el.propArray.DisplayName)
       .sort()
   }
 
@@ -208,7 +205,7 @@ export default class N19baseApplet {
     const controls = {}
     const appletControls = this._returnControls()
     const arr = Object.entries(appletControls)
-    arr.forEach((controlEntry) => {
+    arr.forEach(controlEntry => {
       const control = controlEntry[1]
       const uiType = control.GetUIType()
       if (!this._isSkipControl(uiType)) {
@@ -267,7 +264,7 @@ export default class N19baseApplet {
               )
               return control
                 .GetRadioGroupPropSet()
-                .childArray.map((el) => el.propArray)
+                .childArray.map(el => el.propArray)
             }
           })
           Object.defineProperty(obj, 'lovs', {
@@ -277,7 +274,7 @@ export default class N19baseApplet {
               console.warn(
                 '[NB] The lovs property will be removed; use options instead of it.'
               )
-              return control.GetRadioGroupPropSet().childArray.map((el) => ({
+              return control.GetRadioGroupPropSet().childArray.map(el => ({
                 lic: el.propArray.FieldValue,
                 val: el.propArray.DisplayName
               }))
@@ -315,7 +312,7 @@ export default class N19baseApplet {
       const controls = this._returnControls()
       recordSet.forEach((record, index) => {
         const fields = Object.keys(record)
-        fields.forEach((field) => {
+        fields.forEach(field => {
           if (this.fieldToControlMap[field]) {
             const controlName = this.fieldToControlMap[field].name
             const control = controls[controlName]
@@ -439,7 +436,7 @@ export default class N19baseApplet {
   }
 
   newRecord(cb) {
-    const promise = new Promise((resolve) => this._newRecord(resolve))
+    const promise = new Promise(resolve => this._newRecord(resolve))
     return typeof cb === 'function' ? promise.then(cb) : promise
   }
 
@@ -513,7 +510,6 @@ export default class N19baseApplet {
     const uiType = control.GetUIType()
     const displayFormat =
       control.GetDisplayFormat() || this.getControlDisplayFormat(uiType)
-    // eslint-disable-next-line no-param-reassign
     value = this._getSiebelValue(value, uiType, displayFormat)
     // TODO: should we use SetCellValue for list applets?
     const ret = this._setControlValueInternal(control, value)
@@ -537,7 +533,6 @@ export default class N19baseApplet {
     const isPostChanges = control.IsPostChanges()
     const displayFormat =
       control.GetDisplayFormat() || this.getControlDisplayFormat(uiType)
-    // eslint-disable-next-line no-param-reassign
     value = this._getSiebelValue(value, uiType, displayFormat)
     let ret = this._setControlValueInternal(control, value)
     if (!ret) {
@@ -547,7 +542,7 @@ export default class N19baseApplet {
     ret = this.getCurrentRecordModel()
     // TODO: do we need to check the state, or can we assume that we always have a record?
     if (!isPostChanges) {
-      Object.keys(ret.controls).forEach((con) => {
+      Object.keys(ret.controls).forEach(con => {
         if (ret.controls[con].name && !ret.controls[con].isPostChanges) {
           // TODO: NB+ HERE ENSURE WE ALWAYS RETURN THE NOT FORMATTED WHEN NEEDED!!!
           const setValue = this.pm.ExecuteMethod(
@@ -619,7 +614,6 @@ export default class N19baseApplet {
   }
 
   isStatic(control) {
-    // eslint-disable-line class-methods-use-this
     return '1' === control.IsStaticBounded()
   }
 
@@ -760,7 +754,7 @@ export default class N19baseApplet {
     const methods = {}
     const appletControls = this.pm.Get('GetControls') // even for list applet
     const arr = Object.entries(appletControls)
-    arr.forEach((controlEntry) => {
+    arr.forEach(controlEntry => {
       const controlMethod = controlEntry[1].GetMethodName()
       if (typeof controlMethod !== 'undefined' && controlMethod !== '') {
         methods[controlMethod] = {}
@@ -783,21 +777,21 @@ export default class N19baseApplet {
 
   getCurrentRecordModel(_controls, _methods) {
     if (!_controls) {
-      _controls = this.getControls() // eslint-disable-line no-param-reassign
+      _controls = this.getControls()
     }
-    _controls.state = this.calculateCurrentRecordState() // eslint-disable-line no-param-reassign
-    _controls.id = '' // eslint-disable-line no-param-reassign
+    _controls.state = this.calculateCurrentRecordState()
+    _controls.id = ''
     let obj = {}
     const index = this.getSelection()
     const rawRecordSet = this.getRawRecordSet()
     if (index > -1) {
       // added _controls.state !== 3; we don't need id in query mode
       obj = this.getRecordSet()[index]
-      _controls.id = rawRecordSet[index].Id // eslint-disable-line no-param-reassign
+      _controls.id = rawRecordSet[index].Id
     }
     const appletControls = this._returnControls()
     // populate controls
-    Object.keys(_controls).forEach((controlName) => {
+    Object.keys(_controls).forEach(controlName => {
       let ret = {}
       const control = appletControls[controlName]
       if (typeof control !== 'undefined') {
@@ -837,7 +831,6 @@ export default class N19baseApplet {
           }
         }
         _controls[controlName] = Object.assign(ret, {
-          // eslint-disable-line no-param-reassign
           uiType,
           label: control.GetDisplayName(),
           isPostChanges: control.IsPostChanges(),
@@ -860,17 +853,15 @@ export default class N19baseApplet {
     })
     if (!_controls.Id) {
       _controls.Id = {
-        // eslint-disable-line no-param-reassign
         value: _controls.state !== 3 ? _controls.id : ''
       }
     }
     // populate methods
     if (!_methods) {
       // Is it better to use applet.GetCanInvokeArray?
-      _methods = this._getMethods() // eslint-disable-line no-param-reassign
+      _methods = this._getMethods()
     }
-    // eslint-disable-next-line no-param-reassign
-    Object.keys(_methods).forEach((methodName) => {
+    Object.keys(_methods).forEach(methodName => {
       _methods[methodName] = this.canInvokeMethod(methodName)
     })
     return {
@@ -882,7 +873,7 @@ export default class N19baseApplet {
   _findControlToEnterSearchExpr() {
     const appletControls = this._returnControls()
     const arr = Object.values(appletControls)
-    const found = arr.find((control) => {
+    const found = arr.find(control => {
       const controlUiType = control.GetUIType()
       const controlName = control.GetName()
       if (!this._isSkipControl(controlUiType)) {
@@ -924,7 +915,7 @@ export default class N19baseApplet {
   queryByIdSync(rowId) {
     let expr
     if (Array.isArray(rowId)) {
-      expr = rowId.map((el) => `Id="${el}"`).join(' OR ')
+      expr = rowId.map(el => `Id="${el}"`).join(' OR ')
     } else {
       expr = `Id="${rowId}"`
     }
@@ -932,7 +923,7 @@ export default class N19baseApplet {
   }
 
   queryById(rowId, cb) {
-    const promise = new Promise((resolve) => this._queryById(rowId, resolve))
+    const promise = new Promise(resolve => this._queryById(rowId, resolve))
     const ret = promise.then(() => this.getRecordSet().length)
     return typeof cb === 'function' ? ret.then(cb) : ret
   }
@@ -955,7 +946,7 @@ export default class N19baseApplet {
   }
 
   query(params, cb) {
-    const promise = new Promise((resolve) => this._query(params, resolve))
+    const promise = new Promise(resolve => this._query(params, resolve))
     const ret = promise.then(() => this.getRecordSet().length)
     return typeof cb === 'function' ? ret.then(cb) : ret
   }
@@ -977,7 +968,7 @@ export default class N19baseApplet {
 
     const _controls = this._returnControls()
     const arr = Object.keys(params)
-    arr.forEach((controlName) => {
+    arr.forEach(controlName => {
       const control = _controls[controlName]
       if (control) {
         this._setControlValueInternal(
@@ -1035,7 +1026,7 @@ export default class N19baseApplet {
     psInputs.SetProperty('BC', this.pm.Get('GetBusComp').GetName())
     psInputs.SetProperty('UseActiveBO', useActiveBO ? 'Y' : 'N')
     psInputs.SetProperty('ID', ids.join(','))
-    arr.forEach((el) => {
+    arr.forEach(el => {
       const ps = window.SiebelApp.S_App.NewPropertySet()
       ps.SetType(this._getFieldNameForControl(el[0]))
       ps.SetProperty('Fields', el[1].join(','))
@@ -1052,15 +1043,15 @@ export default class N19baseApplet {
       cb: (methodName, Inputs, psOutputs) => {
         const ret = {}
         const { childArray } = psOutputs.GetChildByType('ResultSet') || {} // to be safe when no results
-        ;(childArray || []).forEach((child) => {
+        ;(childArray || []).forEach(child => {
           ret[child.GetType()] = {}
-          child.childArray.forEach((grandChild) => {
+          child.childArray.forEach(grandChild => {
             ret[child.GetType()][
               grandChild.GetType()
-            ] = grandChild.childArray.map((rec) => {
+            ] = grandChild.childArray.map(rec => {
               const primary = rec.propArray['SSA Primary Field']
               this.boolObject.SetAsString(primary)
-              rec.propArray['SSA Primary Field'] = this.boolObject.GetValue() // eslint-disable-line no-param-reassign
+              rec.propArray['SSA Primary Field'] = this.boolObject.GetValue()
               return Object.assign({}, rec.propArray)
             })
           })
@@ -1102,7 +1093,7 @@ export default class N19baseApplet {
       const arr = this.getRawRecordSet()
 
       // avoid the duplicates
-      arr.forEach((el) => data.set(el.Id, el))
+      arr.forEach(el => data.set(el.Id, el))
 
       // we are using canInvokeMethod, as in 16.0 nextRecordSet always returns undefined
       if (!this.canInvokeMethod('GotoNextSet')) {
@@ -1124,7 +1115,7 @@ export default class N19baseApplet {
     const ret = {}
     const appletControls = this._returnControls()
     const arr = Object.keys(_controls || appletControls)
-    arr.forEach((controlName) => {
+    arr.forEach(controlName => {
       const control = appletControls[controlName]
       if (typeof control !== 'undefined') {
         // just in case somebody gave the incorrect control name
@@ -1162,7 +1153,7 @@ export default class N19baseApplet {
       ret[i] = Object.assign(
         obj,
         Object.keys(ret[i])
-          .filter((el) => this.fieldToControlMap[el])
+          .filter(el => this.fieldToControlMap[el])
           .reduce(
             (acc, el) => ({
               ...acc,

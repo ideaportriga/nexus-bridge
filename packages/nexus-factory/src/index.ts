@@ -1,4 +1,4 @@
-import Nexus from '@ipr/nexus-bridge'
+import Nexus from '@ideaportriga/nexus-bridge'
 import { NexusConfig, NexusBridge } from './types'
 
 declare const window: any

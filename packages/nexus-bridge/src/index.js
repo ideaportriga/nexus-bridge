@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import N19baseApplet from './n19baseApplet'
 import N19popupController from './n19popupController'
 import N19popupApplet from './n19popupApplet'
@@ -62,7 +61,7 @@ export default class Nexus extends N19baseApplet {
   }
 
   _newAssocRecord() {
-    return new Promise((resolve) =>
+    return new Promise(resolve =>
       this.pm.ExecuteMethod('InvokeMethod', 'NewRecord', null, {
         async: true,
         cb: resolve
@@ -114,7 +113,7 @@ export default class Nexus extends N19baseApplet {
   }
 
   drilldownPromised(controlName) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       this.n19popupController.viewLoadedResolve = resolve
       this.drilldown(controlName)
     })
@@ -151,46 +150,48 @@ export default class Nexus extends N19baseApplet {
   }
 
   pickRecordById(controlName, rowId) {
-    return this.showPickApplet(controlName, true)
-      .then(
-        (obj) => new Promise((resolve) => setTimeout(() => resolve(obj), 0))
-      )
-      .then((obj) => {
-        const found = obj.popupAppletN19.queryByIdSync(rowId)
-        if (found !== 1) {
-          throw new Error(`[NB] The record ${rowId} is not found (${found})`)
-        }
-        return obj.popupAppletN19.pickRecord()
-      })
+    return (
+      this.showPickApplet(controlName, true)
+        // is not needed when PR approach is used
+        .then(obj => new Promise(resolve => setTimeout(() => resolve(obj), 0)))
+        .then(obj => {
+          const found = obj.popupAppletN19.queryByIdSync(rowId)
+          if (found !== 1) {
+            throw new Error(`[NB] The record ${rowId} is not found (${found})`)
+          }
+          return obj.popupAppletN19.pickRecord()
+        })
+    )
   }
 
   assocRecordsById(controlName, arr, closeApplet) {
-    return this.showMvgApplet(controlName, true)
-      .then(
-        (obj) => new Promise((resolve) => setTimeout(() => resolve(obj), 0))
-      )
-      .then(
-        (obj) =>
-          new Promise((resolve) => {
-            const found = obj.assocAppletN19.queryByIdSync(arr)
-            if (found !== arr.length) {
-              // TODO: throw an error?
-              console.warn(
-                `[NB] The amount of found records(${found}) does not match to input array length(${arr.length})`
-              )
-            }
-            if (found > 0) {
-              obj.popupAppletN19.addAllRecords()
-            }
-            if (closeApplet) {
-              this.closePopupApplet()
-              resolve(found)
-            } else {
-              obj.found = found
-              resolve(obj)
-            }
-          })
-      )
+    return (
+      this.showMvgApplet(controlName, true)
+        // is not needed when PR approach is used
+        .then(obj => new Promise(resolve => setTimeout(() => resolve(obj), 0)))
+        .then(
+          obj =>
+            new Promise(resolve => {
+              const found = obj.assocAppletN19.queryByIdSync(arr)
+              if (found !== arr.length) {
+                // TODO: throw an error?
+                console.warn(
+                  `[NB] The amount of found records(${found}) does not match to input array length(${arr.length})`
+                )
+              }
+              if (found > 0) {
+                obj.popupAppletN19.addAllRecords()
+              }
+              if (closeApplet) {
+                this.closePopupApplet()
+                resolve(found)
+              } else {
+                obj.found = found
+                resolve(obj)
+              }
+            })
+        )
+    )
   }
 
   static CreatePopupNB(settings) {

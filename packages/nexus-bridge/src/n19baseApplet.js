@@ -1147,6 +1147,14 @@ export default class N19baseApplet {
     return ret
   }
 
+  getControlsRecordsObject(addRecordIndex) {
+    const arr = this.getControlsRecordSet(addRecordIndex)
+    return arr.reduce((res, record) => {
+      res[record.Id] = record
+      return res
+    }, {})
+  }
+
   getControlsRecordSet(addRecordIndex) {
     // used slice to avoid modification of the record set
     const ret = this.getRecordSet(addRecordIndex)

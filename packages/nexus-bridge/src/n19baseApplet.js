@@ -1226,9 +1226,8 @@ export default class N19baseApplet {
   }
 
   _getMockData() {
-    return {
-      items: this.getControlsRecordsObject(),
-      controls: this.getControls()
-    }
+    return Object.assign(this.getCurrentRecordModel(), {
+      items: this.getControlsRecordsObject()
+    })
   }
 }

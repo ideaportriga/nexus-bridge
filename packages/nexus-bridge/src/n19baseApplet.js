@@ -1224,4 +1224,11 @@ export default class N19baseApplet {
       current: this.getSelection() + start
     }
   }
+
+  _getMockData() {
+    return {
+      items: this.getControlsRecordsObject(),
+      controls: this.getControls()
+    }
+  }
 }

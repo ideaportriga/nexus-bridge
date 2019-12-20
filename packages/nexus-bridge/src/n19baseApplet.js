@@ -841,7 +841,11 @@ export default class N19baseApplet {
           uiType,
           label: control.GetDisplayName(),
           isPostChanges: control.IsPostChanges(),
-          required: this._isRequired(control.GetInputName()),
+          // keep required if it was in the template object
+          // workaround for not having required on list applet
+          required:
+            _controls[controlName].required ||
+            this._isRequired(control.GetInputName()),
           maxSize: control.GetMaxSize(),
           fieldName,
           displayFormat,

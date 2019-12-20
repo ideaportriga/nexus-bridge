@@ -9,6 +9,7 @@
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "moduleResolution": "node",
     "module": "esnext",
     "target": "es5",
     "sourceMap": false,

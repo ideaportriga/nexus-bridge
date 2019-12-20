@@ -4,13 +4,6 @@ import N19popupApplet from './n19popupApplet'
 
 export default class Nexus extends N19baseApplet {
   constructor(settings) {
-    const { pm } = settings
-    if (!pm) {
-      throw new Error(
-        '[NB] Nexus initialisation failed. Please provide the `pm`'
-      )
-    }
-
     super(settings)
 
     // get the n19popupController singleton instance
@@ -229,6 +222,11 @@ export default class Nexus extends N19baseApplet {
   }
 
   static CreatePopupNB(settings) {
+    const isPopup = settings.pm.Get('IsPopup')
+    if (!isPopup) {
+      throw new Error('[NB] The given pm is not popup applet PM')
+    }
+    settings.isPopup = true
     return new N19popupApplet(settings)
   }
 }

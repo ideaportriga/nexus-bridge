@@ -13,6 +13,12 @@ export default class N19baseApplet {
       isPopup: this.isPopup
     } = settings)
 
+    if (!this.pm) {
+      throw new Error(
+        '[NB] Nexus initialisation failed. Please provide the `pm`'
+      )
+    }
+
     this.view = window.SiebelApp.S_App.GetActiveView()
     this.appletName = this.pm.Get('GetName')
     this.isListApplet = typeof this.pm.Get('GetListOfColumns') !== 'undefined'

@@ -5,6 +5,8 @@
     "outDir": "./dist",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "declarationDir": "./dist/types",
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,

@@ -1,30 +1,43 @@
-if (typeof (SiebelAppFacade.NBAppletPR) === "undefined") {
-
-  SiebelJS.Namespace("SiebelAppFacade.NBAppletPR");
-  define("siebel/custom/NBAppletPR", ["siebel/custom/NBDefaultAppletPR"],
+/* eslint-disable prefer-rest-params, prettier/prettier */
+if (typeof window.SiebelAppFacade.NBAppletPR === 'undefined') {
+  window.SiebelJS.Namespace('SiebelAppFacade.NBAppletPR')
+  window.define(
+    'siebel/custom/NBAppletPR',
+    ['siebel/custom/NBDefaultAppletPR'],
     function () {
-      SiebelAppFacade.NBAppletPR = (function () {
-
+      window.SiebelAppFacade.NBAppletPR = (function () {
         function NBAppletPR(pm) {
-          SiebelAppFacade.NBAppletPR.superclass.constructor.apply(this, arguments);
+          window.SiebelAppFacade.NBAppletPR.superclass.constructor.apply(
+            this,
+            arguments
+          )
         }
 
-        SiebelJS.Extend(NBAppletPR, SiebelAppFacade.NBDefaultAppletPR);
+        window.SiebelJS.Extend(
+          NBAppletPR,
+          window.SiebelAppFacade.NBDefaultAppletPR
+        )
 
         NBAppletPR.prototype.Init = function () {
-          SiebelAppFacade.NBAppletPR.superclass.Init.apply(this, arguments);
-          this.initializeNexus({ convertDates: true }); // should be before removing to read the required fields
-          this.removeHtml();
+          window.SiebelAppFacade.NBAppletPR.superclass.Init.apply(
+            this,
+            arguments
+          )
+          this.initializeNexus({ convertDates: true }) // should be before removing to read the required fields
+          this.removeHtml()
         }
 
         NBAppletPR.prototype.EndLife = function () {
-          this.destroyNexus();
-          SiebelAppFacade.NBAppletPR.superclass.EndLife.apply(this, arguments);
+          this.destroyNexus()
+          window.SiebelAppFacade.NBAppletPR.superclass.EndLife.apply(
+            this,
+            arguments
+          )
         }
 
-        return NBAppletPR;
-      }()
-      );
-      return "SiebelAppFacade.NBAppletPR";
-    })
+        return NBAppletPR
+      })()
+      return 'SiebelAppFacade.NBAppletPR'
+    }
+  )
 }

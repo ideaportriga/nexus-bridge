@@ -1,15 +1,17 @@
-if (typeof (SiebelAppFacade.NBDefaultFormAppletPR) === "undefined") {
+/* eslint-disable prefer-rest-params, prettier/prettier */
+/* global NBPR */
+if (typeof (window.SiebelAppFacade.NBDefaultFormAppletPR) === "undefined") {
 
-  SiebelJS.Namespace("SiebelAppFacade.NBDefaultFormAppletPR");
-  define("siebel/custom/NBDefaultFormAppletPR", ["siebel/phyrenderer", "siebel/custom/NBPR"],
+  window.SiebelJS.Namespace("SiebelAppFacade.NBDefaultFormAppletPR");
+  window.define("siebel/custom/NBDefaultFormAppletPR", ["siebel/phyrenderer", "siebel/custom/NBPR"],
     function () {
-      SiebelAppFacade.NBDefaultFormAppletPR = (function () {
+      window.SiebelAppFacade.NBDefaultFormAppletPR = (function () {
 
         function NBDefaultFormAppletPR(pm) {
-          SiebelAppFacade.NBDefaultFormAppletPR.superclass.constructor.apply(this, arguments);
+          window.SiebelAppFacade.NBDefaultFormAppletPR.superclass.constructor.apply(this, arguments);
         }
 
-        SiebelJS.Extend(NBDefaultFormAppletPR, SiebelAppFacade.PhysicalRenderer);
+        window.SiebelJS.Extend(NBDefaultFormAppletPR, window.SiebelAppFacade.PhysicalRenderer);
 
         NBDefaultFormAppletPR.prototype.destroyNexus = NBPR.destroyNexus;
 
@@ -24,23 +26,23 @@ if (typeof (SiebelAppFacade.NBDefaultFormAppletPR) === "undefined") {
         NBDefaultFormAppletPR.prototype.NBInit = NBPR.init;
 
         NBDefaultFormAppletPR.prototype.Init = function () {
-          SiebelAppFacade.NBDefaultFormAppletPR.superclass.Init.apply(this, arguments);
+          window.SiebelAppFacade.NBDefaultFormAppletPR.superclass.Init.apply(this, arguments);
         }
 
         NBDefaultFormAppletPR.prototype.ShowUI = function () {
-          SiebelAppFacade.NBDefaultFormAppletPR.superclass.ShowUI.apply(this, arguments);
+          window.SiebelAppFacade.NBDefaultFormAppletPR.superclass.ShowUI.apply(this, arguments);
         }
 
         NBDefaultFormAppletPR.prototype.BindData = function (bRefresh) {
-          SiebelAppFacade.NBDefaultFormAppletPR.superclass.BindData.apply(this, arguments);
+          window.SiebelAppFacade.NBDefaultFormAppletPR.superclass.BindData.apply(this, arguments);
         }
 
         NBDefaultFormAppletPR.prototype.BindEvents = function () {
-          SiebelAppFacade.NBDefaultFormAppletPR.superclass.BindEvents.apply(this, arguments);
+          window.SiebelAppFacade.NBDefaultFormAppletPR.superclass.BindEvents.apply(this, arguments);
         }
 
         NBDefaultFormAppletPR.prototype.EndLife = function () {
-          SiebelAppFacade.NBDefaultFormAppletPR.superclass.EndLife.apply(this, arguments);
+          window.SiebelAppFacade.NBDefaultFormAppletPR.superclass.EndLife.apply(this, arguments);
         }
 
         return NBDefaultFormAppletPR;

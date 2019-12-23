@@ -1,7 +1,7 @@
 {
   "name": "@ideaportriga/nexus-factory",
   "description": "Factory of Nexus Bridge singletons",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": "Idea Port Riga",
   "license": "MIT",
   "main": "dist/index.js",
@@ -22,7 +22,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@ideaportriga/nexus-bridge": "^2.0.0"
+    "@ideaportriga/nexus-bridge": "^2.0.6"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.9.0",

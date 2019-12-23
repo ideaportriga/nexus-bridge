@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@ideaportriga/nexus-bridge@^2.0.0":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@ideaportriga/nexus-bridge/-/nexus-bridge-2.0.1.tgz#5eb266b1a8632426027b16fb0da5819be787620b"
-  integrity sha512-qR7UNgtwLbwYNV9nYtTxXkUqFH58h4hUcnVcfVK4h5ofjwMSVxd+n0JzTakMxDD4Kfh9z9cp/HmPquwrOPqAqg==
+"@ideaportriga/nexus-bridge@^2.0.5":
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@ideaportriga/nexus-bridge/-/nexus-bridge-2.0.6.tgz#14f3e322f1cc57aec2c8acdfa20e72864d4ac7fa"
+  integrity sha512-pxaoMEqXPcxf3RhDN9TH6z230XWWFf7zmb/roMfzVgwbOrznXz0j7bsnHHiqFctGYl1SFHG8s8OZ/o4ogBsSrg==
 
 "@types/eslint-visitor-keys@^1.0.0":
   version "1.0.0"

@@ -25,7 +25,7 @@ const NexusPopup = (appletName: string, pm: any): NexusBridge => {
   })
 }
 
-const NexusFactory = (config: string | NexusConfig): null | NexusBridge => {
+const NexusFactory = (config: string | NexusConfig): NexusBridge | null => {
   if (typeof config === 'string') {
     const key = config || 'default'
 
@@ -62,7 +62,7 @@ const NexusFactory = (config: string | NexusConfig): null | NexusBridge => {
     }
   }
 
-  return memo
+  return null
 }
 
 export { NexusBridge, NexusConfig, NexusFactory, NexusPopup }

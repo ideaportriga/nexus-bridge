@@ -1,7 +1,7 @@
 {
   "name": "@ideaportriga/nexus-factory",
   "description": "Factory of Nexus Bridge singletons",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "author": "Idea Port Riga",
   "license": "MIT",
   "main": "dist/index.js",

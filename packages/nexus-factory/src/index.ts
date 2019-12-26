@@ -45,22 +45,21 @@ const getPM = (appletName: string) => {
 }
 
 const memoizeOnce = (appletName: string, key: string) => {
-  const pm = getPM(appletName)
-  const isPopup = pm.Get('IsPopup')
-  if (isPopup) {
-    memo[key] = createPopup(appletName)
-  } else {
-    memo[key] = createApplet(appletName)
+  if (!memo[key]) {
+    const pm = getPM(appletName)
+    const isPopup = pm.Get('IsPopup')
+    if (isPopup) {
+      memo[key] = createPopup(appletName)
+    } else {
+      memo[key] = createApplet(appletName)
+    }
   }
+
+  return memo[key]
 }
 
 const NexusFactory = (config: string | NexusConfig): NexusBridge | null => {
-  if (typeof config === 'string') {
-    const key = config || 'default'
-
-    return memo[key]
-  }
-
+  // init factory
   if (typeof config === 'object') {
     for (const key in memo) {
       console.log(`[NF] Nexus instance deleted: ${memo[key].appletName}`)
@@ -74,7 +73,15 @@ const NexusFactory = (config: string | NexusConfig): NexusBridge | null => {
     }
   }
 
-  return null
+  // get applet
+  if (typeof config === 'string') {
+    const key = config || 'default'
+
+    return memo[key]
+  }
+
+  return memo
+  // return null
 }
 
-export { createApplet, createPopup, NexusFactory }
+export { memoizeOnce, NexusFactory }

@@ -5,7 +5,17 @@ declare const window: any
 
 const memo: Record<string, NexusBridge> = {}
 
-const NexusPopup = (appletName: string, pm: any): NexusBridge => {
+const createApplet = (appletName: string): NexusBridge => {
+  const pm = getPM(appletName)
+
+  return new Nexus({
+    pm,
+    convertDates: true
+  })
+}
+
+const createPopup = (appletName: string): NexusBridge => {
+  const pm = getPM(appletName)
   const isPopup = pm.Get('IsPopup')
 
   // popup applet PM
@@ -25,6 +35,25 @@ const NexusPopup = (appletName: string, pm: any): NexusBridge => {
   })
 }
 
+const getPM = (appletName: string) => {
+  const applet = window.SiebelApp.S_App.GetActiveView().GetApplet(appletName)
+  if (!applet) {
+    console.log(`[NF] Applet not found: ${appletName}`)
+  }
+
+  return applet.GetPModel()
+}
+
+const memoizeOnce = (appletName: string, key: string) => {
+  const pm = getPM(appletName)
+  const isPopup = pm.Get('IsPopup')
+  if (isPopup) {
+    memo[key] = createPopup(appletName)
+  } else {
+    memo[key] = createApplet(appletName)
+  }
+}
+
 const NexusFactory = (config: string | NexusConfig): NexusBridge | null => {
   if (typeof config === 'string') {
     const key = config || 'default'
@@ -39,24 +68,7 @@ const NexusFactory = (config: string | NexusConfig): NexusBridge | null => {
     }
 
     for (const key in config) {
-      const appletName = config[key]
-      const applet = window.SiebelApp.S_App.GetActiveView().GetApplet(
-        appletName
-      )
-      if (!applet) {
-        console.log(`[NF] Applet not found: ${appletName}`)
-      }
-
-      const pm = applet.GetPModel()
-      const isPopup = pm.Get('IsPopup')
-      if (isPopup) {
-        memo[key] = NexusPopup(appletName, pm)
-      } else {
-        memo[key] = new Nexus({
-          pm,
-          convertDates: true
-        })
-      }
+      memoizeOnce(config[key], key)
 
       console.log(`[NF] Nexus instance created: ${memo[key].appletName}`)
     }
@@ -65,4 +77,4 @@ const NexusFactory = (config: string | NexusConfig): NexusBridge | null => {
   return null
 }
 
-export { NexusBridge, NexusConfig, NexusFactory, NexusPopup }
+export { createApplet, createPopup, NexusFactory }

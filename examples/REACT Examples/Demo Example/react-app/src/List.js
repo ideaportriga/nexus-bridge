@@ -1,4 +1,4 @@
-import n19Factory from "@ipr/n19factory";
+import { NexusFactory } from "@ideaportriga/nexus-factory";
 import React, { useEffect, useState } from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -8,7 +8,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 
 const ContactsList = ({ accountName }) => {
-  const n19Helper = n19Factory("contacts");
+  const n19Helper = NexusFactory("contacts");
 
   const initialState = n19Helper.getRecordSet();
   const [contacts, setContacts] = useState(initialState);
@@ -17,13 +17,13 @@ const ContactsList = ({ accountName }) => {
 
   // subscribe to account name
   useEffect(() => {
-    if(accountName) {
+    if (accountName) {
       const currentContacts = n19Helper.getRecordSet();
       setContacts(currentContacts);
     }
     else
       setContacts([])
-  }, [accountName]);
+  }, [accountName, n19Helper]);
 
   return (
     <div>

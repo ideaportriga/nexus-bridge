@@ -1,4 +1,4 @@
-# N19 React App
+# Nexus React App
 
 ## Configuration
 

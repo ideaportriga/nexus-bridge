@@ -1,4 +1,4 @@
-import n19Factory from "@ipr/n19factory";
+import { NexusFactory } from "@ideaportriga/nexus-factory";
 import React, { useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
@@ -16,7 +16,7 @@ import List from "./List";
 const App = () => {
   // the canonical way to use the applet
   // do not pass as prop or thru context
-  const n19Helper = n19Factory("default");
+  const n19Helper = NexusFactory("default");
 
   // init the applet state
   const _controls = {
@@ -41,7 +41,7 @@ const App = () => {
     return () => {
       n19Helper.unsubscribe(token);
     };
-  }, [state.methods]);
+  }, [_controls, _methods, n19Helper, state, state.methods]);
 
   const [isOpenSnackbar, toggleSnackbar] = useState(false);
   const [snackbarText, setSnackbarText] = useState("");
@@ -99,7 +99,7 @@ const App = () => {
         </Grid>
       </Grid>
 
-      <Form n19Helper={n19Helper} accountName={state.controls.Name.value} queryMode={queryMode}/>
+      <Form n19Helper={n19Helper} accountName={state.controls.Name.value} queryMode={queryMode} />
 
       <Divider variant="middle" />
 
@@ -122,7 +122,7 @@ const App = () => {
             <Button
               disabled={!state.methods.NewQuery}
               style={{ width: "100%" }}
-              onClick={() => {setQueryMode(true); n19Helper.invokeMethod("NewQuery")}}
+              onClick={() => { setQueryMode(true); n19Helper.invokeMethod("NewQuery") }}
               variant="contained"
               color="primary"
             >
@@ -137,7 +137,7 @@ const App = () => {
             <Button
               disabled={state.controls.state !== 3}
               style={{ width: "100%" }}
-              onClick={() => {setQueryMode(false); n19Helper.invokeMethod("ExecuteQuery")}}
+              onClick={() => { setQueryMode(false); n19Helper.invokeMethod("ExecuteQuery") }}
               variant="contained"
               color="primary"
             >

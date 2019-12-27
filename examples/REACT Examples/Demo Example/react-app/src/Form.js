@@ -57,7 +57,7 @@ const Form = ({ n19Helper, accountName, queryMode }) => {
     return () => {
       n19Helper.unsubscribe(token);
     };
-  }, [accountName]);
+  }, [accountName, n19Helper, selectInit]);
 
   const accountStatusList = n19Helper
     .getStaticLOV("AccountStatus")

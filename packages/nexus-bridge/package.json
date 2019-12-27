@@ -28,6 +28,10 @@
     "url": "https://github.com/ideaportriga/nexus-bridge/issues"
   },
   "homepage": "https://github.com/ideaportriga/nexus-bridge#readme",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "peerDependencies": {},
   "dependencies": {},
   "devDependencies": {

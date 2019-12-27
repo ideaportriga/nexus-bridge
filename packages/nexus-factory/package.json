@@ -18,6 +18,10 @@
     "prebuild": "yarn clean",
     "lint": "eslint --fix src/*.ts"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "dependencies": {
     "@ideaportriga/nexus-bridge": "^2.0.6"
   },

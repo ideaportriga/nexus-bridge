@@ -48,10 +48,7 @@ var NBPR = (function () {
       var popupPM = window.SiebelApp.S_App.GetPopupPM()
       var isShuttle = popupPM.Get('isPopupMVGAssoc')
       var mvgAssoc = popupPM.Get('MVGAssocAppletObject')
-      var applet = window.SiebelApp.S_App.GetActiveView().GetApplet(
-        appletName
-      )
-      var isMvgAssoc = isShuttle && applet && applet === mvgAssoc
+      var isMvgAssoc = isShuttle && mvgAssoc && appletName === mvgAssoc.GetName()
       options.isMvgAssoc = isMvgAssoc
       // options.isPopup = true
       window.SiebelAppFacade.NB[

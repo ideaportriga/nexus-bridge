@@ -156,6 +156,7 @@ export default class N19baseApplet {
         .toLocaleString('en-US', { hour12: false })
         .split(',')
         .join('')
+        .replace(/[^ -~]/g, '') // MK fix for IE11
       return window.SiebelApp.S_App.LocaleObject.GetStringFromDateTime(
         date,
         'M/D/YYYY HH:mm:ss',

@@ -16,21 +16,9 @@ const createApplet = (appletName: string): NexusBridge => {
 
 const createPopup = (appletName: string): NexusBridge => {
   const pm = getPM(appletName)
-  const isPopup = pm.Get('IsPopup')
-
-  // popup applet PM
-  const popupPM = window.SiebelApp.S_App.GetPopupPM()
-
-  // if assoc exists
-  const assocApplet = popupPM.Get('MVGAssocAppletObject')
-  const isShuttle = popupPM.Get('isPopupMVGAssoc')
-  const isMvgAssoc =
-    isShuttle && assocApplet ? appletName === assocApplet.GetName() : false
 
   return Nexus.CreatePopupNB({
     pm,
-    isPopup,
-    isMvgAssoc,
     convertDates: true
   })
 }

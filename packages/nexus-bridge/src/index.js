@@ -222,10 +222,16 @@ export default class Nexus extends N19baseApplet {
   }
 
   static CreatePopupNB(settings) {
-    const isPopup = settings.pm.Get('IsPopup')
-    if (!isPopup) {
-      throw new Error('[NB] The given pm is not popup applet PM')
+    if (!settings.pm || !settings.pm.Get('IsPopup')) {
+      throw new Error('[NB] No pm or the given pm is not popup applet PM')
     }
+
+    const popupPM = window.SiebelApp.S_App.GetPopupPM()
+    const isShuttle = popupPM.Get('isPopupMVGAssoc')
+    const mvgAssoc = popupPM.Get('MVGAssocAppletObject')
+
+    settings.isMvgAssoc =
+      isShuttle && mvgAssoc && settings.pm.Get('GetName') === mvgAssoc.GetName()
     settings.isPopup = true
     return new N19popupApplet(settings)
   }

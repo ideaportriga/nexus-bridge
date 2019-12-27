@@ -6,6 +6,29 @@ export default class N19popupApplet extends N19baseApplet {
     console.log('[NB] Popup applet started')
   }
 
+  getPopupType() {
+    // TODO: check state? hidden or visible
+    // pick, mvgassoc, mvg, assoc, popup
+    const pm = window.SiebelApp.S_App.GetPopupPM()
+
+    if (pm.Get('isPopupPick')) {
+      return 'pick'
+    }
+    const mvg = pm.Get('isPopupMVGSelected')
+    if (mvg && pm.Get('isPopupMVGAssoc')) {
+      // TODO: maybe better check
+      // currPopups.length, MVGAssocAppletObject, MVGAssocParentAppletObject
+      return 'mvgassoc'
+    }
+    if (mvg) {
+      return 'mvg'
+    }
+    if (pm.Get('isPopupAssoc')) {
+      return 'assoc'
+    }
+    return 'popup'
+  }
+
   pickRecord() {
     return this.pm.ExecuteMethod('InvokeMethod', 'PickRecord')
   }

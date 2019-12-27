@@ -505,6 +505,7 @@ export default class N19baseApplet {
   deleteRecordSync(skipConfirmDialog) {
     if (skipConfirmDialog) {
       this.N19Confirm = window.SiebelApp.Utils.Confirm
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       window.SiebelApp.Utils.Confirm = () => {}
     }
     // do we need to try..catch and restore the function in catch ?

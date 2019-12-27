@@ -58,6 +58,26 @@ const memoizeOnce = (appletName: string, key: string) => {
   return memo[key]
 }
 
+const CreatePopup = (config: NexusConfig): NexusBridge => {
+  const ret: Record<string, NexusBridge> = {}
+  for (const key in config) {
+    ret[key] = memoizeOnce(config[key], key)
+    console.log(`[NF] Popup Nexus instance created: ${ret[key].appletName}`)
+  }
+
+  return ret
+}
+
+const ClearPopup = (config: string[]): void => {
+  for (const key of config) {
+    if (!memo[key]) {
+      throw new Error(`[NF] '${key}' is not found among NB instances`)
+    }
+    console.log(`[NF] Nexus instance deleted: ${memo[key].appletName}`)
+    delete memo[key]
+  }
+}
+
 const NexusFactory = (config: string | NexusConfig): NexusBridge | null => {
   // init factory
   if (typeof config === 'object') {
@@ -84,4 +104,4 @@ const NexusFactory = (config: string | NexusConfig): NexusBridge | null => {
   // return null
 }
 
-export { memoizeOnce, NexusFactory }
+export { memoizeOnce, NexusFactory, CreatePopup, ClearPopup }

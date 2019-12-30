@@ -1241,4 +1241,36 @@ export default class N19baseApplet {
       items: this.getControlsRecordsObject()
     })
   }
+
+  // TODO: should be static?
+  getPopupType() {
+    // null, pick, mvgassoc, mvg, assoc, popup
+    const pm = window.SiebelApp.S_App.GetPopupPM()
+    if (!pm) {
+      return null
+    }
+
+    // check state? unloaded, hidden or visible
+    if (pm.Get('state') !== this.consts.get('POPUP_STATE_VISIBLE')) {
+      // not visible
+      return null
+    }
+
+    if (pm.Get('isPopupPick')) {
+      return 'pick'
+    }
+    const mvg = pm.Get('isPopupMVGSelected')
+    if (mvg && pm.Get('isPopupMVGAssoc')) {
+      // TODO: maybe better check
+      // currPopups.length, MVGAssocAppletObject, MVGAssocParentAppletObject
+      return 'mvgassoc'
+    }
+    if (mvg) {
+      return 'mvg'
+    }
+    if (pm.Get('isPopupAssoc')) {
+      return 'assoc'
+    }
+    return 'popup'
+  }
 }

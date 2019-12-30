@@ -7,7 +7,7 @@ const memo: Record<string, NexusBridge> = {}
 
 const memoizeOnce = (appletName: string, key: string) => {
   if (!memo[key]) {
-    console.log(`[NF] Nexus instance created: ${memo[key].appletName}`)
+    console.log(`[NF] Nexus instance created: ${appletName}`)
 
     const applet = window.SiebelApp.S_App.GetActiveView().GetApplet(appletName)
     if (!applet) {

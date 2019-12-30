@@ -11,34 +11,28 @@ const memoizeOnce = (appletName: string, key: string) => {
 
     const applet = window.SiebelApp.S_App.GetActiveView().GetApplet(appletName)
     if (!applet) {
-      console.log(`[NF] Applet not found: ${appletName}`)
+      throw new Error(`[NF] Applet not found: ${appletName}`)
+    }
+    const pm = applet.GetPModel()
+    const isPopup = pm.Get('IsPopup')
+    if (isPopup) {
+      memo[key] = Nexus.CreatePopupNB({
+        pm,
+        convertDates: true
+      })
     } else {
-      const pm = applet.GetPModel()
-      const isPopup = pm.Get('IsPopup')
-      if (isPopup) {
-        memo[key] = Nexus.CreatePopupNB({
-          pm,
-          convertDates: true
-        })
-      } else {
-        memo[key] = new Nexus({
-          pm,
-          convertDates: true
-        })
-      }
+      memo[key] = new Nexus({
+        pm,
+        convertDates: true
+      })
     }
   }
-
-  return memo[key]
 }
 
 const createPopup = (config: NexusConfig) => {
-  const res: Record<string, NexusBridge> = {}
   for (const key in config) {
-    res[key] = memoizeOnce(config[key], key)
+    memoizeOnce(config[key], key)
   }
-
-  return res
 }
 
 const clearPopup = (config: string[]) => {
@@ -73,8 +67,7 @@ const NexusFactory = (config: string | NexusConfig): NexusBridge | null => {
     return memo[key]
   }
 
-  return memo
-  // return null
+  return null
 }
 
-export { createPopup, clearPopup, memoizeOnce, NexusFactory }
+export { createPopup, clearPopup, NexusFactory }

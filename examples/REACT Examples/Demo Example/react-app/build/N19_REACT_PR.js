@@ -1,7 +1,6 @@
 if (typeof SiebelAppFacade.N19_REACT_PR === "undefined") {
   SiebelJS.Namespace("SiebelAppFacade.N19_REACT_PR")
   define("siebel/custom/react-app/N19_REACT_PR", [
-    "siebel/custom/NBDefaultAppletPR",
     "siebel/custom/react-app/static/js/main"
   ], function () {
     SiebelAppFacade.N19_REACT_PR = (function () {

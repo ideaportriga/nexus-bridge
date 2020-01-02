@@ -17,4 +17,4 @@ const unmountComponent = id => {
   }
 };
 
-window.SiebReact = { mountComponent, unmountComponent };
+window.N19_REACT_APP = { mountComponent, unmountComponent };

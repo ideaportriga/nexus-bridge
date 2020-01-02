@@ -4,14 +4,13 @@ import N19localeData from './n19localeData'
 export default class N19baseApplet {
   constructor(settings) {
     this.consts = window.SiebelJS.Dependency('window.SiebelApp.Constants')
-    ;({
-      pm: this.pm,
-      convertDates: this.convertDates,
-      returnRawNumbers: this.returnRawNumbers,
-      returnRawCurrencies: this.returnRawCurrencies,
-      isMvgAssoc: this.isMvgAssoc,
-      isPopup: this.isPopup
-    } = settings)
+
+    this.pm = settings.pm
+    this.convertDates = settings.convertDates
+    this.returnRawNumbers = settings.returnRawNumbers
+    this.returnRawCurrencies = settings.returnRawCurrencies
+    this.isMvgAssoc = settings.isMvgAssoc
+    this.isPopup = settings.isPopup
 
     if (!this.pm) {
       throw new Error(
@@ -208,6 +207,16 @@ export default class N19baseApplet {
       .sort()
   }
 
+  _getIconMap(control) {
+    const iconMap = control.GetIconMap()
+    if (iconMap) {
+      return window.SiebelApp.S_App.GetIconMap()[
+        window.SiebelApp.S_App.LookupStringCache(iconMap)
+      ]
+    }
+    return null
+  }
+
   getControls() {
     const controls = {}
     const appletControls = this._returnControls()
@@ -223,7 +232,6 @@ export default class N19baseApplet {
           control.GetDisplayFormat() || this.getControlDisplayFormat(uiType)
         const staticPick = control.IsStaticBounded() === '1'
         const dataType = this.pm.ExecuteMethod('GetFieldDataType', fieldName)
-        const iconMap = control.GetIconMap()
         const obj = {
           name,
           label: control.GetDisplayName(),
@@ -245,11 +253,7 @@ export default class N19baseApplet {
           popupType: control.GetPopupType(), // always correlate to uiType?
           props: N19baseApplet.GetPropSet(control),
           isSortable: control.IsSortable(),
-          iconMap: iconMap
-            ? window.SiebelApp.S_App.GetIconMap()[
-                window.SiebelApp.S_App.LookupStringCache(iconMap)
-              ]
-            : null,
+          iconMap: this._getIconMap(control),
           methodName: control.GetMethodName()
         }
         Object.defineProperty(obj, 'readOnly', {
@@ -506,7 +510,7 @@ export default class N19baseApplet {
     if (skipConfirmDialog) {
       this.N19Confirm = window.SiebelApp.Utils.Confirm
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      window.SiebelApp.Utils.Confirm = () => {}
+      window.SiebelApp.Utils.Confirm = () => true
     }
     // do we need to try..catch and restore the function in catch ?
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecord')
@@ -817,7 +821,6 @@ export default class N19baseApplet {
           control.GetDisplayFormat() || this.getControlDisplayFormat(uiType)
         const staticPick = control.IsStaticBounded() === '1'
         const dataType = this.pm.ExecuteMethod('GetFieldDataType', fieldName)
-        const iconMap = control.GetIconMap()
         let currencyCodeField = ''
         let currencyCode = ''
         if ('currency' === dataType) {
@@ -862,11 +865,7 @@ export default class N19baseApplet {
           currencyCodeField,
           currencyCode,
           name: controlName,
-          iconMap: iconMap
-            ? window.SiebelApp.S_App.GetIconMap()[
-                window.SiebelApp.S_App.LookupStringCache(iconMap)
-              ]
-            : null
+          iconMap: this._getIconMap(control)
         })
       }
     })
@@ -1061,20 +1060,22 @@ export default class N19baseApplet {
       },
       cb: (methodName, Inputs, psOutputs) => {
         const ret = {}
-        const { childArray } = psOutputs.GetChildByType('ResultSet') || {} // to be safe when no results
-        ;(childArray || []).forEach(child => {
-          ret[child.GetType()] = {}
-          child.childArray.forEach(grandChild => {
-            ret[child.GetType()][
-              grandChild.GetType()
-            ] = grandChild.childArray.map(rec => {
-              const primary = rec.propArray['SSA Primary Field']
-              this.boolObject.SetAsString(primary)
-              rec.propArray['SSA Primary Field'] = this.boolObject.GetValue()
-              return Object.assign({}, rec.propArray)
+        const { childArray } = psOutputs.GetChildByType('ResultSet')
+        if (childArray) {
+          childArray.forEach(child => {
+            ret[child.GetType()] = {}
+            child.childArray.forEach(grandChild => {
+              ret[child.GetType()][
+                grandChild.GetType()
+              ] = grandChild.childArray.map(rec => {
+                const primary = rec.propArray['SSA Primary Field']
+                this.boolObject.SetAsString(primary)
+                rec.propArray['SSA Primary Field'] = this.boolObject.GetValue()
+                return Object.assign({}, rec.propArray)
+              })
             })
           })
-        })
+        }
         resolve(ret)
       }
     }
@@ -1191,11 +1192,9 @@ export default class N19baseApplet {
                     uiType: this.fieldToControlMap[el].uiType,
                     dataType: this.fieldToControlMap[el].dataType,
                     displayFormat: this.fieldToControlMap[el].displayFormat,
-                    currencyCode:
-                      rawRecordSet[i] &&
-                      rawRecordSet[i][
-                        this.fieldToControlMap[el].currencyCodeField
-                      ]
+                    currencyCode: (rawRecordSet[i] || {})[
+                      this.fieldToControlMap[el].currencyCodeField
+                    ]
                   }
                 )
               }
@@ -1241,5 +1240,37 @@ export default class N19baseApplet {
     return Object.assign(this.getCurrentRecordModel(), {
       items: this.getControlsRecordsObject()
     })
+  }
+
+  // TODO: should be static?
+  getPopupType() {
+    // null, pick, mvgassoc, mvg, assoc, popup
+    const pm = window.SiebelApp.S_App.GetPopupPM()
+    if (!pm) {
+      return null
+    }
+
+    // check state? unloaded, hidden or visible
+    if (pm.Get('state') !== this.consts.get('POPUP_STATE_VISIBLE')) {
+      // not visible
+      return null
+    }
+
+    if (pm.Get('isPopupPick')) {
+      return 'pick'
+    }
+    const mvg = pm.Get('isPopupMVGSelected')
+    if (mvg && pm.Get('isPopupMVGAssoc')) {
+      // TODO: maybe better check
+      // currPopups.length, MVGAssocAppletObject, MVGAssocParentAppletObject
+      return 'mvgassoc'
+    }
+    if (mvg) {
+      return 'mvg'
+    }
+    if (pm.Get('isPopupAssoc')) {
+      return 'assoc'
+    }
+    return 'popup'
   }
 }

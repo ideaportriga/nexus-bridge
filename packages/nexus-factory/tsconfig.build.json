@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "declaration": true,
+    "baseUrl": "./src",
     "lib": ["dom", "esnext"],
     "outDir": "./dist",
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
+    "declaration": true,
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,

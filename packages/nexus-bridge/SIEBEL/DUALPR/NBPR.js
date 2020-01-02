@@ -41,19 +41,9 @@ var NBPR = (function () {
   function initializeNexus(options) {
     var pm = this.GetPM()
     var appletName = pm.Get('GetName')
-    var isPopup = pm.Get('IsPopup')
     options.pm = pm
     window.SiebelAppFacade.NB = window.SiebelAppFacade.NB || {}
-    if (isPopup) {
-      var popupPM = window.SiebelApp.S_App.GetPopupPM()
-      var isShuttle = popupPM.Get('isPopupMVGAssoc')
-      var mvgAssoc = popupPM.Get('MVGAssocAppletObject')
-      var applet = window.SiebelApp.S_App.GetActiveView().GetApplet(
-        appletName
-      )
-      var isMvgAssoc = isShuttle && applet && applet === mvgAssoc
-      options.isMvgAssoc = isMvgAssoc
-      // options.isPopup = true
+    if (pm.Get('IsPopup')) {
       window.SiebelAppFacade.NB[
         appletName
       ] = window.SiebelAppFacade.NexusBridge.CreatePopupNB(options)

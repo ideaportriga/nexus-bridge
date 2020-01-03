@@ -7,8 +7,8 @@ Webpack config (`webpack.config.js`) ejected from [CRA][1] and modified for usin
 To symlink the development build with the local Siebel client:
 
 ```bash
-cd C:\Projects\nexus-bridge\examples\REACT Examples\Demo Example\react-app\build
-mklink /J C:\Siebel\16.0.0.0.0\Client\public\SCRIPTS\siebel\custom\react-app\static .\static
+cd C:\Projects\nexus-bridge\examples\REACT Examples\Demo Example\react-app
+mklink /J C:\Siebel\16.0.0.0.0\Client\public\SCRIPTS\siebel\custom\react-app .\build
 ```
 
 ## Development

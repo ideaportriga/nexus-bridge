@@ -10,7 +10,7 @@ if (typeof SiebelAppFacade.N19_REACT_PR === "undefined") {
         SiebelAppFacade.N19_REACT_PR.superclass.constructor.apply(this, arguments)
       }
 
-      SiebelJS.Extend(N19_REACT_PR, SiebelAppFacade.NBDefaultAppletPR)
+      SiebelJS.Extend(N19_REACT_PR, SiebelAppFacade.ViewPR)
 
       N19_REACT_PR.prototype.Init = function () {
         SiebelAppFacade.N19_REACT_PR.superclass.Init.apply(this, arguments)
@@ -21,13 +21,13 @@ if (typeof SiebelAppFacade.N19_REACT_PR === "undefined") {
         var rootElement = document.createElement("div")
         rootElement.id = containerId
         applet.parentElement.parentElement.appendChild(rootElement)
-        SiebReact.mountComponent(containerId)
+        N19_REACT_APP.mountComponent(containerId)
         applet.parentElement.remove();
       }
 
       N19_REACT_PR.prototype.EndLife = function () {
         if (document.getElementById(containerId) !== null) {
-          SiebReact.unmountComponent(containerId)
+          N19_REACT_APP.unmountComponent(containerId)
           document.getElementById(containerId).remove()
         }
         SiebelAppFacade.N19_REACT_PR.superclass.EndLife.apply(this, arguments)

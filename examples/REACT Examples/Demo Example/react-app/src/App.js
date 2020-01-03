@@ -16,9 +16,9 @@ import List from "./List";
 const App = () => {
   // the canonical way to use the applet
   // do not pass as prop or thru context
-  const n19Helper = NexusFactory("default");
+  const defaultApplet = NexusFactory("default");
 
-  // init the applet state
+  // init the app state
   const _controls = {
     Name: {}
   };
@@ -28,27 +28,27 @@ const App = () => {
     WriteRecord: false,
     NewQuery: false
   };
-  const initialState = n19Helper.getCurrentRecordModel(_controls, _methods);
+  const initialState = defaultApplet.getCurrentRecordModel(_controls, _methods);
   const [state, setState] = useState(initialState);
 
-  // subscribe to methods only
+  // subscribe to the applet state
   useEffect(() => {
-    const token = n19Helper.subscribe(() => {
-      const { methods } = n19Helper.getCurrentRecordModel(_controls, _methods);
-      setState({ ...state, methods });
+    const token = defaultApplet.subscribe(() => {
+      const newState = defaultApplet.getCurrentRecordModel(_controls, _methods);
+      setState(newState);
     });
 
     return () => {
-      n19Helper.unsubscribe(token);
+      defaultApplet.unsubscribe(token);
     };
-  }, [_controls, _methods, n19Helper, state, state.methods]);
+  }, [_controls, _methods, defaultApplet]);
 
   const [isOpenSnackbar, toggleSnackbar] = useState(false);
   const [snackbarText, setSnackbarText] = useState("");
   const [queryMode, setQueryMode] = useState(false);
 
   const saveRecord = () => {
-    n19Helper.writeRecord(
+    defaultApplet.writeRecord(
       () => {
         setSnackbarText("Record is saved!");
         toggleSnackbar(true);
@@ -95,11 +95,11 @@ const App = () => {
           xl={12}
           style={{ padding: 15, background: "#3f51b5", color: "#fff" }}
         >
-          {n19Helper.appletName} {" rendered by React"}
+          {defaultApplet.appletName} {" rendered by React"}
         </Grid>
       </Grid>
 
-      <Form n19Helper={n19Helper} accountName={state.controls.Name.value} queryMode={queryMode} />
+      <Form formApplet={defaultApplet} accountName={state.controls.Name.value} queryMode={queryMode} />
 
       <Divider variant="middle" />
 
@@ -122,7 +122,7 @@ const App = () => {
             <Button
               disabled={!state.methods.NewQuery}
               style={{ width: "100%" }}
-              onClick={() => { setQueryMode(true); n19Helper.invokeMethod("NewQuery") }}
+              onClick={() => { setQueryMode(true); defaultApplet.invokeMethod("NewQuery") }}
               variant="contained"
               color="primary"
             >
@@ -137,7 +137,7 @@ const App = () => {
             <Button
               disabled={state.controls.state !== 3}
               style={{ width: "100%" }}
-              onClick={() => { setQueryMode(false); n19Helper.invokeMethod("ExecuteQuery") }}
+              onClick={() => { setQueryMode(false); defaultApplet.invokeMethod("ExecuteQuery") }}
               variant="contained"
               color="primary"
             >
@@ -153,7 +153,7 @@ const App = () => {
           <Button
             disabled={!state.methods.GotoPreviousSet}
             style={{ width: "100%" }}
-            onClick={() => n19Helper.prevRecord()}
+            onClick={() => defaultApplet.prevRecord()}
             variant="contained"
             color="primary"
           >
@@ -165,7 +165,7 @@ const App = () => {
           <Button
             disabled={!state.methods.GotoNextSet}
             style={{ width: "100%" }}
-            onClick={() => n19Helper.nextRecord()}
+            onClick={() => defaultApplet.nextRecord()}
             variant="contained"
             color="primary"
           >

@@ -8,9 +8,9 @@ import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 
 const ContactsList = ({ accountName }) => {
-  const n19Helper = NexusFactory("contacts");
+  const listApplet = NexusFactory("contacts");
 
-  const initialState = n19Helper.getRecordSet();
+  const initialState = listApplet.getRecordSet();
   const [contacts, setContacts] = useState(initialState);
 
   let id = 0;
@@ -18,17 +18,17 @@ const ContactsList = ({ accountName }) => {
   // subscribe to account name
   useEffect(() => {
     if (accountName) {
-      const currentContacts = n19Helper.getRecordSet();
+      const currentContacts = listApplet.getRecordSet();
       setContacts(currentContacts);
     }
     else
       setContacts([])
-  }, [accountName, n19Helper]);
+  }, [accountName, listApplet]);
 
   return (
     <div>
       <Typography variant="h6" id="tableTitle">
-        {n19Helper.appletName}
+        {listApplet.appletName}
       </Typography>
 
       <Table>

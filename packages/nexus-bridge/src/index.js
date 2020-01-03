@@ -25,6 +25,7 @@ export default class Nexus extends N19baseApplet {
       )
     }
     this._setActiveControl(name)
+
     return this.n19popupController.showPopupApplet(hide, cb, this, 'EditPopup')
   }
 
@@ -34,6 +35,7 @@ export default class Nexus extends N19baseApplet {
         '[NB] Cannot open popup (currently exists resolve function)'
       )
     }
+
     return this.n19popupController.showPopupApplet(
       hide,
       cb,
@@ -49,15 +51,18 @@ export default class Nexus extends N19baseApplet {
         `[NB] Cannot find a control by name ${name} to show Mvg applet.`
       )
     }
+
     const uiType = control.GetUIType()
     if (uiType !== this.consts.get('SWE_CTRL_MVG')) {
       throw new Error(
         `Control ${name} is not of supported type ${uiType} to show Mvg applet`
       )
     }
+
     if (this.pm.Get('IsInQueryMode')) {
       throw new Error('[NB] Mvg applet cannot be opened in query mode')
     }
+
     return this._showPopupApplet(name, hide, cb)
   }
 
@@ -68,12 +73,14 @@ export default class Nexus extends N19baseApplet {
         `[NB] Cannot find a control by name ${name} to show Pick applet.`
       )
     }
+
     const uiType = control.GetUIType()
     if (uiType !== this.consts.get('SWE_CTRL_PICK')) {
       throw new Error(
         `Control ${name} is not of supported type ${uiType} to show Pick applet`
       )
     }
+
     return this._showPopupApplet(name, hide, cb)
   }
 
@@ -93,9 +100,11 @@ export default class Nexus extends N19baseApplet {
         '[NB] Cannot open popup (currently exists resolve function)'
       )
     }
+
     if (!this.canInvokeMethod('NewRecord')) {
       throw new Error('[NB] NewRecord is not available') // also when in query mode
     }
+
     return this.n19popupController._openAssocApplet(
       hide,
       this._newAssocRecord.bind(this),
@@ -116,11 +125,13 @@ export default class Nexus extends N19baseApplet {
         index
       )
     }
+
     // else lets assume it is form applet
     const control = this._getControl(controlName)
     if (!control) {
       throw new Error(`[NB] Control ${controlName} is not found`)
     }
+
     return this.pm.OnControlEvent(
       this.consts.get('PHYEVENT_DRILLDOWN_FORM'),
       control
@@ -144,6 +155,7 @@ export default class Nexus extends N19baseApplet {
       let SWECmd = `GotoView&SWEView=${viewName}&SWEApplet0=${appletName}`
       SWECmd += `&SWEBU=1&SWEKeepContext=FALSE&SWERowId0=${id}`
       SWECmd = encodeURI(SWECmd)
+
       return window.SiebelApp.S_App.GotoView(viewName, '', SWECmd, '')
     } else {
       return window.SiebelApp.S_App.GotoView(viewName)
@@ -161,16 +173,8 @@ export default class Nexus extends N19baseApplet {
   }
 
   reInitPopup() {
-    // do we need to keep also static ReInitPopup
     this.n19popupController.isPopupHidden = false
 
-    const popupPM = window.SiebelApp.S_App.GetPopupPM()
-    popupPM.Init()
-    popupPM.Setup()
-  }
-
-  static ReInitPopup() {
-    // could be removed in the next version
     const popupPM = window.SiebelApp.S_App.GetPopupPM()
     popupPM.Init()
     popupPM.Setup()
@@ -233,6 +237,7 @@ export default class Nexus extends N19baseApplet {
     settings.isMvgAssoc =
       isShuttle && mvgAssoc && settings.pm.Get('GetName') === mvgAssoc.GetName()
     settings.isPopup = true
+
     return new N19popupApplet(settings)
   }
 }

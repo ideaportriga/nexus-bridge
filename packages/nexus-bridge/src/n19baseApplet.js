@@ -545,6 +545,7 @@ export default class N19baseApplet {
     // TODO: should we use SetCellValue for list applets?
     const ret = this._setControlValueInternal(control, value)
     if (!ret) {
+      // actually the observed behavior that the return is always true
       console.log(`[NB] Value ${value} was not set for ${name} control`)
     }
     return ret
@@ -893,28 +894,23 @@ export default class N19baseApplet {
     const arr = Object.values(appletControls)
     const found = arr.find(control => {
       const controlUiType = control.GetUIType()
-      const controlName = control.GetName()
-      if (!this._isSkipControl(controlUiType)) {
-        // skipping also checkbox, plaintext, button, and label
-        let ret =
-          controlUiType !== this.consts.get('SWE_CTRL_CHECKBOX') &&
-          controlUiType !== this.consts.get('SWE_PST_BUTTON_CTRL') &&
-          controlUiType !== this.consts.get('SWE_CTRL_PLAINTEXT') &&
-          controlUiType !== this.consts.get('SWE_CTRL_LABEL')
+      const fieldName = control.GetFieldName()
+      let ret =
+        controlUiType !== this.consts.get('SWE_CTRL_CHECKBOX') &&
+        controlUiType !== this.consts.get('SWE_PST_BUTTON_CTRL') &&
+        controlUiType !== this.consts.get('SWE_CTRL_PLAINTEXT') &&
+        controlUiType !== this.consts.get('SWE_CTRL_LABEL') &&
+        controlUiType !== this.consts.get('SWE_CTRL_LINK') &&
+        controlUiType !== 'null'
 
-        // maybe it would be better for list applets take only columns as it was before?
-        ret =
-          ret &&
-          ![
-            'PopupQueryCombobox',
-            'PopupQuerySrchspec',
-            'QueryComboBox',
-            'QuerySrchSpec'
-          ].includes(controlName)
-        return ret
-      }
-      return false
+      ret = ret && fieldName
+      return ret
     })
+    if (!found) {
+      throw new Error(
+        `[NB]${this.appletName} does not have a control to enter the search expression`
+      )
+    }
     return found
   }
 

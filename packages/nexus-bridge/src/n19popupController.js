@@ -24,6 +24,7 @@ export default class N19popupController {
     this.consts = window.SiebelJS.Dependency('window.SiebelApp.Constants')
     this.isPopupHidden = false
     this.resolvePromise = null
+    // TODO: remove the code that supports ORW to create NB instances(?)
     this.popupAppletN19 = null // it could be removed in the next version
     this.assocAppletN19 = null // it could be removed in the next version
 
@@ -62,7 +63,7 @@ export default class N19popupController {
 
           if (!window.SiebelAppFacade.NB) {
             console.warn(
-              '[NB] The `window.SiebelAppFacade.NB` is empty. Please check the PR files deployed'
+              '[NB]The `window.SiebelAppFacade.NB` is empty. Please check if the PR files are deployed.'
             )
           } else {
             const arr = Object.values(window.SiebelAppFacade.NB)
@@ -146,19 +147,20 @@ export default class N19popupController {
     return 'refreshpopup'
   }
 
-  closePopupApplet() {
-    if (!this.popupAppletN19 || !this.popupAppletN19.pm) {
-      throw new Error('[NB] The popup applet was not opened by NB')
+  closePopupApplet(nb) {
+    if (!nb || !nb.pm) {
+      if (!this.popupAppletN19 || !this.popupAppletN19.pm) {
+        throw new Error(
+          '[NB]The popup applet was not opened by NB and "nb" is not provided'
+        )
+      }
+      nb = this.popupAppletN19
     }
-    if (
-      !this.popupAppletN19.pm.ExecuteMethod('CanInvokeMethod', 'CloseApplet')
-    ) {
-      throw new Error('[NB] The method CloseApplet is not allowed')
+    // TODO: should be be checked, ensure that CanInvokeMethod does not call server
+    if (!nb.pm.ExecuteMethod('CanInvokeMethod', 'CloseApplet')) {
+      throw new Error('[NB]The method CloseApplet is not allowed')
     }
-    const ret = this.popupAppletN19.pm.ExecuteMethod(
-      'InvokeMethod',
-      'CloseApplet'
-    )
+    const ret = nb.pm.ExecuteMethod('InvokeMethod', 'CloseApplet')
     // it could be better if we don't have a Siebel Applet on the view
     // do reinit here on closing?
     this.popupAppletN19 = null
@@ -201,7 +203,7 @@ export default class N19popupController {
         '[NB] Closing already opened popup applet in checkOpenedPopup'
       )
       // maybe do not close if the applet to be opened if the same as already opened?
-      // return this.closePopupApplet()
+      return this.closePopupApplet()
     }
     return isOpen
   }

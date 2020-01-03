@@ -173,7 +173,6 @@ export default class Nexus extends N19baseApplet {
   }
 
   reInitPopup() {
-    // do we need to keep also static ReInitPopup
     this.n19popupController.isPopupHidden = false
 
     const popupPM = window.SiebelApp.S_App.GetPopupPM()

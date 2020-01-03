@@ -22,7 +22,7 @@ if (typeof SiebelAppFacade.NEXUS_REACT_PR === "undefined") {
         rootElement.id = containerId
         applet.parentElement.parentElement.appendChild(rootElement)
         NEXUS_REACT_APP.mountComponent(containerId)
-        applet.parentElement.remove();
+        applet.parentElement.hidden = "true";
       }
 
       NEXUS_REACT_PR.prototype.EndLife = function () {

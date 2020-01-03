@@ -17,4 +17,4 @@ const unmountComponent = id => {
   }
 };
 
-window.N19_REACT_APP = { mountComponent, unmountComponent };
+window.NEXUS_REACT_APP = { mountComponent, unmountComponent };

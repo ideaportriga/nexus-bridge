@@ -5,7 +5,7 @@ import InputField from "./components/InputField";
 import SelectField from "./components/SelectField";
 import SwitchField from "./components/SwitchField";
 
-const Form = ({ n19Helper, accountName, queryMode }) => {
+const Form = ({ formApplet, accountName, queryMode }) => {
   const initialState = {
     Name: {},
     AccountStatus: {},
@@ -30,10 +30,11 @@ const Form = ({ n19Helper, accountName, queryMode }) => {
 
   const [fromState, dispatch] = useReducer(formReducer, initialState);
 
+  // TODO: useCallback()
   const selectInit = () => {
     let newControls = { ...fromState };
 
-    n19Helper.getCurrentRecordModel(newControls);
+    formApplet.getCurrentRecordModel(newControls);
 
     Object.keys(newControls).map(id =>
       dispatch({
@@ -50,16 +51,16 @@ const Form = ({ n19Helper, accountName, queryMode }) => {
   useEffect(() => {
     selectInit();
 
-    const token = n19Helper.subscribe(() => {
+    const token = formApplet.subscribe(() => {
       selectInit();
     });
 
     return () => {
-      n19Helper.unsubscribe(token);
+      formApplet.unsubscribe(token);
     };
-  }, [accountName]);
+  }, [accountName, formApplet]);
 
-  const accountStatusList = n19Helper
+  const accountStatusList = formApplet
     .getStaticLOV("AccountStatus")
     .map((lov, id) => (
       <MenuItem key={`AccountStatus_${id}`} value={lov}>
@@ -67,7 +68,7 @@ const Form = ({ n19Helper, accountName, queryMode }) => {
       </MenuItem>
     ));
 
-  const accountTypeCodeList = n19Helper
+  const accountTypeCodeList = formApplet
     .getStaticLOV("AccountTypeCode")
     .map((lov, id) => (
       <MenuItem key={`AccountTypeCode_${id}`} value={lov}>
@@ -75,7 +76,7 @@ const Form = ({ n19Helper, accountName, queryMode }) => {
       </MenuItem>
     ));
 
-  const accountTypeList = n19Helper.getStaticLOV("Type").map((lov, id) => (
+  const accountTypeList = formApplet.getStaticLOV("Type").map((lov, id) => (
     <MenuItem key={`Type_${id}`} value={lov}>
       {lov}
     </MenuItem>
@@ -94,8 +95,8 @@ const Form = ({ n19Helper, accountName, queryMode }) => {
   };
 
   const setControlValue = (id, value) => {
-    if (!n19Helper.setControlValue(id, value)) {
-      value = n19Helper.getCurrentRecord()[fromState[id].fieldName];
+    if (!formApplet.setControlValue(id, value)) {
+      value = formApplet.getCurrentRecord()[fromState[id].fieldName];
     }
 
     dispatch({

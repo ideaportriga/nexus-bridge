@@ -14,8 +14,8 @@ export default class Nexus extends N19baseApplet {
     )
   }
 
-  closePopupApplet() {
-    return this.n19popupController.closePopupApplet()
+  closePopupApplet(nb) {
+    return this.n19popupController.closePopupApplet(nb)
   }
 
   _showPopupApplet(name, hide, cb) {
@@ -176,6 +176,7 @@ export default class Nexus extends N19baseApplet {
     popupPM.Setup()
   }
 
+  // TODO: remove this method, and have it is in API only, v2.1?
   pickRecordById(controlName, rowId) {
     return (
       this.showPickApplet(controlName, true)
@@ -191,6 +192,7 @@ export default class Nexus extends N19baseApplet {
     )
   }
 
+  // TODO: remove this method, and have it is in API only, v2.1
   assocRecordsById(controlName, arr, closeApplet) {
     return (
       this.showMvgApplet(controlName, true)

@@ -10,7 +10,7 @@ if (typeof SiebelAppFacade.NEXUS_REACT_PR === "undefined") {
         SiebelAppFacade.NEXUS_REACT_PR.superclass.constructor.apply(this, arguments)
       }
 
-      SiebelJS.Extend(NEXUS_REACT_PR, SiebelAppFacade.ViewPR)
+      SiebelJS.Extend(NEXUS_REACT_PR, window.SiebelAppFacade.PhysicalRenderer)
 
       NEXUS_REACT_PR.prototype.Init = function () {
         SiebelAppFacade.NEXUS_REACT_PR.superclass.Init.apply(this, arguments)

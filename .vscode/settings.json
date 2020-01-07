@@ -1,6 +1,7 @@
 {
-  "editor.formatOnSave": true,
-  "editor.formatOnType": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
   "eslint.enable": true,
   "eslint.packageManager": "yarn",
   "eslint.validate": [
@@ -20,8 +21,5 @@
     "javascriptreact",
     "typescript",
     "typescriptreact"
-  ],
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  }
+  ]
 }

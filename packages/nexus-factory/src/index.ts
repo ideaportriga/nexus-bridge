@@ -7,7 +7,7 @@ const memo: Record<string, NexusBridge> = {}
 
 const memoizeOnce = (appletName: string, key: string) => {
   if (!memo[key]) {
-    console.log(`[NF] Nexus instance created: ${appletName}`)
+    console.log(`[NF] Nexus instance created: ${key} - ${appletName}`)
 
     const applet = window.SiebelApp.S_App.GetActiveView().GetApplet(appletName)
     if (!applet) {
@@ -27,6 +27,8 @@ const memoizeOnce = (appletName: string, key: string) => {
       })
     }
   }
+
+  return memo[key]
 }
 
 const createPopup = (config: NexusConfig) => {
@@ -62,7 +64,7 @@ const NexusFactory = (config: string | NexusConfig): NexusBridge | null => {
 
   // get applet
   if (typeof config === 'string') {
-    const key = config || 'default'
+    const key = config
 
     return memo[key]
   }
@@ -70,4 +72,4 @@ const NexusFactory = (config: string | NexusConfig): NexusBridge | null => {
   return null
 }
 
-export { createPopup, clearPopup, NexusFactory }
+export { createPopup, clearPopup, memoizeOnce, NexusFactory }

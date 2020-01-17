@@ -256,41 +256,7 @@ export default class N19baseApplet {
           iconMap: this._getIconMap(control),
           methodName: control.GetMethodName()
         }
-        Object.defineProperty(obj, 'readOnly', {
-          get: () => {
-            console.warn(
-              '[NB] The readOnly property will be removed; use readonly instead of it.'
-            )
-            return obj.readonly
-          }
-        })
         if (obj.staticPick) {
-          // add values to be displayed in the static picklist - 2 properties are deprecated
-          Object.defineProperty(obj, 'staticLOV', {
-            // TODO: to be removed
-            enumerable: true,
-            get: () => {
-              console.warn(
-                '[NB] The staticLOV property will be removed; use options instead of it.'
-              )
-              return control
-                .GetRadioGroupPropSet()
-                .childArray.map(el => el.propArray)
-            }
-          })
-          Object.defineProperty(obj, 'lovs', {
-            // TODO: to be removed
-            enumerable: true,
-            get: () => {
-              console.warn(
-                '[NB] The lovs property will be removed; use options instead of it.'
-              )
-              return control.GetRadioGroupPropSet().childArray.map(el => ({
-                lic: el.propArray.FieldValue,
-                val: el.propArray.DisplayName
-              }))
-            }
-          })
           obj.options = N19baseApplet.GetControlStaticLOV(control)
         }
         controls[name] = obj

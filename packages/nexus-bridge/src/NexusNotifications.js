@@ -1,4 +1,4 @@
-export default class N19notifications {
+export default class NexusNotifications {
   constructor(pm, consts, fieldToControlMap) {
     let receivedNotifications = []
     this.token = 0

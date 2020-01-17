@@ -1,7 +1,7 @@
-import N19notifications from './n19notifications'
-import N19localeData from './n19localeData'
+import NexusNotifications from './NexusNotifications'
+import NexusLocaleData from './NexuLocaleData'
 
-export default class N19baseApplet {
+export default class NexusBaseApplet {
   constructor(settings) {
     this.consts = window.SiebelJS.Dependency('window.SiebelApp.Constants')
 
@@ -25,10 +25,10 @@ export default class N19baseApplet {
     this.lov = {}
     this.boolObject = new window.SiebelApp.S_App.DatumBoolObject()
 
-    this.localeData = N19localeData.instance // get the instance of locale data object
+    this.localeData = NexusLocaleData.instance // get the instance of locale data object
 
     this.fieldToControlMap = this._getFieldToControlMap()
-    this.notifications = new N19notifications(
+    this.notifications = new NexusNotifications(
       this.pm,
       this.consts,
       this.fieldToControlMap
@@ -251,13 +251,13 @@ export default class N19baseApplet {
           currencyCodeField:
             'currency' === dataType ? this._getCurrencyCodeField(control) : '',
           popupType: control.GetPopupType(), // always correlate to uiType?
-          props: N19baseApplet.GetPropSet(control),
+          props: NexusBaseApplet.GetPropSet(control),
           isSortable: control.IsSortable(),
           iconMap: this._getIconMap(control),
           methodName: control.GetMethodName()
         }
         if (obj.staticPick) {
-          obj.options = N19baseApplet.GetControlStaticLOV(control)
+          obj.options = NexusBaseApplet.GetControlStaticLOV(control)
         }
         controls[name] = obj
       }
@@ -474,14 +474,14 @@ export default class N19baseApplet {
 
   deleteRecordSync(skipConfirmDialog) {
     if (skipConfirmDialog) {
-      this.N19Confirm = window.SiebelApp.Utils.Confirm
+      this.NexusConfirm = window.SiebelApp.Utils.Confirm
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       window.SiebelApp.Utils.Confirm = () => true
     }
     // do we need to try..catch and restore the function in catch ?
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecord')
     if (skipConfirmDialog) {
-      window.SiebelApp.Utils.Confirm = this.N19Confirm
+      window.SiebelApp.Utils.Confirm = this.NexusConfirm
     }
     return ret
   }
@@ -624,7 +624,7 @@ export default class N19baseApplet {
   getLOV(controlName) {
     const control = this._getControl(controlName)
     if (this.isStatic(control)) {
-      return N19baseApplet.GetControlStaticLOV(control)
+      return NexusBaseApplet.GetControlStaticLOV(control)
     }
     if (!this.isDynamic(control)) {
       // Take the dynamic path in the hope that it will work
@@ -645,7 +645,7 @@ export default class N19baseApplet {
   getStaticLOV(controlName) {
     const control = this._getControl(controlName)
     this._validatePickControl(control, true)
-    return N19baseApplet.GetControlStaticLOV(control)
+    return NexusBaseApplet.GetControlStaticLOV(control)
   }
 
   _getJSValue(value, { uiType, dataType, displayFormat, currencyCode }) {

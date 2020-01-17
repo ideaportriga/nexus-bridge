@@ -1,6 +1,6 @@
-import N19baseApplet from './n19baseApplet'
+import NexuBaseApplet from './NexusBaseApplet'
 
-export default class N19popupApplet extends N19baseApplet {
+export default class NexusPopupApplet extends NexuBaseApplet {
   constructor(settings) {
     super(settings)
     console.log('[NB] Popup applet started')

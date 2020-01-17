@@ -1,10 +1,10 @@
 const singleton = Symbol('singleton')
 const singletonEnforcer = Symbol('singletonEnforcer')
 
-export default class N19localeData {
+export default class NexusLocaleData {
   static get instance() {
     if (!this[singleton]) {
-      this[singleton] = new N19localeData(singletonEnforcer)
+      this[singleton] = new NexusLocaleData(singletonEnforcer)
     }
     return this[singleton]
   }

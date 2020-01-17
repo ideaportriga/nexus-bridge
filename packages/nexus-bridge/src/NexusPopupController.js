@@ -1,12 +1,12 @@
-import N19popupApplet from './n19popupApplet'
+import nexusPopupApplet from './NexusPopupApplet'
 
 const singleton = Symbol('singleton')
 const singletonEnforcer = Symbol('singletonEnforcer')
 
-export default class N19popupController {
+export default class NexusPopupController {
   static get instance() {
     if (!this[singleton]) {
-      this[singleton] = new N19popupController(singletonEnforcer)
+      this[singleton] = new NexusPopupController(singletonEnforcer)
     }
     return this[singleton]
   }
@@ -25,20 +25,20 @@ export default class N19popupController {
     this.isPopupHidden = false
     this.resolvePromise = null
     // TODO: remove the code that supports ORW to create NB instances(?)
-    this.popupAppletN19 = null // it could be removed in the next version
-    this.assocAppletN19 = null // it could be removed in the next version
+    this.popupApplet = null // it could be removed in the next version
+    this.assocApplet = null // it could be removed in the next version
 
     console.log('[NB] Popup controller started')
 
     // it will be a singleton, so there is no cleanup
-    this.N19processNewPopup = window.SiebelApp.S_App.ProcessNewPopup
+    this.NexusProcessNewPopup = window.SiebelApp.S_App.ProcessNewPopup
     window.SiebelApp.S_App.ProcessNewPopup = ps => {
       let ret
       if (this.isPopupHidden) {
         ret = this.processNewPopup(ps)
         // this.isPopupHidden = false; // in order to do not affect the next call // it is redundant
       } else {
-        ret = this.N19processNewPopup.call(window.SiebelApp.S_App, ps)
+        ret = this.NexusProcessNewPopup.call(window.SiebelApp.S_App, ps)
       }
       return ret
     }
@@ -52,7 +52,7 @@ export default class N19popupController {
             assocApplet,
             appletName,
             assocAppletName
-          } = N19popupController.IsPopupOpen()
+          } = NexusPopupController.IsPopupOpen()
 
           if (!applet) {
             this.resolvePromise = null // how do we do error handling
@@ -71,9 +71,9 @@ export default class N19popupController {
               if (arr[i].isPopup) {
                 // this is popup
                 if (assocApplet && arr[i].isMvgAssoc) {
-                  this.assocAppletN19 = arr[i]
+                  this.assocApplet = arr[i]
                 } else {
-                  this.popupAppletN19 = arr[i]
+                  this.popupApplet = arr[i]
                 }
               }
             }
@@ -84,8 +84,8 @@ export default class N19popupController {
             applet,
             assocAppletName,
             assocApplet,
-            popupAppletN19: this.popupAppletN19,
-            assocAppletN19: this.assocAppletN19
+            nexusPopupApplet: this.popupApplet,
+            nexusAssocApplet: this.assocApplet
           }
 
           this.resolvePromise(obj)
@@ -96,9 +96,9 @@ export default class N19popupController {
     )
 
     this.viewLoadedResolve = null
-    this.N19viewLoaded = window.SiebelApp.contentUpdater.viewLoaded
+    this.nexusViewLoaded = window.SiebelApp.contentUpdater.viewLoaded
     window.SiebelApp.contentUpdater.viewLoaded = (...args) => {
-      const ret = this.N19viewLoaded.call(
+      const ret = this.nexusViewLoaded.call(
         window.SiebelApp.contentUpdater,
         ...args
       )
@@ -119,7 +119,7 @@ export default class N19popupController {
   }
 
   _createNexusInstance(pm) {
-    return new N19popupApplet(Object.assign({}, this.settings, { pm }))
+    return new nexusPopupApplet(Object.assign({}, this.settings, { pm }))
   }
 
   canOpenPopup() {
@@ -149,12 +149,12 @@ export default class N19popupController {
 
   closePopupApplet(nb) {
     if (!nb || !nb.pm) {
-      if (!this.popupAppletN19 || !this.popupAppletN19.pm) {
+      if (!this.popupApplet || !this.popupApplet.pm) {
         throw new Error(
           '[NB]The popup applet was not opened by NB and "nb" is not provided'
         )
       }
-      nb = this.popupAppletN19
+      nb = this.popupApplet
     }
     // TODO: should be be checked, ensure that CanInvokeMethod does not call server
     if (!nb.pm.ExecuteMethod('CanInvokeMethod', 'CloseApplet')) {
@@ -163,8 +163,8 @@ export default class N19popupController {
     const ret = nb.pm.ExecuteMethod('InvokeMethod', 'CloseApplet')
     // it could be better if we don't have a Siebel Applet on the view
     // do reinit here on closing?
-    this.popupAppletN19 = null
-    this.assocAppletN19 = null
+    this.popupApplet = null
+    this.assocApplet = null
     return ret
   }
 
@@ -196,7 +196,7 @@ export default class N19popupController {
   }
 
   checkOpenedPopup(closeIfOpen) {
-    const { isOpen } = N19popupController.IsPopupOpen()
+    const { isOpen } = NexusPopupController.IsPopupOpen()
     if (isOpen && closeIfOpen) {
       // this code will close the applet even if this applet was originated by another applet
       console.log(
@@ -227,12 +227,12 @@ export default class N19popupController {
     return true
   }
 
-  showPopupApplet(hide, cb, n19, methodName) {
+  showPopupApplet(hide, cb, nb, methodName) {
     // TODO: maybe use the properties set on promise resolving?
     this.checkOpenedPopup(true)
     this.isPopupHidden = !!hide
 
-    n19.pm.ExecuteMethod('InvokeMethod', methodName)
+    nb.pm.ExecuteMethod('InvokeMethod', methodName)
     // can call EditField if EditPopup?
 
     if (hide) {

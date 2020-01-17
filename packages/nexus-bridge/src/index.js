@@ -176,53 +176,6 @@ export default class Nexus extends N19baseApplet {
     popupPM.Setup()
   }
 
-  // TODO: remove this method, and have it is in API only, v2.1?
-  pickRecordById(controlName, rowId) {
-    return (
-      this.showPickApplet(controlName, true)
-        // is not needed when PR approach is used
-        .then(obj => new Promise(resolve => setTimeout(() => resolve(obj), 0)))
-        .then(obj => {
-          const found = obj.popupAppletN19.queryByIdSync(rowId)
-          if (found !== 1) {
-            throw new Error(`[NB] The record ${rowId} is not found (${found})`)
-          }
-          return obj.popupAppletN19.pickRecord()
-        })
-    )
-  }
-
-  // TODO: remove this method, and have it is in API only, v2.1
-  assocRecordsById(controlName, arr, closeApplet) {
-    return (
-      this.showMvgApplet(controlName, true)
-        // is not needed when PR approach is used
-        .then(obj => new Promise(resolve => setTimeout(() => resolve(obj), 0)))
-        .then(
-          obj =>
-            new Promise(resolve => {
-              const found = obj.assocAppletN19.queryByIdSync(arr)
-              if (found !== arr.length) {
-                // TODO: throw an error?
-                console.warn(
-                  `[NB] The amount of found records(${found}) does not match to input array length(${arr.length})`
-                )
-              }
-              if (found > 0) {
-                obj.popupAppletN19.addAllRecords()
-              }
-              if (closeApplet) {
-                this.closePopupApplet()
-                resolve(found)
-              } else {
-                obj.found = found
-                resolve(obj)
-              }
-            })
-        )
-    )
-  }
-
   static CreatePopupNB(settings) {
     if (!settings.pm || !settings.pm.Get('IsPopup')) {
       throw new Error('[NB] No pm or the given pm is not popup applet PM')

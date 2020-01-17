@@ -20,16 +20,16 @@ if (typeof window.SiebelAppFacade.NBDefaultAppletPR === 'undefined') {
 
         function setControlValue(control, value) {
           var pm = this.GetPM()
-          var obj = pm.Get('n19internal')
+          var obj = pm.Get('NexusInternal')
           obj[control.GetName()] = value
-          pm.AddProperty('n19internal', obj)
+          pm.AddProperty('NexusInternal', obj)
         }
 
         function getPhysicalControlValue(control) {
           var pm = this.GetPM()
           pm.AddProperty('PhysicalCtrlVal', '')
           if (control) {
-            var val = pm.Get('n19internal')[control.GetName()]
+            var val = pm.Get('NexusInternal')[control.GetName()]
             pm.AddProperty('PhysicalCtrlVal', val)
           }
         }
@@ -53,7 +53,7 @@ if (typeof window.SiebelAppFacade.NBDefaultAppletPR === 'undefined') {
               })
             }
           }
-          pm.AddProperty('n19internal', obj)
+          pm.AddProperty('NexusInternal', obj)
         }
 
         NBDefaultAppletPR.prototype.destroyNexus = function () {
@@ -95,7 +95,7 @@ if (typeof window.SiebelAppFacade.NBDefaultAppletPR === 'undefined') {
 
         NBDefaultAppletPR.prototype.Init = function () {
           var pm = this.GetPM()
-          pm.AddProperty('n19internal', {})
+          pm.AddProperty('NexusInternal', {})
           pm.AttachNotificationHandler(
             window.consts.get('SWE_PROP_BC_NOTI_END'),
             initInternalObject.bind(this)

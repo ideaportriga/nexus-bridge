@@ -2,16 +2,16 @@
 var NBPR = (function () {
   function setControlValue(control, value) {
     var pm = this.GetPM()
-    var obj = pm.Get('n19internal')
+    var obj = pm.Get('NexusInternal')
     obj[control.GetName()] = value
-    pm.AddProperty('n19internal', obj)
+    pm.AddProperty('NexusInternal', obj)
   }
 
   function getPhysicalControlValue(control) {
     var pm = this.GetPM()
     pm.AddProperty('PhysicalCtrlVal', '')
     if (control) {
-      var val = pm.Get('n19internal')[control.GetName()]
+      var val = pm.Get('NexusInternal')[control.GetName()]
       pm.AddProperty('PhysicalCtrlVal', val)
     }
   }
@@ -35,7 +35,7 @@ var NBPR = (function () {
         })
       }
     }
-    pm.AddProperty('n19internal', obj)
+    pm.AddProperty('NexusInternal', obj)
   }
 
   function initializeNexus(options) {
@@ -72,7 +72,7 @@ var NBPR = (function () {
 
   function init() {
     var pm = this.GetPM()
-    pm.AddProperty('n19internal', {})
+    pm.AddProperty('NexusInternal', {})
     pm.AttachNotificationHandler(
       window.consts.get('SWE_PROP_BC_NOTI_END'),
       initInternalObject.bind(this)

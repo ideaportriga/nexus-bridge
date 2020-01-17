@@ -1,5 +1,5 @@
 import NexusNotifications from './NexusNotifications'
-import NexusLocaleData from './NexuLocaleData'
+import NexusLocaleData from './NexusLocaleData'
 
 export default class NexusBaseApplet {
   constructor(settings) {
@@ -964,7 +964,7 @@ export default class NexusBaseApplet {
   }
 
   static Requery(name) {
-    const service = window.SiebelApp.S_App.GetService('N19 BS')
+    const service = window.SiebelApp.S_App.GetService('Nexus BS')
     if (service) {
       const inPropSet = window.SiebelApp.S_App.NewPropertySet()
       inPropSet.SetProperty('name', name)
@@ -973,7 +973,7 @@ export default class NexusBaseApplet {
   }
 
   static Refresh(name) {
-    const service = window.SiebelApp.S_App.GetService('N19 BS')
+    const service = window.SiebelApp.S_App.GetService('Nexus BS')
     if (service) {
       const inPropSet = window.SiebelApp.S_App.NewPropertySet()
       inPropSet.SetProperty('name', name)
@@ -1012,7 +1012,7 @@ export default class NexusBaseApplet {
       ps.SetProperty('Fields', el[1].join(','))
       psInputs.AddChild(ps.Clone())
     })
-    const bs = window.SiebelApp.S_App.GetService('N19 BS')
+    const bs = window.SiebelApp.S_App.GetService('Nexus BS')
     const ai = {
       async: true,
       selfbusy: true,

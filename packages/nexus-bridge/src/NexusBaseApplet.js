@@ -880,36 +880,43 @@ export default class NexusBaseApplet {
     return found
   }
 
-  _newQuery() {
+  _newQuery(checkQueryMode) {
+    if (checkQueryMode) {
+      if (this.pm.Get('IsInQueryMode')) {
+        return false
+      }
+    }
     return this.pm.ExecuteMethod('InvokeMethod', 'NewQuery')
   }
 
-  queryBySearchExprSync(expr) {
-    this._newQuery() // check or optionally skip?
+  queryBySearchExprSync(expr, skipNewQueryInQueryMode, checkQueryMode) {
+    this._newQuery(checkQueryMode)
     const control = this._findControlToEnterSearchExpr()
     this._setControlValueInternal(control, expr)
     this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery')
     return this.getRecordSet().length
   }
 
-  queryByIdSync(rowId) {
+  queryByIdSync(rowId, checkQueryMode) {
     let expr
     if (Array.isArray(rowId)) {
       expr = rowId.map(el => `Id="${el}"`).join(' OR ')
     } else {
       expr = `Id="${rowId}"`
     }
-    return this.queryBySearchExprSync(expr)
+    return this.queryBySearchExprSync(expr, checkQueryMode)
   }
 
-  queryById(rowId, cb) {
-    const promise = new Promise(resolve => this._queryById(rowId, resolve))
+  queryById(rowId, cb, checkQueryMode) {
+    const promise = new Promise(resolve =>
+      this._queryById(rowId, resolve, checkQueryMode)
+    )
     const ret = promise.then(() => this.getRecordSet().length)
     return typeof cb === 'function' ? ret.then(cb) : ret
   }
 
-  _queryById(rowId, cb) {
-    this._newQuery() // check or optionally skip?
+  _queryById(rowId, cb, checkQueryMode) {
+    this._newQuery(checkQueryMode) // check or optionally skip?
 
     const ai = {
       scope: this,
@@ -925,17 +932,19 @@ export default class NexusBaseApplet {
     return this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, ai)
   }
 
-  query(params, cb) {
-    const promise = new Promise(resolve => this._query(params, resolve))
+  query(params, cb, checkQueryMode) {
+    const promise = new Promise(resolve =>
+      this._query(params, resolve, checkQueryMode)
+    )
     const ret = promise.then(() => this.getRecordSet().length)
     return typeof cb === 'function' ? ret.then(cb) : ret
   }
 
-  _query(params, cb) {
+  _query(params, cb, checkQueryMode) {
     // TODO: check if it is already in query mode to avoid calling the new query again
     // or accept the input parameter to skip calling the new query?
     // or maybe better to cancel the existing query?
-    this._newQuery()
+    this._newQuery(checkQueryMode)
 
     const ai = {
       scope: this,

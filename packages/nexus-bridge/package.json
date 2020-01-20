@@ -1,7 +1,7 @@
 {
   "name": "@ideaportriga/nexus-bridge",
   "description": "Bridges the gap between the jQuery-based API for Siebel Open UI and modern JS frameworks",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "author": "Idea Port Riga",
   "license": "MIT",
   "main": "dist/index.js",

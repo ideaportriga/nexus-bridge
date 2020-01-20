@@ -28,11 +28,12 @@ export default class NexusBaseApplet {
     this.localeData = NexusLocaleData.instance // get the instance of locale data object
 
     this.fieldToControlMap = this._getFieldToControlMap()
-    this.notifications = new NexusNotifications(
-      this.pm,
-      this.consts,
-      this.fieldToControlMap
-    )
+    this.notifications = new NexusNotifications({
+      pm: this.pm,
+      consts: this.consts,
+      fieldToControlMap: this.fieldToControlMap,
+      debug: settings.debug
+    })
 
     // populate the required array for form applets
     if (!this.isListApplet) {
@@ -70,7 +71,6 @@ export default class NexusBaseApplet {
           }
         } else if (i === 0) {
           // this is a misconfiguration, when getting dynamic LOV is called second+ time?
-
           console.warn(
             `[NB] It seems the control/list column ${inputName} is incorrectly configured in the Tools.`
           )

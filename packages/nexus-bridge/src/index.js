@@ -1,40 +1,45 @@
-import N19baseApplet from './n19baseApplet'
-import N19popupController from './n19popupController'
-import N19popupApplet from './n19popupApplet'
+import NexusBaseApplet from './NexusBaseApplet'
+import NexusPopupController from './NexusPopupController'
+import NexusPopupApplet from './NexusPopupApplet'
 
-export default class Nexus extends N19baseApplet {
+export default class Nexus extends NexusBaseApplet {
   constructor(settings) {
     super(settings)
 
-    // get the n19popupController singleton instance
-    this.n19popupController = N19popupController.instance
-    this.n19popupController.settings = Object.assign(
-      this.n19popupController.settings || {},
+    // get the NexusPopupController singleton instance
+    this.nexusPopupController = NexusPopupController.instance
+    this.nexusPopupController.settings = Object.assign(
+      this.nexusPopupController.settings || {},
       settings
     )
   }
 
   closePopupApplet(nb) {
-    return this.n19popupController.closePopupApplet(nb)
+    return this.nexusPopupController.closePopupApplet(nb)
   }
 
   _showPopupApplet(name, hide, cb) {
-    if (!this.n19popupController.canOpenPopup()) {
+    if (!this.nexusPopupController.canOpenPopup()) {
       throw new Error(
         '[NB] Cannot open popup (currently exists resolve function)'
       )
     }
     this._setActiveControl(name)
-    return this.n19popupController.showPopupApplet(hide, cb, this, 'EditPopup')
+    return this.nexusPopupController.showPopupApplet(
+      hide,
+      cb,
+      this,
+      'EditPopup'
+    )
   }
 
   changeRecords(hide, cb) {
-    if (!this.n19popupController.canOpenPopup()) {
+    if (!this.nexusPopupController.canOpenPopup()) {
       throw new Error(
         '[NB] Cannot open popup (currently exists resolve function)'
       )
     }
-    return this.n19popupController.showPopupApplet(
+    return this.nexusPopupController.showPopupApplet(
       hide,
       cb,
       this,
@@ -88,7 +93,7 @@ export default class Nexus extends N19baseApplet {
 
   openAssocApplet(hide, cb) {
     // this method should be available for child business component in M:M relationship
-    if (!this.n19popupController.canOpenPopup()) {
+    if (!this.nexusPopupController.canOpenPopup()) {
       throw new Error(
         '[NB] Cannot open popup (currently exists resolve function)'
       )
@@ -96,7 +101,7 @@ export default class Nexus extends N19baseApplet {
     if (!this.canInvokeMethod('NewRecord')) {
       throw new Error('[NB] NewRecord is not available') // also when in query mode
     }
-    return this.n19popupController._openAssocApplet(
+    return this.nexusPopupController._openAssocApplet(
       hide,
       this._newAssocRecord.bind(this),
       cb
@@ -131,7 +136,7 @@ export default class Nexus extends N19baseApplet {
 
   drilldownPromised(controlName) {
     return new Promise(resolve => {
-      this.n19popupController.viewLoadedResolve = resolve
+      this.nexusPopupController.viewLoadedResolve = resolve
       this.drilldown(controlName)
     })
   }
@@ -151,7 +156,7 @@ export default class Nexus extends N19baseApplet {
   }
 
   gotoViewPromised(targetViewName, appletName, id) {
-    return this.n19popupController.gotoView(
+    return this.nexusPopupController.gotoView(
       this,
       this.gotoView,
       targetViewName,
@@ -162,7 +167,7 @@ export default class Nexus extends N19baseApplet {
 
   reInitPopup() {
     // do we need to keep also static ReInitPopup
-    this.n19popupController.isPopupHidden = false
+    this.nexusPopupController.isPopupHidden = false
 
     const popupPM = window.SiebelApp.S_App.GetPopupPM()
     popupPM.Init()
@@ -174,53 +179,6 @@ export default class Nexus extends N19baseApplet {
     const popupPM = window.SiebelApp.S_App.GetPopupPM()
     popupPM.Init()
     popupPM.Setup()
-  }
-
-  // TODO: remove this method, and have it is in API only, v2.1?
-  pickRecordById(controlName, rowId) {
-    return (
-      this.showPickApplet(controlName, true)
-        // is not needed when PR approach is used
-        .then(obj => new Promise(resolve => setTimeout(() => resolve(obj), 0)))
-        .then(obj => {
-          const found = obj.popupAppletN19.queryByIdSync(rowId)
-          if (found !== 1) {
-            throw new Error(`[NB] The record ${rowId} is not found (${found})`)
-          }
-          return obj.popupAppletN19.pickRecord()
-        })
-    )
-  }
-
-  // TODO: remove this method, and have it is in API only, v2.1
-  assocRecordsById(controlName, arr, closeApplet) {
-    return (
-      this.showMvgApplet(controlName, true)
-        // is not needed when PR approach is used
-        .then(obj => new Promise(resolve => setTimeout(() => resolve(obj), 0)))
-        .then(
-          obj =>
-            new Promise(resolve => {
-              const found = obj.assocAppletN19.queryByIdSync(arr)
-              if (found !== arr.length) {
-                // TODO: throw an error?
-                console.warn(
-                  `[NB] The amount of found records(${found}) does not match to input array length(${arr.length})`
-                )
-              }
-              if (found > 0) {
-                obj.popupAppletN19.addAllRecords()
-              }
-              if (closeApplet) {
-                this.closePopupApplet()
-                resolve(found)
-              } else {
-                obj.found = found
-                resolve(obj)
-              }
-            })
-        )
-    )
   }
 
   static CreatePopupNB(settings) {
@@ -235,6 +193,6 @@ export default class Nexus extends N19baseApplet {
     settings.isMvgAssoc =
       isShuttle && mvgAssoc && settings.pm.Get('GetName') === mvgAssoc.GetName()
     settings.isPopup = true
-    return new N19popupApplet(settings)
+    return new NexusPopupApplet(settings)
   }
 }

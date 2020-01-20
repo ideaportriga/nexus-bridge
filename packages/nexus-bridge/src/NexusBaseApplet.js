@@ -1,7 +1,7 @@
-import N19notifications from './n19notifications'
-import N19localeData from './n19localeData'
+import NexusNotifications from './NexusNotifications'
+import NexusLocaleData from './NexusLocaleData'
 
-export default class N19baseApplet {
+export default class NexusBaseApplet {
   constructor(settings) {
     this.consts = window.SiebelJS.Dependency('window.SiebelApp.Constants')
 
@@ -25,14 +25,15 @@ export default class N19baseApplet {
     this.lov = {}
     this.boolObject = new window.SiebelApp.S_App.DatumBoolObject()
 
-    this.localeData = N19localeData.instance // get the instance of locale data object
+    this.localeData = NexusLocaleData.instance // get the instance of locale data object
 
     this.fieldToControlMap = this._getFieldToControlMap()
-    this.notifications = new N19notifications(
-      this.pm,
-      this.consts,
-      this.fieldToControlMap
-    )
+    this.notifications = new NexusNotifications({
+      pm: this.pm,
+      consts: this.consts,
+      fieldToControlMap: this.fieldToControlMap,
+      debug: settings.debug
+    })
 
     // populate the required array for form applets
     if (!this.isListApplet) {
@@ -70,7 +71,6 @@ export default class N19baseApplet {
           }
         } else if (i === 0) {
           // this is a misconfiguration, when getting dynamic LOV is called second+ time?
-
           console.warn(
             `[NB] It seems the control/list column ${inputName} is incorrectly configured in the Tools.`
           )
@@ -96,6 +96,10 @@ export default class N19baseApplet {
 
   unsubscribe(token) {
     return this.notifications.unsubscribe(token)
+  }
+
+  invokeSubscriptions() {
+    this.notifications._invokeSubscriptions()
   }
 
   _getControl(name) {
@@ -251,47 +255,13 @@ export default class N19baseApplet {
           currencyCodeField:
             'currency' === dataType ? this._getCurrencyCodeField(control) : '',
           popupType: control.GetPopupType(), // always correlate to uiType?
-          props: N19baseApplet.GetPropSet(control),
+          props: NexusBaseApplet.GetPropSet(control),
           isSortable: control.IsSortable(),
           iconMap: this._getIconMap(control),
           methodName: control.GetMethodName()
         }
-        Object.defineProperty(obj, 'readOnly', {
-          get: () => {
-            console.warn(
-              '[NB] The readOnly property will be removed; use readonly instead of it.'
-            )
-            return obj.readonly
-          }
-        })
         if (obj.staticPick) {
-          // add values to be displayed in the static picklist - 2 properties are deprecated
-          Object.defineProperty(obj, 'staticLOV', {
-            // TODO: to be removed
-            enumerable: true,
-            get: () => {
-              console.warn(
-                '[NB] The staticLOV property will be removed; use options instead of it.'
-              )
-              return control
-                .GetRadioGroupPropSet()
-                .childArray.map(el => el.propArray)
-            }
-          })
-          Object.defineProperty(obj, 'lovs', {
-            // TODO: to be removed
-            enumerable: true,
-            get: () => {
-              console.warn(
-                '[NB] The lovs property will be removed; use options instead of it.'
-              )
-              return control.GetRadioGroupPropSet().childArray.map(el => ({
-                lic: el.propArray.FieldValue,
-                val: el.propArray.DisplayName
-              }))
-            }
-          })
-          obj.options = N19baseApplet.GetControlStaticLOV(control)
+          obj.options = NexusBaseApplet.GetControlStaticLOV(control)
         }
         controls[name] = obj
       }
@@ -508,14 +478,14 @@ export default class N19baseApplet {
 
   deleteRecordSync(skipConfirmDialog) {
     if (skipConfirmDialog) {
-      this.N19Confirm = window.SiebelApp.Utils.Confirm
+      this.NexusConfirm = window.SiebelApp.Utils.Confirm
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       window.SiebelApp.Utils.Confirm = () => true
     }
     // do we need to try..catch and restore the function in catch ?
     const ret = this.pm.ExecuteMethod('InvokeMethod', 'DeleteRecord')
     if (skipConfirmDialog) {
-      window.SiebelApp.Utils.Confirm = this.N19Confirm
+      window.SiebelApp.Utils.Confirm = this.NexusConfirm
     }
     return ret
   }
@@ -658,7 +628,7 @@ export default class N19baseApplet {
   getLOV(controlName) {
     const control = this._getControl(controlName)
     if (this.isStatic(control)) {
-      return N19baseApplet.GetControlStaticLOV(control)
+      return NexusBaseApplet.GetControlStaticLOV(control)
     }
     if (!this.isDynamic(control)) {
       // Take the dynamic path in the hope that it will work
@@ -679,7 +649,7 @@ export default class N19baseApplet {
   getStaticLOV(controlName) {
     const control = this._getControl(controlName)
     this._validatePickControl(control, true)
-    return N19baseApplet.GetControlStaticLOV(control)
+    return NexusBaseApplet.GetControlStaticLOV(control)
   }
 
   _getJSValue(value, { uiType, dataType, displayFormat, currencyCode }) {
@@ -914,36 +884,43 @@ export default class N19baseApplet {
     return found
   }
 
-  _newQuery() {
+  _newQuery(checkQueryMode) {
+    if (checkQueryMode) {
+      if (this.pm.Get('IsInQueryMode')) {
+        return false
+      }
+    }
     return this.pm.ExecuteMethod('InvokeMethod', 'NewQuery')
   }
 
-  queryBySearchExprSync(expr) {
-    this._newQuery() // check or optionally skip?
+  queryBySearchExprSync(expr, skipNewQueryInQueryMode, checkQueryMode) {
+    this._newQuery(checkQueryMode)
     const control = this._findControlToEnterSearchExpr()
     this._setControlValueInternal(control, expr)
     this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery')
     return this.getRecordSet().length
   }
 
-  queryByIdSync(rowId) {
+  queryByIdSync(rowId, checkQueryMode) {
     let expr
     if (Array.isArray(rowId)) {
       expr = rowId.map(el => `Id="${el}"`).join(' OR ')
     } else {
       expr = `Id="${rowId}"`
     }
-    return this.queryBySearchExprSync(expr)
+    return this.queryBySearchExprSync(expr, checkQueryMode)
   }
 
-  queryById(rowId, cb) {
-    const promise = new Promise(resolve => this._queryById(rowId, resolve))
+  queryById(rowId, cb, checkQueryMode) {
+    const promise = new Promise(resolve =>
+      this._queryById(rowId, resolve, checkQueryMode)
+    )
     const ret = promise.then(() => this.getRecordSet().length)
     return typeof cb === 'function' ? ret.then(cb) : ret
   }
 
-  _queryById(rowId, cb) {
-    this._newQuery() // check or optionally skip?
+  _queryById(rowId, cb, checkQueryMode) {
+    this._newQuery(checkQueryMode) // check or optionally skip?
 
     const ai = {
       scope: this,
@@ -959,17 +936,19 @@ export default class N19baseApplet {
     return this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, ai)
   }
 
-  query(params, cb) {
-    const promise = new Promise(resolve => this._query(params, resolve))
+  query(params, cb, checkQueryMode) {
+    const promise = new Promise(resolve =>
+      this._query(params, resolve, checkQueryMode)
+    )
     const ret = promise.then(() => this.getRecordSet().length)
     return typeof cb === 'function' ? ret.then(cb) : ret
   }
 
-  _query(params, cb) {
+  _query(params, cb, checkQueryMode) {
     // TODO: check if it is already in query mode to avoid calling the new query again
     // or accept the input parameter to skip calling the new query?
     // or maybe better to cancel the existing query?
-    this._newQuery()
+    this._newQuery(checkQueryMode)
 
     const ai = {
       scope: this,
@@ -998,7 +977,7 @@ export default class N19baseApplet {
   }
 
   static Requery(name) {
-    const service = window.SiebelApp.S_App.GetService('N19 BS')
+    const service = window.SiebelApp.S_App.GetService('Nexus BS')
     if (service) {
       const inPropSet = window.SiebelApp.S_App.NewPropertySet()
       inPropSet.SetProperty('name', name)
@@ -1007,7 +986,7 @@ export default class N19baseApplet {
   }
 
   static Refresh(name) {
-    const service = window.SiebelApp.S_App.GetService('N19 BS')
+    const service = window.SiebelApp.S_App.GetService('Nexus BS')
     if (service) {
       const inPropSet = window.SiebelApp.S_App.NewPropertySet()
       inPropSet.SetProperty('name', name)
@@ -1046,7 +1025,7 @@ export default class N19baseApplet {
       ps.SetProperty('Fields', el[1].join(','))
       psInputs.AddChild(ps.Clone())
     })
-    const bs = window.SiebelApp.S_App.GetService('N19 BS')
+    const bs = window.SiebelApp.S_App.GetService('Nexus BS')
     const ai = {
       async: true,
       selfbusy: true,

@@ -15,7 +15,7 @@ The below guides will help you to setup Nexus Bridge library with a lightweight 
 - [Nexus Bridge Setup + React example quick start guide](/examples/REACT%20Examples/Demo%20Example/readme.md)
 - [Nexus Bridge Setup + Angular example quick start guide](/examples/ANGULAR%20Examples/SR%20Form%20Applet/README.md)
 
-** Please take into account that above examples were tested on Siebel IP16+ versions. **
+**Please take into account that above examples were tested on Siebel IP16+ versions.**
 
 ## How to contribute
 

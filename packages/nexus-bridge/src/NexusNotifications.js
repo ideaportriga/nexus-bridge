@@ -58,9 +58,13 @@ export default class NexusNotifications {
     pm.AttachNotificationHandler(consts.get('SWE_PROP_BC_NOTI_END'), () => {
       if (receivedNotifications.length > 0) {
         // we assume that the function does not throw an error, so no error handling here
-        this.subscribers.forEach(el => el.func())
+        this._invokeSubscriptions()
       }
     })
+  }
+
+  _invokeSubscriptions() {
+    this.subscribers.forEach(el => el.func())
   }
 
   subscribe(func) {

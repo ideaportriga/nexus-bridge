@@ -98,6 +98,10 @@ export default class NexusBaseApplet {
     return this.notifications.unsubscribe(token)
   }
 
+  invokeSubscriptions() {
+    this.notifications._invokeSubscriptions()
+  }
+
   _getControl(name) {
     return this.pm.ExecuteMethod('GetControl', name)
   }

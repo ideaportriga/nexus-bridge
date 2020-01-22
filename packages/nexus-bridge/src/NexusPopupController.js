@@ -24,91 +24,98 @@ export default class NexusPopupController {
     this.consts = window.SiebelJS.Dependency('window.SiebelApp.Constants')
     this.isPopupHidden = false
     this.resolvePromise = null
-    // TODO: remove the code that supports ORW to create NB instances(?)
     this.popupApplet = null // it could be removed in the next version
     this.assocApplet = null // it could be removed in the next version
 
     console.log('[NB] Popup controller started')
 
-    // it will be a singleton, so there is no cleanup
-    this.NexusProcessNewPopup = window.SiebelApp.S_App.ProcessNewPopup
-    window.SiebelApp.S_App.ProcessNewPopup = ps => {
-      let ret
-      if (this.isPopupHidden) {
-        ret = this.processNewPopup(ps)
-        // this.isPopupHidden = false; // in order to do not affect the next call // it is redundant
-      } else {
-        ret = this.NexusProcessNewPopup.call(window.SiebelApp.S_App, ps)
+    if (!window.SiebelAppFacade.NexusProcessNewPopup) {
+      window.SiebelAppFacade.NexusProcessNewPopup =
+        window.SiebelApp.S_App.ProcessNewPopup
+      window.SiebelApp.S_App.ProcessNewPopup = ps => {
+        if (this.isPopupHidden) {
+          return this.processNewPopup(ps)
+          // this.isPopupHidden = false; // in order to do not affect the next call // it is redundant
+        }
+        return window.SiebelAppFacade.NexusProcessNewPopup.call(
+          window.SiebelApp.S_App,
+          ps
+        )
       }
-      return ret
     }
 
+    // resolve popup promise
     window.SiebelApp.S_App.GetPopupPM().AddMethod(
       'OnLoadPopupContent',
-      () => {
-        if (typeof this.resolvePromise === 'function') {
-          const {
-            applet,
-            assocApplet,
-            appletName,
-            assocAppletName
-          } = NexusPopupController.IsPopupOpen()
-
-          if (!applet) {
-            this.resolvePromise = null // how do we do error handling
-            throw new Error(
-              '[NB] Open Popup Applet is not found in OnLoadPopupContent resolving Promise'
-            )
-          }
-
-          if (!window.SiebelAppFacade.NB) {
-            console.warn(
-              '[NB]The `window.SiebelAppFacade.NB` is empty. Please check if the PR files are deployed.'
-            )
-          } else {
-            const arr = Object.values(window.SiebelAppFacade.NB)
-            for (let i = 0; i < arr.length; i += 1) {
-              if (arr[i].isPopup) {
-                // this is popup
-                if (assocApplet && arr[i].isMvgAssoc) {
-                  this.assocApplet = arr[i]
-                } else {
-                  this.popupApplet = arr[i]
-                }
-              }
-            }
-          }
-
-          const obj = {
-            appletName,
-            applet,
-            assocAppletName,
-            assocApplet,
-            nexusPopupApplet: this.popupApplet,
-            nexusAssocApplet: this.assocApplet
-          }
-
-          this.resolvePromise(obj)
-          this.resolvePromise = null
-        }
-      },
-      { sequence: false }
+      this.onLoadPopupContent,
+      { sequence: false, scope: this }
     )
 
+    // resolve view promise
     this.viewLoadedResolve = null
-    this.nexusViewLoaded = window.SiebelApp.contentUpdater.viewLoaded
-    window.SiebelApp.contentUpdater.viewLoaded = (...args) => {
-      const ret = this.nexusViewLoaded.call(
-        window.SiebelApp.contentUpdater,
-        ...args
-      )
-      if (typeof this.viewLoadedResolve === 'function') {
-        this.viewLoadedResolve(true)
-        // TODO: Check view name to be safe??
-        this.viewLoadedResolve = null
+    if (!window.SiebelAppFacade.nexusViewLoaded) {
+      window.SiebelAppFacade.nexusViewLoaded =
+        window.SiebelApp.contentUpdater.viewLoaded
+      window.SiebelApp.contentUpdater.viewLoaded = (...args) => {
+        const ret = window.SiebelAppFacade.nexusViewLoaded.call(
+          window.SiebelApp.contentUpdater,
+          ...args
+        )
+        if (typeof this.viewLoadedResolve === 'function') {
+          this.viewLoadedResolve(true)
+          // TODO: Check view name and "error loading the content"
+          this.viewLoadedResolve = null
+        }
+        return ret
       }
-      return ret
     }
+  }
+
+  onLoadPopupContent() {
+    if (typeof this.resolvePromise !== 'function') {
+      return
+    }
+
+    const {
+      applet,
+      assocApplet,
+      appletName,
+      assocAppletName
+    } = NexusPopupController.IsPopupOpen()
+
+    if (!applet) {
+      this.resolvePromise = null
+      throw new Error(
+        '[NB] Opened Popup Applet is not found in OnLoadPopupContent'
+      )
+    }
+
+    if (!window.SiebelAppFacade.NB) {
+      console.warn(
+        '[NB]The `window.SiebelAppFacade.NB` is empty. Please check if the PR files are deployed.'
+      )
+    } else {
+      // ORW - keep or remove?
+      Object.values(window.SiebelAppFacade.NB).forEach(nexus => {
+        if (nexus.isPopup) {
+          if (assocApplet && nexus.isMvgAssoc) {
+            this.assocApplet = nexus
+          } else {
+            this.popupApplet = nexus
+          }
+        }
+      })
+    }
+
+    this.resolvePromise({
+      appletName,
+      applet,
+      assocAppletName,
+      assocApplet,
+      nexusPopupApplet: this.popupApplet,
+      nexusAssocApplet: this.assocApplet
+    })
+    this.resolvePromise = null
   }
 
   gotoView(ctx, func, viewName, appletName, id) {

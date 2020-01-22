@@ -893,7 +893,13 @@ export default class NexusBaseApplet {
     return this.pm.ExecuteMethod('InvokeMethod', 'NewQuery')
   }
 
-  queryBySearchExprSync(expr, skipNewQueryInQueryMode, checkQueryMode) {
+  queryBySearchExpr(expr, checkQueryMode) {
+    return new Promise(resolve =>
+      resolve(this.queryBySearchExprSync(expr, checkQueryMode))
+    )
+  }
+
+  queryBySearchExprSync(expr, checkQueryMode) {
     this._newQuery(checkQueryMode)
     const control = this._findControlToEnterSearchExpr()
     this._setControlValueInternal(control, expr)

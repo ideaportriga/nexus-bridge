@@ -221,11 +221,9 @@ export default class NexusBaseApplet {
     return null
   }
 
-  getControls() {
-    const controls = {}
-    const appletControls = this._returnControls()
-    const arr = Object.entries(appletControls)
-    arr.forEach(controlEntry => {
+  _getControls(controls) {
+    const ret = {}
+    controls.forEach(controlEntry => {
       const control = controlEntry[1]
       const uiType = control.GetUIType()
       if (!this._isSkipControl(uiType)) {
@@ -263,10 +261,23 @@ export default class NexusBaseApplet {
         if (obj.staticPick) {
           obj.options = NexusBaseApplet.GetControlStaticLOV(control)
         }
-        controls[name] = obj
+        ret[name] = obj
       }
     })
-    return controls
+    return ret
+  }
+
+  getListColumns() {
+    if (!this.isListApplet) {
+      throw new Error('[NB] getListColumns works only for list applet')
+    }
+    const appletControls = this.pm.Get('GetListOfColumns')
+    return this._getControls(Object.entries(appletControls))
+  }
+
+  getControls() {
+    const appletControls = this._returnControls()
+    return this._getControls(Object.entries(appletControls))
   }
 
   getRecordSet(addRecordIndex) {

@@ -264,6 +264,12 @@ export default class NexusBaseApplet {
         ret[name] = obj
       }
     })
+    ret.Id = ret.Id || {
+      name: 'Id',
+      label: 'Id',
+      uiType: this.consts.get('SWE_CTRL_TEXT'),
+      dataType: 'id'
+    }
     return ret
   }
 
@@ -851,16 +857,12 @@ export default class NexusBaseApplet {
         })
       }
     })
-    if (!_controls.Id) {
-      _controls.Id = {
-        value: _controls.state !== 3 ? _controls.id : ''
-      }
+    if (_controls.Id && !_controls.Id.value) {
+      _controls.Id.value = _controls.state !== 3 ? _controls.id : ''
     }
     // populate methods
-    if (!_methods) {
-      // Is it better to use applet.GetCanInvokeArray?
-      _methods = this._getMethods()
-    }
+    // Is it better to use applet.GetCanInvokeArray?
+    _methods = _methods || this._getMethods()
     Object.keys(_methods).forEach(methodName => {
       _methods[methodName] = this.canInvokeMethod(methodName)
     })

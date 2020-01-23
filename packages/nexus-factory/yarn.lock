@@ -18,10 +18,10 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@ideaportriga/nexus-bridge@^2.1.0":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@ideaportriga/nexus-bridge/-/nexus-bridge-2.1.1.tgz#029a28a685985b6e2d4b5e3f353370b2396bf550"
-  integrity sha512-ZmpiWFu038bM+8+dHqBnbiixo0L4n9ir5dPkbgI+t/PUPMRyQKb6OM/hocDzdWa8Mrl1VkROjTW75SLiausDrQ==
+"@ideaportriga/nexus-bridge@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@ideaportriga/nexus-bridge/-/nexus-bridge-2.1.2.tgz#0fd1997341a42fa63f8b04a0cd047b9a427e5540"
+  integrity sha512-dCyBAAjDmXtW7avT8gLpPARk0XQFhHO0VhCczC+5NnFjeEGhHY3Qnpw5XIN0wL0Wh6l+v/3O8C6d/pZCcBtMLw==
 
 "@types/eslint-visitor-keys@^1.0.0":
   version "1.0.0"

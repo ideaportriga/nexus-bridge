@@ -221,11 +221,9 @@ export default class NexusBaseApplet {
     return null
   }
 
-  getControls() {
-    const controls = {}
-    const appletControls = this._returnControls()
-    const arr = Object.entries(appletControls)
-    arr.forEach(controlEntry => {
+  _getControls(controls) {
+    const ret = {}
+    controls.forEach(controlEntry => {
       const control = controlEntry[1]
       const uiType = control.GetUIType()
       if (!this._isSkipControl(uiType)) {
@@ -263,10 +261,29 @@ export default class NexusBaseApplet {
         if (obj.staticPick) {
           obj.options = NexusBaseApplet.GetControlStaticLOV(control)
         }
-        controls[name] = obj
+        ret[name] = obj
       }
     })
-    return controls
+    ret.Id = ret.Id || {
+      name: 'Id',
+      label: 'Id',
+      uiType: this.consts.get('SWE_CTRL_TEXT'),
+      dataType: 'id'
+    }
+    return ret
+  }
+
+  getListColumns() {
+    if (!this.isListApplet) {
+      throw new Error('[NB] getListColumns works only for list applet')
+    }
+    const appletControls = this.pm.Get('GetListOfColumns')
+    return this._getControls(Object.entries(appletControls))
+  }
+
+  getControls() {
+    const appletControls = this._returnControls()
+    return this._getControls(Object.entries(appletControls))
   }
 
   getRecordSet(addRecordIndex) {
@@ -840,16 +857,12 @@ export default class NexusBaseApplet {
         })
       }
     })
-    if (!_controls.Id) {
-      _controls.Id = {
-        value: _controls.state !== 3 ? _controls.id : ''
-      }
+    if (_controls.Id && !_controls.Id.value) {
+      _controls.Id.value = _controls.state !== 3 ? _controls.id : ''
     }
     // populate methods
-    if (!_methods) {
-      // Is it better to use applet.GetCanInvokeArray?
-      _methods = this._getMethods()
-    }
+    // Is it better to use applet.GetCanInvokeArray?
+    _methods = _methods || this._getMethods()
     Object.keys(_methods).forEach(methodName => {
       _methods[methodName] = this.canInvokeMethod(methodName)
     })
@@ -866,12 +879,15 @@ export default class NexusBaseApplet {
       const controlUiType = control.GetUIType()
       const fieldName = control.GetFieldName()
       let ret =
-        controlUiType !== this.consts.get('SWE_CTRL_CHECKBOX') &&
-        controlUiType !== this.consts.get('SWE_PST_BUTTON_CTRL') &&
-        controlUiType !== this.consts.get('SWE_CTRL_PLAINTEXT') &&
-        controlUiType !== this.consts.get('SWE_CTRL_LABEL') &&
-        controlUiType !== this.consts.get('SWE_CTRL_LINK') &&
-        controlUiType !== 'null'
+        controlUiType !== 'null' &&
+        ![
+          this.consts.get('SWE_CTRL_CHECKBOX'),
+          this.consts.get('SWE_PST_BUTTON_CTRL'),
+          this.consts.get('SWE_CTRL_PLAINTEXT'),
+          this.consts.get('SWE_CTRL_LABEL'),
+          this.consts.get('SWE_CTRL_LINK'),
+          this.consts.get('SWE_CTRL_MVG')
+        ].includes(controlUiType)
 
       ret = ret && fieldName
       return ret

@@ -866,12 +866,15 @@ export default class NexusBaseApplet {
       const controlUiType = control.GetUIType()
       const fieldName = control.GetFieldName()
       let ret =
-        controlUiType !== this.consts.get('SWE_CTRL_CHECKBOX') &&
-        controlUiType !== this.consts.get('SWE_PST_BUTTON_CTRL') &&
-        controlUiType !== this.consts.get('SWE_CTRL_PLAINTEXT') &&
-        controlUiType !== this.consts.get('SWE_CTRL_LABEL') &&
-        controlUiType !== this.consts.get('SWE_CTRL_LINK') &&
-        controlUiType !== 'null'
+        controlUiType !== 'null' &&
+        ![
+          this.consts.get('SWE_CTRL_CHECKBOX'),
+          this.consts.get('SWE_PST_BUTTON_CTRL'),
+          this.consts.get('SWE_CTRL_PLAINTEXT'),
+          this.consts.get('SWE_CTRL_LABEL'),
+          this.consts.get('SWE_CTRL_LINK'),
+          this.consts.get('SWE_CTRL_MVG')
+        ].includes(controlUiType)
 
       ret = ret && fieldName
       return ret

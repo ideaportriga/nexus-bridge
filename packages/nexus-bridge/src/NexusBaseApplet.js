@@ -222,6 +222,7 @@ export default class NexusBaseApplet {
 
   _getControls(controls) {
     const ret = {}
+    const list = this.pm.Get('GetListOfColumns')
     controls.forEach(controlEntry => {
       const control = controlEntry[1]
       const uiType = control.GetUIType()
@@ -255,7 +256,8 @@ export default class NexusBaseApplet {
           props: NexusBaseApplet.GetPropSet(control),
           isSortable: control.IsSortable(),
           iconMap: this._getIconMap(control),
-          methodName: control.GetMethodName()
+          methodName: control.GetMethodName(),
+          isListColumn: !!(this.isListApplet && list[name])
         }
         if (obj.staticPick) {
           obj.options = NexusBaseApplet.GetControlStaticLOV(control)

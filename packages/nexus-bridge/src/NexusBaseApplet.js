@@ -208,7 +208,6 @@ export default class NexusBaseApplet {
     return control
       .GetRadioGroupPropSet()
       .childArray.map(el => el.propArray.DisplayName)
-      .sort()
   }
 
   _getIconMap(control) {

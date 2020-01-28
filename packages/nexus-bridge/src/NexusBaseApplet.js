@@ -1000,20 +1000,16 @@ export default class NexusBaseApplet {
 
   static Requery(name) {
     const service = window.SiebelApp.S_App.GetService('Nexus BS')
-    if (service) {
-      const inPropSet = window.SiebelApp.S_App.NewPropertySet()
-      inPropSet.SetProperty('name', name)
-      service.InvokeMethod('Requery', inPropSet, {})
-    }
+    const inPropSet = window.SiebelApp.S_App.NewPropertySet()
+    inPropSet.SetProperty('name', name)
+    service.InvokeMethod('Requery', inPropSet, {})
   }
 
   static Refresh(name) {
     const service = window.SiebelApp.S_App.GetService('Nexus BS')
-    if (service) {
-      const inPropSet = window.SiebelApp.S_App.NewPropertySet()
-      inPropSet.SetProperty('name', name)
-      service.InvokeMethod('Refresh', inPropSet, {})
-    }
+    const inPropSet = window.SiebelApp.S_App.NewPropertySet()
+    inPropSet.SetProperty('name', name)
+    service.InvokeMethod('Refresh', inPropSet, {})
   }
 
   getMVF(ids, fields, useActiveBO) {
@@ -1057,7 +1053,13 @@ export default class NexusBaseApplet {
       },
       cb: (methodName, Inputs, psOutputs) => {
         const ret = {}
-        const { childArray } = psOutputs.GetChildByType('ResultSet')
+        const resultSet = psOutputs.GetChildByType('ResultSet')
+        if (!resultSet) {
+          throw new Error(
+            '[NB] ResultSet is not found in the output returned by business service'
+          )
+        }
+        const { childArray } = resultSet
         if (childArray) {
           childArray.forEach(child => {
             ret[child.GetType()] = {}

@@ -142,9 +142,7 @@ export default class Nexus extends NexusBaseApplet {
   }
 
   gotoView(viewName, appletName, id) {
-    // TODO: check if current record exists this.getCurrentRecord
-    id = typeof id === 'undefined' ? (this.getCurrentRecord(true) || {}).Id : id
-
+    // id = typeof id === 'undefined' ? (this.getCurrentRecord(true) || {}).Id : id
     if (appletName && id) {
       let SWECmd = `GotoView&SWEView=${viewName}&SWEApplet0=${appletName}`
       SWECmd += `&SWEBU=1&SWEKeepContext=FALSE&SWERowId0=${id}`

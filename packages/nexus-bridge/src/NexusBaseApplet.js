@@ -798,12 +798,13 @@ export default class NexusBaseApplet {
       _controls.id = rawRecordSet[index].Id
     }
     const appletControls = this._returnControls()
+    const list = this.pm.Get('GetListOfColumns')
     // populate controls
     Object.keys(_controls).forEach(controlName => {
       let ret = {}
       const control = appletControls[controlName]
+      // just if somebody sends incorrect name of the control
       if (typeof control !== 'undefined') {
-        // just if somebody sends incorrect name of the control
         const fieldName = control.GetFieldName()
         const uiType = control.GetUIType()
         const displayFormat =
@@ -854,7 +855,8 @@ export default class NexusBaseApplet {
           currencyCodeField,
           currencyCode,
           name: controlName,
-          iconMap: this._getIconMap(control)
+          iconMap: this._getIconMap(control),
+          isListColumn: !!(this.isListApplet && list[controlName])
         })
       }
     })

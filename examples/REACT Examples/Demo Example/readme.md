@@ -29,9 +29,9 @@ This is not an example of implementation that can be used on production. It is i
 
    - Find out your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` into Chrome Developer Tools console.
 
-   - Use the Tools to add `Nexus React Account Screen` under `Application > Screen Menu Item` for your Siebel Application Name.
+   - Use the Tools to add `N19 React Account Screen` under `Application > Screen Menu Item` for your Siebel Application Name.
 
-   - Use the Tools to add `Nexus React Account Screen` under `Application > Page Tab` for your Siebel Application Name.
+   - Use the Tools to add `N19 React Account Screen` under `Application > Page Tab` for your Siebel Application Name.
 
 1. Compile (Siebel IP16) or deliver (Siebel IP17+) your changes:
 

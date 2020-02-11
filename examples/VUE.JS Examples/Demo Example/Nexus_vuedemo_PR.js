@@ -6,22 +6,22 @@
   This was created and tested on 16.19 ENU, so there might be issues on another locales/versions.
 */
 
-if (typeof (SiebelAppFacade.N19_vuedemo_PR) === "undefined") {
-  SiebelJS.Namespace("SiebelAppFacade.N19_vuedemo_PR");
-  define("siebel/custom/N19_vuedemo_PR", ["siebel/custom/NBDefaultAppletPR", "siebel/custom/vue.js", "siebel/custom/polyfill.min.js", "siebel/custom/vuetify.js"],
+if (typeof (SiebelAppFacade.Nexus_vuedemo_PR) === "undefined") {
+  SiebelJS.Namespace("SiebelAppFacade.Nexus_vuedemo_PR");
+  define("siebel/custom/Nexus_vuedemo_PR", ["siebel/custom/NBDefaultAppletPR", "siebel/custom/vue.js", "siebel/custom/polyfill.min.js", "siebel/custom/vuetify.js"],
     function () {
-      SiebelAppFacade.N19_vuedemo_PR = (function () {
+      SiebelAppFacade.Nexus_vuedemo_PR = (function () {
         let vueObj;
 
-        function N19_vuedemo_PR(pm) {
-          SiebelAppFacade.N19_vuedemo_PR.superclass.constructor.apply(this, arguments);
+        function Nexus_vuedemo_PR(pm) {
+          SiebelAppFacade.Nexus_vuedemo_PR.superclass.constructor.apply(this, arguments);
         }
 
-        SiebelJS.Extend(N19_vuedemo_PR, SiebelAppFacade.NBDefaultAppletPR);
+        SiebelJS.Extend(Nexus_vuedemo_PR, SiebelAppFacade.NBDefaultAppletPR);
 
-        N19_vuedemo_PR.prototype.Init = function () {
+        Nexus_vuedemo_PR.prototype.Init = function () {
           importCss();
-          SiebelAppFacade.N19_vuedemo_PR.superclass.Init.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
+          SiebelAppFacade.Nexus_vuedemo_PR.superclass.Init.apply(this, arguments); //Executing vanilla bindings, required to use SiebelApp/pm methods
 
           // we will use simplified BC, therefore safer to disable the new record creation
           this.GetPM().AddMethod("CanInvokeMethod", function (method, returnStructure) {
@@ -34,7 +34,7 @@ if (typeof (SiebelAppFacade.N19_vuedemo_PR) === "undefined") {
           vueObj = mountVueSample("vue_sample", this.GetPM());
         }
 
-        N19_vuedemo_PR.prototype.EndLife = function () {
+        Nexus_vuedemo_PR.prototype.EndLife = function () {
           //Cleanup before destroying applet object
           if (vueObj) {
             vueObj.$destroy();
@@ -45,12 +45,12 @@ if (typeof (SiebelAppFacade.N19_vuedemo_PR) === "undefined") {
           $("link[href*='https://fonts.googleapis.com/css']").remove();
           $('#vuetify-theme-stylesheet').remove();
 
-          SiebelAppFacade.N19_vuedemo_PR.superclass.EndLife.apply(this, arguments); //Siebel applet cleanup
+          SiebelAppFacade.Nexus_vuedemo_PR.superclass.EndLife.apply(this, arguments); //Siebel applet cleanup
         }
-        return N19_vuedemo_PR;
+        return Nexus_vuedemo_PR;
       }()
       );
-      return "SiebelAppFacade.N19_vuedemo_PR";
+      return "SiebelAppFacade.Nexus_vuedemo_PR";
     })
 }
 
@@ -69,14 +69,14 @@ function addContainer(pm, vueId) {
 }
 
 function mountVueSample(elementId, pm) {
-  var n19 = new SiebelAppFacade.NexusBridge({ pm: pm });
+  var nexus = new SiebelAppFacade.NexusBridge({ pm: pm });
   addContainer(pm, elementId);
 
   return new Vue({
     el: '#' + elementId,
     template: compiledTemplate,
     data: {
-      n19: n19,
+      nexus: nexus,
       snackBar: false,
       snackBarColor: '',
       snackBarText: '',
@@ -100,14 +100,14 @@ function mountVueSample(elementId, pm) {
     },
     mounted: function () {
       this.selectionInit(); // resetting record based on siebel record, mapping control state to vue instance
-      this.selectionSubId = n19.subscribe(this.selectionInit);
-      this.accountStatusList = n19.getStaticLOV('AccountStatus');
-      this.accountTypeCodeList = n19.getStaticLOV('AccountTypeCode');
-      this.accountTypeList = n19.getStaticLOV('Type');
+      this.selectionSubId = nexus.subscribe(this.selectionInit);
+      this.accountStatusList = nexus.getStaticLOV('AccountStatus');
+      this.accountTypeCodeList = nexus.getStaticLOV('AccountTypeCode');
+      this.accountTypeList = nexus.getStaticLOV('Type');
     },
     methods: {
       saveRecord: function () {
-        n19.writeRecord(function () {
+        nexus.writeRecord(function () {
           this.snackBarColor = 'success';
           this.snackBarText = 'Record Saved Successfully';
           this.snackBarButtonColor = 'pink';
@@ -120,40 +120,40 @@ function mountVueSample(elementId, pm) {
         }.bind(this));
       },
       changeValue: function (name) {
-        if (!n19.setControlValue(name, this.controls[name].value)) {
+        if (!nexus.setControlValue(name, this.controls[name].value)) {
           // the value was not set properly
-          var currentValue = n19.getCurrentRecord()[name];
+          var currentValue = nexus.getCurrentRecord()[name];
           setTimeout(function () {
             this.controls[name].value = currentValue;
           }.bind(this));
         }
       },
       nextRecord: function () {
-        n19.nextRecord();
+        nexus.nextRecord();
       },
       prevRecord: function () {
-        n19.prevRecord();
+        nexus.prevRecord();
       },
       newQuery: function () {
-        n19.invokeMethod('NewQuery');
+        nexus.invokeMethod('NewQuery');
       },
       executeQuery: function () {
-        n19.invokeMethod('ExecuteQuery');
+        nexus.invokeMethod('ExecuteQuery');
       },
       escapeOnControl: function (name) {
-        this.controls[name].value = n19.getCurrentRecord()[this.controls[name].fieldName];
+        this.controls[name].value = nexus.getCurrentRecord()[this.controls[name].fieldName];
         this.changeValue(name);
       },
       handleClear: function (name) { // this is needed because the clearing sets the model value to null
-        this.controls[name].value = '';     // it will not be needed if we handle it inside N19
+        this.controls[name].value = '';     // it will not be needed if it will be handled inside Nexis
         this.changeValue(name);
       },
       selectionInit: function () {
-        n19.getCurrentRecordModel(this.controls, this.methods);
+        nexus.getCurrentRecordModel(this.controls, this.methods);
       },
       beforeDestroy: function () {
         this.unsubscribeId(this.selectionSubId);
-        n19 = null;
+        nexus = null;
       }
     }
   });
@@ -174,7 +174,7 @@ var compiledTemplate = '\
       <v-container fluid> \
         <v-layout row wrap> \
           <v-flex md12 pa-2> \
-           <v-alert :value="true" type="info">{{ n19.appletName }} rendered by VUE.JS PR / {{controls.state}}</v-alert>\
+           <v-alert :value="true" type="info">{{ nexus.appletName }} rendered by VUE.JS PR / {{controls.state}}</v-alert>\
           </v-flex>\
           <v-flex md9 pa-2>\
             <v-text-field :rules="controls.Name.required ? [\'Required\'] : []" \

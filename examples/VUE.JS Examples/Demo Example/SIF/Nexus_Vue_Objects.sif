@@ -10,20 +10,20 @@
 	   ALLOW_OBJECT_LOCKING="Y"
 	   INACTIVE="N"
 	   LOCKED="N"
-	   NAME="Nexus19 Vue Demo Examples"
+	   NAME="Nexus Vue Demo Examples"
 	   UI_FREEZE="N"
 	   UPDATED="01/29/2019 06:20:54"
 	   UPDATED_BY="SADMIN"
 	   CREATED="01/29/2019 06:02:31"
 	   CREATED_BY="SADMIN">
 		<APPLET
-		   BUSINESS_COMPONENT="N19 Account"
+		   BUSINESS_COMPONENT="Nexus Account"
 		   CLASS="CSSSWEJumpFrame"
 		   COMMENTS="Galena Release: Added Next Call Date and the Objective fields"
 		   DISABLE_DATALOSS_WARNING="N"
 		   HEIGHT="4"
 		   INACTIVE="N"
-		   NAME="N19 SIS Account Entry Applet"
+		   NAME="Nexus SIS Account Entry Applet"
 		   NO_DELETE="N"
 		   NO_INSERT="N"
 		   NO_MERGE="N"
@@ -39,6 +39,7 @@
 		   CREATED_BY="SADMIN">
 			<APPLET_WEB_TEMPLATE
 			   COMMENTS="FH:8/18/03 account small applet for all vert groups."
+			   EXT_WEB_TEMPLATE="Applet Form Grid Layout"
 			   INACTIVE="N"
 			   NAME="Edit"
 			   SEQUENCE="0"
@@ -48,7 +49,7 @@
 			   UPDATED_BY="SADMIN"
 			   CREATED="01/29/2019 06:11:59"
 			   CREATED_BY="SADMIN"
-			   >
+			   EXT_REC_TABLES="S_APPL_WTMPL_RX">
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="15"
 				   CONTROL="AccountStatus"
@@ -115,61 +116,70 @@
 				   ITEM_IDENTIFIER="90"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="AppletTitle"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_90"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:11:59"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:11:59"
-				   CREATED_BY="SADMIN">
+				   CREATED_BY="SADMIN"
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="15"
 				   COMMENTS="All-City"
 				   CONTROL="City"
+				   EXT_EXPRESSION="(GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Power Communications&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Financial Services&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Hospitality&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Life Sciences&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel eChannel for CME&quot;)"
 				   GRID_PROPERTY="FormattedHtml"
 				   INACTIVE="N"
 				   ITEM_IDENTIFIER="8019"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="City"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_8_19"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:11:59"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:11:59"
-				   CREATED_BY="SADMIN">
+				   CREATED_BY="SADMIN"
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="14"
 				   COMMENTS="All-CityLabel"
 				   CONTROL="City"
+				   EXT_EXPRESSION="(GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel eChannel for CME&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Life Sciences&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Power Communications&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Financial Services&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Hospitality&quot;)"
 				   GRID_PROPERTY="FormattedLabel"
 				   INACTIVE="N"
 				   ITEM_IDENTIFIER="8005"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="CityLabel"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="siebcontrol"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:11:59"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:11:59"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="15"
 				   COMMENTS="All-Country"
 				   CONTROL="Country"
+				   EXT_EXPRESSION="(GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Financial Services&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Power Communications&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel eChannel for CME&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Public Sector&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Life Sciences&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Hospitality&quot;)"
 				   GRID_PROPERTY="FormattedHtml"
 				   INACTIVE="N"
 				   ITEM_IDENTIFIER="8049"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="Country"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_8_49"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:11:59"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:11:59"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 					<APPLET_WEB_TEMPLATE_ITEM_LOCALE
 					   APPLICATION_CODE="STD"
 					   INACTIVE="N"
@@ -187,18 +197,20 @@
 				   COLUMN_SPAN="14"
 				   COMMENTS="All-CountryLabel"
 				   CONTROL="Country"
+				   EXT_EXPRESSION="(GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel eChannel for CME&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Power Communications&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Public Sector&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Life Sciences&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Hospitality&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Financial Services&quot;)"
 				   GRID_PROPERTY="FormattedLabel"
 				   INACTIVE="N"
 				   ITEM_IDENTIFIER="8035"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="CountryLabel"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="siebcontrol"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:11:59"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:11:59"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 					<APPLET_WEB_TEMPLATE_ITEM_LOCALE
 					   APPLICATION_CODE="STD"
 					   INACTIVE="N"
@@ -218,12 +230,13 @@
 				   ITEM_IDENTIFIER="133"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="DeleteRecord"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_133"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:11:59"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:11:59"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   CONTROL="ExecuteQuery"
@@ -231,12 +244,13 @@
 				   ITEM_IDENTIFIER="107"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="ExecuteQuery"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_107"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:11:59"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:11:59"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="5"
@@ -274,12 +288,13 @@
 				   ITEM_IDENTIFIER="123"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="GotoNextSet"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_123"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:11:59"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:11:59"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   CONTROL="GotoPreviousSet"
@@ -287,137 +302,154 @@
 				   ITEM_IDENTIFIER="122"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="GotoPreviousSet"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_122"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:11:59"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:11:59"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   CONTROL="GridCtrl"
+				   EXTENSION_FLAG="Y"
 				   INACTIVE="N"
 				   ITEM_IDENTIFIER="99989"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="GridCtrl"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_99989"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="15"
 				   CONTROL="HomePage"
+				   EXT_EXPRESSION="(GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Hospitality&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Power Communications&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Financial Services&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Life Sciences&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel eChannel for CME&quot;)"
 				   GRID_PROPERTY="FormattedHtml"
 				   INACTIVE="N"
 				   ITEM_IDENTIFIER="11089"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="HomePage"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_11_89"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="24"
 				   CONTROL="HomePage"
+				   EXT_EXPRESSION="(GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel eChannel for CME&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Power Communications&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Financial Services&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Life Sciences&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Hospitality&quot;)"
 				   GRID_PROPERTY="FormattedLabel"
 				   INACTIVE="N"
 				   ITEM_IDENTIFIER="11065"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="HomePageLabel"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="siebcontrol"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="15"
 				   CONTROL="Location"
+				   EXT_EXPRESSION="(GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Hospitality&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Financial Services&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel eChannel for CME&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Life Sciences&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Power Communications&quot;)"
 				   GRID_PROPERTY="FormattedHtml"
 				   INACTIVE="N"
 				   ITEM_IDENTIFIER="2049"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="Location"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_2_49"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="14"
 				   CONTROL="Location"
+				   EXT_EXPRESSION="(GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel eChannel for CME&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Financial Services&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Hospitality&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Power Communications&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Life Sciences&quot;)"
 				   GRID_PROPERTY="FormattedLabel"
 				   INACTIVE="N"
 				   ITEM_IDENTIFIER="2035"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="LocationLabel"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="siebcontrol"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="15"
 				   CONTROL="MainFaxNumber"
+				   EXT_EXPRESSION="(GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel eChannel for CME&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Financial Services&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Life Sciences&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Power Communications&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Hospitality&quot;)"
 				   GRID_PROPERTY="FormattedHtml"
 				   INACTIVE="N"
 				   ITEM_IDENTIFIER="8089"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="MainFaxNumber"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_8_89"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="24"
 				   CONTROL="MainFaxNumber"
+				   EXT_EXPRESSION="(GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Hospitality&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Financial Services&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Life Sciences&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel eChannel for CME&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Power Communications&quot;)"
 				   GRID_PROPERTY="FormattedLabel"
 				   INACTIVE="N"
 				   ITEM_IDENTIFIER="8065"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="MainFaxNumberLabel"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="siebcontrol"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="15"
 				   CONTROL="MainPhoneNumber"
+				   EXT_EXPRESSION="(GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Hospitality&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Power Communications&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel eChannel for CME&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Life Sciences&quot;) AND (GetProfileAttr(&quot;ApplicationName&quot;) &lt;&gt; &quot;Siebel Financial Services&quot;)"
 				   GRID_PROPERTY="FormattedHtml"
 				   INACTIVE="N"
 				   ITEM_IDENTIFIER="5089"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="MainPhoneNumber3"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_5_89"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="24"
@@ -428,12 +460,13 @@
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="MainPhoneNumberLabel3"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="siebcontrol"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   CONTROL="Match Account"
@@ -441,12 +474,13 @@
 				   ITEM_IDENTIFIER="109"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="Match Account"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_109"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="15"
@@ -457,12 +491,13 @@
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="Name"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_2_19"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="17"
@@ -473,12 +508,13 @@
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="NameLabel"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="siebcontrol"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   CONTROL="NewQuery"
@@ -486,12 +522,13 @@
 				   ITEM_IDENTIFIER="106"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="NewQuery"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_106"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   CONTROL="NewRecord"
@@ -499,12 +536,13 @@
 				   ITEM_IDENTIFIER="131"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="NewRecord"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_131"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="15"
@@ -516,12 +554,13 @@
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="PostalCode"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_11_19"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="14"
@@ -533,12 +572,13 @@
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="PostalCodeLabel"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="siebcontrol"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   CONTROL="QueryAssistant"
@@ -546,12 +586,13 @@
 				   ITEM_IDENTIFIER="126"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="QueryAssistant"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_126"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="15"
@@ -562,12 +603,13 @@
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="SalesRep"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_2_89"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="24"
@@ -578,12 +620,13 @@
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="SalesRepLabel"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="siebcontrol"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="15"
@@ -595,12 +638,13 @@
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="State"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_5_49"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 					<APPLET_WEB_TEMPLATE_ITEM_LOCALE
 					   APPLICATION_CODE="STD"
 					   INACTIVE="N"
@@ -624,12 +668,13 @@
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="StateLabel"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="siebcontrol"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 					<APPLET_WEB_TEMPLATE_ITEM_LOCALE
 					   APPLICATION_CODE="STD"
 					   INACTIVE="N"
@@ -653,12 +698,13 @@
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="StreetAddress"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_5_19"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 					<APPLET_WEB_TEMPLATE_ITEM_LOCALE
 					   APPLICATION_CODE="STD"
 					   COLUMN_SPAN="15"
@@ -682,12 +728,13 @@
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="StreetAddressLabel"
 				   ROW_SPAN="3"
+				   TMPL_ITEM_HOLDER_NAME="siebcontrol"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   CONTROL="Sync Account"
@@ -695,12 +742,13 @@
 				   ITEM_IDENTIFIER="110"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="Sync Account"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_110"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   COLUMN_SPAN="15"
@@ -738,12 +786,13 @@
 				   ITEM_IDENTIFIER="108"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="UndoQuery"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_108"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 				<APPLET_WEB_TEMPLATE_ITEM
 				   CONTROL="WriteRecord"
@@ -751,12 +800,13 @@
 				   ITEM_IDENTIFIER="136"
 				   MARKUP_LANGUAGE="HTML"
 				   NAME="WriteRecord"
+				   TMPL_ITEM_HOLDER_NAME="SiebControl_136"
 				   TYPE="Control"
 				   UPDATED="01/29/2019 06:12:00"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:00"
 				   CREATED_BY="SADMIN"
-				   >
+				   EXT_REC_TABLES="S_APPL_WT_IT_RX">
 				</APPLET_WEB_TEMPLATE_ITEM>
 			</APPLET_WEB_TEMPLATE>
 			<CONTROL
@@ -1833,7 +1883,7 @@ Added validation for the fields as per the CR 12-JNVJZ6"
 		   INSERT_UPDATE_ALL_COLUMNS="N"
 		   LOG_CHANGES="Y"
 		   MULTI_RECIPIENT_SELECT="N"
-		   NAME="N19 Account"
+		   NAME="Nexus Account"
 		   NO_DELETE="N"
 		   NO_INSERT="N"
 		   NO_MERGE="N"
@@ -2694,17 +2744,17 @@ Added validation for the fields as per the CR 12-JNVJZ6"
 		</BUSINESS_COMPONENT>
 		<BUSINESS_OBJECT
 		   INACTIVE="N"
-		   NAME="N19 Account"
-		   PRIMARY_BUSINESS_COMPONENT="N19 Account"
+		   NAME="Nexus Account"
+		   PRIMARY_BUSINESS_COMPONENT="Nexus Account"
 		   QUERY_LIST_BUSINESS_COMPONENT="Query List"
 		   UPDATED="01/29/2019 06:19:10"
 		   UPDATED_BY="SADMIN"
 		   CREATED="01/29/2019 06:06:34"
 		   CREATED_BY="SADMIN">
 			<BUSINESS_OBJECT_COMPONENT
-			   BUSCOMP="N19 Account"
+			   BUSCOMP="Nexus Account"
 			   INACTIVE="N"
-			   NAME="N19 Account"
+			   NAME="Nexus Account"
 			   UPDATED="01/29/2019 06:06:34"
 			   UPDATED_BY="SADMIN"
 			   CREATED="01/29/2019 06:06:34"
@@ -2712,9 +2762,9 @@ Added validation for the fields as per the CR 12-JNVJZ6"
 			</BUSINESS_OBJECT_COMPONENT>
 		</BUSINESS_OBJECT>
 		<SCREEN
-		   DEFAULT_VIEW="N19 Account View"
+		   DEFAULT_VIEW="Nexus Account View"
 		   INACTIVE="N"
-		   NAME="N19 Vue Account Screen"
+		   NAME="Nexus Vue Account Screen"
 		   UNRESTRICTED_VIEWBAR="N"
 		   UPGRADE_BEHAVIOR="Preserve"
 		   UPDATED="01/29/2019 06:19:26"
@@ -2727,7 +2777,7 @@ Added validation for the fields as per the CR 12-JNVJZ6"
 			   LANGUAGE_CODE="ENU"
 			   NAME="ENU-STD"
 			   TRANSLATE="Y"
-			   VIEWBAR_TEXT="N19 Accounts"
+			   VIEWBAR_TEXT="Nexus Accounts"
 			   UPDATED="01/29/2019 06:12:01"
 			   UPDATED_BY="SADMIN"
 			   CREATED="01/29/2019 06:12:01"
@@ -2739,9 +2789,9 @@ Added validation for the fields as per the CR 12-JNVJZ6"
 			   DISPLAY_IN_PAGE="Y"
 			   DISPLAY_IN_SITE_MAP="Y"
 			   INACTIVE="N"
-			   NAME="N19 Account View"
+			   NAME="Nexus Account View"
 			   TYPE="Aggregate View"
-			   VIEW="N19 Account View"
+			   VIEW="Nexus Account View"
 			   UPDATED="01/29/2019 06:12:01"
 			   UPDATED_BY="SADMIN"
 			   CREATED="01/29/2019 06:12:01"
@@ -2750,10 +2800,10 @@ Added validation for the fields as per the CR 12-JNVJZ6"
 				   APPLICATION_CODE="STD"
 				   INACTIVE="N"
 				   LANGUAGE_CODE="ENU"
-				   MENU_TEXT="N19 Accounts"
+				   MENU_TEXT="Nexus Accounts"
 				   NAME="ENU-STD"
 				   TRANSLATE="Y"
-				   VIEWBAR_TEXT="N19 Accounts"
+				   VIEWBAR_TEXT="Nexus Accounts"
 				   UPDATED="01/29/2019 06:12:01"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:01"
@@ -2764,30 +2814,31 @@ Added validation for the fields as per the CR 12-JNVJZ6"
 		<VIEW
 		   ADD_TO_HISTORY="Y"
 		   ADMIN_MODE_FLAG="N"
-		   BUSINESS_OBJECT="N19 Account"
+		   BUSINESS_OBJECT="Nexus Account"
 		   DISABLE_PDQ="N"
 		   DROP_SECTORS="1and5"
 		   EXPLICIT_LOGIN="N"
 		   HELP_IDENTIFIER="ID_VIEW_ACCOUNT_LIST"
 		   INACTIVE="N"
-		   NAME="N19 Account View"
+		   NAME="Nexus Account View"
 		   NO_BORDERS="N"
+		   RESPONSIVE_FLAG="Y"
 		   SCREEN_MENU="Y"
 		   SECURE="N"
 		   STATUS_TEXT_-_STRING_REFERENCE="SBL_VIEW_YOUR_ACCOUNTS-1004224413-0G6"
-		   THREAD_APPLET="N19 SIS Account Entry Applet"
+		   THREAD_APPLET="Nexus SIS Account Entry Applet"
 		   THREAD_FIELD="Name"
 		   THREAD_TITLE_-_STRING_REFERENCE="SBL_ACCOUNT:-1004224422-0HV"
 		   TITLE_-_STRING_REFERENCE="SBL_MY_ACCOUNTS-1004225013-4I4"
 		   TYPE="Standard"
 		   UPGRADE_BEHAVIOR="Preserve"
-		   VISIBILITY_APPLET="N19 SIS Account Entry Applet"
+		   VISIBILITY_APPLET="Nexus SIS Account Entry Applet"
 		   VISIBILITY_APPLET_TYPE="Sales Rep"
 		   UPDATED="01/29/2019 06:19:18"
 		   UPDATED_BY="SADMIN"
 		   CREATED="01/29/2019 06:12:01"
 		   CREATED_BY="SADMIN"
-		   >
+		   EXT_REC_TABLES="S_VIEW_RX">
 			<VIEW_WEB_TEMPLATE
 			   INACTIVE="N"
 			   NAME="Base"
@@ -2798,12 +2849,12 @@ Added validation for the fields as per the CR 12-JNVJZ6"
 			   CREATED="01/29/2019 06:12:01"
 			   CREATED_BY="SADMIN">
 				<VIEW_WEB_TEMPLATE_ITEM
-				   APPLET="N19 SIS Account Entry Applet"
+				   APPLET="Nexus SIS Account Entry Applet"
 				   APPLET_MODE="Edit"
 				   INACTIVE="N"
 				   ITEM_IDENTIFIER="1"
 				   MARKUP_LANGUAGE="HTML"
-				   NAME="N19 SIS Account Entry Applet"
+				   NAME="Nexus SIS Account Entry Applet"
 				   UPDATED="01/29/2019 06:12:01"
 				   UPDATED_BY="SADMIN"
 				   CREATED="01/29/2019 06:12:01"
@@ -2812,6 +2863,71 @@ Added validation for the fields as per the CR 12-JNVJZ6"
 			</VIEW_WEB_TEMPLATE>
 		</VIEW>
 	</PROJECT>
+	<SBL_EXT_TYPE_DEF>
+		<TYPE
+		   NAME="Applet">
+			<ATTRIBUTE
+			   NAME="Responsive Flag">
+			</ATTRIBUTE>
+		</TYPE>
+		<TYPE
+		   NAME="Applet Web Template">
+			<ATTRIBUTE
+			   NAME="Ext Web Template">
+			</ATTRIBUTE>
+		</TYPE>
+		<TYPE
+		   NAME="Applet Web Template Item">
+			<ATTRIBUTE
+			   NAME="Ext Expression">
+			</ATTRIBUTE>
+			<ATTRIBUTE
+			   NAME="Group Name">
+			</ATTRIBUTE>
+			<ATTRIBUTE
+			   NAME="Html Attr">
+			</ATTRIBUTE>
+			<ATTRIBUTE
+			   NAME="Sequence">
+			</ATTRIBUTE>
+			<ATTRIBUTE
+			   NAME="Tmpl Item Holder Name">
+			</ATTRIBUTE>
+			<ATTRIBUTE
+			   NAME="Web Tmpl Name">
+			</ATTRIBUTE>
+		</TYPE>
+		<TYPE
+		   NAME="View">
+			<ATTRIBUTE
+			   NAME="Responsive Flag">
+			</ATTRIBUTE>
+		</TYPE>
+		<TYPE
+		   NAME="View Web Template Item">
+			<ATTRIBUTE
+			   NAME="Ext Expression">
+			</ATTRIBUTE>
+			<ATTRIBUTE
+			   NAME="Group Name">
+			</ATTRIBUTE>
+			<ATTRIBUTE
+			   NAME="Html Attr">
+			</ATTRIBUTE>
+			<ATTRIBUTE
+			   NAME="Sequence">
+			</ATTRIBUTE>
+			<ATTRIBUTE
+			   NAME="Tmpl Item Holder Name">
+			</ATTRIBUTE>
+			<ATTRIBUTE
+			   NAME="Type">
+			</ATTRIBUTE>
+			<ATTRIBUTE
+			   NAME="Web Tmpl Name">
+			</ATTRIBUTE>
+		</TYPE>
+	</SBL_EXT_TYPE_DEF>
 </REPOSITORY>
 
 

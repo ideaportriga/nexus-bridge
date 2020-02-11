@@ -21,23 +21,23 @@ This is not an example of implementation that can be used on production. It is i
 
 1. Clone the project `git clone https://github.com/ideaportriga/nexus-bridge` or download and unpack [the project's archive](../../../../../archive/master.zip).
 
-1. Import [sif-file](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/examples/VUE.JS%20Examples/Demo%20Example/SIF/N19_Vue_Objects.sif) *(use the mouse right click and `Save link as...` to download the file)* into the Siebel Tools.
+1. Import [sif-file](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/examples/VUE.JS%20Examples/Demo%20Example/SIF/Nexus_Vue_Objects.sif) *(use the mouse right click and `Save link as...` to download the file)* into the Siebel Tools.
 
-1. Add the `N19 Vue Account Screen` to your application:
+1. Add the `Nexus Vue Account Screen` to your application:
 
       * Find out your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` into Chrome Developer Tools console.
       
-      * Use the Tools to add `N19 Vue Account Screen` under `Application > Screen Menu Item` for your Siebel Application Name.
+      * Use the Tools to add `Nexus Vue Account Screen` under `Application > Screen Menu Item` for your Siebel Application Name.
       
-      * Use the Tools to add `N19 Vue Account Screen` under `Application > Page Tab` for your Siebel Application Name.
+      * Use the Tools to add `Nexus Vue Account Screen` under `Application > Page Tab` for your Siebel Application Name.
       
 1. Compile (Siebel IP16) or deliver (Siebel IP17+) your changes:
 
       * Even in 19.11 changes on the Application object still require the Object Manager restart.
     
-1. Add the `N19 Account View` to your application:
+1. Add the `Nexus Account View` to your application:
 
-      * Use the Siebel Web Client to register `N19 Account View` under `Administration - Application > Views`.
+      * Use the Siebel Web Client to register `Nexus Account View` under `Administration - Application > Views`.
       
       * Add your user's responsibility to this view.
             
@@ -51,17 +51,17 @@ This is not an example of implementation that can be used on production. It is i
     
     * [`polyfill.min.js`](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/examples/VUE.JS%20Examples/polyfill.min.js)
     
-1. Copy [`N19_vuedemo_PR.js`](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/examples/VUE.JS%20Examples/Demo%20Example/N19_vuedemo_PR.js) *(use the mouse right click and `Save link as...` to download the file)* into the `[CLIENT_HOME or SERVER_HOME]/public/SCRIPTS/siebel/custom/` folder.
+1. Copy [`Nexus_vuedemo_PR.js`](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/examples/VUE.JS%20Examples/Demo%20Example/Nexus_vuedemo_PR.js) *(use the mouse right click and `Save link as...` to download the file)* into the `[CLIENT_HOME or SERVER_HOME]/public/SCRIPTS/siebel/custom/` folder.
 
 1. Copy [`vuetify.min.css`](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/examples/VUE.JS%20Examples/vuetify.min.css) *(use the mouse right click and `Save link as...` to download the file)* into the `[Siebel Client or Server Home]\public\files\custom` folder.
 
 1. Use the Siebel Web Client to reference JS-files in Siebel Open UI Manifest as follows:
 
 	* under `Administration - Application > Manifest Files` add a new record: 
-		* **Name:** `siebel/custom/N19_vuedemo_PR.js`
+		* **Name:** `siebel/custom/Nexus_vuedemo_PR.js`
 
 	* under `Administration - Application > Manifest Administration` add a new record under **UI Objects**: 
-		* **Name:** `N19 SIS Account Entry Applet`
+		* **Name:** `Nexus SIS Account Entry Applet`
 		* **Usage Type:** `Physical Renderer`
 		* **Type:** `Applet`
 
@@ -69,10 +69,10 @@ This is not an example of implementation that can be used on production. It is i
 		* **Level:** `1`
 
 	* and add a new record under **Files**:
-		* **Name:** `siebel/custom/N19_vuedemo_PR.js`
+		* **Name:** `siebel/custom/Nexus_vuedemo_PR.js`
     
 1. Empty browser cache and hard reload *(e.g. using Chrome with open DevTools: press F12, then right-click a browser Refresh button and press ‘Empty Cache and Hard Reload’)*
 
 1. Re-login to your Siebel Application.
 
-1. Navigate to the `N19 Vue Account Screen` screen.
+1. Navigate to the `Nexus Vue Account Screen` screen.

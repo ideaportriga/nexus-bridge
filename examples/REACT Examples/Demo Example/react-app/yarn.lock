@@ -971,17 +971,17 @@
   resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.7.4.tgz#f14932887422c9056b15a8d222a9074a7dfa2831"
   integrity sha512-fxfMSBMX3tlIbKUdtGKxqB1fyrH6gVrX39Gsv3y8lRYKUqlgDt3UMqQyGnR1bQMa2B8aGnhLZokZgg8vT0Le+A==
 
-"@ideaportriga/nexus-bridge@^2.0.8":
-  version "2.0.8"
-  resolved "https://registry.yarnpkg.com/@ideaportriga/nexus-bridge/-/nexus-bridge-2.0.8.tgz#7fd537a9f0cb13a581d1ffa1acdd60599995312c"
-  integrity sha512-H3S6dUkwjR2amK6iF8k2hPwR/APQ9I5gNzlZ8zP8iazEE5SwCM1FOydD3HAg+PjS8XwxIOy4bzKC7zSBgd5/1Q==
+"@ideaportriga/nexus-bridge@^2.1.2":
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/@ideaportriga/nexus-bridge/-/nexus-bridge-2.1.3.tgz#d97476454b837aaabd16978b1a3a9e9e67e2856f"
+  integrity sha512-n72q7qp46gKpH/rsJcMdM/40AK5LXZR/5A+OZE24CxopxWqCE3NvHxv74ojqdwNhr7li7CBCK4pOWi6CS7zOhg==
 
-"@ideaportriga/nexus-factory@^2.0.9":
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/@ideaportriga/nexus-factory/-/nexus-factory-2.0.9.tgz#ff3b5656fe96c394f65018aa26faff16554cbd2c"
-  integrity sha512-nXgpVYZ+SdRXZziNznYIfxfZN2RqsxmZlJBcba7xPxn9Rdy4maF/F07bc41yRJVREdj0uDdYRvTok22gsGj5Rg==
+"@ideaportriga/nexus-factory@^2.1.3":
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/@ideaportriga/nexus-factory/-/nexus-factory-2.1.3.tgz#fc12361834709613c7400a292e276fdc9b9a4d0f"
+  integrity sha512-dA+JvmjIK6tXpA545foFxK+mRuDampH2F89qbE5w59u26JiqUz9Ir3Vw3yGYECg/lq/sTd7iFh5X8naG2xzUdQ==
   dependencies:
-    "@ideaportriga/nexus-bridge" "^2.0.8"
+    "@ideaportriga/nexus-bridge" "^2.1.2"
 
 "@jest/console@^24.7.1", "@jest/console@^24.9.0":
   version "24.9.0"

@@ -23,23 +23,21 @@ This is not an example of implementation that can be used on production. It is i
 
 1. Clone the project `git clone https://github.com/ideaportriga/nexus-bridge` or download and unpack [the project's archive](../../../../../archive/master.zip).
 
-1. Import [sif-file](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/examples/REACT%20Examples/Demo%20Example/SIF/N19_React_Objects.sif) _(use the mouse right click and `Save link as...` to download the file)_ into the Siebel Tools.
+1. Import [sif-file](https://raw.githubusercontent.com/ideaportriga/nexus-bridge/master/examples/REACT%20Examples/Demo%20Example/SIF/Nexus_React_Objects.sif) _(use the mouse right click and `Save link as...` to download the file)_ into the Siebel Tools.
 
 1. Add the `Nexus React Account Screen` to your application:
 
    - Find out your Siebel Application Name in application `.cfg` file or by logging in and typing `SiebelApp.S_App.GetAppName()` into Chrome Developer Tools console.
 
-   - Use the Tools to add `N19 React Account Screen` under `Application > Screen Menu Item` for your Siebel Application Name.
+   - Use the Tools to add `Nexus React Account Screen` under `Application > Screen Menu Item` for your Siebel Application Name.
 
-   - Use the Tools to add `N19 React Account Screen` under `Application > Page Tab` for your Siebel Application Name.
+   - Use the Tools to add `Nexus React Account Screen` under `Application > Page Tab` for your Siebel Application Name.
 
-1. Compile (Siebel IP16) or deliver (Siebel IP17+) your changes:
+1. Compile (Siebel IP16) or deliver (Siebel IP17+) your changes.
 
-   - Even in 19.11 changes on the Application object still require the Object Manager restart.
+1. Add the `Nexus React Account View` to your application:
 
-1. Add the `N19 React Account View` to your application:
-
-   - Use the Siebel Web Client to register `N19 React Account View` under `Administration - Application > Views`.
+   - Use the Siebel Web Client to register `Nexus React Account View` under `Administration - Application > Views`.
 
    - Add your user's responsibility to this view.
    - Click the `Clear cache` button on `Administration – Application > Responsibilities`.
@@ -54,7 +52,7 @@ This is not an example of implementation that can be used on production. It is i
 
    - under `Administration - Application > Manifest Administration` add a new record under **UI Objects**:
 
-     **Name:** `N19 React SIS Account Entry Applet`
+     **Name:** `Nexus React SIS Account Entry Applet`
 
      **Usage Type:** `Physical Renderer`
 

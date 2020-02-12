@@ -31,9 +31,7 @@ This is not an example of implementation that can be used on production. It is i
       
       * Use the Tools to add `Nexus Vue Account Screen` under `Application > Page Tab` for your Siebel Application Name.
       
-1. Compile (Siebel IP16) or deliver (Siebel IP17+) your changes:
-
-      * Even in 19.11 changes on the Application object still require the Object Manager restart.
+1. Compile (Siebel IP16) or deliver (Siebel IP17+) your changes.
     
 1. Add the `Nexus Account View` to your application:
 

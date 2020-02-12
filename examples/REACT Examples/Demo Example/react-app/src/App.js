@@ -61,7 +61,7 @@ const App = () => {
   };
 
   return (
-    <div className="N19App" style={{ padding: 15 }}>
+    <div className="NexusApp" style={{ padding: 15 }}>
       <Snackbar
         anchorOrigin={{
           vertical: "top",

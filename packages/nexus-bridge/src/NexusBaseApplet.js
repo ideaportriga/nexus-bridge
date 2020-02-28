@@ -148,25 +148,30 @@ export default class NexusBaseApplet {
 
   _getSiebelValue(value, uiType, displayFormat) {
     if (this.consts.get('SWE_CTRL_CHECKBOX') === uiType) {
-      // convert true/false => Y/N // null is not handled (the same as in standard Open UI)
-      // value = value ? 'Y' : 'N';
+      // convert true/false => Y/N
+      // null converted to N (the same as in standard Open UI)
+      // check typeof value === 'boolean' || value === null ?
       this.boolObject.SetValue(value)
       return this.boolObject.GetAsString()
     }
     if (this.convertDates && displayFormat && this._isDateTimeControl(uiType)) {
-      // TODO: check if a valid date is inputted?
+      if (!(value instanceof Date)) {
+        throw new Error(
+          `[NB] When NB was created with convertDates settings, value is expected to be a date - ${value}`
+        )
+      }
       const date = value
-        .toLocaleString('en-US', { hour12: false })
+        .toLocaleString('en-US', { hour12: true })
         .split(',')
         .join('')
         .replace(/[^ -~]/g, '') // MK fix for IE11
       return window.SiebelApp.S_App.LocaleObject.GetStringFromDateTime(
         date,
-        'M/D/YYYY HH:mm:ss',
+        'M/D/YYYY hh:mm:ss p',
         displayFormat
       )
     }
-    return `${value}` // to implicitly convert to string? Number for currencies/numbers
+    return `${value}` // to implicitly convert to string, Number for currencies/numbers
   }
 
   canInvokeMethod(method) {

@@ -19,6 +19,7 @@ export default class NexusPopupController {
     }
 
     const popupPM = window.SiebelApp.S_App.GetPopupPM()
+    popupPM.Init() // to avoid double PR creation, still avoid GetRenderer as Oracle told us
     popupPM.Setup() // to create PR
 
     this.consts = window.SiebelJS.Dependency('window.SiebelApp.Constants')

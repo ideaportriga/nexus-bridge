@@ -35,8 +35,8 @@ export default class NexusPopupController {
         window.SiebelApp.S_App.ProcessNewPopup
       window.SiebelApp.S_App.ProcessNewPopup = ps => {
         if (this.isPopupHidden) {
+          this.isPopupHidden = false
           return this.processNewPopup(ps)
-          // this.isPopupHidden = false; // in order to do not affect the next call // it is redundant
         }
         return window.SiebelAppFacade.NexusProcessNewPopup.call(
           window.SiebelApp.S_App,

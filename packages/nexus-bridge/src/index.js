@@ -164,7 +164,6 @@ export default class Nexus extends NexusBaseApplet {
   }
 
   reInitPopup() {
-    // do we need to keep also static ReInitPopup
     this.nexusPopupController.isPopupHidden = false
 
     const popupPM = window.SiebelApp.S_App.GetPopupPM()
@@ -173,7 +172,11 @@ export default class Nexus extends NexusBaseApplet {
   }
 
   static ReInitPopup() {
-    // could be removed in the next version
+    // if (window.SiebelAppFacade.NexusProcessNewPopup) {
+    //   window.SiebelApp.S_App.ProcessNewPopup =
+    //     window.SiebelAppFacade.NexusProcessNewPopup
+    //   window.SiebelAppFacade.NexusProcessNewPopup = null
+    // }
     const popupPM = window.SiebelApp.S_App.GetPopupPM()
     popupPM.Init()
     popupPM.Setup()

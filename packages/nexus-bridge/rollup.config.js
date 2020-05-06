@@ -34,7 +34,7 @@ export default {
         [
           '@babel/env',
           {
-            modules: 'false',
+            modules: false,
             corejs: 3,
             targets: {
               browsers: 'ie 11'

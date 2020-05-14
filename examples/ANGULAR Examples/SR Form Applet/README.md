@@ -12,6 +12,7 @@ The demo supports:
 
 Requirements: 
 * Siebel version: 16+
+* Access to icons and fonts stored on https://fonts.googleapis.com/.
 
 This is not an example of implementation that can be used on production. It is intentionally kept straightforward.
 

@@ -696,7 +696,8 @@ export default class NexusBaseApplet {
           `[NB] ISO value is empty after converting ${value}/${displayFormat}`
         )
       }
-      return new Date(ISO)
+      let fix = ISO.replace(/-/g, '/')
+      return new Date(fix)
     }
     if (this.returnRawNumbers && 'number' === dataType) {
       // it is already not formatted on form applet, so only for list applet

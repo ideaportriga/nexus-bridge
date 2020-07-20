@@ -3,6 +3,19 @@ import NexusLocaleData from './NexusLocaleData'
 
 export default class NexusBaseApplet {
   constructor(settings) {
+    if (!SiebelApp.S_App.AppletControl.prototype.IsPostChanges) {    // for ip13
+      SiebelApp.S_App.AppletControl.prototype.IsPostChanges = function() {
+        var applet = this.GetApplet()
+        var bc = applet.GetBusComp()
+        var fieldName = this.GetFieldName()
+        if (fieldName) {
+          var field = bc.GetField(fieldName)
+          return '1' === field.IsPostChanges()
+        }
+        return false;
+      }
+    }
+
     this.consts = window.SiebelJS.Dependency('window.SiebelApp.Constants')
 
     this.pm = settings.pm
@@ -237,7 +250,7 @@ export default class NexusBaseApplet {
         const fieldName = control.GetFieldName()
         const displayFormat =
           control.GetDisplayFormat() || this.getControlDisplayFormat(uiType)
-        const staticPick = control.IsStaticBounded() === '1'
+        const staticPick = this.isStatic(control)
         const dataType = this.pm.ExecuteMethod('GetFieldDataType', fieldName)
         const obj = {
           name,
@@ -627,7 +640,11 @@ export default class NexusBaseApplet {
   }
 
   isStatic(control) {
-    return '1' === control.IsStaticBounded()
+    if (SiebelApp.S_App.AppletControl.prototype.IsStaticBounded) {
+      return '1' === control.IsStaticBounded()
+    } else { // for ip13
+      return NexusBaseApplet.GetControlStaticLOV(control).length > 0;
+    }
   }
 
   isDynamic(control) {
@@ -815,7 +832,7 @@ export default class NexusBaseApplet {
         const uiType = control.GetUIType()
         const displayFormat =
           control.GetDisplayFormat() || this.getControlDisplayFormat(uiType)
-        const staticPick = control.IsStaticBounded() === '1'
+        const staticPick = this.isStatic(control)
         const dataType = this.pm.ExecuteMethod('GetFieldDataType', fieldName)
         let currencyCodeField = ''
         let currencyCode = ''

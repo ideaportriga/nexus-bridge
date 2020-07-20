@@ -25,7 +25,9 @@ export default class NexusLocaleData {
     this.dateTimeFormat = localeObject.GetProfile(
       this.consts.get('LOCAL_DATETIME_FORMAT')
     )
-    this.firstDayOfWeek = localeObject.GetWeekStartDay()
+    if (typeof localeObject.GetWeekStartDay === "function") { // for ip13
+      this.firstDayOfWeek = localeObject.GetWeekStartDay()
+    }
     this.dateFormat = localeObject.GetProfile(
       this.consts.get('LOCAL_DATE_FORMAT')
     )

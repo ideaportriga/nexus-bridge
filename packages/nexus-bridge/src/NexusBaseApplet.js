@@ -415,9 +415,10 @@ export default class NexusBaseApplet {
     const control = this.pm.Get('GetActiveControl')
     if (control) {
       // control is a picklist
-      if (this.consts.get('SWE_CTRL_COMBOBOX') === control.GetUIType()) {
+      // it was found that in some environments any active control prevents positionOnRow 
+      // if (this.consts.get('SWE_CTRL_COMBOBOX') === control.GetUIType()) {
         this.pm.ExecuteMethod('SetActiveControl', null)
-      }
+      // }
     }
 
     const { ctrlKey, shiftKey } = keys || {}

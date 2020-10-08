@@ -23,7 +23,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@ideaportriga/nexus-bridge": "^2.1.7"
+    "@ideaportriga/nexus-bridge": "^2.1.9"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.15.0",

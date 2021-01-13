@@ -154,7 +154,8 @@ export default class NexusBaseApplet {
       this.boolObject.SetValue(value)
       return this.boolObject.GetAsString()
     }
-    if (this.convertDates && displayFormat && this._isDateTimeControl(uiType)) {
+    // MK suggested fix to allow setting the empty date (check if value)
+    if (this.convertDates && displayFormat && value && this._isDateTimeControl(uiType)) {
       if (!(value instanceof Date)) {
         throw new Error(
           `[NB] When NB was created with convertDates settings, value is expected to be a date - ${value}`

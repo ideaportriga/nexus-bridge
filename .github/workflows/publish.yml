@@ -38,7 +38,7 @@ jobs:
         working-directory: ./packages/nexus-bridge
         run: |
           yarn install
-          yarn build:umd
+          yarn build
       - name: GPR Publish
         working-directory: ./packages/nexus-bridge
         run: |

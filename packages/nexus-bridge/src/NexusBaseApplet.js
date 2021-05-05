@@ -169,7 +169,8 @@ export default class NexusBaseApplet {
       return window.SiebelApp.S_App.LocaleObject.GetStringFromDateTime(
         date,
         'M/D/YYYY hh:mm:ss p',
-        displayFormat
+        displayFormat,
+        false // if true, / and : is NOT changed to local date and time separator
       )
     }
     return `${value}` // to implicitly convert to string, Number for currencies/numbers
@@ -691,7 +692,8 @@ export default class NexusBaseApplet {
       const ISO = window.SiebelApp.S_App.LocaleObject.GetStringFromDateTime(
         value,
         displayFormat,
-        this.consts.get('ISO8601_DATETIME_FORMAT')
+        this.consts.get('ISO8601_DATETIME_FORMAT'),
+        true // AK fix to keep : or / (instead of taking local time or date separator)
       )
       if (ISO === '') {
         throw new Error(

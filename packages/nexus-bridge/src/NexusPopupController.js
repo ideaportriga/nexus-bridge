@@ -137,6 +137,9 @@ export default class NexusPopupController {
   processNewPopup(ps) {
     const popupPM = window.SiebelApp.S_App.GetPopupPM()
 
+    // reset currPopups to fill them again when nested popup is opened
+    popupPM.SetProperty('currPopups', [])
+
     // this property is added using AttachPMBinding into the Init PR (called by PM Setup)
     popupPM.AddProperty('state', this.consts.get('POPUP_STATE_VISIBLE'))
 
@@ -203,21 +206,7 @@ export default class NexusPopupController {
     throw new Error('[NB] Should never have been here')
   }
 
-  checkOpenedPopup(closeIfOpen) {
-    const { isOpen } = NexusPopupController.IsPopupOpen()
-    if (isOpen && closeIfOpen) {
-      // this code will close the applet even if this applet was originated by another applet
-      console.log(
-        '[NB] Closing already opened popup applet in checkOpenedPopup'
-      )
-      // maybe do not close if the applet to be opened if the same as already opened?
-      return this.closePopupApplet()
-    }
-    return isOpen
-  }
-
   _openAssocApplet(hide, newRecordFunc, cb) {
-    this.checkOpenedPopup(true)
     this.isPopupHidden = !!hide
 
     newRecordFunc() // make async of invokeMethod?
@@ -237,7 +226,6 @@ export default class NexusPopupController {
 
   showPopupApplet(hide, cb, nb, methodName) {
     // TODO: maybe use the properties set on promise resolving?
-    this.checkOpenedPopup(true)
     this.isPopupHidden = !!hide
 
     nb.pm.ExecuteMethod('InvokeMethod', methodName)

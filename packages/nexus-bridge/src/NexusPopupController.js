@@ -228,10 +228,13 @@ export default class NexusPopupController {
     // TODO: maybe use the properties set on promise resolving?
     this.isPopupHidden = !!hide
 
-    nb.pm.ExecuteMethod('InvokeMethod', methodName)
+    const result = nb.pm.ExecuteMethod('InvokeMethod', methodName)
     // can call EditField if EditPopup?
 
     if (hide) {
+      if (result === false) {
+        return Promise.reject()
+      }
       // we will populate the instances only when applet should be hidden
       let ret = new Promise(resolve => {
         this.resolvePromise = resolve
@@ -242,6 +245,6 @@ export default class NexusPopupController {
       return ret
     }
 
-    return true
+    return result
   }
 }

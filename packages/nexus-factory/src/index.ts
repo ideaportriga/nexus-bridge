@@ -1,6 +1,7 @@
 import Nexus from '@ideaportriga/nexus-bridge'
 import { NexusBridge, NexusConfig } from './types'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const window: any
 
 const memo: Record<string, NexusBridge> = {}

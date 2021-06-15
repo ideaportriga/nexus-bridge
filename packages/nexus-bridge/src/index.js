@@ -83,7 +83,7 @@ export default class Nexus extends NexusBaseApplet {
   }
 
   _newAssocRecord() {
-    return new Promise(resolve =>
+    return new Promise((resolve) =>
       this.pm.ExecuteMethod('InvokeMethod', 'NewRecord', null, {
         async: true,
         cb: resolve
@@ -135,7 +135,7 @@ export default class Nexus extends NexusBaseApplet {
   }
 
   drilldownPromised(controlName) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this.nexusPopupController.viewLoadedResolve = resolve
       this.drilldown(controlName)
     })

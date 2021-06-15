@@ -22,7 +22,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@ideaportriga/nexus-bridge": "^2.2.1"
   },
   "devDependencies": {

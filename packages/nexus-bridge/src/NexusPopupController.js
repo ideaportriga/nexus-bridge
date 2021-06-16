@@ -33,7 +33,7 @@ export default class NexusPopupController {
     if (!window.SiebelAppFacade.NexusProcessNewPopup) {
       window.SiebelAppFacade.NexusProcessNewPopup =
         window.SiebelApp.S_App.ProcessNewPopup
-      window.SiebelApp.S_App.ProcessNewPopup = ps => {
+      window.SiebelApp.S_App.ProcessNewPopup = (ps) => {
         if (this.isPopupHidden) {
           this.isPopupHidden = false
           return this.processNewPopup(ps)
@@ -77,12 +77,8 @@ export default class NexusPopupController {
       return
     }
 
-    const {
-      applet,
-      assocApplet,
-      appletName,
-      assocAppletName
-    } = NexusPopupController.IsPopupOpen()
+    const { applet, assocApplet, appletName, assocAppletName } =
+      NexusPopupController.IsPopupOpen()
 
     if (!applet) {
       this.resolvePromise = null
@@ -97,7 +93,7 @@ export default class NexusPopupController {
       )
     } else {
       // ORW - keep or remove?
-      Object.values(window.SiebelAppFacade.NB).forEach(nexus => {
+      Object.values(window.SiebelAppFacade.NB).forEach((nexus) => {
         if (nexus.isPopup) {
           if (assocApplet && nexus.isMvgAssoc) {
             this.assocApplet = nexus
@@ -120,7 +116,7 @@ export default class NexusPopupController {
   }
 
   gotoView(ctx, func, viewName, appletName, id) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this.viewLoadedResolve = resolve
       return func.call(ctx, viewName, appletName, id)
     })
@@ -223,7 +219,7 @@ export default class NexusPopupController {
     newRecordFunc() // make async of invokeMethod?
 
     if (hide) {
-      let ret = new Promise(resolve => {
+      let ret = new Promise((resolve) => {
         this.resolvePromise = resolve
       })
       if (typeof cb === 'function') {
@@ -245,7 +241,7 @@ export default class NexusPopupController {
 
     if (hide) {
       // we will populate the instances only when applet should be hidden
-      let ret = new Promise(resolve => {
+      let ret = new Promise((resolve) => {
         this.resolvePromise = resolve
       })
       if (typeof cb === 'function') {

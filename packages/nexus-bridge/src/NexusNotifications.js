@@ -13,7 +13,7 @@ export default class NexusNotifications {
 
     pm.AttachNotificationHandler(
       consts.get('SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW'),
-      propSet => {
+      (propSet) => {
         acceptedNotifications.push({
           type: 'SWE_PROP_BC_NOTI_NEW_ACTIVE_ROW',
           propSet
@@ -23,7 +23,7 @@ export default class NexusNotifications {
 
     pm.AttachNotificationHandler(
       consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'),
-      propSet => {
+      (propSet) => {
         const states = ['cp', 'n']
         const obj = {
           type: 'SWE_PROP_BC_NOTI_STATE_CHANGED',
@@ -39,7 +39,7 @@ export default class NexusNotifications {
     // or SWE_PROP_BC_NOTI_NEW_FIELD_DATA?
     pm.AttachNotificationHandler(
       consts.get('SWE_PROP_BC_NOTI_NEW_DATA_WS'),
-      propSet => {
+      (propSet) => {
         const fieldName = propSet.GetProperty(consts.get('SWE_PROP_NOTI_FIELD'))
         const control = fieldToControlMap[fieldName]
         const obj = {
@@ -59,7 +59,7 @@ export default class NexusNotifications {
 
     pm.AttachNotificationHandler(
       consts.get('SWE_PROP_BC_NOTI_DELETE_RECORD'),
-      propSet => {
+      (propSet) => {
         acceptedNotifications.push({
           type: 'SWE_PROP_BC_NOTI_DELETE_RECORD',
           propSet
@@ -69,7 +69,7 @@ export default class NexusNotifications {
 
     pm.AttachNotificationHandler(
       consts.get('SWE_PROP_BC_NOTI_NEW_RECORD'),
-      propSet => {
+      (propSet) => {
         acceptedNotifications.push({
           type: 'SWE_PROP_BC_NOTI_NEW_RECORD',
           propSet
@@ -94,7 +94,7 @@ export default class NexusNotifications {
   }
 
   _invokeSubscriptions() {
-    this.subscribers.forEach(el => el.func())
+    this.subscribers.forEach((el) => el.func())
   }
 
   subscribe(func) {
@@ -115,7 +115,7 @@ export default class NexusNotifications {
   }
 
   subIndexOf(subToken) {
-    return this.subscribers.findIndex(el => el.token === subToken)
+    return this.subscribers.findIndex((el) => el.token === subToken)
   }
 
   unsubscribe(subToken) {
@@ -127,7 +127,7 @@ export default class NexusNotifications {
   }
 
   _attachDebugNotifications(pm, consts) {
-    ;[
+    [
       'SWE_NOTIFY_PAGE_REFRESH',
       'SWE_PROP_BC_NEW_ACTIVE_FIELD',
       'SWE_PROP_BC_NOTI_BEGIN_QUERY',
@@ -156,8 +156,8 @@ export default class NexusNotifications {
       'SWE_PROP_IS_IN_QUERY',
       'SWE_NOTIFY_TOTALS_CHANGED',
       'SWE_PROP_BC_NOTI_ACTIVE_ROW'
-    ].forEach(type => {
-      pm.AttachNotificationHandler(consts.get(type), propSet => {
+    ].forEach((type) => {
+      pm.AttachNotificationHandler(consts.get(type), (propSet) => {
         this.skippedNotifications.push({
           type,
           propSet

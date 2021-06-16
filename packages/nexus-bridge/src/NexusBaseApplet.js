@@ -41,7 +41,7 @@ export default class NexusBaseApplet {
       const applet = document.getElementById(appletId)
       if (applet) {
         const appletInputs = applet.querySelectorAll('input')
-        appletInputs.forEach(el => {
+        appletInputs.forEach((el) => {
           if (el.attributes['aria-required']) {
             this.required.push(el.attributes.name.nodeValue)
           }
@@ -155,7 +155,12 @@ export default class NexusBaseApplet {
       return this.boolObject.GetAsString()
     }
     // MK suggested fix to allow setting the empty date (check if value)
-    if (this.convertDates && displayFormat && value && this._isDateTimeControl(uiType)) {
+    if (
+      this.convertDates &&
+      displayFormat &&
+      value &&
+      this._isDateTimeControl(uiType)
+    ) {
       if (!(value instanceof Date)) {
         throw new Error(
           `[NB] When NB was created with convertDates settings, value is expected to be a date - ${value}`
@@ -204,7 +209,7 @@ export default class NexusBaseApplet {
     const propSet = control.GetPMPropSet()
     if (propSet && propSet.propArray) {
       const { propArray } = propSet
-      Object.keys(propArray).forEach(prop =>
+      Object.keys(propArray).forEach((prop) =>
         ret.push({ prop, val: propArray[prop] })
       )
     }
@@ -214,7 +219,7 @@ export default class NexusBaseApplet {
   static GetControlStaticLOV(control) {
     return control
       .GetRadioGroupPropSet()
-      .childArray.map(el => el.propArray.DisplayName)
+      .childArray.map((el) => el.propArray.DisplayName)
   }
 
   _getIconMap(control) {
@@ -230,7 +235,7 @@ export default class NexusBaseApplet {
   _getControls(controls) {
     const ret = {}
     const list = this.pm.Get('GetListOfColumns')
-    controls.forEach(controlEntry => {
+    controls.forEach((controlEntry) => {
       const control = controlEntry[1]
       const uiType = control.GetUIType()
       if (!this._isSkipControl(uiType)) {
@@ -318,7 +323,7 @@ export default class NexusBaseApplet {
       const controls = this._returnControls()
       recordSet.forEach((record, index) => {
         const fields = Object.keys(record)
-        fields.forEach(field => {
+        fields.forEach((field) => {
           if (this.fieldToControlMap[field]) {
             const controlName = this.fieldToControlMap[field].name
             const control = controls[controlName]
@@ -417,9 +422,9 @@ export default class NexusBaseApplet {
     const control = this.pm.Get('GetActiveControl')
     if (control) {
       // control is a picklist
-      // it was found that in some environments any active control prevents positionOnRow 
+      // it was found that in some environments any active control prevents positionOnRow
       // if (this.consts.get('SWE_CTRL_COMBOBOX') === control.GetUIType()) {
-        this.pm.ExecuteMethod('SetActiveControl', null)
+      this.pm.ExecuteMethod('SetActiveControl', null)
       // }
     }
 
@@ -456,7 +461,7 @@ export default class NexusBaseApplet {
   }
 
   newRecord(cb) {
-    const promise = new Promise(resolve => this._newRecord(resolve))
+    const promise = new Promise((resolve) => this._newRecord(resolve))
     return typeof cb === 'function' ? promise.then(cb) : promise
   }
 
@@ -558,7 +563,7 @@ export default class NexusBaseApplet {
       ret = this.getCurrentRecordModel()
       // TODO: do we need to check the state, or can we assume that we always have a record?
       if (!isPostChanges) {
-        Object.keys(ret.controls).forEach(con => {
+        Object.keys(ret.controls).forEach((con) => {
           if (ret.controls[con].name && !ret.controls[con].isPostChanges) {
             const setValue = this.pm.ExecuteMethod(
               'GetFormattedFieldValue',
@@ -772,7 +777,7 @@ export default class NexusBaseApplet {
     const methods = {}
     const appletControls = this.pm.Get('GetControls') // even for list applet
     const arr = Object.entries(appletControls)
-    arr.forEach(controlEntry => {
+    arr.forEach((controlEntry) => {
       const controlMethod = controlEntry[1].GetMethodName()
       if (typeof controlMethod !== 'undefined' && controlMethod !== '') {
         methods[controlMethod] = {}
@@ -810,7 +815,7 @@ export default class NexusBaseApplet {
     const appletControls = this._returnControls()
     const list = this.pm.Get('GetListOfColumns')
     // populate controls
-    Object.keys(_controls).forEach(controlName => {
+    Object.keys(_controls).forEach((controlName) => {
       let ret = {}
       const control = appletControls[controlName]
       // just if somebody sends incorrect name of the control
@@ -876,7 +881,7 @@ export default class NexusBaseApplet {
     // populate methods
     // Is it better to use applet.GetCanInvokeArray?
     _methods = _methods || this._getMethods()
-    Object.keys(_methods).forEach(methodName => {
+    Object.keys(_methods).forEach((methodName) => {
       _methods[methodName] = this.canInvokeMethod(methodName)
     })
     return {
@@ -888,7 +893,7 @@ export default class NexusBaseApplet {
   _findControlToEnterSearchExpr() {
     const appletControls = this._returnControls()
     const arr = Object.values(appletControls)
-    const found = arr.find(control => {
+    const found = arr.find((control) => {
       const controlUiType = control.GetUIType()
       const fieldName = control.GetFieldName()
       let ret =
@@ -923,7 +928,7 @@ export default class NexusBaseApplet {
   }
 
   queryBySearchExpr(expr, checkQueryMode) {
-    return new Promise(resolve =>
+    return new Promise((resolve) =>
       resolve(this.queryBySearchExprSync(expr, checkQueryMode))
     )
   }
@@ -939,7 +944,7 @@ export default class NexusBaseApplet {
   queryByIdSync(rowId, checkQueryMode) {
     let expr
     if (Array.isArray(rowId)) {
-      expr = rowId.map(el => `Id="${el}"`).join(' OR ')
+      expr = rowId.map((el) => `Id="${el}"`).join(' OR ')
     } else {
       expr = `Id="${rowId}"`
     }
@@ -947,7 +952,7 @@ export default class NexusBaseApplet {
   }
 
   queryById(rowId, cb, checkQueryMode) {
-    const promise = new Promise(resolve =>
+    const promise = new Promise((resolve) =>
       this._queryById(rowId, resolve, checkQueryMode)
     )
     const ret = promise.then(() => this.getRecordSet().length)
@@ -972,7 +977,7 @@ export default class NexusBaseApplet {
   }
 
   query(params, cb, checkQueryMode) {
-    const promise = new Promise(resolve =>
+    const promise = new Promise((resolve) =>
       this._query(params, resolve, checkQueryMode)
     )
     const ret = promise.then(() => this.getRecordSet().length)
@@ -996,7 +1001,7 @@ export default class NexusBaseApplet {
 
     const _controls = this._returnControls()
     const arr = Object.keys(params)
-    arr.forEach(controlName => {
+    arr.forEach((controlName) => {
       const control = _controls[controlName]
       if (control) {
         this._setControlValueInternal(
@@ -1050,7 +1055,7 @@ export default class NexusBaseApplet {
     psInputs.SetProperty('BC', this.pm.Get('GetBusComp').GetName())
     psInputs.SetProperty('UseActiveBO', useActiveBO ? 'Y' : 'N')
     psInputs.SetProperty('ID', ids.join(','))
-    arr.forEach(el => {
+    arr.forEach((el) => {
       const ps = window.SiebelApp.S_App.NewPropertySet()
       ps.SetType(this._getFieldNameForControl(el[0]))
       ps.SetProperty('Fields', el[1].join(','))
@@ -1074,17 +1079,17 @@ export default class NexusBaseApplet {
         }
         const { childArray } = resultSet
         if (childArray) {
-          childArray.forEach(child => {
+          childArray.forEach((child) => {
             ret[child.GetType()] = {}
-            child.childArray.forEach(grandChild => {
-              ret[child.GetType()][
-                grandChild.GetType()
-              ] = grandChild.childArray.map(rec => {
-                const primary = rec.propArray['SSA Primary Field']
-                this.boolObject.SetAsString(primary)
-                rec.propArray['SSA Primary Field'] = this.boolObject.GetValue()
-                return Object.assign({}, rec.propArray)
-              })
+            child.childArray.forEach((grandChild) => {
+              ret[child.GetType()][grandChild.GetType()] =
+                grandChild.childArray.map((rec) => {
+                  const primary = rec.propArray['SSA Primary Field']
+                  this.boolObject.SetAsString(primary)
+                  rec.propArray['SSA Primary Field'] =
+                    this.boolObject.GetValue()
+                  return Object.assign({}, rec.propArray)
+                })
             })
           })
         }
@@ -1125,7 +1130,7 @@ export default class NexusBaseApplet {
       const arr = this.getRawRecordSet()
 
       // avoid the duplicates
-      arr.forEach(el => data.set(el.Id, el))
+      arr.forEach((el) => data.set(el.Id, el))
 
       // we are using canInvokeMethod, as in 16.0 nextRecordSet always returns undefined
       if (!this.canInvokeMethod('GotoNextSet')) {
@@ -1147,7 +1152,7 @@ export default class NexusBaseApplet {
     const ret = {}
     const appletControls = this._returnControls()
     const arr = Object.keys(_controls || appletControls)
-    arr.forEach(controlName => {
+    arr.forEach((controlName) => {
       const control = appletControls[controlName]
       if (typeof control !== 'undefined') {
         // just in case somebody gave the incorrect control name
@@ -1193,7 +1198,7 @@ export default class NexusBaseApplet {
       ret[i] = Object.assign(
         obj,
         Object.keys(ret[i])
-          .filter(el => this.fieldToControlMap[el])
+          .filter((el) => this.fieldToControlMap[el])
           .reduce(
             (acc, el) => ({
               ...acc,

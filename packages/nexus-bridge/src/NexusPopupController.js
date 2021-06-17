@@ -25,8 +25,13 @@ export default class NexusPopupController {
     this.assocApplet = null // it could be removed in the next version
 
     const popupPM = window.SiebelApp.S_App.GetPopupPM()
-    // We have to check if PR was not created before to avoid double bindigns
-    if (popupPM.Get('state') === this.consts.get('POPUP_STATE_UNLOADED')) {
+    // We have to check if PR was not created before to avoid double bindings.
+    // Unloaded state check is not sufficient because standalone popups create
+    // PR but the state remain unchanged (unloaded by default).
+    if (
+      popupPM.Get('state') === this.consts.get('POPUP_STATE_UNLOADED') &&
+      !popupPM.GetRenderer()
+    ) {
       popupPM.Setup() // this creates and initializes PR
     }
 
@@ -79,8 +84,12 @@ export default class NexusPopupController {
       return
     }
 
-    const { applet, assocApplet, appletName, assocAppletName } =
-      NexusPopupController.IsPopupOpen()
+    const {
+      applet,
+      assocApplet,
+      appletName,
+      assocAppletName
+    } = NexusPopupController.IsPopupOpen()
 
     if (!applet) {
       this.resolvePromise = null

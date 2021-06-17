@@ -164,22 +164,11 @@ export default class Nexus extends NexusBaseApplet {
   }
 
   reInitPopup() {
-    this.nexusPopupController.isPopupHidden = false
-
-    const popupPM = window.SiebelApp.S_App.GetPopupPM()
-    popupPM.Init()
-    popupPM.Setup()
+    this.nexusPopupController.reInitPopupPM()
   }
 
   static ReInitPopup() {
-    // if (window.SiebelAppFacade.NexusProcessNewPopup) {
-    //   window.SiebelApp.S_App.ProcessNewPopup =
-    //     window.SiebelAppFacade.NexusProcessNewPopup
-    //   window.SiebelAppFacade.NexusProcessNewPopup = null
-    // }
-    const popupPM = window.SiebelApp.S_App.GetPopupPM()
-    popupPM.Init()
-    popupPM.Setup()
+    NexusPopupController.instance.reInitPopupPM()
   }
 
   static CreatePopupNB(settings) {

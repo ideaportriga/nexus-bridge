@@ -18,15 +18,17 @@ export default class NexusPopupController {
       )
     }
 
-    const popupPM = window.SiebelApp.S_App.GetPopupPM()
-    popupPM.Init() // to avoid double PR creation, still avoid GetRenderer as Oracle told us
-    popupPM.Setup() // to create PR
-
     this.consts = window.SiebelJS.Dependency('window.SiebelApp.Constants')
     this.isPopupHidden = false
     this.resolvePromise = null
     this.popupApplet = null // it could be removed in the next version
     this.assocApplet = null // it could be removed in the next version
+
+    const popupPM = window.SiebelApp.S_App.GetPopupPM()
+    // We have to check if PR was not created before to avoid double bindigns
+    if (popupPM.Get('state') === this.consts.get('POPUP_STATE_UNLOADED')) {
+      popupPM.Setup() // this creates and initializes PR
+    }
 
     console.log('[NB] Popup controller started')
 
@@ -251,5 +253,39 @@ export default class NexusPopupController {
     }
 
     return true
+  }
+
+  reInitPopupPM() {
+    this.isPopupHidden = false
+
+    const popupPM = window.SiebelApp.S_App.GetPopupPM()
+
+    // First of first we have to delete all props/methods ever created by PM
+    // and (that's important!) all bindings attached to them by PR.
+    popupPM.EndLife()
+    // Props/methods of particular PM are stored inside of BasePM in private
+    // variables shared between many PMs. As PM.EndLife just deletes specific
+    // key in these variables we have to call PM.constructor to reinitialize
+    // these variables with empty prop/method sets for current PM.
+    popupPM.constructor({ GetName: () => 'PopupPxy' })
+    // Now we can safely allow PM to recreate own props and methods.
+    popupPM.Init()
+    // Create PR (here new bindings attached to just added PM props/methods)
+    popupPM.Setup()
+
+    // This tweak clears all visible/hidden remains inside DOM container that
+    // were created by previous PR, and eliminates weird glitches in popups
+    // opened by fresh PR first time.
+    // Also it "hides" standard (unhidden) popup if it was opened and active
+    // just before reInitPopupPM call. It's useful if this popup itself
+    // caused navigation to another view.
+    popupPM.SetProperty('state', this.consts.get('POPUP_STATE_HIDDEN'))
+
+    // As all PM's method bindings previously were removed we have to readd
+    // our handler for OnLoadPopupContent method again.
+    popupPM.AddMethod('OnLoadPopupContent', this.onLoadPopupContent, {
+      sequence: false,
+      scope: this
+    })
   }
 }

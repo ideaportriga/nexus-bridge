@@ -890,8 +890,18 @@ export default class NexusBaseApplet {
     }
   }
 
-  _findControlToEnterSearchExpr() {
+  _findControlToEnterSearchExpr(controlName) {
     const appletControls = this._returnControls()
+    if (controlName) {
+      const control = appletControls[controlName]
+      if (!control) {
+        throw new Error(
+          `[NB]${this.appletName} does not have a control ${controlName}`
+        )
+      }
+      // TODO: trust dev OR need validate the UiType? 
+      return control;
+    }
     const arr = Object.values(appletControls)
     const found = arr.find((control) => {
       const controlUiType = control.GetUIType()
@@ -904,7 +914,8 @@ export default class NexusBaseApplet {
           this.consts.get('SWE_CTRL_PLAINTEXT'),
           this.consts.get('SWE_CTRL_LABEL'),
           this.consts.get('SWE_CTRL_LINK'),
-          this.consts.get('SWE_CTRL_MVG')
+          this.consts.get('SWE_CTRL_MVG'),
+          this.consts.get('SWE_CTRL_HIDDEN'), // exclude also Hidden
         ].includes(controlUiType)
 
       ret = ret && fieldName
@@ -924,43 +935,48 @@ export default class NexusBaseApplet {
         return false
       }
     }
-    return this.pm.ExecuteMethod('InvokeMethod', 'NewQuery')
+    const ret = this.pm.ExecuteMethod('InvokeMethod', 'NewQuery')
+    if (!this.pm.Get('IsInQueryMode')) {
+      console.error('[NB]The applet is not in Query Mode')
+      throw new Error('[NB]The applet is not in Query Mode')
+    }
+    return ret
   }
 
-  queryBySearchExpr(expr, checkQueryMode) {
+  queryBySearchExpr(expr, checkQueryMode, controlName) {
     return new Promise((resolve) =>
-      resolve(this.queryBySearchExprSync(expr, checkQueryMode))
+      resolve(this.queryBySearchExprSync(expr, checkQueryMode, controlName))
     )
   }
 
-  queryBySearchExprSync(expr, checkQueryMode) {
+  queryBySearchExprSync(expr, checkQueryMode, controlName) {
     this._newQuery(checkQueryMode)
-    const control = this._findControlToEnterSearchExpr()
+    const control = this._findControlToEnterSearchExpr(controlName)
     this._setControlValueInternal(control, expr)
     this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery')
     return this.getRecordSet().length
   }
 
-  queryByIdSync(rowId, checkQueryMode) {
+  queryByIdSync(rowId, checkQueryMode, controlName) {
     let expr
     if (Array.isArray(rowId)) {
       expr = rowId.map((el) => `Id="${el}"`).join(' OR ')
     } else {
       expr = `Id="${rowId}"`
     }
-    return this.queryBySearchExprSync(expr, checkQueryMode)
+    return this.queryBySearchExprSync(expr, checkQueryMode, controlName)
   }
 
-  queryById(rowId, cb, checkQueryMode) {
+  queryById(rowId, cb, checkQueryMode, controlName) {
     const promise = new Promise((resolve) =>
-      this._queryById(rowId, resolve, checkQueryMode)
+      this._queryById(rowId, resolve, checkQueryMode, controlName)
     )
     const ret = promise.then(() => this.getRecordSet().length)
     return typeof cb === 'function' ? ret.then(cb) : ret
   }
 
-  _queryById(rowId, cb, checkQueryMode) {
-    this._newQuery(checkQueryMode) // check or optionally skip?
+  _queryById(rowId, cb, checkQueryMode, controlName) {
+    this._newQuery(checkQueryMode)
 
     const ai = {
       scope: this,
@@ -970,8 +986,8 @@ export default class NexusBaseApplet {
     if (typeof cb === 'function') {
       ai.cb = cb
     }
-
-    const control = this._findControlToEnterSearchExpr()
+    
+    const control = this._findControlToEnterSearchExpr(controlName)
     this._setControlValueInternal(control, `Id="${rowId}"`)
     return this.pm.ExecuteMethod('InvokeMethod', 'ExecuteQuery', null, ai)
   }
@@ -985,9 +1001,6 @@ export default class NexusBaseApplet {
   }
 
   _query(params, cb, checkQueryMode) {
-    // TODO: check if it is already in query mode to avoid calling the new query again
-    // or accept the input parameter to skip calling the new query?
-    // or maybe better to cancel the existing query?
     this._newQuery(checkQueryMode)
 
     const ai = {

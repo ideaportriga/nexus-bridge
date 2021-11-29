@@ -59,8 +59,10 @@ export default class NexusPopupController {
       { sequence: false, scope: this }
     )
 
-    // resolve view promise
+    // resolve/reject view promise
     this.viewLoadedResolve = null
+    this.viewLoadedReject = null
+    this.targetViewName = null
     if (!window.SiebelAppFacade.nexusViewLoaded) {
       window.SiebelAppFacade.nexusViewLoaded =
         window.SiebelApp.contentUpdater.viewLoaded
@@ -69,11 +71,16 @@ export default class NexusPopupController {
           window.SiebelApp.contentUpdater,
           ...args
         )
-        if (typeof this.viewLoadedResolve === 'function') {
+        const viewName = window.SiebelApp.S_App.GetActiveView().GetName()
+        const isCorrectViewName = viewName === this.targetViewName 
+        if (isCorrectViewName && typeof this.viewLoadedResolve === 'function') {
           this.viewLoadedResolve(true)
-          // TODO: Check view name and "error loading the content"
-          this.viewLoadedResolve = null
+        } else if (typeof this.viewLoadedReject === 'function') {
+          this.viewLoadedReject(`The ${viewName} does not match target ${this.targetViewName} `)
         }
+        this.viewLoadedResolve = null
+        this.viewLoadedReject = null
+        this.targetViewName = null
         return ret
       }
     }
@@ -127,8 +134,10 @@ export default class NexusPopupController {
   }
 
   gotoView(ctx, func, viewName, appletName, id) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.viewLoadedResolve = resolve
+      this.viewLoadedReject = reject
+      this.targetViewName = viewName
       return func.call(ctx, viewName, appletName, id)
     })
   }

@@ -84,6 +84,8 @@ export default class NexusPopupController {
         return ret
       }
     }
+
+    window.SiebelAppFacade._NBPopupController = this;
   }
 
   onLoadPopupContent() {

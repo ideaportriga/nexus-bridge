@@ -71,16 +71,22 @@ export default class NexusPopupController {
           window.SiebelApp.contentUpdater,
           ...args
         )
-        const viewName = window.SiebelApp.S_App.GetActiveView().GetName()
-        const isCorrectViewName = viewName === this.targetViewName 
-        if (isCorrectViewName && typeof this.viewLoadedResolve === 'function') {
-          this.viewLoadedResolve(true)
-        } else if (typeof this.viewLoadedReject === 'function') {
-          this.viewLoadedReject(`The ${viewName} does not match target ${this.targetViewName} `)
-        }
-        this.viewLoadedResolve = null
-        this.viewLoadedReject = null
-        this.targetViewName = null
+        
+        setTimeout(()=>{
+          if (typeof this.viewLoadedResolve === 'function') {
+            const viewName = window.SiebelApp.S_App.GetActiveView().GetName()
+            const isCorrectViewName = viewName === this.targetViewName 
+            if (isCorrectViewName) {
+              this.viewLoadedResolve(true)
+            } else if (typeof this.viewLoadedReject === 'function') {
+              this.viewLoadedReject(`The ${viewName} does not match target ${this.targetViewName} `)
+            }  
+          }  
+          this.viewLoadedResolve = null
+          this.viewLoadedReject = null
+          this.targetViewName = null
+        }, 0)
+        
         return ret
       }
     }

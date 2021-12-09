@@ -63,30 +63,40 @@ export default class NexusPopupController {
     this.viewLoadedResolve = null
     this.viewLoadedReject = null
     this.targetViewName = null
-    if (!window.SiebelAppFacade.nexusViewLoaded) {
-      window.SiebelAppFacade.nexusViewLoaded =
+    if (!window.SiebelAppFacade.siebelViewLoaded) {
+      window.SiebelAppFacade.siebelViewLoaded =
         window.SiebelApp.contentUpdater.viewLoaded
       window.SiebelApp.contentUpdater.viewLoaded = (...args) => {
-        const ret = window.SiebelAppFacade.nexusViewLoaded.call(
+        const ret = window.SiebelAppFacade.siebelViewLoaded.call(
           window.SiebelApp.contentUpdater,
           ...args
         )
-        
-        setTimeout(()=>{
-          if (typeof this.viewLoadedResolve === 'function') {
-            const viewName = window.SiebelApp.S_App.GetActiveView().GetName()
-            const isCorrectViewName = viewName === this.targetViewName 
-            if (isCorrectViewName) {
-              this.viewLoadedResolve(true)
-            } else if (typeof this.viewLoadedReject === 'function') {
-              this.viewLoadedReject(`The ${viewName} does not match target ${this.targetViewName} `)
-            }  
-          }  
-          this.viewLoadedResolve = null
-          this.viewLoadedReject = null
-          this.targetViewName = null
-        }, 0)
-        
+
+        const nexusResolveViewNavigation = () => {
+          // sometimes the view is not fully initialized after Siebel viewLoaded executed
+          if (typeof window.SiebelApp.S_App.GetActiveView().GetName === 'function') {
+            if (typeof this.viewLoadedResolve === 'function') {
+              const viewName = window.SiebelApp.S_App.GetActiveView().GetName()
+              const isCorrectViewName = viewName === this.targetViewName 
+              if (isCorrectViewName) {
+                this.viewLoadedResolve(true)
+              } else if (typeof this.viewLoadedReject === 'function') {
+                this.viewLoadedReject(`The ${viewName} does not match target ${this.targetViewName} `)
+              }  
+            }
+            this.viewLoadedResolve = null
+            this.viewLoadedReject = null
+            this.targetViewName = null
+          } else {
+            console.warn(
+              `[NB] GetName of ActiveView is not a function in viewLoaded... ${this.targetViewName}`
+            )
+            setTimeout(()=>nexusResolveViewNavigation(), 100)
+          }
+        }
+
+        nexusResolveViewNavigation()
+
         return ret
       }
     }

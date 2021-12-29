@@ -91,7 +91,7 @@ export default class NexusPopupController {
             console.warn(
               `[NB] GetName of ActiveView is not a function in viewLoaded... ${this.targetViewName}`
             )
-            setTimeout(()=>nexusResolveViewNavigation(), 100)
+            setTimeout(() => nexusResolveViewNavigation(), 100)
           }
         }
 
@@ -101,7 +101,7 @@ export default class NexusPopupController {
       }
     }
 
-    window.SiebelAppFacade._NBPopupController = this;
+    window.SiebelAppFacade._NBPopupController = this
   }
 
   onLoadPopupContent() {
@@ -170,6 +170,9 @@ export default class NexusPopupController {
 
   processNewPopup(ps) {
     const popupPM = window.SiebelApp.S_App.GetPopupPM()
+
+    // Clear the currPopups property in order to fill it with nested popup's applets
+    popupPM.SetProperty('currPopups', [])
 
     // this property is added using AttachPMBinding into the Init PR (called by PM Setup)
     popupPM.AddProperty('state', this.consts.get('POPUP_STATE_VISIBLE'))
@@ -251,7 +254,6 @@ export default class NexusPopupController {
   }
 
   _openAssocApplet(hide, newRecordFunc, cb) {
-    this.checkOpenedPopup(true)
     this.isPopupHidden = !!hide
 
     newRecordFunc() // make async of invokeMethod?
@@ -271,13 +273,19 @@ export default class NexusPopupController {
 
   showPopupApplet(hide, cb, nb, methodName) {
     // TODO: maybe use the properties set on promise resolving?
-    this.checkOpenedPopup(true)
     this.isPopupHidden = !!hide
 
-    nb.pm.ExecuteMethod('InvokeMethod', methodName)
+    // This is a quite common situation when invoked method fails due to some server or
+    // validation errors, so popup won't even open in this case.
+    const result = nb.pm.ExecuteMethod('InvokeMethod', methodName)
+    console.log('hello')
     // can call EditField if EditPopup?
 
     if (hide) {
+      if (false === result) {
+        return Promise.reject()
+      }
+
       // we will populate the instances only when applet should be hidden
       let ret = new Promise((resolve) => {
         this.resolvePromise = resolve
@@ -288,7 +296,7 @@ export default class NexusPopupController {
       return ret
     }
 
-    return true
+    return result
   }
 
   reInitPopupPM() {

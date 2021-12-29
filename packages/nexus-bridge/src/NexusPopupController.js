@@ -278,7 +278,7 @@ export default class NexusPopupController {
     // This is a quite common situation when invoked method fails due to some server or
     // validation errors, so popup won't even open in this case.
     const result = nb.pm.ExecuteMethod('InvokeMethod', methodName)
-    console.log('hello')
+
     // can call EditField if EditPopup?
 
     if (hide) {

@@ -18,33 +18,22 @@ export default class Nexus extends NexusBaseApplet {
     return this.nexusPopupController.closePopupApplet(nb)
   }
 
-  _showPopupApplet(name, hide, cb) {
+  showPopupApplet(method, hide, cb) {
     if (!this.nexusPopupController.canOpenPopup()) {
       throw new Error(
         '[NB] Cannot open popup (currently exists resolve function)'
       )
     }
-    this._setActiveControl(name)
-    return this.nexusPopupController.showPopupApplet(
-      hide,
-      cb,
-      this,
-      'EditPopup'
-    )
+    return this.nexusPopupController.showPopupApplet(hide, cb, this, method)
+  }
+
+  _showEditPopup(controlName, hide, cb) {
+    this._setActiveControl(controlName)
+    return this.showPopupApplet('EditPopup', hide, cb)
   }
 
   changeRecords(hide, cb) {
-    if (!this.nexusPopupController.canOpenPopup()) {
-      throw new Error(
-        '[NB] Cannot open popup (currently exists resolve function)'
-      )
-    }
-    return this.nexusPopupController.showPopupApplet(
-      hide,
-      cb,
-      this,
-      'ChangeRecords'
-    )
+    this.showPopupApplet('ChangeRecords', hide, cb)
   }
 
   showMvgApplet(name, hide, cb) {
@@ -63,7 +52,7 @@ export default class Nexus extends NexusBaseApplet {
     if (this.pm.Get('IsInQueryMode')) {
       throw new Error('[NB] Mvg applet cannot be opened in query mode')
     }
-    return this._showPopupApplet(name, hide, cb)
+    return this._showEditPopup(name, hide, cb)
   }
 
   showPickApplet(name, hide, cb) {
@@ -79,7 +68,7 @@ export default class Nexus extends NexusBaseApplet {
         `Control ${name} is not of supported type ${uiType} to show Pick applet`
       )
     }
-    return this._showPopupApplet(name, hide, cb)
+    return this._showEditPopup(name, hide, cb)
   }
 
   _newAssocRecord() {

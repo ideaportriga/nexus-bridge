@@ -80,9 +80,12 @@ export default class NexusPopupController {
               const isCorrectViewName = viewName === this.targetViewName 
               if (isCorrectViewName) {
                 this.viewLoadedResolve(true)
-              } else if (typeof this.viewLoadedReject === 'function') {
+              } else if (this.targetViewName && typeof this.viewLoadedReject === 'function') {
                 this.viewLoadedReject(`The ${viewName} does not match target ${this.targetViewName} `)
-              }  
+              } else {
+                // this is drilldown as this.targetViewName is not defined
+                this.viewLoadedResolve(true)
+              }
             }
             this.viewLoadedResolve = null
             this.viewLoadedReject = null

@@ -36,7 +36,15 @@ export default class NexusBaseApplet {
     })
 
     // populate the required array for form applets
-    if (!this.isListApplet) {
+    if (this.isListApplet) {
+      const columns = this.pm.Get('ListOfColumns')
+
+      Object.values(columns).forEach(column => {
+        if (column.isRequired) {
+          this.required.push(column.control.GetInputName())
+        }
+      })
+    } else {
       const appletId = `s_${this.pm.Get('GetFullId')}_div`
       const applet = document.getElementById(appletId)
       if (applet) {

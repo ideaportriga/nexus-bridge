@@ -702,7 +702,7 @@ export default class NexusBaseApplet {
       )
       if (ISO === '') {
         throw new Error(
-          `[NB] ISO value is empty after converting ${value}/${displayFormat}`
+          `[NB] ISO value is empty after converting ${value} using ${displayFormat} format`
         )
       }
       let fix = ISO.replace(/-/g, '/')

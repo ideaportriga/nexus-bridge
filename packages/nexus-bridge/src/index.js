@@ -18,13 +18,13 @@ export default class Nexus extends NexusBaseApplet {
     return this.nexusPopupController.closePopupApplet(nb)
   }
 
-  showPopupApplet(method, hide, cb) {
+  showPopupApplet(method, hide, cb, ps) {
     if (!this.nexusPopupController.canOpenPopup()) {
       throw new Error(
         '[NB] Cannot open popup (currently exists resolve function)'
       )
     }
-    return this.nexusPopupController.showPopupApplet(hide, cb, this, method)
+    return this.nexusPopupController.showPopupApplet(hide, cb, this, method, ps)
   }
 
   _showEditPopup(controlName, hide, cb) {
@@ -69,6 +69,31 @@ export default class Nexus extends NexusBaseApplet {
       )
     }
     return this._showEditPopup(name, hide, cb)
+  }
+
+  showPopup(name, hide, cb) {
+    const control = this._getControl(name)
+    if (!control) {
+      throw new Error(
+        `[NB] Cannot find a control by name ${name} to show Popup applet.`
+      )
+    }
+    const uiType = control.GetUIType()
+    if (uiType !== 'Button') {
+      throw new Error(
+        `Control ${name} is not of supported type ${uiType} to show Popup applet`
+      )
+    }
+    if (control.GetMethodName() !== 'ShowPopup') {
+      throw new Error(
+        `Control ${name} method is not ShowPopup`
+      )
+    }
+    const ps = control.GetMethodPropSet() // TODO: check if the SWETA property exists?
+
+    this._setActiveControl(name)
+
+    return this.showPopupApplet('ShowPopup', hide, cb, ps)
   }
 
   _newAssocRecord() {

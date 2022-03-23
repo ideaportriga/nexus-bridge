@@ -274,13 +274,13 @@ export default class NexusPopupController {
     return true
   }
 
-  showPopupApplet(hide, cb, nb, methodName) {
+  showPopupApplet(hide, cb, nb, methodName, ps) {
     // TODO: maybe use the properties set on promise resolving?
     this.isPopupHidden = !!hide
 
     // This is a quite common situation when invoked method fails due to some server or
     // validation errors, so popup won't even open in this case.
-    const result = nb.pm.ExecuteMethod('InvokeMethod', methodName)
+    const result = nb.pm.ExecuteMethod('InvokeMethod', methodName, ps)
 
     // can call EditField if EditPopup?
 

@@ -6,7 +6,7 @@ declare const window: any
 
 const memo: Record<string, NexusBridge> = {}
 
-const memoizeOnce = (appletName: string, key: string, settings: Object | null) => {
+const memoizeOnce = (appletName: string, key: string, settings: Object = {}) => {
   if (!memo[key]) {
     console.log(`[NF] Nexus instance created: ${key} - ${appletName}`)
 
@@ -31,7 +31,7 @@ const memoizeOnce = (appletName: string, key: string, settings: Object | null) =
   return memo[key]
 }
 
-const createPopup = (config: NexusConfig, settings: Object | null) => {
+const createPopup = (config: NexusConfig, settings: Object = {}) => {
   for (const key in config) {
     memoizeOnce(config[key], key, settings)
   }
@@ -48,7 +48,7 @@ const clearPopup = (config: string[]) => {
   }
 }
 
-const NexusFactory = (config: string | NexusConfig, settings: Object | null): NexusBridge | null => {
+const NexusFactory = (config: string | NexusConfig, settings: Object = {}): NexusBridge | null => {
   // init factory
   if (typeof config === 'object') {
     for (const key in memo) {

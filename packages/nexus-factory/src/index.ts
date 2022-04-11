@@ -6,7 +6,7 @@ declare const window: any
 
 const memo: Record<string, NexusBridge> = {}
 
-const memoizeOnce = (appletName: string, key: string) => {
+const memoizeOnce = (appletName: string, key: string, settings: Object | null) => {
   if (!memo[key]) {
     console.log(`[NF] Nexus instance created: ${key} - ${appletName}`)
 
@@ -16,25 +16,24 @@ const memoizeOnce = (appletName: string, key: string) => {
     }
     const pm = applet.GetPModel()
     const isPopup = pm.Get('IsPopup')
+    const nexusInitSettings = {
+      ...settings,
+      pm,
+      convertDates: true,
+    }
     if (isPopup) {
-      memo[key] = Nexus.CreatePopupNB({
-        pm,
-        convertDates: true
-      })
+      memo[key] = Nexus.CreatePopupNB(nexusInitSettings)
     } else {
-      memo[key] = new Nexus({
-        pm,
-        convertDates: true
-      })
+      memo[key] = new Nexus(nexusInitSettings)
     }
   }
 
   return memo[key]
 }
 
-const createPopup = (config: NexusConfig) => {
+const createPopup = (config: NexusConfig, settings: Object | null) => {
   for (const key in config) {
-    memoizeOnce(config[key], key)
+    memoizeOnce(config[key], key, settings)
   }
 }
 
@@ -49,7 +48,7 @@ const clearPopup = (config: string[]) => {
   }
 }
 
-const NexusFactory = (config: string | NexusConfig): NexusBridge | null => {
+const NexusFactory = (config: string | NexusConfig, settings: Object | null): NexusBridge | null => {
   // init factory
   if (typeof config === 'object') {
     for (const key in memo) {
@@ -59,7 +58,7 @@ const NexusFactory = (config: string | NexusConfig): NexusBridge | null => {
     }
 
     for (const key in config) {
-      memoizeOnce(config[key], key)
+      memoizeOnce(config[key], key, settings)
     }
   }
 

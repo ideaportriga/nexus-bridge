@@ -64,6 +64,7 @@ export default class NexusPopupController {
     this.viewLoadedReject = null
     this.targetViewName = null
     if (!window.SiebelAppFacade.siebelViewLoaded) {
+      // TODO: use SiebelApp.contentUpdater.AddCallBack or use refreshview
       window.SiebelAppFacade.siebelViewLoaded =
         window.SiebelApp.contentUpdater.viewLoaded
       window.SiebelApp.contentUpdater.viewLoaded = (...args) => {

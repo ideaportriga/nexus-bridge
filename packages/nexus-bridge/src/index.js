@@ -36,6 +36,10 @@ export default class Nexus extends NexusBaseApplet {
     this.showPopupApplet('ChangeRecords', hide, cb)
   }
 
+  showExportApplet(hide, cb) {
+    return this.showPopupApplet('ExportQuery', hide, cb)
+  }
+
   showMvgApplet(name, hide, cb) {
     const control = this._getControl(name)
     if (!control) {

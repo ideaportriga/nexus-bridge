@@ -21,7 +21,7 @@ export default class NexusBaseApplet {
     this.view = window.SiebelApp.S_App.GetActiveView()
     this.appletName = this.pm.Get('GetName')
     this.isListApplet = typeof this.pm.Get('GetListOfColumns') !== 'undefined'
-    this.required = [] // will be empty for the list applet
+    this.required = []
     this.lov = {}
     this.boolObject = new window.SiebelApp.S_App.DatumBoolObject()
 
@@ -35,7 +35,7 @@ export default class NexusBaseApplet {
       debug: settings.debug
     })
 
-    // populate the required array for form applets
+    // populate the required array
     if (this.isListApplet) {
       const columns = this.pm.Get('ListOfColumns')
 
@@ -134,8 +134,7 @@ export default class NexusBaseApplet {
   }
 
   _isRequired(inputName) {
-    // required is empty for list applets
-    // it would be very good to use IsRequired and RequiredControl PM prop
+    // it would be very good to use IsRequired method and RequiredControl PM prop, but it always []
     return this.required.indexOf(inputName) > -1
   }
 
@@ -866,7 +865,7 @@ export default class NexusBaseApplet {
           label: control.GetDisplayName(),
           isPostChanges: control.IsPostChanges(),
           // keep required if it was in the template object
-          // workaround for not having required on list applet
+          // it was workaround for not having required on list applet, but do we need it now?
           required:
             _controls[controlName].required ||
             this._isRequired(control.GetInputName()),

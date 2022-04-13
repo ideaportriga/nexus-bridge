@@ -53,11 +53,13 @@ export default class NexusPopupController {
     }
 
     // resolve popup promise
-    window.SiebelApp.S_App.GetPopupPM().AddMethod(
-      'OnLoadPopupContent',
-      this.onLoadPopupContent,
-      { sequence: false, scope: this }
-    )
+    // window.SiebelApp.S_App.GetPopupPM().AddMethod(
+    //   'OnLoadPopupContent',
+    //   this.onLoadPopupContent,
+    //   { sequence: false, scope: this }
+    // )
+    // above commented when started to use refreshpopup
+    window.SiebelApp.EventManager.addListner('refreshpopup', this.onLoadPopupContent, this)
 
     // resolve/reject view promise
     this.viewLoadedResolve = null
@@ -108,6 +110,7 @@ export default class NexusPopupController {
     window.SiebelAppFacade._NBPopupController = this
   }
 
+  // formerly it was called thru OnLoadPopupContent, now thru EventManager.refreshpopup
   onLoadPopupContent() {
     if (typeof this.resolvePromise !== 'function') {
       return
@@ -122,6 +125,7 @@ export default class NexusPopupController {
 
     if (!applet) {
       this.resolvePromise = null
+      // TODO: better to reject Promise?
       throw new Error(
         '[NB] Opened Popup Applet is not found in OnLoadPopupContent'
       )
@@ -329,11 +333,12 @@ export default class NexusPopupController {
     // caused navigation to another view.
     popupPM.SetProperty('state', this.consts.get('POPUP_STATE_HIDDEN'))
 
-    // As all PM's method bindings previously were removed we have to readd
+    // As all PM's method bindings previously were removed we have to read
     // our handler for OnLoadPopupContent method again.
-    popupPM.AddMethod('OnLoadPopupContent', this.onLoadPopupContent, {
-      sequence: false,
-      scope: this
-    })
+    // popupPM.AddMethod('OnLoadPopupContent', this.onLoadPopupContent, {
+    //  sequence: false,
+    //  scope: this
+    // })
+    // above commented when started to use refreshpopup
   }
 }

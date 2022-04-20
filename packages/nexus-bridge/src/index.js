@@ -159,8 +159,7 @@ export default class Nexus extends NexusBaseApplet {
     })
   }
 
-  gotoView(viewName, appletName, id) {
-    // id = typeof id === 'undefined' ? (this.getCurrentRecord(true) || {}).Id : id
+  static GotoView(viewName, appletName, id) {
     if (appletName && id) {
       let SWECmd = `GotoView&SWEView=${viewName}&SWEApplet0=${appletName}`
       SWECmd += `&SWEBU=1&SWEKeepContext=FALSE&SWERowId0=${id}`
@@ -171,10 +170,25 @@ export default class Nexus extends NexusBaseApplet {
     }
   }
 
+  gotoView(viewName, appletName, id) {
+    // id = typeof id === 'undefined' ? (this.getCurrentRecord(true) || {}).Id : id
+    return Nexus.GotoView(viewName, appletName, id)
+  }
+
   gotoViewPromised(targetViewName, appletName, id) {
     return this.nexusPopupController.gotoView(
       this,
       this.gotoView,
+      targetViewName,
+      appletName,
+      id
+    )
+  }
+
+  static GotoViewPromised(targetViewName, appletName, id) {
+    return NexusPopupController.instance.gotoView(
+      null,
+      Nexus.GotoView,
       targetViewName,
       appletName,
       id

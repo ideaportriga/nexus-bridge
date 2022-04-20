@@ -111,6 +111,7 @@ export default class NexusBaseApplet {
   }
 
   _getControl(name) {
+    // TODO: check if control found?
     return this.pm.ExecuteMethod('GetControl', name)
   }
 

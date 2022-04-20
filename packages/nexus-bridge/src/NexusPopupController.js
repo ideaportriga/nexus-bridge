@@ -53,61 +53,33 @@ export default class NexusPopupController {
     }
 
     // resolve popup promise
-    // window.SiebelApp.S_App.GetPopupPM().AddMethod(
-    //   'OnLoadPopupContent',
-    //   this.onLoadPopupContent,
-    //   { sequence: false, scope: this }
-    // )
-    // above commented when started to use refreshpopup
     window.SiebelApp.EventManager.addListner('refreshpopup', this.onLoadPopupContent, this)
-
     // resolve/reject view promise
+    window.SiebelApp.EventManager.addListner('refreshview', this.viewLoaded, this)
+
     this.viewLoadedResolve = null
     this.viewLoadedReject = null
     this.targetViewName = null
-    if (!window.SiebelAppFacade.siebelViewLoaded) {
-      // TODO: use SiebelApp.contentUpdater.AddCallBack or use refreshview
-      window.SiebelAppFacade.siebelViewLoaded =
-        window.SiebelApp.contentUpdater.viewLoaded
-      window.SiebelApp.contentUpdater.viewLoaded = (...args) => {
-        const ret = window.SiebelAppFacade.siebelViewLoaded.call(
-          window.SiebelApp.contentUpdater,
-          ...args
-        )
 
-        const nexusResolveViewNavigation = () => {
-          // sometimes the view is not fully initialized after Siebel viewLoaded executed
-          if (typeof window.SiebelApp.S_App.GetActiveView().GetName === 'function') {
-            if (typeof this.viewLoadedResolve === 'function') {
-              const viewName = window.SiebelApp.S_App.GetActiveView().GetName()
-              const isCorrectViewName = viewName === this.targetViewName 
-              if (isCorrectViewName) {
-                this.viewLoadedResolve(true)
-              } else if (this.targetViewName && typeof this.viewLoadedReject === 'function') {
-                this.viewLoadedReject(`The ${viewName} does not match target ${this.targetViewName} `)
-              } else {
-                // this is drilldown as this.targetViewName is not defined
-                this.viewLoadedResolve(true)
-              }
-            }
-            this.viewLoadedResolve = null
-            this.viewLoadedReject = null
-            this.targetViewName = null
-          } else {
-            console.warn(
-              `[NB] GetName of ActiveView is not a function in viewLoaded... ${this.targetViewName}`
-            )
-            setTimeout(() => nexusResolveViewNavigation(), 100)
-          }
-        }
+    window.SiebelAppFacade._NBPopupController = this // it could be removed in the next version
+  }
 
-        nexusResolveViewNavigation()
-
-        return ret
+  viewLoaded() {
+    if (typeof this.viewLoadedResolve === 'function') {
+      const viewName = window.SiebelApp.S_App.GetActiveView().GetName()
+      const isCorrectViewName = viewName === this.targetViewName 
+      if (isCorrectViewName) {
+        this.viewLoadedResolve(true)
+      } else if (this.targetViewName && typeof this.viewLoadedReject === 'function') {
+        this.viewLoadedReject(`The ${viewName} does not match target ${this.targetViewName} `)
+      } else {
+        // this is drilldown as this.targetViewName is not defined
+        this.viewLoadedResolve(true)
       }
     }
-
-    window.SiebelAppFacade._NBPopupController = this
+    this.viewLoadedResolve = null
+    this.viewLoadedReject = null
+    this.targetViewName = null
   }
 
   // formerly it was called thru OnLoadPopupContent, now thru EventManager.refreshpopup

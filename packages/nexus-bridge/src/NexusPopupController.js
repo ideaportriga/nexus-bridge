@@ -251,6 +251,28 @@ export default class NexusPopupController {
     return true
   }
 
+  showExportApplet(hide, cb, nb) {
+    this.isPopupHidden = !!hide
+
+    window.SiebelApp.CommandManager.GetInstance().InvokeCommand(
+      `*Browser Applet* *ExportQuery*${nb.appletName}* *420*230*true`, 
+      true, //  
+      true, // async
+    )
+
+    if (hide) {
+      let ret = new Promise((resolve) => {
+        this.resolvePromise = resolve
+      })
+      if (typeof cb === 'function') {
+        ret = ret.then(cb)
+      }
+      return ret
+    }
+
+    return true
+  }
+
   showPopupApplet(hide, cb, nb, methodName, ps) {
     // TODO: maybe use the properties set on promise resolving?
     this.isPopupHidden = !!hide

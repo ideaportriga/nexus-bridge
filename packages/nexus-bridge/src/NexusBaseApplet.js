@@ -665,6 +665,7 @@ export default class NexusBaseApplet {
   }
 
   getLOV(controlName) {
+    // TODO: check if controlName populated
     const control = this._getControl(controlName)
     if (this.isStatic(control)) {
       return NexusBaseApplet.GetControlStaticLOV(control)

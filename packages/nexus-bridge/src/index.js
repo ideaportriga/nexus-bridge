@@ -21,7 +21,7 @@ export default class Nexus extends NexusBaseApplet {
   showPopupApplet(method, hide, cb, ps) {
     if (!this.nexusPopupController.canOpenPopup()) {
       throw new Error(
-        '[NB] Cannot open popup (currently exists resolve function)'
+        '[NB] Cannot open popup, another popup is openning and exists resolve func' 
       )
     }
     return this.nexusPopupController.showPopupApplet(hide, cb, this, method, ps)
@@ -37,7 +37,13 @@ export default class Nexus extends NexusBaseApplet {
   }
 
   showExportApplet(hide, cb) {
-    return this.showPopupApplet('ExportQuery', hide, cb)
+    if (!this.nexusPopupController.canOpenPopup()) {
+      throw new Error(
+        '[NB] Cannot open popup, another popup is openning and exists resolve func' 
+      )
+    }
+    return this.nexusPopupController.showExportApplet(hide, cb, this)
+    // return this.showPopupApplet('ExportQuery', hide, cb)
   }
 
   showMvgApplet(name, hide, cb) {

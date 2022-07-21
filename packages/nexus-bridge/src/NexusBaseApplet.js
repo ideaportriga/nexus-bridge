@@ -8,6 +8,7 @@ export default class NexusBaseApplet {
     this.pm = settings.pm
     this.convertDates = settings.convertDates
     this.returnRawNumbers = settings.returnRawNumbers
+    this.returnRawIntegers = settings.returnRawIntegers
     this.returnRawCurrencies = settings.returnRawCurrencies
     this.isMvgAssoc = settings.isMvgAssoc
     this.isPopup = settings.isPopup
@@ -717,7 +718,7 @@ export default class NexusBaseApplet {
       let fix = ISO.replace(/-/g, '/')
       return new Date(fix)
     }
-    if (this.returnRawNumbers && 'number' === dataType) {
+    if ((this.returnRawNumbers && 'number' === dataType) || (this.returnRawIntegers && 'integer' === dataType)) {
       // it is already not formatted on form applet, so only for list applet
       return window.SiebelApp.S_App.LocaleObject.FormattedToString(
         dataType,

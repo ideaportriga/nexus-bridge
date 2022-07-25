@@ -24,12 +24,22 @@ export default class NexusNotifications {
     pm.AttachNotificationHandler(
       consts.get('SWE_PROP_BC_NOTI_STATE_CHANGED'),
       (propSet) => {
-        const states = ['cp', 'n']
+        // 2022-07-25: cp removed from states, because otherwise on UndoRecord the subscription was not invoked
+        // const states = ['cp', 'n']
+        const states = ['n']
+        const currentState = propSet.GetProperty('state')
         const obj = {
           type: 'SWE_PROP_BC_NOTI_STATE_CHANGED',
           propSet
         }
-        if (!states.includes(propSet.GetProperty('state'))) {
+        if (currentState === 'cp') {
+          const activeControl = pm.Get('GetActiveControl')
+          // to skip notification when pick/mvg is opened for uncommitted record
+          if (activeControl && [consts.get('SWE_CTRL_MVG'), consts.get('SWE_CTRL_PICK')].includes(activeControl.GetUIType())) {
+            return this.skippedNotifications.push(obj)            
+          }
+        }
+        if (!states.includes(currentState)) {
           return acceptedNotifications.push(obj)
         }
         this.skippedNotifications.push(obj)

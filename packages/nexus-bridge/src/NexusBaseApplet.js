@@ -66,6 +66,7 @@ export default class NexusBaseApplet {
     this.pm.AttachPMBinding(
       'UpdateQuickPickInfo',
       (inputName, b, arr, i) => {
+        const activeControl = this.pm.Get('GetActiveControl')
         if (i === 6) {
           // this is a normal flow, could it be 5 as in Bookshelf stated?
           if (this.appletName === arr[2]) {
@@ -77,6 +78,10 @@ export default class NexusBaseApplet {
               )
             }
             this.lov[inputName] = arr.slice().splice(i)
+            // if current input is active then fill JQuery autocomplete with lov values for vanilla dropdown
+            if (inputName === activeControl?.GetInputName()) {
+              this.pm.GetRenderer()?.GetUIWrapper(activeControl)?.UpdatePickList(this.lov[inputName])
+            }
           }
         } else if (i === 0) {
           // this is a misconfiguration, when getting dynamic LOV is called second+ time?
@@ -84,6 +89,10 @@ export default class NexusBaseApplet {
             `[NB] It seems the control/list column ${inputName} is incorrectly configured in the Tools.`
           )
           this.lov[inputName] = arr
+          // if current input is active then fill JQuery autocomplete with lov values for vanilla dropdown
+          if (inputName === activeControl?.GetInputName()) {
+            this.pm.GetRenderer()?.GetUIWrapper(activeControl)?.UpdatePickList(this.lov[inputName])
+          }
         }
       },
       { scope: this }

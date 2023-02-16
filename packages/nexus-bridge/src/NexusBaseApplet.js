@@ -137,7 +137,7 @@ export default class NexusBaseApplet {
     // https://docs.oracle.com/cd/E74890_01/books/ConfigOpenUI/appendix_a_api002.htm
     // maybe we need to exclude more types
     return (
-      type === this.consts.get('SWE_CTRL_LINK') ||
+      type === this.consts.get('SWE_CTRL_LINK') || // why do we skip this type
       // || (type === this.consts.get('SWE_PST_BUTTON_CTRL'))
       // || (type === this.consts.get('SWE_CTRL_PLAINTEXT')) // KC IM
       type === 'null'
@@ -185,13 +185,14 @@ export default class NexusBaseApplet {
         )
       }
       const date = value
-        .toLocaleString('en-US', { hour12: true })
+        .toLocaleString('en-US', { hourCycle: 'h23' })
         .split(',')
         .join('')
+        .replace(/\s+/, ' ') // AK fix for Edge
         .replace(/[^ -~]/g, '') // MK fix for IE11
       return window.SiebelApp.S_App.LocaleObject.GetStringFromDateTime(
         date,
-        'M/D/YYYY hh:mm:ss p',
+        'M/D/YYYY HH:mm:ss',
         displayFormat,
         false // if true, / and : is NOT changed to local date and time separator
       )

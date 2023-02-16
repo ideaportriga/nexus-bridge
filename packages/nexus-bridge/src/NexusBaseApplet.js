@@ -188,7 +188,7 @@ export default class NexusBaseApplet {
         .toLocaleString('en-US', { hourCycle: 'h23' })
         .split(',')
         .join('')
-        .replace(/\s+/, ' ') // AK fix for Edge
+        .replace(/\s+/g, ' ') // AK fix for Edge
         .replace(/[^ -~]/g, '') // MK fix for IE11
       return window.SiebelApp.S_App.LocaleObject.GetStringFromDateTime(
         date,

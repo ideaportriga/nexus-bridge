@@ -137,7 +137,7 @@ export default class NexusBaseApplet {
     // https://docs.oracle.com/cd/E74890_01/books/ConfigOpenUI/appendix_a_api002.htm
     // maybe we need to exclude more types
     return (
-      type === this.consts.get('SWE_CTRL_LINK') || // why do we skip this type
+      // type === this.consts.get('SWE_CTRL_LINK') ||
       // || (type === this.consts.get('SWE_PST_BUTTON_CTRL'))
       // || (type === this.consts.get('SWE_CTRL_PLAINTEXT')) // KC IM
       type === 'null'

@@ -205,9 +205,19 @@ export default class NexusBaseApplet {
     return this.pm.ExecuteMethod('CanInvokeMethod', method)
   }
 
-  invokeMethod(method) {
+  invokeMethod(method, { async, cb } = {}) {
+    // TODO: check if the method in the local array? or maybe skip checking for canInvokeMethod
     if (!this.canInvokeMethod(method)) {
       return false
+    }
+    if (async) {
+      const promise = new Promise((resolve) => this.pm.ExecuteMethod('InvokeMethod', method, null, { 
+        async, 
+        cb: function() {
+          resolve.call(null, [].slice.call(arguments))
+        },
+      }))
+      return typeof cb === 'function' ? promise.then(cb) : promise
     }
     return this.pm.ExecuteMethod('InvokeMethod', method)
   }

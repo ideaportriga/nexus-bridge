@@ -393,23 +393,15 @@ export default class NexusBaseApplet {
     return this.pm.Get('GetSelection')
   }
 
-  _navigate(method) {
-    if (!this.canInvokeMethod(method)) {
-      return false
-    }
-    const ret = this.pm.ExecuteMethod('InvokeMethod', method)
-    return ret
+  nextRecord({ async } = {}) {
+    return this.invokeMethod(this.isListApplet ? 'GotoNext' : 'GotoNextSet', { async })
   }
 
-  nextRecord() {
-    return this._navigate(this.isListApplet ? 'GotoNext' : 'GotoNextSet')
-  }
-
-  nextRecordSet() {
+  nextRecordSet({ async } = {}) {
     if (!this.isListApplet) {
       return false
     }
-    return this._navigate('GotoNextSet')
+    return this.invokeMethod('GotoNextSet', { async })
   }
 
   positionOnRow(index, keys, skipIfAlreadyPositioned) {
@@ -474,19 +466,19 @@ export default class NexusBaseApplet {
     return ret // true if success, false is positioning not happened
   }
 
-  prevRecord() {
+  prevRecord({ async } = {}) {
     if (this.isListApplet) {
       // return this.positionOnRow(this.pm.Get('GetSelection') - 1)
-      return this._navigate('GotoPrevious')
+      return this.invokeMethod('GotoPrevious', { async })
     }
-    return this._navigate('GotoPreviousSet')
+    return this.invokeMethod('GotoPreviousSet', { async })
   }
 
-  prevRecordSet() {
+  prevRecordSet({ async } = {}) {
     if (!this.isListApplet) {
       return false
     }
-    return this._navigate('GotoPreviousSet')
+    return this.invokeMethod('GotoPreviousSet', { async })
   }
 
   newRecord(cb) {

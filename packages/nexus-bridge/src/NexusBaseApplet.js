@@ -602,7 +602,6 @@ export default class NexusBaseApplet {
   }
 
   _setControlValueInternal(control, value) {
-    // should it be PHYEVENT_COLUMN_FOCUS/PHYEVENT_COLUMN_BLUR for list applet
     this.pm.OnControlEvent(this.consts.get('PHYEVENT_CONTROL_FOCUS'), control)
     return this.pm.OnControlEvent(
       this.consts.get('PHYEVENT_CONTROL_BLUR'),

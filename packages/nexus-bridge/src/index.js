@@ -14,6 +14,19 @@ export default class Nexus extends NexusBaseApplet {
     )
   }
 
+  saveUserPref(key, value) {
+    const ps = window.SiebelApp.S_App.NewPropertySet()
+    ps.SetProperty("Key", key)
+    ps.SetProperty(key, value)
+    this.pm.SetProperty(key, value)
+    this.pm.OnControlEvent(this.consts.get("PHYEVENT_INVOKE_CONTROL"), 
+      this.pm.Get(this.consts.get("SWE_MTHD_UPDATE_USER_PREF")), ps)
+  }
+
+  getUsePref(key) {
+    return this.pm.Get(key);
+  }
+
   closePopupApplet(nb) {
     return this.nexusPopupController.closePopupApplet(nb)
   }

@@ -23,7 +23,7 @@ export default class Nexus extends NexusBaseApplet {
       this.pm.Get(this.consts.get("SWE_MTHD_UPDATE_USER_PREF")), ps)
   }
 
-  getUsePref(key) {
+  getUserPref(key) {
     return this.pm.Get(key);
   }
 

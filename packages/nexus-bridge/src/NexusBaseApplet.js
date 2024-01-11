@@ -737,9 +737,11 @@ export default class NexusBaseApplet {
         displayFormat
       )
     }
-    if (this.returnRawCurrencies && 'currency' === dataType && currencyCode) {
+    if (this.returnRawCurrencies && 'currency' === dataType) {
       // it is already not formatted on form applet, so only for list applet
-      window.SiebelApp.S_App.LocaleObject.SetCurrencyCode(currencyCode) // TODO: do we need to restore the m_sCurrencyCode?
+      if (currencyCode) {
+        window.SiebelApp.S_App.LocaleObject.SetCurrencyCode(currencyCode) // TODO: do we need to restore the m_sCurrencyCode?
+      }
       return window.SiebelApp.S_App.LocaleObject.FormattedToString(
         dataType,
         value,
